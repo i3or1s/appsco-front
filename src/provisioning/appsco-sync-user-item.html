@@ -1,0 +1,378 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
+
+<!--
+`appsco-sync-user-item`
+Account item is used to present account in form of an item.
+
+    <appsco-sync-user-item>
+    </appsco-sync-user-item>
+
+### Styling
+
+`<appsco-sync-user-item>` provides the following custom properties and mixins for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--background-color` | Background color applied to the root element | `#fff`
+`--color` | Color applied to all the text | `#33`
+`--appsco-sync-user-item` | Mixin for the root element | `{}`
+
+@demo demo/appsco-sync-user-item.html
+-->
+
+<dom-module id="appsco-sync-user-item">
+    <template>
+        <style>
+            :host {
+                display: none;
+                color: var(--primary-text-color);
+            }
+            :host .item {
+                text-align: center;
+                width: 141px;
+                height: 156px;
+                overflow: hidden;
+                @apply(--shadow-elevation-2dp);
+                position: relative;
+                background-color: var(--background-color, #fff);
+                padding: 0 4px;
+                cursor: pointer;
+                @apply(--appsco-sync-user-item);
+            }
+            :host .item:hover {
+                @apply(--shadow-elevation-4dp);
+            }
+            :host .account-icon {
+                width: 52px;
+                height: 52px;
+                margin: 24px 0 8px 0;
+            }
+            :host .account-initials {
+                position: relative;
+                background-color: var(--body-background-color, #f5f8fa);
+                color: var(--primary-text-color);
+            }
+            :host .account-initials .initials {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                margin: auto;
+                line-height: 52px;
+                text-align: center;
+                text-transform: uppercase;
+                font-size: 18px;
+            }
+            :host .account-title {
+                display: block;
+                height: 32px;
+                line-height: 16px;
+                @apply(--paper-font-common-base);
+                font-size: 14px;
+                font-weight: 400;
+                overflow: hidden;
+            }
+            :host .account-org-units {
+                display: none;
+            }
+            :host .actions {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                position: absolute;
+                bottom: 2px;
+            }
+            :host paper-button {
+                @apply(--paper-font-common-base);
+                @apply(--paper-font-common-nowrap);
+
+                padding: 4px;
+                font-size: 12px;
+                font-weight: 400;
+                letter-spacing: 0.018em;
+                line-height: 18px;
+                text-transform: uppercase;
+            }
+            :host paper-button[disabled] {
+                background: transparent;
+            }
+            :host([company][active]) .item {
+                background: var(--app-primary-color);
+                color: #ffffff;
+                transition: all 0.3s ease-in;
+            }
+            :host([company]) .item {
+                width: 100%;
+                height: 70px;
+                padding: 0 10px;
+                box-sizing: border-box;
+                border-radius: 3px;
+                text-align: left;
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                transition: all 0.2s ease-out;
+            }
+            :host([company]) .account-icon {
+                margin: 0;
+                @apply(--layout-flex-none);
+                border-radius: 50%;
+            }
+            :host .account-icon::shadow #sizedImgDiv, :host .account-icon::shadow #placeholder {
+                border-radius: 50%;
+            }
+            :host([company]) .account-info {
+                @apply(--layout-vertical);
+                @apply(--layout-start);
+                padding: 0 10px;
+                /*margin-right: 20px;*/
+            }
+            :host([company]) .account-basic-info {
+                min-width: 210px;
+            }
+            :host([company]) .account-info-auth-type {
+                border-left: 1px solid var(--divider-color);
+            }
+            :host([company]) .info-label {
+                font-size: 16px;
+                height: auto;
+                line-height: normal;
+            }
+            :host([company]) .info-value {
+                display: block;
+                font-size: 12px;
+            }
+            :host([company]) .actions {
+                right: 4px;
+                bottom: 4px;
+            }
+            :host .two-fa-icon {
+                width: 14px;
+                height: 14px;
+                margin-top: -2px;
+            }
+        </style>
+
+        <div class="item" on-tap="_onAccountAction">
+
+            <template is="dom-if" if="[[ account.picture_url ]]">
+                <iron-image class="account-icon"
+                            sizing="cover"
+                            preload fade
+                            src="[[ account.picture_url ]]"></iron-image>
+            </template>
+
+            <template is="dom-if" if="[[ !account.picture_url ]]">
+                <div class="account-icon account-initials">
+                    <span class="initials">[[ _accountInitials ]]</span>
+                </div>
+            </template>
+
+            <div class="account-info account-basic-info">
+                <span class="info-label account-title">[[ account.display_name ]]</span>
+                <span class="info-value"
+                      hidden$="[[ !company ]]">[[ account.email ]]</span>
+            </div>
+
+
+            <div class="account-info account-info-auth-type">
+                <!--<paper-autocomplete-->
+                        <!--placeholder="Create new or select"-->
+                        <!--label="AppsCo account"-->
+                        <!--id="input-local-placeholder"-->
+                        <!--source="[[ companyRoles ]]"-->
+                        <!--text-property="alias"-->
+                        <!--value-property="alias"-->
+                        <!--always-float-lable="true"></paper-autocomplete>-->
+                <paper-autocomplete
+                        placeholder="Create new or select"
+                        label="AppsCo account"
+                        id="input-remote-custom-template"
+                        text-property="display_name"
+                        value-property="alias"
+                        always-float-lable="true"
+                        min-length="2"
+                        remote-source
+                >
+                    <template autocomplete-custom-template>
+                        <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
+                            <img src$="[[item.avatar_url]]" height="50" width="50" style="margin: 8px 8px 8px 0; min-height: 50px;">[[item.login]]
+                            <paper-ripple></paper-ripple>
+                        </paper-item>
+                    </template>
+                </paper-autocomplete>
+            </div>
+
+            <div class="actions">
+                <paper-button on-tap="_onEdit">Import</paper-button>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-sync-user-item',
+
+            properties: {
+
+                companyRoles: {
+                    type: Array,
+                    value: function() { return []; }
+                },
+
+                _mockCompanyRoles: {
+                    type: Array,
+                    computed: "_computeMockCompanyRoles(companyRoles)"
+                },
+
+                /**
+                 * Indicates if user manages company accounts or not.
+                 */
+                company: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                /**
+                 * [account](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+                 */
+                account: {
+                    type: Object,
+                    value: function() { return {}; }
+                },
+
+                companyRole: {
+                    type: Object,
+                    value: function() { return {}; }
+                },
+
+                _accountInitials: {
+                    type: String,
+                    computed: '_computeAccountInitials(account)'
+                },
+
+                active: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                /**
+                 * Animation for loader appearance.
+                 */
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': {
+                                name: 'fade-in-animation',
+                                node: this,
+                                timing: {
+                                    duration: 200
+                                }
+                            },
+                            'exit': {
+                                name: 'fade-out-animation',
+                                node: this,
+                                timing: {
+                                    duration: 100
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimationRunnerBehavior
+            ],
+
+            attached: function() {
+                this.style.display = 'inline-block';
+                this.playAnimation('entry');
+                console.log(this.companyRoles);
+            },
+
+            _computeMockCompanyRoles: function(companyRoles) {
+                var data = [],
+                    length = companyRoles.length;
+
+                for (var i = 0; i < length; i++) {
+                    var mockObj = {};
+                    mockObj.text = companyRoles[i].account.display_name;
+                    mockObj.value = companyRoles[i].alias;
+                    mockObj.test = "TEST";
+
+                    data.push(mockObj);
+                }
+
+                return data;
+            },
+
+            _computeAccountInitials: function(account) {
+                var initials = '';
+
+                if (account.self && account.first_name.length > 0 && account.last_name.length > 0) {
+                    initials = account.first_name.substring(0, 1) + account.last_name.substring(0, 1);
+                }
+                else if (account.self && account.name) {
+                    initials = account.name.substring(0, 2);
+                }
+
+                return initials;
+            },
+
+            _onEdit: function (event) {
+                event.stopPropagation();
+
+                /**
+                 * Fired when `edit` is tapped.
+                 *
+                 * @event edit
+                 * @param {Object} account [account](https://developers.appsco.com/api/dashboard/id/icons/id)
+                 *                              for which event is fired
+                 */
+                this.fire('edit', {
+                    account: this.account,
+                    role: this.companyRole
+                });
+            },
+
+            _onAccountAction: function() {
+                this.active = !this.active;
+
+                /**
+                 * Fired when whole item is tapped.
+                 *
+                 * @event account
+                 * @param {Object} account [account](https://developers.appsco.com/api/dashboard/id/icons/id)
+                 *                              for which event is fired
+                 */
+                this.fire('account', {
+                    account: this.account,
+                    role: this.companyRole
+                });
+            },
+
+            select: function() {
+                this.active = true;
+            },
+
+            deselect: function() {
+                this.active = false;
+            }
+
+        });
+    </script>
+</dom-module>

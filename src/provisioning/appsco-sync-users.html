@@ -1,0 +1,752 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/transform-animation.html">
+
+<link rel="import" href="appsco-sync-user-item.html">
+
+<!--
+`appsco-sync-users`
+Contains account list and Load More action (if there are more accounts then presented).
+Accounts are loaded inside component through iron-ajax.
+Component listens for events which have influence on result and changes query in order to retrieve appropriate accounts.
+
+
+    <appsco-sync-users>
+    </appsco-sync-users>
+
+### Styling
+
+`<appsco-sync-users>` provides the following custom properties and mixins for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--appsco-sync-users-item` | Mixin for item style | `{}`
+`--appsco-sync-users` | Mixin for the root element | `{}`
+`--accounts-container` | Mixin for the accounts container | `{}`
+`--accounts-progress-bar` | Mixin applied to paper-progress for account list | `{}`
+
+@demo demo/appsco-sync-users.html
+-->
+
+<dom-module id="appsco-sync-users">
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+                position: relative;
+                @apply(--appsco-sync-users);
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+
+                --paper-progress-container-color: var(--body-background-color);
+                --paper-progress-height: 2px;
+            }
+
+            :host div[accounts] {
+                @apply(--layout-horizontal);
+                @apply(--layout-wrap);
+                @apply(--layout-start);
+                margin-right: -10px;
+                @apply(--accounts-container);
+            }
+            :host([company]) div[accounts] {
+                @apply(--layout-vertical);
+                @apply(--layout-start);
+                margin-right: 0;
+            }
+            :host appsco-sync-user-item {
+                margin: 0 10px 10px 0;
+                @apply(--appsco-sync-users-item);
+            }
+            :host([company]) appsco-sync-user-item {
+                width: 100%;
+                margin: 0 0 10px 0;
+                @apply(--appsco-sync-users-item);
+            }
+
+            :host .accounts-container {
+                width: 100%;
+                min-height: 160px;
+                padding-top: 10px;
+                position: relative;
+            }
+            :host appsco-loader {
+                background-color: rgba(255, 255, 255, 0.4);
+            }
+            :host .load-more-box {
+                margin-top: 10px;
+                padding-top: 4px;
+                position: relative;
+            }
+            :host .accounts-progress-bar {
+                min-width: 100px;
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                @apply(--accounts-progress-bar);
+            }
+            :host paper-button {
+                display: block;
+                width: 120px;
+                margin: 20px auto 0;
+                text-align: center;
+                @apply(--load-more-button);
+            }
+            :host .message {
+                color: var(--secondary-text-color);
+                font-style: italic;
+                @apply(--paper-font-body2);
+                @apply(--info-message);
+            }
+        </style>
+
+        <div class="accounts-container">
+            <iron-ajax
+                    auto
+                    id="accountsApiRequest"
+                    url="{{ _currentUrl }}"
+                    on-error="_onError"
+                    on-response="_onResponse"
+                    headers="{{ _computedHeaders }}"
+                    debounce-duration="300"
+            ></iron-ajax>
+
+            <paper-progress id="paperProgress"
+                            class="accounts-progress-bar"
+                            indeterminate></paper-progress>
+
+            <template is="dom-if" if="[[ _message ]]">
+                <p class="message">[[ _message ]]</p>
+            </template>
+
+            <template is="dom-if" if="[[ !_accountsEmpty ]]">
+                <div accounts company$="[[ company ]]">
+                    <template is="dom-repeat"
+                              items="{{ _accounts }}"
+                              on-dom-change="_onItemsDomChange">
+
+                        <appsco-sync-user-item
+                                id="appscoAccountItem_[[ index ]]"
+                                class="accountitem"
+                                account="{{ item.account }}"
+                                company-role="{{ item }}"
+                                company-roles="[[ _accounts ]]"
+                                company="[[ company ]]"></appsco-sync-user-item>
+
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <template is="dom-if" if="[[ !_accountsEmpty ]]">
+            <div class="load-more-box" hidden$="[[ !_loadMore ]]">
+                <paper-progress id="loadMoreProgress" indeterminate></paper-progress>
+                <paper-button on-tap="_loadMoreAccounts" id="loadMore">Load More</paper-button>
+            </div>
+        </template>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-sync-users',
+
+            properties: {
+
+                /**
+                 * Indicates if user manages company accounts or not.
+                 */
+                company: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                /**
+                 * Authorization token.
+                 */
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+                /**
+                 * Route to retrieve accounts for current user
+                 */
+                accountsApi: {
+                    type: String,
+                    value: '',
+                    notify: true
+                },
+                /**
+                 * Number of account items to load and present
+                 */
+                size: {
+                    type: Number,
+                    value: 10
+                },
+                /**
+                 * Show load more button
+                 */
+                loadMore: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _loadMore: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _computedHeaders: {
+                    type: Object,
+                    computed: "_computeHeaders(authorizationToken)"
+                },
+                _accounts: {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    },
+                    notify: true
+                },
+
+                _allAccounts: {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                },
+
+                _accountsEmpty: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _message: {
+                    type: String,
+                    value: ''
+                },
+
+                _currentUrl: {
+                    type: String,
+                    notify: true
+                },
+                _next: {
+                    type: String
+                },
+
+                _totalAccounts: {
+                    type: Number,
+                    value: 0
+                },
+
+                _renderedIndex: {
+                    type: Number,
+                    value: -1
+                },
+
+                /**
+                 * Search term.
+                 */
+                _filterTerm: {
+                    type: String,
+                    value: ''
+                },
+
+                /**
+                 * Search term.
+                 */
+                _filterOrgunit: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                /**
+                 * Animation for loader appearance.
+                 */
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': {
+                                name: 'transform-animation',
+                                transformOrigin: '1 1',
+                                transformFrom: 'scale(1)',
+                                transformTo: 'scale(1.08)',
+                                node: {},
+                                timing: {
+                                    delay: 200,
+                                    duration: 500
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimationRunnerBehavior
+            ],
+
+            listeners: {
+                'accounts-api-changed': "_loadAccounts"
+            },
+
+            ready: function () {
+                this._currentUrl = this.accountsApi + "?page=1&extended=1&limit=" + this.size;
+
+                if (this.company) {
+
+                    this.animationConfig.entry = {
+                        name: 'cascaded-animation',
+                        animation: 'slide-from-left-animation',
+                        nodes: [],
+                        nodeDelay: 50,
+                        timing: {
+                            duration: 300
+                        }
+                    };
+
+                }
+            },
+
+            _loadAccounts: function () {
+                this.$$('#paperProgress').hidden = false;
+                this._loadMore = false;
+                this._currentUrl = this.accountsApi + "?page=1&extended=1&limit=" + this.size;
+                this.set('_accounts', []);
+                this.set('_allAccounts', []);
+            },
+
+            _loadMoreAccounts: function () {
+                this.$$('#loadMoreProgress').hidden = false;
+                this._currentUrl = this._next;
+            },
+
+            _onError: function() {
+                this._message = 'We couldn\'t load accounts at the moment. Please try again in a minute.';
+                this._handleEmptyLoad();
+            },
+
+            _handleEmptyLoad: function() {
+                this._accountsEmpty = true;
+
+                /**
+                 * Fired when there are no accounts.
+                 *
+                 * @event empty-load
+                 */
+                this.fire('empty-load');
+
+                this._hideProgressBar();
+            },
+
+            _onResponse: function(e) {
+                var me = this,
+                        response = e.detail.response,
+                        companyRoles = response.company_roles.reverse(),
+                        meta = response.meta,
+                        accountsCount = companyRoles.length - 1;
+
+                this._totalAccounts = meta.total;
+                this._next = meta.next + "&limit=" + this.size;
+
+                if (meta.total === 0) {
+                    this._message = 'Please add accounts to your company.';
+                    this._handleEmptyLoad();
+                    return false;
+                }
+
+                this._accountsEmpty = false;
+                this._message = '';
+
+                companyRoles.forEach(function (el, index) {
+
+                    setTimeout( function() {
+
+                        me.push('_accounts', el);
+                        me.push('_allAccounts', el);
+
+                        if (index == accountsCount) {
+
+                            me._loadMore = me.loadMore;
+
+                            if (me._accounts.length === meta.total) {
+                                me._loadMore = false;
+                            }
+
+                            me._hideProgressBar();
+
+                            /**
+                             * Fired when accounts are loaded
+                             *
+                             * @event loaded
+                             * @param {Object} account[] [account](https://developers.appsco.com/api/dashboard/id/icons/id)
+                             */
+                            me.fire('loaded', {
+                                accounts: e.detail.response.company_roles
+                            });
+
+                            if (me._filterOrgunit.selected) {
+                                me._filterByOrgunit();
+                            }
+                        }
+
+                    }.bind(this), (index + 1) * 50 );
+
+                });
+            },
+
+            _computeHeaders: function (authorizationToken) {
+                return {
+                    "Authorization": "token " + authorizationToken
+                }
+            },
+
+            addAccounts: function(accounts) {
+                var length = accounts.length;
+
+                this._accountsEmpty = false;
+                this._message = '';
+                this._renderedIndex = length - 1;
+
+                for (var i = 0; i < length; i++) {
+                    this.unshift('_accounts', accounts[i]);
+                    this.unshift('_allAccounts', accounts[i]);
+                }
+            },
+
+            modifyAccounts: function(accounts) {
+                var _accounts = JSON.parse(JSON.stringify(this._accounts)),
+                        _length = _accounts.length,
+                        allAccounts = JSON.parse(JSON.stringify(this._allAccounts)),
+                        allLength = allAccounts.length,
+                        lengthModify = accounts.length;
+
+                for (var i = 0; i < lengthModify; i++) {
+                    var account = accounts[i];
+
+                    for (var j = 0; j < _length; j++) {
+                        if (account.account.self === _accounts[j].account.self) {
+                            _accounts[j] = account;
+                            break;
+                        }
+                    }
+
+                    for (var k = 0; k < allLength; k++) {
+                        if (account.account.self === allAccounts[k].account.self) {
+                            allAccounts[k] = account;
+                            break;
+                        }
+                    }
+
+                }
+
+                this.set('_accounts', []);
+                this.set('_accounts', _accounts);
+
+                this.set('_allAccounts', []);
+                this.set('_allAccounts', allAccounts);
+            },
+
+            reloadAccounts: function() {
+                this.set('_currentUrl', '');
+                this._loadAccounts();
+            },
+
+            removeAccounts: function(accounts) {
+                var length = accounts.length,
+                        _accounts = this._accounts,
+                        _length = _accounts.length,
+                        allAccounts = this._allAccounts,
+                        allLength = allAccounts.length;
+
+                for (var i = 0; i < length; i++) {
+                    var account = accounts[i];
+
+                    for (var j = 0; j < _length; j++) {
+
+                        if (account.self === _accounts[j].self) {
+                            this.splice('_accounts', j, 1);
+                            break;
+                        }
+                    }
+
+                    for (var k = 0; k < allLength; k++) {
+
+                        if (account.self === allAccounts[k].self) {
+                            this.splice('_allAccounts', k, 1);
+                            break;
+                        }
+                    }
+
+                }
+
+                if (0 === this._accounts.length) {
+                    this._message = 'You have removed all accounts from company. Please add new ones.';
+                    this._handleEmptyLoad();
+                }
+            },
+
+            getFirstAccount: function() {
+                return this._accounts[0];
+            },
+
+            selectAllAccounts: function(select) {
+                var accounts = this._accounts,
+                        length = accounts.length;
+
+                for (var i = 0; i < length; i++) {
+                    var accountItem = this.$$('#appscoAccountItem_' + i);
+                    select ? accountItem.select() : accountItem.deselect();
+                }
+            },
+
+            setOrgunit: function(orgunit) {
+                var _accounts = JSON.parse(JSON.stringify(this._accounts)),
+                        _length = _accounts.length,
+                        allAccounts = JSON.parse(JSON.stringify(this._allAccounts)),
+                        allLength = allAccounts.length;
+
+                for (var i = 0; i < _length; i++) {
+                    var account = _accounts[i],
+                            orgunits = account.account.org_units,
+                            length = orgunits.length;
+
+                    for (var j = 0; j < length; j++) {
+                        if (orgunit.alias === orgunits[j].alias) {
+                            _accounts[i].account.org_units[j].name = orgunit.name;
+                            break;
+                        }
+                    }
+
+                }
+
+                for (var j = 0; j < allLength; j++) {
+                    var account = allAccounts[j],
+                            orgunits = account.account.org_units,
+                            length = orgunits.length;
+
+                    for (var k = 0; k < length; k++) {
+                        if (orgunit.alias === orgunits[k].alias) {
+                            allAccounts[j].account.org_units[k].name = orgunit.name;
+                            break;
+                        }
+                    }
+
+                }
+
+                this.set('_accounts', []);
+                this.set('_accounts', _accounts);
+
+                this.set('_allAccounts', []);
+                this.set('_allAccounts', allAccounts);
+            },
+
+            filterByTerm: function(term) {
+                this._filterTerm = term;
+
+                this._filterOrgunit.orgUnit ? this._filterByTermAndOrgunit() : this._filterByTerm();
+            },
+
+            filterByOrgunit: function(orgunitData) {
+                this._filterOrgunit = orgunitData;
+
+                this._filterTerm.trim().length > 0 ? this._filterByTermAndOrgunit() : this._filterByOrgunit();
+            },
+
+            _filterByTerm: function() {
+                var term = this._filterTerm,
+                        length = this._allAccounts.length;
+
+                this.$$('#paperProgress').hidden = false;
+
+                if (length < this._accounts.length) {
+                    this._allAccounts = JSON.parse(JSON.stringify(this._accounts));
+                    length = this._allAccounts.length;
+                }
+
+                if (length === 0) {
+                    this.fire('filter-done');
+                    return false;
+                }
+
+                this.set('_accounts', []);
+
+                this._allAccounts.forEach(function(elem, index) {
+
+                    if (elem.account.name.toLowerCase().indexOf(term.toLowerCase()) >= 0 || elem.account.email.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
+                        var oldElem = JSON.parse(JSON.stringify(elem));
+
+                        this.push('_accounts', oldElem);
+                    }
+
+                    if (index === length - 1) {
+                        this._accountsEmpty = (this._accounts.length === 0);
+                        this._message = this._accountsEmpty ? 'There are no accounts with asked term.' : '';
+                        this._hideProgressBar();
+
+                        this.fire('filter-done');
+                    }
+
+                }.bind(this));
+
+                this._loadMore = false;
+
+                if (term.length < 3 && this._accounts.length < this._totalAccounts) {
+                    this._loadMore = true;
+                }
+            },
+
+            _filterByOrgunit: function() {
+                var filterOrgunit = this._filterOrgunit,
+                        orgunit = filterOrgunit.orgUnit,
+                        selected = filterOrgunit.selected,
+                        allLength = 0;
+
+                this._accountsEmpty = false;
+                this._message = '';
+
+                if (this._allAccounts.length < this._accounts.length) {
+                    this._allAccounts = JSON.parse(JSON.stringify(this._accounts));
+                }
+
+                allLength = this._allAccounts.length;
+
+                if (!selected) {
+                    this.set('_accounts', this._allAccounts);
+//                    this.set('_accounts', JSON.parse(JSON.stringify(this._allAccounts)));
+
+                    for (var i = 0; i < allLength; i++) {
+                        var item = this.$$('#appscoAccountItem_' + i);
+
+                        if (item) {
+                            item.deselect();
+                        }
+                    }
+
+                    this.set('_filterOrgunit', {});
+                }
+                else {
+                    this.set('_accounts', []);
+
+                    for (var i = 0; i < allLength; i++) {
+                        var account = this._allAccounts[i],
+                                orgunits = account.account.org_units,
+                                orgunitsLength = orgunits.length,
+                                item = this.$$('#appscoAccountItem_' + i);
+
+                        if (item) {
+                            item.deselect();
+                        }
+
+                        for (var j = 0; j < orgunitsLength; j++) {
+
+                            if (orgunits[j].alias === orgunit.alias) {
+                                this.push('_accounts', account);
+                                break;
+                            }
+
+                        }
+                    }
+
+                    if (this._accounts.length === 0) {
+                        this._message = 'There are no accounts within ' + orgunit.name +' organization unit.';
+                        this._handleEmptyLoad();
+                    }
+
+                }
+            },
+
+            _filterByTermAndOrgunit: function() {
+                var filterOrgunit = this._filterOrgunit,
+                        orgunit = filterOrgunit.orgUnit,
+                        selected = filterOrgunit.selected,
+                        term = this._filterTerm,
+                        allLength = 0;
+
+                this._accountsEmpty = false;
+                this._message = '';
+
+                if (this._allAccounts.length < this._accounts.length) {
+                    this._allAccounts = JSON.parse(JSON.stringify(this._accounts));
+                }
+
+                allLength = this._allAccounts.length;
+
+                if (!selected) {
+                    this.set('_accounts', this._allAccounts);
+                    this.set('_filterOrgunit', {});
+                    this._filterByTerm();
+                }
+                else {
+                    this.set('_accounts', []);
+
+                    for (var i = 0; i < allLength; i++) {
+                        var account = this._allAccounts[i],
+                                orgunits = account.account.org_units,
+                                orgunitsLength = orgunits.length,
+                                accountItem = this.$$('#appscoAccountItem_' + i);
+
+                        if (accountItem) {
+                            accountItem.deselect();
+                        }
+
+                        for (var j = 0; j < orgunitsLength; j++) {
+
+                            if (orgunits[j].alias === orgunit.alias &&
+                                    (account.account.name.toLowerCase().indexOf(term.toLowerCase()) >= 0 || account.account.email.toLowerCase().indexOf(term.toLowerCase()) >= 0)) {
+                                this.push('_accounts', account);
+                                break;
+                            }
+
+                        }
+
+                        if (i === allLength - 1) {
+                            this.fire('filter-done');
+                        }
+                    }
+
+                    if (this._accounts.length === 0) {
+                        this._message = 'There are no accounts within ' + orgunit.name +' organization unit.';
+                        this._handleEmptyLoad();
+                    }
+
+                }
+            },
+
+            _hideProgressBar: function() {
+
+                setTimeout(function() {
+                    this.$$('#paperProgress').hidden = true;
+                    this.$$('#loadMoreProgress').hidden = true;
+                }.bind(this), 300);
+
+            },
+
+            _onItemsDomChange: function() {
+                var index = this._renderedIndex;
+
+                if (-1 != index && this.company) {
+
+                    this.animationConfig.entry.nodes = [];
+
+                    for (var i = 0; i <= index; i++) {
+                        var addedItem = this.$$('#appscoAccountItem_' + i);
+                        this.animationConfig.entry.nodes.push(addedItem);
+                    }
+
+                    this.playAnimation('entry');
+
+                    this._renderedIndex = -1;
+                }
+
+            }
+        });
+    </script>
+</dom-module>

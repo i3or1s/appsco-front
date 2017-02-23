@@ -337,9 +337,9 @@
                             <iron-icon icon="icons:supervisor-account"></iron-icon> <span class="menu-text">Directory</span>
                             <!--icons:folder-shared-->
                         </a>
-                        <div name="vault" href="/vault" disabled>
+                        <a name="provisioning" href="/provisioning" >
                             <iron-icon icon="icons:compare-arrows"></iron-icon> <span class="menu-text">Provisioning</span>
-                        </div>
+                        </a>
                         <a name="auditlog" href="/audit-log">
                             <iron-icon icon="icons:reorder"></iron-icon> <span class="menu-text">Audit</span>
                         </a>
@@ -364,16 +364,16 @@
                         <div name="directory" disabled>
                             <iron-icon icon="icons:supervisor-account"></iron-icon> <span class="menu-text">Directory</span>
                         </div>
-                        <div name="vault" disabled>
+                        <div name="provisioning" disabled>
                             <iron-icon icon="icons:compare-arrows"></iron-icon> <span class="menu-text">Provisioning</span>
                         </div>
-                        <div name="vault" disabled>
+                        <div name="auditlog" disabled>
                             <iron-icon icon="icons:reorder"></iron-icon> <span class="menu-text">Audit</span>
                         </div>
-                        <div name="vault" disabled>
+                        <div name="statistics" disabled>
                             <iron-icon icon="icons:donut-large"></iron-icon> <span class="menu-text">Statistics</span>
                         </div>
-                        <div name="vault" disabled>
+                        <div name="billing" disabled>
                             <iron-icon icon="icons:payment"></iron-icon> <span class="menu-text">Billing</span>
                         </div>
                         <div name="settings" disabled>
@@ -653,6 +653,13 @@
                             on-revoke-assignee="_onRevokeAssigneeAccess"
                     ></appsco-manage-account-page>
 
+                    <appsco-provisioning-page
+                            id="appscoProvisioningPage"
+                            name="provisioning"
+                            company-api="[[ companyApi ]]"
+                            authorization-token="[[ authorizationToken ]]"
+                    ></appsco-provisioning-page>
+
                     <appsco-audit-log-page
                             id="appscoAuditLogPage"
                             name="audit-log"
@@ -665,6 +672,7 @@
                             company-api="[[ companyApi ]]"
                             authorization-token="[[ authorizationToken ]]"
                     ></appsco-statistics-page>
+
                     <appsco-billing-page
                             id="appscoBillingPage"
                             name="billing"
@@ -2380,6 +2388,7 @@
                         page === 'directory' ||
                         page === 'manage-account' ||
                         page === 'statistics' ||
+                        page === 'provisioning' ||
                         page === 'billing' ||
                         page === 'company-settings' ||
                         page === 'audit-log');
