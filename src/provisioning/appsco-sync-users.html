@@ -106,15 +106,15 @@ Custom property | Description | Default
         </style>
 
         <div class="accounts-container">
-            <iron-ajax
-                    auto
-                    id="accountsApiRequest"
-                    url="{{ _currentUrl }}"
-                    on-error="_onError"
-                    on-response="_onResponse"
-                    headers="{{ _computedHeaders }}"
-                    debounce-duration="300"
-            ></iron-ajax>
+            <!--<iron-ajax-->
+                    <!--auto-->
+                    <!--id="accountsApiRequest"-->
+                    <!--url="{{ _currentUrl }}"-->
+                    <!--on-error="_onError"-->
+                    <!--on-response="_onResponse"-->
+                    <!--headers="{{ _computedHeaders }}"-->
+                    <!--debounce-duration="300"-->
+            <!--&gt;</iron-ajax>-->
 
             <paper-progress id="paperProgress"
                             class="accounts-progress-bar"
@@ -746,6 +746,15 @@ Custom property | Description | Default
                     this._renderedIndex = -1;
                 }
 
+            },
+
+            emptyAccounts: function() {
+                this.set('_accounts', []);
+            },
+
+            addAccount: function(account) {
+                console.log(account);
+                this.push('_accounts', account)
             }
         });
     </script>

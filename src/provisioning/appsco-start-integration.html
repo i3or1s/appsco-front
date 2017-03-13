@@ -1,0 +1,185 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+
+<link rel="import" href="../../bower_components/appsco-components/appsco-loader.html">
+
+<dom-module id="appsco-start-integration">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+            }
+            :host paper-dialog {
+                width: 670px;
+                top: 10vh;
+                @apply(--appsco-paper-dialog);
+            }
+            :host paper-dialog-scrollable > * {
+                @apply(--paper-dialog-scrollable-child);
+            }
+            :host appsco-loader {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            :host .buttons paper-button {
+                @apply(--paper-dialog-button);
+            }
+            :host .buttons paper-button[dialog-dismiss] {
+                @apply(--paper-dialog-dismiss-button);
+            }
+        </style>
+
+        <paper-dialog id="dialog"
+                      with-backdrop
+                      entry-animation="scale-up-animation"
+                      exit-animation="fade-out-animation"
+                      on-iron-overlay-closed="_onDialogClosed">
+
+            <h2>Authorization process for [[ integration.title ]]</h2>
+
+            <appsco-loader active="[[ _loader ]]"
+                           loader-alt="Appsco is processing request"
+                           multi-color></appsco-loader>
+
+            <paper-dialog-scrollable>
+                <div class="dialog-container">
+                    <div>
+                        <p>
+                            Authorization is required in order to access the integrating system and setup all necessary configurations.
+                        </p>
+                        <p>
+                            After authorization is achieved credentials will be used for the purpose of synchronizing the users between two systems.
+                        </p>
+                    </div>
+                </div>
+            </paper-dialog-scrollable>
+
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button autofocus on-tap="_onStart">Start</paper-button>
+            </div>
+        </paper-dialog>
+
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-start-integration',
+
+            properties: {
+
+                account: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                integration: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                /**
+                 * Authorization token.
+                 */
+                authorizationToken: {
+                    type: String
+                },
+
+                /**
+                 * Company API link.
+                 * API in which company to add application.
+                 */
+                companyApi: {
+                    type: String
+                },
+
+                /**
+                 * Computed headers.
+                 * It contains authorization token.
+                 */
+                _headers: {
+                    type: Object,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                _loader: {
+                    type: Boolean,
+                    value: false
+                }
+
+            },
+
+            /**
+             * Computes authorization headers.
+             *
+             * @param {Object} authorizationToken
+             * @returns {{ Authorization: string }}
+             * @private
+             */
+            _computeHeaders: function (authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken
+                }
+            },
+
+            /**
+             * Toggles add applications dialog.
+             */
+            toggle: function() {
+                this.$.dialog.toggle();
+            },
+
+            /**
+             * Called after dialog has been closed.
+             *
+             * @private
+             */
+            _onDialogClosed: function() {
+                this._loader = false;
+            },
+
+            _onStart: function() {
+                var request = document.createElement('iron-request'),
+                        options = {
+                            url: this.companyApi + "/integrations/available/" + this.integration.alias,
+                            method: 'POST',
+                            handleAs: 'json',
+                            headers: this._headers
+                        };
+
+                this._loader = true;
+
+                request.send(options).then(function(request) {
+                    console.log(request.response.authorization_url)
+                    this._loader = false;
+                    this.$.dialog.close();
+                    window.location.href = request.response.authorization_url;
+//
+//                    /**
+//                     * Fired when invoice has been sent.
+//                     *
+//                     * @event invoice-sent
+//                     */
+//                    this.fire('invoice-sent', {
+//                        sentTo: this.account.company.contact_email
+//                    });
+                }.bind(this));
+            },
+
+            setIntegration: function(integration) {
+                this.set('integration', integration);
+            }
+        });
+    </script>
+</dom-module>

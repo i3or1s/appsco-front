@@ -18,7 +18,7 @@
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="provisioning/appsco-sync-users.html">
 
-<dom-module id="appsco-provisioning-page">
+<dom-module id="appsco-provisioning-settings-page">
     <template>
         <style include="webkit-scrollbar-style">
             :host {
@@ -72,6 +72,10 @@
                 border-bottom: 1px solid var(--divider-color);
                 margin-bottom:20px;
                 font-size:18px;
+            }
+            :host .resource-item {
+                border-bottom: 1px solid var(--divider-color);
+                font-size:16px;
             }
             :host div[content] {
                 padding: 10px;
@@ -204,18 +208,12 @@
 
         <iron-ajax
                 auto
-                url="[[ companyApi ]]/integrations/available"
+                id="remoteUsersCall"
+                url="[[ integration.self ]]/mappings"
                 handle-as="json"
+                method="PATCH"
                 headers="[[ _computedHeaders ]]"
                 on-response="_handleAvailableIntegrationsResponse"
-        ></iron-ajax>
-
-        <iron-ajax
-                auto
-                url="[[ companyApi ]]/integrations/active"
-                handle-as="json"
-                headers="[[ _computedHeaders ]]"
-                on-response="_handleActiveIntegrationsResponse"
         ></iron-ajax>
 
         <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
@@ -226,97 +224,47 @@
 
             <div class="flex-vertical" resource>
 
-                <div class="resource-header">
-                    Available Integrations
+                <div class="resource-item">
+                    <iron-icon icon="social:group-add"></iron-icon>
+                    Integration Accounts
                 </div>
 
-                <div>
-                    <template is="dom-repeat" items="{{ availableIntegrations }}" >
-                        <div class="flex-horizontal integration-item" on-tap="_startAuthorization">
-                            <div class="flex">
-                                <div class="flex-horizontal" style="padding:5px;">
-                                    <img src="[[ item.image ]]" height="34px">
-                                    <span style="padding-left:10px;">[[ item.title ]]</span>
-                                </div>
-                            </div>
-                            <div class="hide">
-                                <iron-icon class="icon-16" icon="icons:launch"></iron-icon>
-                            </div>
-                        </div>
-                    </template>
+                <div class="resource-item">
+                    <iron-icon icon="social:people"></iron-icon> Synced Accounts with AppsCo
                 </div>
+
+                <div class="resource-item">
+                    <iron-icon icon="icons:settings"></iron-icon> Settings
+                </div>
+
             </div>
 
             <div content>
-                <template is="dom-if" if="[[ !_hasActiveIntegrations ]]">
-                    <h2>No Active integrations</h2>
-                    <p>
-                        Integrations facilitate the exchange of provisioning information among applications and organizations, corporations, or agencies.
-                        Provisioning is the automation of all the steps required to manage (setup, amend, and revoke) user
-                        or system access entitlements or data relative to electronically published services.
-                    </p>
-                    <p>
-                        AppsCo provides set of systems that integration can be achieved with.
-                        If you cant find what you require please contact us and we will be glad to help you.
-                    </p>
 
-                    <div class="flex-vertical flex-center pt-40">
-                        <div class="flex-horizontal">
-                            <img src="/images/provisioning-graph.png">
-                        </div>
-                    </div>
-                </template>
-                <template is="dom-if" if="[[ _hasActiveIntegrations ]]">
-                    <h2>Active integrations</h2>
-                    <template is="dom-repeat" items="{{ _activeIntegrations }}">
-                        <paper-material elavation="1" style="background-color: #fff;">
-                            <div class="flex-horizontal" style="padding:5px;">
-                                <img src="[[ item.integration.image ]]" height="34px">
-                                <span style="padding-left:10px;">[[ item.integration.title ]]</span>
-                                <span class="pl-20 flex">Authorization for: {{ _domain(item) }}</span>
-                                <paper-button on-tap="_setupIntegration">Manage</paper-button>
-                            </div>
-                        </paper-material>
-                    </template>
-                </template>
+                <paper-button>Import Selected Accounts</paper-button>
+                <appsco-sync-users
+                id="appscoAccounts"
+                size="100"
+                load-more
+                company
+                authorization-token="[[ authorizationToken ]]"
+                accounts-api="[[ companyApi ]]/directory/roles"
+                on-edit="_onAccountEdit"
+                on-account="_onAccount"
+                on-loaded="_onAccountsLoaded"
+                on-empty-load="_pageLoaded"></appsco-sync-users>
+
             </div>
 
             <div info class="flex-vertical">
-                <div class="info-header">
-                    Info Header
-                </div>
-
-                <div class="info-content-container">
-                    <div class="info-content">
-                        Info Content
-
-                    </div>
-                </div>
-
-                <div class="info-actions flex-horizontal">
-                    <paper-button
-                            class="send-invoice-button flex"
-                            on-tap="_onSendInvoice">
-                        Send invoice
-                    </paper-button>
-                </div>
             </div>
         </appsco-content>
     </template>
 
     <script>
         Polymer({
-            is: 'appsco-provisioning-page',
+            is: 'appsco-provisioning-settings-page',
 
-            _domain: function(e) {
-                var domain = '';
-                for (var property in e.domains) {
-                    if (e.domains.hasOwnProperty(property)) {
-                        domain += domain == '' ? property : ', ' + property;
-                    }
-                }
-                return domain;
-            },
             properties: {
 
                 _remoteAccounts: {
@@ -346,9 +294,9 @@
                     type: String
                 },
 
-                _hasActiveIntegrations: {
-                    type: Boolean,
-                    value: false
+                integration: {
+                    type: Object,
+                    value: function() { return {}; }
                 },
 
                 authorizationToken: {
@@ -389,6 +337,11 @@
                 pageLoaded: {
                     type: Boolean,
                     value: false
+                },
+
+                _mappedUsers: {
+                    type: Array,
+                    value: function() { return []; }
                 }
             },
 
@@ -405,6 +358,7 @@
                 }
 
                 this._pageLoaded();
+                console.log(this.integration);
             },
 
             _updateScreen: function(medium, tablet, mobile) {
@@ -449,30 +403,38 @@
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
             },
+//
+//            setIntegration: function(integration) {
+//                this.set('integration', integration);
+//                this.$.remoteUsersCall.generateRequest();
+//                console.log(this.$.remoteUsersCall, this.integration);
+//            },
 
-            _handleAvailableIntegrationsResponse: function(e) {
-                if(e.detail.response && e.detail.response.available_integrations) {
-                    this.availableIntegrations = e.detail.response.available_integrations;
-                }
-            },
+            _handleAvailableIntegrationsResponse: function(response) {
+                var request = document.createElement('iron-request'),
+                        options = {
+                            url: this.integration.self + '/mappings',
+                            method: 'GET',
+                            handleAs: 'json',
+                            headers: {
+                                'Authorization': 'token ' + this.authorizationToken
+                            }
+                        };
 
-            _handleActiveIntegrationsResponse: function(e) {
-                if(e.detail.response) {
-                    this._hasActiveIntegrations = e.detail.response.active_integrations.length != 0;
-                    this._activeIntegrations = e.detail.response.active_integrations;
-                }
-            },
+                this._loader = true;
 
-            _startAuthorization: function(e) {
-                this.fire('start-authorization', {
-                    integration: e.model.item
-                })
-            },
-
-            _setupIntegration: function(e) {
-                this.fire('integration-setup', {
-                    integration: e.model.item
-                })
+                request.send(options).then(function(request) {
+                    this.$.appscoAccounts.emptyAccounts();
+                    this.set('_remoteAccounts', []);
+                    var mappings = request.response.mappings;
+                    this.set('_mappedUsers', request.response.mappings);
+                    for(var i=0; i < mappings.length; i++) {
+                        if(mappings[i].local == null) {
+                            this.$.appscoAccounts.addAccount({account: mappings[i].remote});
+                            this.push('_remoteAccounts', {account: mappings[i].remote})
+                        }
+                    }
+                }.bind(this));
             }
         });
     </script>

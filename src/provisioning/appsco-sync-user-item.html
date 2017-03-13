@@ -8,7 +8,6 @@
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
-<link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
 
 <!--
 `appsco-sync-user-item`
@@ -122,6 +121,9 @@ Custom property | Description | Default
                 @apply(--layout-center);
                 transition: all 0.2s ease-out;
             }
+            :host .items {
+                @apply(--layout-vertical);
+            }
             :host([company]) .account-icon {
                 margin: 0;
                 @apply(--layout-flex-none);
@@ -193,23 +195,23 @@ Custom property | Description | Default
                         <!--text-property="alias"-->
                         <!--value-property="alias"-->
                         <!--always-float-lable="true"></paper-autocomplete>-->
-                <paper-autocomplete
-                        placeholder="Create new or select"
-                        label="AppsCo account"
-                        id="input-remote-custom-template"
-                        text-property="display_name"
-                        value-property="alias"
-                        always-float-lable="true"
-                        min-length="2"
-                        remote-source
-                >
-                    <template autocomplete-custom-template>
-                        <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
-                            <img src$="[[item.avatar_url]]" height="50" width="50" style="margin: 8px 8px 8px 0; min-height: 50px;">[[item.login]]
-                            <paper-ripple></paper-ripple>
-                        </paper-item>
-                    </template>
-                </paper-autocomplete>
+                <!--<paper-autocomplete-->
+                        <!--placeholder="Create new or select"-->
+                        <!--label="AppsCo account"-->
+                        <!--id="input-remote-custom-template"-->
+                        <!--text-property="display_name"-->
+                        <!--value-property="alias"-->
+                        <!--always-float-lable="true"-->
+                        <!--min-length="2"-->
+                        <!--remote-source-->
+                <!--&gt;-->
+                    <!--<template autocomplete-custom-template>-->
+                        <!--<paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">-->
+                            <!--<img src$="[[item.avatar_url]]" height="50" width="50" style="margin: 8px 8px 8px 0; min-height: 50px;">[[item.login]]-->
+                            <!--<paper-ripple></paper-ripple>-->
+                        <!--</paper-item>-->
+                    <!--</template>-->
+                <!--</paper-autocomplete>-->
             </div>
 
             <div class="actions">
@@ -301,7 +303,7 @@ Custom property | Description | Default
             attached: function() {
                 this.style.display = 'inline-block';
                 this.playAnimation('entry');
-                console.log(this.companyRoles);
+                //console.log(this.companyRoles);
             },
 
             _computeMockCompanyRoles: function(companyRoles) {
