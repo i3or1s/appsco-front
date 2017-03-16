@@ -1,10 +1,12 @@
 {
-  "name": "My App",
-  "short_name": "My App",
-  "start_url": "/?homescreen=1",
+  "name": "AppsCo",
+  "short_name": "AppsCo",
+  "start_url": "http://localhost:8080",
+  "description": "AppsCo helps you securely manage all your private applications access and digital confidential information from any device.",
   "display": "standalone",
-  "theme_color": "#3f51b5",
-  "background_color": "#3f51b5",
+  "orientation": "any",
+  "theme_color": "#279FBC",
+  "background_color": "rgba(0,0,0,0.2)",
   "icons": [
     {
       "src": "images/manifest/icon-192x192.png",

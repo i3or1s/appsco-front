@@ -51,7 +51,12 @@
             <paper-dialog-scrollable>
                 <div class="dialog-container">
                     <div>
-                        <p>Invoice will be sent to the contact email specified in company settings: [[ account.company.contact_email ]]</p>
+                        <template is="dom-if" if="[[ account.company.billing_email ]]">
+                            <p>Invoice will be sent to the billing email specified in company settings: [[ account.company.billing_email ]]</p>
+                        </template>
+                        <template is="dom-if" if="[[ !account.company.billing_email ]]">
+                            <p>Invoice will be sent to the contact email specified in company settings: [[ account.company.contact_email ]]</p>
+                        </template>
                     </div>
                 </div>
             </paper-dialog-scrollable>
