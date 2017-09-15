@@ -3343,9 +3343,11 @@
 
                 switch (action) {
                     case 'sso-application':
+                        this.$.appscoCompanySSOApplicationsAdd.setAction(action);
                         this.$.appscoCompanySSOApplicationsAdd.toggle();
                         break;
                     case 'catalogue-application':
+                        this.$.appscoCompanyApplicationsAdd.setAction(action);
                         this.$.appscoCompanyApplicationsAdd.toggle();
                         break;
                     default:
@@ -3363,6 +3365,7 @@
 
                             if (200 == request.status) {
                                 this.$.appscoDialogApplicationCompanyAdd.setApplicationTemplate(request.response.application);
+                                this.$.appscoDialogApplicationCompanyAdd.setAction(action);
                                 this.$.appscoDialogApplicationCompanyAdd.toggle();
                             }
 
