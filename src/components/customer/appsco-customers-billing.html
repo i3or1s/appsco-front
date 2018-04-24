@@ -35,7 +35,7 @@
                    debounce-duration="300"></iron-ajax>
 
         <div class="total">
-            <span>Total customers: [[ _totalItems ]]</span>
+            <span>Total customers: <span id="numberOfCustomers">0</span></span>
         </div>
 
         <div class="list-container">
@@ -51,14 +51,13 @@
             <template is="dom-if" if="[[ !_listEmpty ]]">
                 <div class="list">
                     <template is="dom-repeat"
-                              items="[[ _listItems ]]"
+                              items="[[ _items ]]"
                               on-dom-change="_onItemsDomChange">
 
                         <appsco-customer-billing-item
                                 id="appscoListItem_[[ index ]]"
                                 item="[[ item ]]"
-                                list-api="[[ listApi ]]"
-                                authorization-token="[[ authorizationToken ]]"
+                                billing-data="[[ item.billing_data ]]"
                         ></appsco-customer-billing-item>
 
                     </template>
@@ -85,6 +84,26 @@
                 Polymer.AppscoListObserverBehavior
             ],
 
+            properties: {
+
+                paymentType: {
+                    type: String,
+                    value: ''
+                },
+
+                period: {
+                    type: String,
+                    value: ''
+                },
+
+                _items: {
+                    type: Array,
+                    value: function() {
+                        return[]
+                    },
+                    computed: '_computeListItems(_listItems)'
+                }
+            },
 
             observers: [
                 '_observeItems(_listItems)'
@@ -93,7 +112,142 @@
             _observeItems: function(items) {
                 this.setObservableType('customers');
                 this.populateItems(items);
+            },
+
+            filter: function(searchTerm, paymentType, period) {
+                var filterApi = this.listApi + '?page=1&limit=1000&extended=1';
+
+                this._hideMessage();
+                this._showProgressBar();
+                this._hideLoadMoreAction();
+                this._clearListLoaders();
+                this.set('_listItems', []);
+
+
+                if (searchTerm) {
+                    filterApi += '&term=' + searchTerm;
+                }
+
+                if (paymentType) {
+                    filterApi += '&payment_type=' + paymentType;
+                }
+
+                if (period) {
+                    filterApi += '&period=' + period;
+                }
+
+                this._getItems(filterApi).then(function(items) {
+                    var itemsLength = items.length,
+                        allListItems = JSON.parse(JSON.stringify(this._allListItems)),
+                        allLength = allListItems.length;
+
+                    if (0 === itemsLength) {
+                        this._showMessage('There are no customers that match given parameters');
+                        this._handleEmptyLoad();
+                        this.fire('filter-done');
+                        return false;
+                    }
+
+                    this._listEmpty = false;
+
+                    items.forEach(function(element, index) {
+
+                        for (var i = 0; i < allLength; i++) {
+                            var currentListItem = allListItems[i];
+
+                            if (element.alias === currentListItem.alias) {
+                                this.push('_listItems', currentListItem);
+                                this._listItems = JSON.parse(JSON.stringify(this._listItems));
+                                break;
+                            } else if (i === allLength - 1) {
+                                this.push('_listItems', element);
+                                this._listItems = JSON.parse(JSON.stringify(this._listItems));
+                            }
+                        }
+
+                        if (index === itemsLength - 1) {
+                            this._hideProgressBar();
+                            this.fire('filter.done');
+                        }
+
+                    }.bind(this));
+
+                }.bind(this));
+
+            },
+
+            _computeListItems: function(listItems) {
+                var groupedItems = [],
+                    addedCompanies = [],
+                    licencesSum = [],
+                    itemsWithLicences = [];
+                listItems.forEach(function(item, index) {
+                    var customerIndex = addedCompanies.indexOf(item.customer.alias);
+                    if (customerIndex === -1) {
+                        var customer = item.customer;
+                        customer.billing_data = [];
+                        addedCompanies.push(item.customer.alias);
+                        customer.billing_data.push({month: this.getMonthName(item.month), year: item.year, used_licences: item.used_licences});
+                        groupedItems.push(customer);
+                        licencesSum.push(item.used_licences);
+                    } else {
+                        groupedItems[customerIndex].billing_data.push({month: this.getMonthName(item.month), year: item.year, used_licences: item.used_licences})
+                        licencesSum [customerIndex] += item.used_licences;
+                    }
+                }.bind(this));
+
+                licencesSum.forEach(function(item, index) {
+                    if (item > 0) {
+                        itemsWithLicences.push(groupedItems[index]);
+                    }
+                });
+                this.$.numberOfCustomers.innerHTML = itemsWithLicences.length;
+                return itemsWithLicences;
+            },
+
+            getMonthName: function(month) {
+                var name = '';
+                switch (month) {
+                    case 1:
+                        name = 'January';
+                        break;
+                    case 2:
+                        name = 'February';
+                        break;
+                    case 3:
+                        name = 'March';
+                        break;
+                    case 4:
+                        name = 'April';
+                        break;
+                    case 5:
+                        name = 'May';
+                        break;
+                    case 6:
+                        name = 'June';
+                        break;
+                    case 7:
+                        name = 'July';
+                        break;
+                    case 8:
+                        name = 'August';
+                        break;
+                    case 9:
+                        name = 'September';
+                        break;
+                    case 10:
+                        name = 'October';
+                        break;
+                    case 11:
+                        name = 'November';
+                        break;
+                    case 12:
+                        name = 'December';
+                        break;
+                }
+                return name;
             }
+
         });
     </script>
 </dom-module>
