@@ -73,7 +73,7 @@
                 <div class="input-container">
                     <paper-input id="description"
                                  name="compliance[description]"
-                                 value="[[ application.compliance.description ]]"
+                                 value="[[ _descriptionValue ]]"
                                  label="Description"
                                  data-stripe="name"></paper-input>
                 </div>
@@ -85,7 +85,7 @@
                 <div class="input-container">
                     <paper-input id="fields"
                                  name="compliance[fields]"
-                                 value="[[ application.compliance.fields ]]"
+                                 value="[[ _fieldsValue ]]"
                                  label="Fields"
                                  data-stripe="name"></paper-input>
                 </div>
@@ -151,6 +151,16 @@
                 _complianceFieldsValue: {
                     type: String,
                     compute: '_computeComplianceFieldsValue(application)'
+                },
+
+                _descriptionValue: {
+                    type: String,
+                    compute: '_computeDescriptionValue(application)'
+                },
+
+                _fieldsValue: {
+                    type: String,
+                    compute: '_computeFieldsValue(application)'
                 },
 
                 /**
@@ -248,6 +258,14 @@
             _onFormResponse: function() {
                 this._hideLoader();
                 this.fire('compliance-info-updated');
+            },
+
+            _computeDescriptionValue: function(application) {
+                return application.compliance.description ? application.compliance.description : '';
+            },
+
+            _computeFieldsValue: function(application) {
+                return application.compliance.fields ? application.compliance.fields : '';
             }
 
         });
