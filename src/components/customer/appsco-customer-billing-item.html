@@ -3,9 +3,7 @@
 <link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/iron-collapse/iron-collapse.html">
-<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
-
 
 <link rel="import" href="../components/appsco-list-item-behavior.html">
 <link rel="import" href="../components/appsco-list-item-styles.html">
@@ -83,14 +81,6 @@
 
         </style>
 
-        <iron-ajax id="getBillingReportApiRequest"
-                   url="[[ _getBillingReportApiUrl ]]"
-                   headers="[[ _headers ]]"
-                   auto
-                   on-error="_onGetBillingReportError"
-                   on-response="_onGetBillingReportResponse"
-        ></iron-ajax>
-
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <div class="item">
@@ -150,7 +140,7 @@
 
         <iron-collapse id="licences">
             <div class="reports-container">
-                <template is="dom-repeat" items="[[ _licences ]]" as="licence">
+                <template is="dom-repeat" items="[[ billingData ]]" as="licence">
                     <div class="report">
                         <span class="info-label">[[ licence.month ]] [[ licence.year ]]</span>
                         <span class="info-value">Licences: [[ licence.used_licences ]]</span>
@@ -167,25 +157,10 @@
 
             properties: {
 
-                listApi: {
-                    type: String,
-                    value: ''
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
                 mobileScreen: {
                     type: Boolean,
                     value: false,
                     reflectToAttribute: true
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
                 },
 
                 _customerInitials: {
@@ -196,19 +171,6 @@
                 _licencesVisible: {
                     type: Boolean,
                     value: false
-                },
-
-                _getBillingReportApiUrl: {
-                    type: String,
-                    value: '',
-                    computed: '_computeBillingReportApiUrl(item)'
-                },
-
-                _licences: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
                 }
             },
 
@@ -231,12 +193,6 @@
                 return initials;
             },
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
             _onShowLicences: function() {
                 this.$.licences.show();
                 this._licencesVisible = true;
@@ -245,67 +201,6 @@
             _onHideLicences: function() {
                 this.$.licences.hide();
                 this._licencesVisible = false;
-            },
-
-            _computeBillingReportApiUrl: function(item) {
-                return item.meta ? item.meta.billing_report + '?extended=1' : '';
-            },
-
-            _onGetBillingReportError: function() {
-                this.set('_licences', []);
-            },
-
-            _onGetBillingReportResponse: function(event) {
-                var reports = event.detail.response.reports;
-                if (reports) {
-                    reports.forEach(function(element, index) {
-                        element.month = this.getMonthName(element.month);
-                        this.push('_licences', element);
-                    }.bind(this));
-                }
-            },
-
-            getMonthName: function(month) {
-                var name = '';
-                switch (month) {
-                    case 1:
-                        name = 'January';
-                        break;
-                    case 2:
-                        name = 'February';
-                        break;
-                    case 3:
-                        name = 'March';
-                        break;
-                    case 4:
-                        name = 'April';
-                        break;
-                    case 5:
-                        name = 'May';
-                        break;
-                    case 6:
-                        name = 'June';
-                        break;
-                    case 7:
-                        name = 'July';
-                        break;
-                    case 8:
-                        name = 'August';
-                        break;
-                    case 9:
-                        name = 'September';
-                        break;
-                    case 10:
-                        name = 'October';
-                        break;
-                    case 11:
-                        name = 'November';
-                        break;
-                    case 12:
-                        name = 'December';
-                        break;
-                }
-                return name;
             }
 
         });

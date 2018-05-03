@@ -1310,6 +1310,7 @@
                     <appsco-billing-report-page
                             id="appscoBillingReportPage"
                             name="billing-report"
+                            billing-report-api="[[ _billingReportApi ]]"
                             customers-api="[[ _companyCustomersApi ]]"
                             authorization-token="[[ authorizationToken ]]"
                     ></appsco-billing-report-page>
@@ -2237,6 +2238,11 @@
                     computed: '_computeCompanyContact(currentCompany)'
                 },
 
+                _billingReportApi: {
+                    type: String,
+                    value: ''
+                },
+
                 _companyApi: {
                     type: String,
                     value: ''
@@ -2960,6 +2966,7 @@
                     this._getAvailableIntegrationsApi = companyApi + '/integrations/available';
                     this._getActiveIntegrationsApi = companyApi + '/integrations/active';
                     this._companyOAuthApplicationsApi = companyApi + '/oauth/applications';
+                    this._billingReportApi = companyApi + '/reports/billing-report';
                 }
                 this._companyFoldersApi = companyApi + '/dashboard-groups';
             },
