@@ -54,6 +54,13 @@ Used to update company resource - configuration fields and claims.
                 display: none;
                 margin-top: 10px;
             }
+            :host .info {
+                @apply(--info-message);
+                margin-top: 20px;
+            }
+            :host .user-can-edit-toggle {
+                margin-top: 10px;
+            }
             :host .save-action {
                 margin: 10px 0 0 0;
                 @apply(--form-action);
@@ -123,7 +130,10 @@ Used to update company resource - configuration fields and claims.
     
             <template is="dom-if" if="[[ !_claimTypeIndividual ]]">
                 <template is="dom-if" if="[[ !isDialog ]]">
-                    <paper-toggle-button checked$="[[ _userCanEdit ]]"
+                    <p class="info user-can-edit-info">
+                        If this option is turned on, all users you have shared this resource to will be able to edit it.
+                    </p>
+                    <paper-toggle-button class="user-can-edit-toggle" checked$="[[ _userCanEdit ]]"
                                          on-change="_onChangeUserCanEdit">User can edit resource</paper-toggle-button>
                 </template>
 
