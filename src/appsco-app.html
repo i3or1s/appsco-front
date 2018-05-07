@@ -161,6 +161,7 @@
 <link rel="import" href="components/report/appsco-reports-page-actions.html">
 <link rel="import" href="components/report/appsco-access-report-page-actions.html">
 <link rel="import" href="components/report/appsco-compliance-report-page-actions.html">
+<link rel="import" href="components/report/appsco-billing-report-page-actions.html">
 
 <link rel="import" href="components/company-role/appsco-role-reset-two-fa.html">
 <link rel="import" href="components/company-role/appsco-role-save-client-data.html">
@@ -533,9 +534,9 @@
                                     <a name="customer-billing" href="#">
                                         <iron-icon icon="icons:payment"></iron-icon> <span class="menu-text">Customer Billing</span>
                                     </a>
-                                    <!--<a name="billing-report" href="#">-->
-                                        <!--<iron-icon icon="icons:description"></iron-icon><span class="menu-text">Billing Report</span>-->
-                                    <!--</a>-->
+                                    <a name="billing-report" href="#">
+                                        <iron-icon icon="icons:description"></iron-icon><span class="menu-text">Billing Report</span>
+                                    </a>
 
                                 </template>
 
@@ -766,6 +767,10 @@
                                     name="compliance-report"
                                     on-back="_showReportsPage"
                                     on-resource-section="_onResourceActionPage"></appsco-compliance-report-page-actions>
+
+                            <appsco-billing-report-page-actions
+                                    id="appscoBillingReportPageActions"
+                                    name="billing-report"></appsco-billing-report-page-actions>
 
                             <appsco-provisioning-page-actions id="appscoProvisioningPageActions"
                                                               name="provisioning"
@@ -2393,6 +2398,11 @@
                     computed: '_computeExportComplianceReportApi(_getComplianceReportApi)'
                 },
 
+                _exportBillingReportApi: {
+                    type: String,
+                    computed: '_computeExportBillingReportApi(_billingReportApi)'
+                },
+
                 _getTransferTokenApi: {
                     type: String,
                     value: ''
@@ -2545,11 +2555,14 @@
                 'reset-page-actions': '_onResetPageActions',
                 'export-access-report': '_onExportAccessReportAction',
                 'export-compliance-report': '_onExportComplianceReportAction',
+                'export-billing-report': '_onExportBillingReportAction',
                 'export-access-report-finished': '_onExportAccessReportFinished',
                 'export-compliance-report-finished': '_onExportComplianceReportFinished',
                 'export-company-log-finished' : '_onExportCompanyLogFinished',
+                'export-billing-report-finished': '_onExportBillingReportFinished',
                 'export-access-report-failed': '_onExportAccessReportFailed',
                 'export-compliance-report-failed': '_onExportComplianceReportFailed',
+                'export-billing-report-failed': '_onExportBillingReportFailed',
                 'user-session-expired': '_onUserSessionExpired',
                 'add-item-to-group-event': '_onAddItemToGroupAction',
                 'customer-subscription-state-changed': '_onCustomerSubscriptionStateChanged',
@@ -3009,6 +3022,10 @@
 
             _computeExportComplianceReportApi: function(getComplianceReportApi) {
                 return getComplianceReportApi ? (getComplianceReportApi + '/export') : '';
+            },
+
+            _computeExportBillingReportApi: function(billingReportApi) {
+                return billingReportApi ? (billingReportApi + '/export') : '';
             },
 
             _computeCompanyIconsWithoutFolderApi: function(companyFoldersApi) {
@@ -6564,6 +6581,48 @@
                 }.bind(this));
             },
 
+            _exportBillingReport: function(url) {
+                var request = document.createElement('iron-request'),
+                        options = {
+                            url: url + '?' + this._computeExportBillingReportBody(),
+                            method: 'GET',
+                            handleAs: 'blob',
+                            headers: {
+                                'Authorization': 'token ' + this.authorizationToken,
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        };
+
+                request.send(options).then(function() {
+                    var fileReader = new FileReader();
+
+                    fileReader.onload = function(event) {
+                        var link = document.createElement('a');
+
+                        link.href = event.target.result;
+                        link.setAttribute('download', 'Billing Report.xlsx');
+                        document.body.appendChild(link);
+
+                        if (link.click) {
+                            link.click();
+                        }
+                        else if (document.createEvent) {
+                            var clickEvent = document.createEvent('MouseEvents');
+
+                            clickEvent.initEvent('click', true, true);
+                            link.dispatchEvent(clickEvent);
+                        }
+                        document.body.removeChild(link);
+                    };
+
+                    fileReader.readAsDataURL(request.response);
+
+                    this.fire('export-billing-report-finished');
+                }.bind(this), function(error) {
+                    this.fire('export-billing-report-failed');
+                }.bind(this));
+            },
+
             _computeExportComplianceReportBody: function() {
 
                 if ('compliance-report' != this.page) {
@@ -6594,6 +6653,29 @@
                 return body;
             },
 
+            _computeExportBillingReportBody: function() {
+                if ('billing-report' != this.page) {
+                    return '';
+                }
+
+                var filters = this.$.appscoBillingReportPage.getFilters(),
+                        body = '';
+
+                if (filters.term) {
+                      body += 'term=' + encodeURIComponent(filters.term);
+                }
+                if (filters.paymentType) {
+                    body += ('' !== body) ? '&' : '';
+                    body += 'payment_type=' + encodeURIComponent(filters.paymentType);
+                }
+                if (filters.period) {
+                    body += ('' !== body) ? '&' : '';
+                    body += 'period=' + encodeURIComponent(filters.period);
+                }
+
+                return body;
+            },
+
             _onExportAccessReportAction: function() {
                 this._showProgressBar();
                 this._exportAccessReport(('access-report' === this.page) ? this._computeExportAccessReportApiUrl() : this._exportAccessReportApi);
@@ -6602,6 +6684,11 @@
             _onExportComplianceReportAction: function() {
                 this._showProgressBar();
                 this._exportComplianceReport(this._exportComplianceReportApi);
+            },
+
+            _onExportBillingReportAction: function() {
+                this._showProgressBar();
+                this._exportBillingReport(this._exportBillingReportApi);
             },
 
             _onExportAccessReportFinished: function() {
@@ -6616,6 +6703,10 @@
                 this._hideProgressBar();
             },
 
+            _onExportBillingReportFinished: function () {
+                this._hideProgressBar();
+            },
+
             _onExportAccessReportFailed: function() {
                 this._hideProgressBar();
                 this._notify('Export of Access Report failed. Please contact AppsCo support.');
@@ -6624,6 +6715,11 @@
             _onExportComplianceReportFailed: function() {
                 this._hideProgressBar();
                 this._notify('Export of Access Report failed. Please contact AppsCo support.');
+            },
+
+            _onExportBillingReportFailed: function() {
+                this._hideProgressBar();
+                this._notify('Export of Billing Report failed. Please contact AppsCo support.');
             },
 
             /**

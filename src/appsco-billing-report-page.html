@@ -395,6 +395,14 @@
                         reject(request.response.message);
                     });
                 }.bind(this));
+            },
+
+            getFilters: function () {
+                return {
+                    term: this.searchTerm,
+                    paymentType: this.paymentType,
+                    period: this.period
+                };
             }
 
         });
