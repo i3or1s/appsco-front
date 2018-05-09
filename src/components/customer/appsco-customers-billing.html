@@ -197,9 +197,7 @@
                 }.bind(this));
 
                 licencesSum.forEach(function(item, index) {
-                    if (item > 0) {
-                        itemsWithLicences.push(groupedItems[index]);
-                    }
+                    itemsWithLicences.push(groupedItems[index]);
                 });
                 this.$.numberOfCustomers.innerHTML = itemsWithLicences.length;
                 return itemsWithLicences;
