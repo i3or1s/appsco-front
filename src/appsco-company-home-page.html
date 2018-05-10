@@ -399,7 +399,8 @@
 
                 foldersApi: {
                     type: String,
-                    value: ''
+                    value: '',
+                    observer: '_foldersApiChanged'
                 },
 
                 _shared: {
@@ -536,6 +537,10 @@
                 }
             },
 
+            _foldersApiChanged: function() {
+                this._hideFolders();
+            },
+
             _updateScreen: function(mobile, tablet, tabletS1024Screen, tabletS1280Screen, laptop) {
                 this.updateStyles();
             },
@@ -556,6 +561,7 @@
 
             _pageLoaded: function() {
                 this.pageLoaded = true;
+                this._initializeFoldersView();
                 this.fire('page-loaded');
                 this._initializeResourcesDragBehavior();
             },
@@ -712,6 +718,14 @@
 
             _initializeResourcesDragBehavior: function() {
                 this.$.appscoApplications.initializeResourcesDragBehavior();
+            },
+
+            _initializeFoldersView: function() {
+                if (this.$.appscoFolders.getCurrentCount() > 0) {
+                    this._showFolders();
+                } else {
+                    this._hideFolders();
+                }
             },
 
             _showFolders: function() {
