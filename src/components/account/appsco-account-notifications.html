@@ -240,18 +240,20 @@ Example:
                 var icon = item.imageUrl,
                         domain = window.location.protocol + '//' + window.location.hostname,
                         result = null;
-//                domain = 'https://my-dev.appsco.com';
 
                 if (icon && icon.indexOf('/public/pic') > -1) {
                     icon = domain + icon;
                 }
-
-                if (item.type == 'message') {
+                if (item.type === 'message') {
                     result = {
                         account: item.sender,
                         date: item.createdAt,
                         message: this._getNotificationMessage(item.body)
                     };
+                    if(item.sender && !item.sender.email) {
+                        result.icon = '/images/message.png';
+                        result.account = null;
+                    }
                 } else {
                     result = {
                         icon: icon,

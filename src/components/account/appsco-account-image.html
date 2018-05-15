@@ -85,6 +85,9 @@ Account image is used to present account in form of an image or initials if imag
                 else if (account && account.name) {
                     initials = account.name.substring(0, 2);
                 }
+                if(account && account.email && '' === initials) {
+                    initials = account.email.substring(0, 2);
+                }
 
                 return initials;
             }
