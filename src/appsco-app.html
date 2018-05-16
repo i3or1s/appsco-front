@@ -1390,7 +1390,7 @@
                 authorization-token="[[ authorizationToken ]]"
                 application="[[ application ]]"
                 domain="[[ domain ]]"
-                on-company-resource-edited="_onCompanyResourceEdited"
+                on-application-settings-saved="_onApplicationSettingsSaved"
         ></appsco-company-resource-settings-dialog>
 
         <appsco-application-remove
@@ -3764,20 +3764,6 @@
                 this._notify(message);
             },
 
-            _onCompanyResourceEdited: function(event) {
-                if (this.$.appscoHomePage.$) {
-                    this.$.appscoHomePage.reloadApplications();
-                }
-                if (this.$.appscoCompanyHomePage.$) {
-                    this.$.appscoCompanyHomePage.reloadApplications();
-                }
-                if (this.$.appscoContactHomePage.$) {
-                    this.$.appscoContactHomePage.reloadApplications();
-                }
-                if (this.$.appscoDashboardFolderPage.$) {
-                    this.$.appscoDashboardFolderPage.reloadApplications();
-                }
-            },
 
             _onRemoveApplication: function() {
                 this.$.appscoApplicationRemove.open();
@@ -3803,6 +3789,19 @@
                 var application = event.detail.application,
                     applicationLogApi = application.meta.log,
                     message = application.title + ' was successfully changed.';
+
+                if (this.$.appscoHomePage.$) {
+                    this.$.appscoHomePage.reloadApplications();
+                }
+                if (this.$.appscoCompanyHomePage.$) {
+                    this.$.appscoCompanyHomePage.reloadApplications();
+                }
+                if (this.$.appscoContactHomePage.$) {
+                    this.$.appscoContactHomePage.reloadApplications();
+                }
+                if (this.$.appscoDashboardFolderPage.$) {
+                    this.$.appscoDashboardFolderPage.reloadApplications();
+                }
 
                 this._notifyAboutApplicationLogChange(applicationLogApi);
                 this._notify(message);
