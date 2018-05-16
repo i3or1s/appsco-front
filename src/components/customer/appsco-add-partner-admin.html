@@ -1,0 +1,758 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
+
+<link rel="import" href="../components/appsco-loader.html">
+<link rel="import" href="../components/appsco-form-error.html">
+<link rel="import" href="../components/appsco-search.html">
+<link rel="import" href="../../components/resource/appsco-account-list-item.html">
+<link rel="import" href="../account/appsco-accounts.html">
+<link rel="import" href="../account/appsco-contacts.html">
+<link rel="import" href="../components/appsco-list-item-styles.html">
+
+<dom-module id="appsco-add-partner-admin">
+    <template>
+        <style include="appsco-list-item-styles"></style>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+
+                --paper-checkbox-unchecked-color: var(--secondary-text-color);
+                --paper-checkbox-checked-color: var(--secondary-text-color);
+                --paper-checkbox-size: 22px;
+            }
+            :host paper-dialog {
+                width: 670px;
+                top: 20vh;
+                @apply(--appsco-paper-dialog);
+            }
+            :host paper-dialog-scrollable > * {
+                @apply(--paper-dialog-scrollable-child);
+            }
+            :host paper-progress {
+                width: 100%;
+            }
+            :host appsco-loader {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            :host appsco-form-error {
+                box-sizing: border-box;
+                margin-top: 0 !important;
+            }
+            .dialog-container {
+                padding-bottom: 20px;
+            }
+            .filter-accounts {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                margin-top: 0 !important;
+            }
+            appsco-search {
+                margin-right: 20px;
+                @apply(--layout-flex);
+            }
+            paper-dropdown-menu {
+                @apply(--layou-flex-none);
+                width: 150px;
+                margin-top: 2px;
+
+                --paper-input-container-input: {
+                    font-size: 14px;
+                    cursor: pointer;
+                };
+            }
+            :host .item-info {
+                padding: 0;
+            }
+            :host .info-value {
+                font-size: 14px;
+            }
+            :host .item-type {
+                text-transform: capitalize;
+            }
+            :host table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            :host table thead tr th {
+                text-align: left;
+                font-size: 16px;
+                font-weight: normal;
+                padding: 10px 4px;
+                border-bottom: 1px solid var(--divider-color);
+            }
+            :host table thead tr th:first-of-type {
+                width: 40px;
+            }
+            :host table thead tr th:last-of-type {
+                width: 60px;
+            }
+            :host table tbody tr td {
+                padding: 10px 4px 0;
+            }
+            :host paper-checkbox {
+                width: 22px;
+                margin: 0 auto 0 4px;
+            }
+            :host paper-checkbox::shadow paper-ripple {
+                width: 200% !important;
+                height: 200% !important;
+                top: -50% !important;
+                left: -50% !important;
+            }
+            :host .message {
+                @apply(--info-message);
+            }
+            :host .selected-info {
+                height: 20px;
+                position: absolute;
+                top: 0;
+                left: 24px;
+                bottom: 0;
+                margin: auto;
+                font-size: 12px;
+                color: var(--secondary-text-color);
+            }
+            :host .buttons paper-button {
+                @apply(--paper-dialog-button);
+            }
+            :host .buttons paper-button[dialog-dismiss] {
+                @apply(--paper-dialog-dismiss-button);
+            }
+            :host *[hidden] {
+                display: none;
+            }
+        </style>
+
+        <appsco-accounts hidden
+                         id="appscoRoles"
+                         type="account"
+                         size="1000"
+                         authorization-token="[[ authorizationToken ]]"
+                         list-api="[[ getRolesApi ]]"
+                         no-auto-load
+                         on-list-loaded="_onAccountsLoadFinished"
+                         on-filter-done="_onAccountsLoadFinished"
+                         on-list-empty="_onAccountsLoadFinished"></appsco-accounts>
+
+        <paper-dialog id="dialog"
+                      with-backdrop
+                      entry-animation="scale-up-animation"
+                      exit-animation="fade-out-animation"
+                      on-iron-overlay-opened="_onDialogOpened"
+                      on-iron-overlay-closed="_onDialogClosed">
+
+            <h2>Add partner admin to customer</h2>
+
+            <appsco-loader active="[[ _createLoader ]]"
+                           loader-alt="Appsco is processing request"
+                           multi-color></appsco-loader>
+
+            <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+
+            <div class="filter-accounts">
+                <appsco-search id="appscoSearch"
+                               label="Search for accounts"
+                               float-label
+                               on-search="_onSearchAccounts"
+                               on-search-clear="_onSearchAccountsClear"></appsco-search>
+            </div>
+
+            <paper-dialog-scrollable>
+                <div class="dialog-container">
+                    <div class="account-list">
+                        <paper-progress id="accountListProgress"
+                                        indeterminate></paper-progress>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <paper-checkbox id="bulkSelect"
+                                                        on-tap="_onBulkSelect"
+                                                        checked$="[[ _bulkSelect ]]"></paper-checkbox>
+                                    </th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <template is="dom-repeat" items="[[ _accountList ]]">
+                                    <tr>
+                                        <td>
+                                            <appsco-account-list-item item="[[ item ]]"
+                                                                      on-select-item="_onAccountListItemSelectChanged"></appsco-account-list-item>
+                                        </td>
+
+                                        <td>
+                                            <div class="item-info">
+                                                <span class="info-value">[[ item.account.display_name ]]</span>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="item-info">
+                                                <span class="info-value">[[ item.account.email ]]</span>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="item-info">
+                                                <span class="info-value item-type">[[ item.account.type ]]</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+
+                        <template is="dom-if" if="[[ _message ]]">
+                            <p class="message">
+                                [[ _message ]]
+                            </p>
+                        </template>
+                    </div>
+                </div>
+            </paper-dialog-scrollable>
+
+            <div class="buttons">
+                <div class="selected-info">
+                    Selected [[ _numberOfSelectedAccounts ]] out of [[ _accountsCount ]]
+                </div>
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button autofocus on-tap="_onCreatePartnerAdminsAction">Add</paper-button>
+            </div>
+        </paper-dialog>
+
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-add-partner-admin',
+
+            properties: {
+
+                authorizationToken: {
+                    type: String
+                },
+
+                getRolesApi: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                customer: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _headers: {
+                    type: Object,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                _accountList: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+
+                _accountListAll: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+
+                _message: {
+                    type: String
+                },
+
+                _selectedAccounts: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+
+                _createLoader: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _componentReady: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _bulkSelect: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _accountsCount: {
+                    type: Number,
+                    value: 0
+                },
+
+                _numberOfSelectedAccounts: {
+                    type: Number,
+                    value: 0
+                },
+
+                _filterTerm: {
+                    type: String,
+                    value: ''
+                },
+
+                _filterType: {
+                    type: String,
+                    value: 'all'
+                }
+            },
+
+            _computeHeaders: function (authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            },
+
+            toggle: function() {
+                this.$.dialog.toggle();
+            },
+
+            _showLoader: function() {
+                this._createLoader = true;
+            },
+
+            _hideLoader: function() {
+                this._createLoader = false;
+            },
+
+            _showError: function(message) {
+                this._error = message;
+            },
+
+            _hideError: function() {
+                this._error = '';
+            },
+
+            _showMessage: function(message) {
+                this._message = message;
+            },
+
+            _hideMessage: function() {
+                this._message = '';
+            },
+
+            _showAccountListProgress: function() {
+                this.$.accountListProgress.hidden = false;
+            },
+
+            _hideAccountListProgress: function() {
+
+                setTimeout(function() {
+                    this.$.accountListProgress.hidden = true;
+                }.bind(this), 500);
+            },
+
+            /**
+             * Called after dialog has been opened.
+             *
+             * @private
+             */
+            _onDialogOpened: function() {
+                this.$.appscoSearch.setup();
+                this.$$('#appscoRoles').reloadItems();
+                this._componentReady = true;
+            },
+
+            /**
+             * Called after dialog has been closed.
+             *
+             * @private
+             */
+            _onDialogClosed: function() {
+                this._reset();
+            },
+
+            _onAccountsLoadFinished: function() {
+                var listItems = [];
+
+                this._showAccountListProgress();
+
+                this.set('_accountList', []);
+                this.set('_accountListAll', []);
+
+                var rolesComponent = this.$$('#appscoRoles'),
+                    roles = rolesComponent.getAllItems();
+
+                roles.forEach(function(role, index) {
+                    role.account.type = 'user';
+                    role.account.selected = false;
+                    listItems.push(role);
+                }.bind(this));
+
+
+
+                this.set('_accountList', listItems);
+                this.set('_accountListAll', listItems);
+                this._accountsCount = this._accountList.length;
+                this._hideAccountListProgress();
+            },
+
+            _setAccountList: function() {
+                var listItems = [];
+
+                this._showAccountListProgress();
+
+                this.set('_accountList', []);
+                this.set('_accountListAll', []);
+
+                var rolesComponent = this.$$('#appscoRoles'),
+                    roles = rolesComponent.getAllItems();
+
+                roles.forEach(function(role, index) {
+                    role.account.type = 'user';
+                    role.account.selected = false;
+                    listItems.push(role.account);
+                }.bind(this));
+
+
+
+                this.set('_accountList', listItems);
+                this.set('_accountListAll', listItems);
+                this._accountsCount = this._accountList.length;
+                this._hideAccountListProgress();
+            },
+
+            _hideContacts: function() {
+                var list = JSON.parse(JSON.stringify(this._accountList)),
+                    length = list.length;
+
+                this.set('_accountList', []);
+
+                for (var i = 0; i < length; i++) {
+
+                    if ('user' === list[i].type) {
+                        this.push('_accountList', list[i]);
+                    }
+                }
+            },
+
+            _onBulkSelect: function() {
+
+                this._hideError();
+
+                if (this._componentReady) {
+                    this._bulkSelect = !this._bulkSelect;
+                    this._bulkSelect ? this._selectAllAccounts() : this._deselectAllAccounts();
+                }
+            },
+
+            _selectAllAccounts: function() {
+                var list = JSON.parse(JSON.stringify(this._accountList)),
+                    length = list.length,
+                    listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+                    lengthAll = listAll.length;
+
+                for (var i = 0; i < length; i++) {
+                    list[i].selected = true;
+
+                    for (var j = 0; j < lengthAll; j++) {
+
+                        if (listAll[j].self === list[i].self) {
+                            listAll[j].selected = true;
+                        }
+                    }
+                }
+
+                this.set('_accountList', []);
+                this.set('_accountList', list);
+
+                this.set('_accountListAll', []);
+                this.set('_accountListAll', listAll);
+
+                this._recalculateInfo();
+            },
+
+            _deselectAllAccounts: function() {
+                var list = JSON.parse(JSON.stringify(this._accountList)),
+                    length = list.length,
+                    listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+                    lengthAll = listAll.length;
+
+                for (var i = 0; i < length; i++) {
+                    list[i].selected = false;
+
+                    for (var j = 0; j < lengthAll; j++) {
+
+                        if (listAll[j].self === list[i].self) {
+                            listAll[j].selected = false;
+                        }
+                    }
+                }
+
+                this.set('_accountList', []);
+                this.set('_accountList', list);
+
+                this.set('_accountListAll', []);
+                this.set('_accountListAll', listAll);
+
+                this._recalculateInfo();
+            },
+
+            _onAccountListItemSelectChanged: function(event) {
+                var item = event.detail.item,
+                    listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+                    lengthAll = listAll.length;
+
+                if (!item.selected) {
+                    this._bulkSelect = false;
+                }
+
+                for (var j = 0; j < lengthAll; j++) {
+
+                    if (listAll[j].self === item.self) {
+                        listAll[j].selected = item.selected;
+                    }
+                }
+
+                this.set('_accountListAll', []);
+                this.set('_accountListAll', listAll);
+
+                this._recalculateInfo();
+                this._setBulkSelectStatus();
+                this._hideError();
+            },
+
+            _recalculateInfo: function() {
+                var list = this._accountListAll,
+                    length = list.length;
+
+                this._numberOfSelectedAccounts = 0;
+
+                for (var i = 0; i < length; i++) {
+
+                    if (list[i].selected) {
+                        this._numberOfSelectedAccounts++;
+                    }
+                }
+            },
+
+            _setBulkSelectStatus: function() {
+                this._bulkSelect = (this._numberOfSelectedAccounts === this._accountListAll.length);
+            },
+
+            _onSearchAccounts: function(event) {
+                var searchValue = event.detail.term,
+                    searchLength = searchValue.length;
+
+                this._filterTerm = searchValue;
+
+                if (searchLength < 3) {
+                    this._filterTerm = '';
+                }
+
+                this._filterAccountList();
+            },
+
+            _onSearchAccountsClear: function() {
+                this._filterTerm = '';
+                this._filterAccountList();
+            },
+
+            _onAccountTypeSelected: function(event) {
+                this._filterType = event.detail.item.getAttribute('value');
+                this._filterAccountList();
+                this._setBulkSelectStatus();
+            },
+
+            _filterAccountList: function() {
+                var listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+                    lengthAll = listAll.length,
+                    term = this._filterTerm.toLowerCase(),
+                    type = this._filterType;
+
+                this._hideMessage();
+                this.set('_accountList', []);
+
+                if ('all' === type) {
+
+                    if (term) {
+
+                        for (var i = 0; i < lengthAll; i++) {
+
+                            if ((-1 != listAll[i].account.name.toLowerCase().indexOf(term.toLowerCase())) ||
+                                (-1 != listAll[i].account.email.toLowerCase().indexOf(term))) {
+                                this.push('_accountList', listAll[i]);
+                            }
+                        }
+                    }
+                    else {
+                        this.set('_accountList', listAll);
+                    }
+                }
+                else {
+
+                    if (term) {
+
+                        for (var i = 0; i < lengthAll; i++) {
+
+                            if ((type === listAll[i].type) &&
+                                ((-1 != listAll[i].account.name.toLowerCase().indexOf(term)) ||
+                                (-1 != listAll[i].account.email.toLowerCase().indexOf(term)))) {
+                                this.push('_accountList', listAll[i]);
+                            }
+                        }
+                    }
+                    else {
+
+                        for (var i = 0; i < lengthAll; i++) {
+
+                            if (type === listAll[i].type) {
+                                this.push('_accountList', listAll[i]);
+                            }
+                        }
+                    }
+                }
+
+                if (0 === this._accountList.length) {
+                    this._showMessage('There are no accounts available according to selected filters.');
+                }
+            },
+
+            _reset: function() {
+                this.$.appscoSearch.reset() ;
+                this.set('_accountList', []);
+                this.set('_accountListAll', []);
+                this.set('resources', []);
+                this.set('_selectedAccounts', []);
+                this._componentReady = false;
+                this._filterTerm = '';
+                this._filterType = 'all';
+                this._numberOfSelectedAccounts = 0;
+                this._accountsCount = 0;
+                this._bulkSelect = false;
+                this._hideLoader();
+                this._hideError();
+                this._hideMessage();
+            },
+
+            _partnerAdminCreateFinished: function() {
+                this.$.dialog.close();
+
+                /**
+                 * Fired when partner admin has been added
+                 *
+                 * @event resources-shared
+                 */
+                // resources-shared
+                this.fire('partner-admins-created', {
+                    resources: this._responseApplications
+                });
+
+                this.set('_selectedAccounts', []);
+                this.set('_responseApplications', []);
+                this._hideLoader();
+            },
+
+            _createPartnerAdmins: function(companyRoles) {
+                this._showLoader();
+                var me = this,
+                    addedAdmins = [],
+                    requestCounter = 0;
+
+                for (var idx in companyRoles) {
+                    var request = document.createElement('iron-request'),
+                        options = {
+                            method: 'POST',
+                            handleAs: 'json',
+                            body: {
+                                "company_role": companyRoles[idx].self
+                            },
+                            url: this.customer.self + '/partner-admins',
+                            headers: {
+                                'Authorization': 'token ' + this.authorizationToken,
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        };
+
+                    request.send(options).then(
+                        function(companyRole, adminList, rq) {
+                            return function() {
+                                if (rq.succeeded) {
+                                    adminList.push(rq.response);
+                                }
+                                requestCounter++;
+                                if (requestCounter === companyRoles.length) {
+                                    me._hideLoader();
+                                    me.fire('partner-admins-added', {
+                                        customer: me.customer,
+                                        partnerAdmins: adminList
+                                    });
+                                    me.toggle();
+                                }
+                            }
+                        }(companyRoles[idx], addedAdmins, request), function() {
+                            requestCounter++;
+                            if (requestCounter === companyRoles.length) {
+                                me.fire('partner-admins-added', {
+                                    customer: me.customer,
+                                    partnerAdmins: addedAdmins
+                                });
+                                me._hideLoader();
+                                me.toggle();
+                            }
+                        }
+                    );
+                }
+            },
+
+            _onCreatePartnerAdminsAction: function() {
+                var list = JSON.parse(JSON.stringify(this._accountListAll)),
+                    length = list.length;
+
+                for (var i = 0; i < length; i++) {
+                    if (list[i].selected) {
+                        this._selectedAccounts.push(list[i]);
+                    }
+                }
+
+                if (0 === this._selectedAccounts.length) {
+                    this._showError('Please add at least one user to make partner admin.');
+                    return false;
+                }
+
+                this._createPartnerAdmins(this._selectedAccounts);
+            },
+
+            _onInnerIronOverlay: function(event) {
+                event.stopPropagation();
+            }
+        });
+    </script>
+</dom-module>
