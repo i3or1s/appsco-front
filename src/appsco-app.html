@@ -149,6 +149,7 @@
 <link rel="import" href="components/customer/appsco-remove-customer.html">
 <link rel="import" href="components/customer/appsco-customers-page-actions.html">
 <link rel="import" href="components/customer/appsco-add-customer.html">
+<link rel="import" href="components/customer/appsco-add-partner-admin.html">
 <link rel="import" href="components/customer/appsco-remove-customers.html">
 <link rel="import" href="components/customer/appsco-manage-customer-subscription.html">
 <link rel="import" href="components/customer/appsco-add-partner-admin-to-customers.html">
@@ -1510,6 +1511,15 @@
                 on-resources-shared="_onResourcesShared"
                 ></appsco-share-resource>
 
+        <appsco-add-partner-admin
+                id="appscoAddPartnerAdmin"
+                customer="[[ _customerToCreateAdminFor ]]"
+                authorization-token="[[ authorizationToken ]]"
+                get-roles-api="[[ _companyRolesApi ]]"
+                api-errors="[[ _apiErrors ]]"
+                on-partner-admins-added="_onPartnerAdminsAdded"
+        ></appsco-add-partner-admin>
+
         <appsco-application-assignee-claims
                 id="appscoApplicationAssigneeClaims"
                 application="[[ _companyApplication ]]"
@@ -1858,15 +1868,6 @@
                 api-errors="[[ _apiErrors ]]"
                 on-customer-added="_onCustomerAdded"></appsco-add-customer>
 
-        <appsco-add-partner-admin-to-customers
-                id="appscoAddPartnerAdmin"
-                authorization-token="[[ authorizationToken ]]"
-                partner-admins-api="[[ _customerPartnerAdminsApi ]]"
-                roles-api="[[ _companyRolesApi ]]"
-                customers="[[ _selectedCustomers ]]"
-                api-errors="[[ _apiErrors ]]"
-                on-partner-admin-added="_onPartnerAdminAdded"></appsco-add-partner-admin-to-customers>
-
         <appsco-remove-customers
                 id="appscoCustomersRemove"
                 customers="[[ _selectedCustomers ]]"
@@ -2147,6 +2148,13 @@
                     type: Array,
                     value: function() {
                         return [];
+                    }
+                },
+
+                _customerToCreateAdminFor: {
+                    type: Array,
+                    value: function() {
+
                     }
                 },
 
@@ -6323,10 +6331,8 @@
             },
 
             _onAddPartnerAdminAction: function(event) {
-                var customer = event.detail.customer;
-                this.set('_selectedCustomers', [customer]);
-                this.$.appscoAddPartnerAdmin.setStopOnNextFail(true);
-                this.$.appscoAddPartnerAdmin.open();
+                this._customerToCreateAdminFor = event.detail.customer;
+                this.$.appscoAddPartnerAdmin.toggle();
             },
 
             _addCustomer: function(customer) {
@@ -6410,11 +6416,14 @@
                 }
             },
 
-            _onPartnerAdminAdded: function(event) {
-                var partnerAdmin = event.detail.partnerAdmin,
+            _onPartnerAdminsAdded: function(event) {
+                var partnerAdmins = event.detail.partnerAdmins,
                     customer = event.detail.customer;
 
-                this._addPartnerAdmin(customer, partnerAdmin);
+                for (var idx in partnerAdmins) {
+                    this._addPartnerAdmin(customer, partnerAdmins[idx]);
+                }
+
                 this._notify('Partner admin added successfully.');
             },
 
