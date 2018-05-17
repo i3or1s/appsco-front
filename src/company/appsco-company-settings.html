@@ -195,6 +195,23 @@ Custom property | Description | Default
                     Block TOR
                 </paper-toggle-button>
             </div>
+
+            <div class="toggle-button-container mt-30">
+                <paper-toggle-button name="company_settings[sendEmailToAdminOnNewDevice]"
+                                     id="newDeviceInfoAdminEmail"
+                                     checked$="[[ company.mail_admin_on_new_device ]]"
+                                     on-change="_mailAdminOnNewDeviceChanged">
+                    Send email notification to system admin when managed users log in from a new device
+                </paper-toggle-button>
+
+                <template is="dom-if" if="[[ _emailAdminOnNewDevice ]]">
+                    <paper-input id="sendEmailToAdminOnNewDevice"
+                                 label="Admin email"
+                                 name="company_settings[newDeviceInfoAdminEmail]"
+                                 value="[[ company.notify_admin_email ]]"
+                                 on-keyup="_onKeyUp"></paper-input>
+                </template>
+            </div>
         </form>
 
         <div class="mt-30">
@@ -321,6 +338,13 @@ Custom property | Description | Default
                     type: Object,
                     value: function() {
                         return this.$.ipWhiteList;
+                    }
+                },
+
+                _emailAdminOnNewDevice: {
+                    type: Boolean,
+                    value: function() {
+                        return this.$.newDeviceInfoAdminEmail;
                     }
                 }
             },
@@ -516,6 +540,10 @@ Custom property | Description | Default
 
             _enforced2faChanged: function() {
                 this._2faChangedToEnable = this.$.switchForce2FA.checked;
+            },
+
+            _mailAdminOnNewDeviceChanged: function() {
+                this._emailAdminOnNewDevice = this.$.newDeviceInfoAdminEmail.checked;
             },
 
             /**
