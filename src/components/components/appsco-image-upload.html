@@ -1,0 +1,257 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="appsco-loader.html">
+
+<dom-module id="appsco-image-upload">
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+                position: relative;
+                @apply(--appsco-image-upload);
+            }
+            .upload-container {
+                width: 96px;
+                height: 96px;
+                margin-left: auto;
+                margin-right: auto;
+                overflow: hidden;
+                position: relative;
+                @apply(--image-upload-container);
+            }
+            .image, .image-upload, .icon-upload {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+            .image {
+                width: 96px;
+                height: 96px;
+                --iron-image-placeholder: {
+                    background: #eeeeee;
+                };
+
+                @apply(--image);
+            }
+            .image-upload {
+                background-color: rgba(250, 250, 250, 0.8);
+                display: block;
+                opacity: 0;
+                z-index: 5;
+                cursor: pointer;
+                @apply(--image-upload-field);
+            }
+            .image-upload.no-image {
+                opacity: 1;
+            }
+            .image-upload:hover {
+                opacity: 1;
+                transition: opacity .2s ease-in;
+            }
+            .icon-upload {
+                width: 32px;
+                height: 32px;
+                @apply(--image-upload-icon);
+            }
+            .upload-file {
+                width: 0;
+                height: 0;
+                opacity: 0;
+            }
+        </style>
+
+        <div class="upload-container">
+
+            <appsco-loader active="[[ _loader ]]" loader-alt="[[ loaderAlt]]" multi-color></appsco-loader>
+
+            <iron-image class="image"
+                        src="[[ image ]]"
+                        alt="[[ imageAlt ]]"
+                        sizing="contain"></iron-image>
+
+            <template is="dom-if" if="[[ !previewOnly ]]">
+                <label for="imageInput"
+                       class$="image-upload [[ _imagePreview ]]">
+                    <iron-icon icon="file-upload" class="icon-upload"></iron-icon>
+                </label>
+
+                <input type="file"
+                       accept="image/*"
+                       id="imageInput"
+                       name="image"
+                       class="upload-file"
+                       on-change="_onUploadImage">
+            </template>
+        </div>
+
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-image-upload',
+
+            properties: {
+                image: {
+                    type: String,
+                    value: "",
+                    notify: true
+                },
+
+                loaderAlt: {
+                    type: String,
+                    value: "AppsCo is saving image"
+                },
+
+                imageAlt: {
+                    type: String,
+                    value: "AppsCo image"
+                },
+
+                /**
+                 * Authorization token for the account.
+                 */
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                /**
+                 * Account image settings api link.
+                 */
+                imageSettingsApi: {
+                    type: String
+                },
+
+                /**
+                 * Preview only. Without upload.
+                 */
+                previewOnly: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * Computed headers.
+                 * It contains authorization token.
+                 */
+                _computedHeaders: {
+                    type: Object,
+                    computed: "_computeHeaders(authorizationToken)"
+                },
+
+                _imagePreview: {
+                    type: String,
+                    computed: '_computeImagePreviewClass(image)'
+                },
+
+                _loader: {
+                    type: Boolean,
+                    value: false
+                }
+
+            },
+
+            _validateImageFile: function(file) {
+                var validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'],
+                    fileType = file.type,
+                    valid = true;
+
+                if (file.size > 1048576) {
+                    this.fire('image-upload-error', 'Image size must be less than 1MB.');
+                    valid = false;
+                }
+                else {
+
+                    for (var i = 0; i < validFileTypes.length; i++) {
+
+                        if (validFileTypes[i] === fileType) {
+                            valid = true;
+                            break;
+                        }
+                        else {
+                            valid = false;
+                        }
+
+                        if (i === (validFileTypes.length - 1) && !valid) {
+                            this.fire('image-upload-error', 'Allowed file types are: jpg, jpeg and png.');
+                        }
+                    }
+
+                }
+
+                return valid;
+
+            },
+
+            _setNewImage: function(file) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    this.image = e.target.result;
+                }.bind(this);
+
+                reader.readAsDataURL(file);
+            },
+
+            _onUploadImage: function(event) {
+                var input = event.target;
+
+                if (input.files && input.files[0]) {
+                    var file = input.files[0],
+                        formData = new FormData(),
+                        request = new XMLHttpRequest();
+
+                    /** To ensure that on-change event will be triggered even if user tries to upload same image again */
+                    this.$$('#imageInput').value = null;
+                    if (!this._validateImageFile(file)) {
+                        return false;
+                    }
+
+                    formData.append('file', file, file.name);
+
+                    request.onreadystatechange = function()
+                    {
+                        if (4 === parseInt(request.readyState) && 200 === parseInt(request.status)) {
+                            this._setNewImage(file);
+                            this.fire('image-changed', {
+                                response: JSON.parse(request.response)
+                            })
+                        }
+                    }.bind(this);
+
+                    request.open('POST', this.imageSettingsApi, true);
+                    request.setRequestHeader('Authorization', this._computedHeaders);
+                    request.send(formData);
+                }
+            },
+
+            /**
+             * Computes authorization headers.
+             *
+             * @param {Object} authorizationToken
+             * @returns {{Authorization: string}}
+             * @private
+             */
+            _computeHeaders: function (authorizationToken) {
+                return 'token ' + authorizationToken;
+            },
+
+            _computeImagePreviewClass: function(image) {
+                return image ? 'has-image' : 'no-image';
+            },
+
+            /**
+             * Resets component.
+             */
+            reset: function() {
+                this.image = "";
+            }
+        });
+    </script>
+</dom-module>

@@ -10,6 +10,7 @@
 <link rel="import" href="company/appsco-company-components-page.html">
 <link rel="import" href="company/appsco-company-settings-page.html">
 <link rel="import" href="company/appsco-company-brand-settings-page.html">
+<link rel="import" href="company/appsco-company-branded-login-page.html">
 <link rel="import" href="company/appsco-company-domains-page.html">
 <link rel="import" href="company/appsco-company-transfer-token-page.html">
 <link rel="import" href="company/appsco-company-manage-idp-settings-page.html">
@@ -121,6 +122,7 @@
                                 on-empty-load="_onPageLoaded"
                                 on-manage-company-settings="_onManageCompanySettings"
                                 on-manage-company-brand-settings="_onManageCompanyBrandSettings"
+                                on-manage-company-branded-login="_onManageCompanyBrandedLogin"
                                 on-manage-company-domains="_onManageCompanyDomains"
                                 on-manage-company-transfer-token="_onManageCompanyTransferToken"
                                 on-manage-company-idp-settings="_onManageCompanyIdPSettings">
@@ -146,6 +148,13 @@
                                 on-company-brand-settings-changed="_onCompanyBrandSettingsChanged"
                                 on-back="_onResourceBack">
                         </appsco-company-brand-settings-page>
+
+                        <appsco-company-branded-login-page
+                                name="appsco-company-branded-login-page"
+                                company="[[ company ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                on-back="_onResourceBack">
+                        </appsco-company-branded-login-page>
 
                         <appsco-company-manage-idp-settings-page id="appscoCompanyManageIdPSettingsPage"
                                 name="appsco-company-manage-idp-settings-page"
@@ -440,6 +449,10 @@
                 this._selected = 'appsco-company-brand-settings-page';
             },
 
+            _showCompanyBrandedLoginPage: function() {
+                this._selected = 'appsco-company-branded-login-page';
+            },
+
             _showCompanyDomainsPage: function() {
                 this._selected = 'appsco-company-domains-page';
             },
@@ -466,6 +479,10 @@
 
             _onManageCompanyBrandSettings: function() {
                 this._showCompanyBrandSettingsPage();
+            },
+
+            _onManageCompanyBrandedLogin: function() {
+                this._showCompanyBrandedLoginPage();
             },
 
             _onCompanyBrandSettingsChanged: function() {
