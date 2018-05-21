@@ -54,15 +54,22 @@
 
         <template is="dom-if" if="{{ !preview }}">
             <div class="devices">
-                <template is="dom-repeat" items="[[ _devices ]]" rendered-item-count="{{ renderedCount }}">
+                <template is="dom-repeat" items="[[ _uniqueDevices ]]" rendered-item-count="{{ renderedCount }}">
                     <appsco-account-devices-item
-                            device="[[ item ]]"
+                            devices="[[ item ]]"
+                            device="[[ item.0 ]]"
                             account="[[ account ]]">
                     </appsco-account-devices-item>
                 </template>
             </div>
         </template>
 
+        <template is="dom-if" if="{{ preview }}">
+            <p>
+                Device and security related activities tied to your account.
+                Browse list of devices used to perform activity on AppsCo in the name of [[ account.account.display_name ]]
+            </p>
+        </template>
         <template is="dom-if" if="{{ _message }}">
             <p class="message">
                 [[ _message ]]
@@ -71,7 +78,6 @@
 
         <div class="info-total">
             <div class="total">
-                Total registered devices: [[ _totalDevices ]]
             </div>
         </div>
 
@@ -83,6 +89,15 @@
             is: 'appsco-account-devices',
 
             properties: {
+
+                /**
+                 * Number of same devices to display
+                 *
+                 */
+                DISPLAY_DEVICE_SIZE: {
+                    type: Number,
+                    value: 3
+                },
 
                 /**
                  * Account
@@ -128,7 +143,17 @@
                     type: Array,
                     value: function () {
                         return [];
-                    }
+                    },
+                    notify: true,
+                    observer: '_devicesChanged'
+                },
+
+                _uniqueDevices: {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    },
+                    notify: true
                 },
 
                 /**
@@ -162,6 +187,7 @@
             loadDevices: function() {
                 this.$.progress.hidden = false;
                 this.set('_devices', []);
+                this.set('_uniqueDevices', []);
                 this._message = '';
                 this._totalDevices = 0;
 
@@ -182,6 +208,25 @@
                 }
 
                 this._totalDevices--;
+            },
+
+            _devicesChanged: function() {
+                var uniqueDevices = [];
+                for(var deviceIndex in this._devices) {
+                    var device = JSON.parse(JSON.stringify(this._devices[deviceIndex]));
+                    var key = btoa(device.browser + device.operatingSystem);
+                    if(!uniqueDevices[key]) {
+                        uniqueDevices[key] = [];
+                    }
+                    if(uniqueDevices[key].length >= this.DISPLAY_DEVICE_SIZE) continue;
+                    uniqueDevices[key].push(device);
+                }
+                for(var index in uniqueDevices) {
+                    uniqueDevices.push(JSON.parse(JSON.stringify(uniqueDevices[index])));
+                    delete uniqueDevices[index];
+                }
+                this.set('_uniqueDevices', []);
+                this.set('_uniqueDevices', uniqueDevices);
             },
 
             _computeUrl: function(devicesApi) {

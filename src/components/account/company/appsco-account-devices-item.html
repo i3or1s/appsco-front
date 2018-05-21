@@ -6,7 +6,10 @@
 <link rel="import" href="../../../../bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../../../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../../components/appsco-list-item-styles.html">
+<link rel="import" href="../../components/appsco-date-format.html">
+<link rel="import" href="../../components/appsco-ip-country.html">
 
 <dom-module id="appsco-account-devices-item">
     <template>
@@ -41,29 +44,62 @@
             .value {
                 font-weight: bold;
             }
+            .resources-container {
+                padding: 20px;
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+                background-color: var(--collapsible-content-background-color);
+            }
+            .resource-list {
+                width: 100%;
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                @apply(--layout-wrap);
+            }
+            .full-width {
+                width: 100%;
+            }
+            table > thead > tr > td {
+                font-weight: 700;
+                font-size: 16px;
+            }
+            table > tbody > tr > td {
+                border-top: 1px dashed var(--header-background-color);
+            }
+            img {
+                height: 100px;
+                margin-right: 20px;
+            }
         </style>
 
         <div class="item">
             <div class="browser-hash">Browser fingerprint: [[ device.browserFingerprint ]]</div>
 
-            <div class="item-info item-basic-info">
-                <span class="info-label item-title">[[ device.name ]]</span>
-                <div class="info-additional">
-                    Device: <span class="value">[[ device.device ]]</span>
-                    Device vendor: <span class="value">[[ device.vendor ]]</span>
+            <div class="item-info item-basic-info resource-list">
+                <div >
+                    <img src="[[ _deviceImg ]]" alt="[[ _deviceName ]]">
                 </div>
-                <template is="dom-if" if="[[ _showTrustedIPs ]]">
-                    <div class="info-additional">
-                        2FA trusted IP list: <span class="value">[[ device.trustedIpList ]]</span>
-                    </div>
-                </template>
+                <div >
+                    <span class="info-label item-title">[[ _deviceName ]]</span>
+                    <template is="dom-if" if="[[ _isADevice ]]">
+                        <div class="info-additional">
+                            Device: <span class="value">[[ device.device ]]</span>
+                            Device vendor: <span class="value">[[ device.vendor ]]</span>
+                        </div>
+                    </template>
+                    <template is="dom-if" if="[[ _showTrustedIPs ]]">
+                        <div class="info-additional">
+                            2FA trusted IP list: <span class="value">[[ device.trustedIpList ]]</span>
+                        </div>
+                    </template>
 
-                <div class="info-additional">
-                    Browser: <span class="value">[[ device.browser ]]</span>
-                    Browser version: <span class="value">[[ device.browserVersion ]]</span>
-                </div>
-                <div class="info-additional">
-                    Operating system: <span class="value">[[ device.operatingSystem ]]</span>
+                    <div class="info-additional">
+                        Browser: <span class="value">[[ device.browser ]]</span>
+                        Browser version: <span class="value">[[ device.browserVersion ]]</span>
+                    </div>
+                    <div class="info-additional">
+                        Operating system: <span class="value">[[ device.operatingSystem ]]</span>
+                    </div>
                 </div>
             </div>
 
@@ -75,8 +111,41 @@
                 <template is="dom-if" if="[[ _approved ]]">
                     <paper-button on-tap="_onDisapproveAction">Disapprove</paper-button>
                 </template>
+
+                <paper-button on-tap="_onShowResources"
+                              hidden$="[[ _resourcesVisible ]]">Show</paper-button>
+                <paper-button on-tap="_onHideResources"
+                              hidden$="[[ !_resourcesVisible ]]">Hide</paper-button>
             </div>
         </div>
+
+        <iron-collapse id="resources">
+            <div class="resources-container">
+                <div class="resource-list">
+                    <table class="full-width">
+                        <thead>
+                            <tr>
+                                <td>Browser</td>
+                                <td>Last login</td>
+                                <td>Location</td>
+                                <td>IP-address</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <template is="dom-repeat"
+                                  items="[[ devices ]]" rendered-item-count="{{ renderedCount }}">
+                            <tr>
+                                <td>[[ item.browser ]]</td>
+                                <td><appsco-date-format date="[[ item.lastLogin.date ]]" options="[[ dateOptions ]]"></appsco-date-format></td>
+                                <td><appsco-ip-country ip="[[ item.ipList.0 ]]"></appsco-ip-country></td>
+                                <td>[[ item.ipList.0 ]]</td>
+                            </tr>
+                        </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </iron-collapse>
 
     </template>
 
@@ -94,7 +163,36 @@
                     type: Object,
                     value: function() {
                         return {};
-                    }
+                    },
+                    notify: true
+                },
+
+                devices: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    notify: true
+                },
+
+                _deviceName: {
+                    type: String,
+                    computed: "_computeDeviceName(device)"
+                },
+
+                _deviceImg: {
+                    type: String,
+                    computed: "_computeDeviceImg(device)"
+                },
+
+                _isADevice: {
+                    type: Boolean,
+                    computed: "_computeIsADevice(device)"
+                },
+
+                dateOptions: {
+                    type: Object,
+                    value: { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute:"numeric" }
                 },
 
                 /**
@@ -105,6 +203,11 @@
                     value: function () {
                         return {};
                     }
+                },
+
+                _resourcesVisible: {
+                    type: Boolean,
+                    value: false
                 },
 
                 _approved: {
@@ -149,6 +252,7 @@
             attached: function() {
                 this.style.display = 'inline-block';
                 this.playAnimation('entry');
+                console.log(this.devices);
             },
 
             _computeApproved: function(device) {
@@ -157,6 +261,31 @@
 
             _computeShowTrustedIPs: function(device) {
                 return device && device.trustedIpList && device.trustedIpList.length > 0;
+            },
+
+            _computeIsADevice: function(device) {
+                return device.vendor !== "unavailable";
+            },
+
+            _computeDeviceName: function(device) {
+                if(this._computeIsADevice(device)) {
+                    return device.browser + " on " + device.vendor + " " + device.device;
+                }
+
+                return device.browser + " on " + device.operatingSystem;
+            },
+
+            _computeDeviceImg: function(device) {
+                if(this._computeIsADevice(device)) {
+                    // It is a mobile
+                    if(device.operatingSystem === "Android")
+                        return '/images/devices/android.png';
+                    if(device.operatingSystem === "Windows")
+                        return '/images/devices/unknown.png';
+                    return '/images/devices/ios.png';
+                }
+                // It is a desktop
+                return '/images/devices/mac.png';
             },
 
             _onApproveAction: function(event) {
@@ -191,7 +320,17 @@
                     device: this.device,
                     account: this.account
                 });
-            }
+            },
+
+            _onShowResources: function() {
+                this.$.resources.show();
+                this._resourcesVisible = true;
+            },
+
+            _onHideResources: function() {
+                this.$.resources.hide();
+                this._resourcesVisible = false;
+            },
 
         });
     </script>
