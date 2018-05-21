@@ -118,7 +118,7 @@
                             <paper-input id="loginPageTitle"
                                          label="Login page title"
                                          name="branded_login[title]"
-                                         value="{{ brandedLogin.title }}"
+                                         value="[[ brandedLogin.title ]]"
                             ></paper-input>
                         </div>
                         <div class="form-input form-input-text">
@@ -206,7 +206,7 @@
                             <paper-input id="loginPageAdminLoginLinkCaption"
                                          label="Admin force login link"
                                          name="branded_login[admin_login_link_caption]"
-                                         value="{{ brandedLogin.adminLoginLinkCaption }}"
+                                         value="[[ brandedLogin.adminLoginLinkCaption ]]"
                             ></paper-input>
                         </div>
                         <div class="form-input form-input-text">
@@ -214,7 +214,7 @@
                             <paper-input id="loginPageUsernameFieldCaption"
                                          label="Username field title"
                                          name="branded_login[username_field_caption]"
-                                         value="{{ brandedLogin.usernameFieldCaption }}"
+                                         value="[[ brandedLogin.usernameFieldCaption ]]"
                             ></paper-input>
                         </div>
                         <div class="form-input form-input-text">
@@ -222,7 +222,7 @@
                             <paper-input id="loginPagePasswordFieldCaption"
                                          label="Password field title"
                                          name="branded_login[password_field_caption]"
-                                         value="{{ brandedLogin.passwordFieldCaption }}"
+                                         value="[[ brandedLogin.passwordFieldCaption ]]"
                             ></paper-input>
                         </div>
                     </div>
@@ -424,7 +424,20 @@
                 request.send(options).then(function() {
 
                     if (200 === parseInt(request.status)) {
-                        this.brandedLogin = {};
+                        this.brandedLogin = {
+                            adminLoginLinkCaption: null,
+                            alias: "",
+                            backgroundColor: null,
+                            backgroundImage: null,
+                            createAccountDisabled: false,
+                            logo: "",
+                            oauthLoginDisabled: false,
+                            passwordDisabled: false,
+                            passwordFieldCaption: null,
+                            resetPasswordDisabled: false,
+                            title: "",
+                            usernameFieldCaption: null
+                        };
                     }
 
                 }.bind(this));
