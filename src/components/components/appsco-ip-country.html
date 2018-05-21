@@ -1,0 +1,101 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
+
+<!--
+`appsco-ip-country`
+
+Date format
+
+@demo demo/index.html 
+-->
+
+<dom-module id="appsco-ip-country">
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+            }
+        </style>
+        [[ _country ]]
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-ip-country',
+
+            properties: {
+                ip: {
+                    type: String,
+                    value: function() { return ''; },
+                    observer: "_calculateCountry"
+                },
+                _country: {
+                    type: String
+                },
+                _cache: {
+                    type: Array,
+                    value: []
+                }
+            },
+
+            attahced: function() {
+                if(this._isLocalStorageSupported()) {
+                    this._cache = JSON.parse(this._getStoredValue('appsco-ip-country-cache'));
+                }
+            },
+
+            /**
+             * @private
+             */
+            _calculateCountry: function() {
+                if(this._cache && this._cache[this.ip]) {
+                    this._country = this._cache[this.ip];
+                    return;
+                }
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: 'http://www.geoplugin.net/json.gp?ip='+this.ip,
+                        method: 'GET',
+                        handleAs: 'json'
+                    };
+
+                request.send(options).then(function() {
+
+                    if (200 === parseInt(request.status)) {
+                        this._country = request.response.geoplugin_countryName;
+                        this._cache[this.ip] = this._country;
+                        if(this._isLocalStorageSupported()) {
+                            var _cache = JSON.parse(this._getStoredValue('appsco-ip-country-cache'));
+                            if(!_cache[this.ip]) {
+                                _cache[this.ip] = this._country;
+                                this._storeValue('appsco-ip-country-cache', JSON.stringify(_cache));
+                            }
+                        }
+                    }
+
+                }.bind(this));
+            },
+
+            _isLocalStorageSupported: function () {
+                return window.localStorage
+                    && typeof(window.localStorage.setItem) === 'function'
+                    && typeof(window.localStorage.getItem) === 'function'
+                    && typeof(window.localStorage.removeItem) === 'function';
+            },
+
+            _storeValue: function(key, value) {
+                if (this._isLocalStorageSupported()) {
+                    window.localStorage.setItem(key, value);
+                } else {
+                    var secure_cookie = Boolean(Number(this.cookieSecure)) === true ? ';secure' : '';
+                    document.cookie = key + '=' + value + secure_cookie;
+                }
+            },
+
+            _getStoredValue: function(key) {
+                return this._isLocalStorageSupported() ? window.localStorage.getItem(key) : this._getCookie(key);
+            },
+        });
+    </script>
+</dom-module>
