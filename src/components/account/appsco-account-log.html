@@ -432,7 +432,6 @@ Custom property | Description | Default
                             });
 
                         default:
-//                            console.log('Property ' + property + ' change isn\'t supported in log.' );
                     }
 
                     if ('is_public' === propertyName) {
@@ -534,10 +533,18 @@ Custom property | Description | Default
             },
 
             _formatLogDirectoryRoleRemoved: function(item) {
+                var displayName = "unknown";
+                if(item.data && item.data.account && item.data.account.display_name) {
+                    displayName = item.data.account.display_name;
+                }
+                var companyName = "unknown";
+                if(item.data.company && item.data.company.name) {
+                    companyName = item.data.company.name;
+                }
                 return {
                     icon: 'social:person-outline',
                     date: item.created_at.date,
-                    message: this.localize('account_log_account_removed_from_company', 'account', item.data.account.display_name, 'company', item.data.company.name),
+                    message: this.localize('account_log_account_removed_from_company', 'account', displayName, 'company', companyName),
                     address: item.ip
                 }
             },
@@ -914,7 +921,6 @@ Custom property | Description | Default
                         break;
 
                     default:
-                        // console.log(item.type + ' not supported yet.');
                 }
 
                 return logItem;
