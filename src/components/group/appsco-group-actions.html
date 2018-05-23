@@ -60,6 +60,15 @@
                            label="Search groups"></appsco-search>
         </div>
 
+        <div class="action flex-none">
+            <paper-icon-button id="sendNotificationButton"
+                               icon="social:notifications"
+                               alt="Send notification"
+                               on-tap="_onSendNotificationAction"></paper-icon-button>
+            <paper-tooltip for="removeGroupsAction"
+                           position="bottom">Remove group</paper-tooltip>
+        </div>
+
         <div class="action bulk-action flex-none">
             <paper-icon-button id="removeGroupsAction"
                                icon="icons:delete"
@@ -209,6 +218,15 @@
                  * @event remove-groups
                  */
                 this.fire('remove-groups');
+            },
+
+            _onSendNotificationAction: function() {
+                /**
+                 * Fired when notification is to be sent to a group(s).
+                 *
+                 * @event notify-groups
+                 */
+                this.fire('notify-groups');
             },
 
             /**

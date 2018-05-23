@@ -65,6 +65,7 @@
 <link rel="import" href="components/group/appsco-resource-remove-from-group.html">
 <link rel="import" href="components/group/appsco-manage-group-page-actions.html">
 <link rel="import" href="components/group/appsco-delete-groups.html">
+<link rel="import" href="components/group/appsco-company-group-notification-dialog.html">
 
 <link rel="import" href="components/account/appsco-account-authorized-app-revoke.html">
 
@@ -691,6 +692,7 @@
                                                            on-search-clear="_onSearchCompanyGroupClear"
                                                            on-select-all-groups="_onSelectAllGroupsAction"
                                                            on-remove-groups="_onRemoveGroupsAction"
+                                                           on-notify-groups="_onNotifyGroupsAction"
                             ></appsco-groups-page-actions>
 
                             <appsco-manage-contact-page-actions
@@ -1510,6 +1512,14 @@
                 api-errors="[[ _apiErrors ]]"
                 on-resources-shared="_onResourcesShared"
                 ></appsco-share-resource>
+
+        <appsco-company-group-notification-dialog
+                id="appscoNotifyGroup"
+                authorization-token="[[ authorizationToken ]]"
+                company-groups-api="[[ _companyGroupsApi ]]"
+                company-notifications-api="[[ _companyNotificationsApi ]]"
+                on-notification-sent="_onNotificationSent"
+        ></appsco-company-group-notification-dialog>
 
         <appsco-add-partner-admin
                 id="appscoAddPartnerAdmin"
@@ -5133,6 +5143,10 @@
                 else {
                     this._onHideGroupsBulkActions()
                 }
+            },
+
+            _onNotifyGroupsAction: function() {
+                this.$.appscoNotifyGroup.toggle();
             },
 
             _onRemovedGroups: function() {
