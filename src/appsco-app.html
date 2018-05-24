@@ -3185,8 +3185,8 @@
 
             _onCheckNewNotificationsResponse: function(event, response) {
                 var newNotifications = event.detail.response;
-                if (newNotifications) {
-                    this._notifyNewNotifications();
+                if (0 < newNotifications) {
+                    this._notifyNewNotifications(newNotifications);
                 } else {
                     this._notifyNotificationsSeen();
                 }
@@ -3199,8 +3199,8 @@
                 }, 30000);
             },
 
-            _notifyNewNotifications: function () {
-                this.$.appscoHeader.notifyNewNotifications();
+            _notifyNewNotifications: function (newNotifications) {
+                this.$.appscoHeader.notifyNewNotifications(newNotifications);
             },
 
             _notifyNotificationsSeen: function () {

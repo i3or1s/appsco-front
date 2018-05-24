@@ -3,6 +3,7 @@
 <link rel="import" href="../../../bower_components/iron-icons/communication-icons.html">
 
 <link rel="import" href="appsco-account-notifications-dropdown.html">
+<link rel="import" href="../notifications/appsco-notification-icon.html">
 
 <!--
 `appsco-header-account-actions`
@@ -80,25 +81,10 @@ Custom property | Description | Default
                 </paper-icon-button>
             </template>
 
-            <template is="dom-if" if="[[ _newNotifications ]]">
-                <paper-icon-button
-                        id="newNotificationsAction"
-                        class="action-icon new-notifications-icon"
-                        icon="social:notifications-active"
-                        title="Notifications"
-                        on-tap="_onNewNotificationsAction">
-                </paper-icon-button>
-            </template>
-
-            <template is="dom-if" if="[[ !_newNotifications ]]">
-                <paper-icon-button
-                        id="notificationsAction"
-                        class="action-icon"
-                        icon="social:notifications"
-                        title="Notifications"
-                        on-tap="_onNotificationsAction">
-                </paper-icon-button>
-            </template>
+            <appsco-notification-icon
+                id="newNotificationsIcon"
+                on-tap="_onNewNotificationsAction"
+            ></appsco-notification-icon>
 
             <appsco-account-notifications-dropdown
                     id="appscoAccountNotificationsDropdown"
@@ -177,11 +163,13 @@ Custom property | Description | Default
                 this.fire('account-chat');
             },
 
-            notifyNewNotifications:function () {
+            notifyNewNotifications:function (newNotificationsCount) {
+                this.$.newNotificationsIcon.setNotificationsCount(newNotificationsCount);
                 this._newNotifications = true;
             },
 
             notifyNotificationsSeen:function () {
+                this.$.newNotificationsIcon.setNotificationsCount(0);
                 this._newNotifications = false;
             },
 
