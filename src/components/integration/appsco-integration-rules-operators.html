@@ -1,0 +1,33 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="appsco-integration-rules-operators">
+    <template>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'appsco-integration-rules-operators',
+
+        properties: {
+
+            operators: {
+                type: Object,
+                value: {
+                    "equal": "Equals",
+                    "notEqual": "Does not equal",
+                    "contains": "Contains",
+                    "notContains": "Does not contain",
+                    "memberOf": "Is member of",
+                    "notMemberOf": "Is not member of",
+                    "matching": "Matching"
+                }
+            }
+
+        },
+
+        getOperator: function(operatorCode) {
+            return (this.operators[operatorCode]) ? this.operators[operatorCode] : operatorCode;
+        }
+    });
+</script>

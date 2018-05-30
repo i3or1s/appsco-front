@@ -19,6 +19,8 @@
 <link rel="import" href="../../components/components/appsco-loader.html">
 <link rel="import" href="../../components/components/appsco-form-error.html">
 
+<link rel="import" href="appsco-integration-rules-operators.html">
+
 <dom-module id="appsco-edit-integration-rule">
     <template>
         <style>
@@ -72,7 +74,15 @@
                 font-size: 16px;
                 margin-top: 20px;
             }
+            :host div.input-container table {
+                width: 100%;
+            }
+            :host div.input-container table td.operator-select {
+                width: 30%;
+            }
         </style>
+
+        <appsco-integration-rules-operators id="operators"></appsco-integration-rules-operators>
 
         <iron-ajax id="getIntegrationPSOSApiRequest"
                    url="[[ _getIntegrationPSOSApi ]]"
@@ -205,11 +215,38 @@
                              class="input-container display-none">
                             <p>Define regular expression for fields to further filter the object. </p>
                             <div class="input-container-title">Conditions:</div>
-                            <template is="dom-repeat" items="[[ _fromConditionList ]]">
-                                <div class="input-container">
-                                    <paper-input label="[[ item.key ]]" value="{{ item.value }}"></paper-input>
-                                </div>
-                            </template>
+                            <div class="input-container">
+                                <table>
+                                    <tbody>
+                                    <template is="dom-repeat" items="[[ _fromConditionList ]]">
+                                        <tr>
+                                            <td class="operator-select">
+                                                <paper-dropdown-menu id="fromConditionOperator_[[ item.key ]]"
+                                                                     label="Operator"
+                                                                     name="fromConditionOperator_[[ item.key ]]"
+                                                                     horizontal-align="left"
+                                                                     on-iron-overlay-opened="_onIronOverlayEvents"
+                                                                     on-iron-overlay-closed="_onIronOverlayEvents"
+                                                                     required
+                                                                     error-message="Please select operator."
+                                                                     auto-validate>
+                                                    <paper-listbox id="fromCondition_[[ item.key ]]"
+                                                                   class="dropdown-content"
+                                                                   attr-for-selected="value" selected="{{ item.operator }}">
+                                                        <template is="dom-repeat" items="[[ item.supportedOperators ]]" as="operator">
+                                                            <paper-item value="[[ operator ]]">[[ _formatOperator(operator) ]]</paper-item>
+                                                        </template>
+                                                    </paper-listbox>
+                                                </paper-dropdown-menu>
+                                            </td>
+                                            <td>
+                                                <paper-input label="[[ item.key ]]" value="{{ item.value }}"></paper-input>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <template is="dom-if" if="[[ _integrationKindRA ]]">
@@ -568,6 +605,8 @@
             },
 
             _reset: function() {
+                var me = this;
+
                 this._target.reset();
                 this._fromPSOSelected = false;
                 this._toPSOSelected = false;
@@ -578,6 +617,15 @@
                 this.$$('#fromPSOList').selected = -1;
                 this.$$('#toMethodList').selected = -1;
                 this.$$('#toPSOList').selected = -1;
+
+                this._fromConditionList.forEach(function(element) {
+                    if (me.$$('#fromCondition_' + element.key)) {
+                        me.$$('#fromCondition_' + element.key).selected = null;
+                    }
+                    if (me.$$('#fromConditionOperator_' + element.key)) {
+                        me.$$('#fromConditionOperator_' + element.key).selected = null;
+                    }
+                });
 
                 Polymer.dom(this.root).querySelectorAll('paper-button').forEach(function(element) {
                     element.active = false;
@@ -683,7 +731,8 @@
                     for (var i = 0; i < ruleConditionsLength; i++) {
 
                         if (element.key === ruleConditions[i].key) {
-                            element.value = ruleConditions[i].value;
+                            element.operator = ruleConditions[i].value.operator;
+                            element.value = ruleConditions[i].value.value;
                             break;
                         }
                     }
@@ -695,13 +744,16 @@
                 this._fromPSOList.forEach(function(element) {
 
                     if (pso === element.key) {
-                        this.set('_fromConditionList', element.conditions.map(function(element) {
-                            return {
-                                key: element,
-                                value: ''
-                            };
-                        }));
-                        return false;
+                        var _fromConditionList = [];
+                        for (var idx in element.conditions) {
+                            _fromConditionList.push({
+                                key: idx,
+                                value: '',
+                                supportedOperators: element.conditions[idx],
+                                operator: element.conditions[idx][0]
+                            });
+                        }
+                        this.set('_fromConditionList', _fromConditionList);
                     }
                 }.bind(this));
 
@@ -830,8 +882,9 @@
                 this._fromConditionList.forEach(function(element) {
 
                     if ('' != element.value) {
-                        form.request.body['integration_recipe[fromCondition][' + conditionIndex + '][key]'] = element.key;
+                        form.request.body['integration_recipe[fromCondition][' + conditionIndex + '][field]'] = element.key;
                         form.request.body['integration_recipe[fromCondition][' + conditionIndex + '][value]'] = element.value;
+                        form.request.body['integration_recipe[fromCondition][' + conditionIndex + '][operator]'] = element.operator;
                         conditionIndex ++;
                     }
                 });
@@ -858,6 +911,10 @@
                     integration: this.integration,
                     rule: event.detail.response
                 });
+            },
+
+            _formatOperator: function(operatorKey) {
+                return this.$.operators.getOperator(operatorKey);
             }
         });
     </script>
