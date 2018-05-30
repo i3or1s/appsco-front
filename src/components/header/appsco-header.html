@@ -247,8 +247,8 @@ Custom property | Description | Default
                 this.$.appscoProduct.addPersonalToProducts();
             },
 
-            notifyNewNotifications: function () {
-                this.$.appscoHeaderAccountActions.notifyNewNotifications();
+            notifyNewNotifications: function (newNotifications) {
+                this.$.appscoHeaderAccountActions.notifyNewNotifications(newNotifications);
             },
 
             notifyNotificationsSeen: function () {
