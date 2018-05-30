@@ -9,11 +9,13 @@
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 
+<link rel="import" href="../components/components/appsco-list-item-styles.html">
 <link rel="import" href="appsco-add-integration-search.html">
 <link rel="import" href="appsco-add-integration-form.html">
 
 <dom-module id="appsco-add-integration">
     <template>
+        <style include="appsco-list-item-styles"></style>
         <style>
             :host {
                 display: block;
@@ -44,6 +46,12 @@
             .dialog-container {
                 min-height: 420px;
             }
+            :host paper-dialog-scrollable {
+                margin: 25px;
+            }
+            :host paper-dialog-scrollable > * {
+                @apply(--paper-dialog-scrollable-child);
+            }
         </style>
 
         <paper-dialog id="dialog"
@@ -51,8 +59,8 @@
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-closed="_onDialogClosed">
-
-            <h2>Add Integration</h2>
+            <paper-dialog-scrollable>
+                <h2>Add Integration</h2>
 
                 <div class="dialog-container">
                     <neon-animated-pages class="flex"
@@ -75,6 +83,7 @@
                         </appsco-add-integration-form>
                     </neon-animated-pages>
                 </div>
+            </paper-dialog-scrollable>
 
             <div class="buttons">
                 <paper-button dialog-dismiss>Cancel</paper-button>
