@@ -133,6 +133,9 @@
             :host *[hidden] {
                 display: none;
             }
+            :host div.error-container {
+                height: 20px;
+            }
         </style>
 
         <appsco-accounts hidden
@@ -169,15 +172,8 @@
                            loader-alt="Appsco is processing request"
                            multi-color></appsco-loader>
 
-            <appsco-form-error message="[[ _error ]]"></appsco-form-error>
-
-            <div>
-                <template is="dom-if" if="[[ _ssoResourceExists ]]">
-                    <p class="message">
-                        At least one of the selected resources is a SSO resource.
-                        SSO resources can only be shared to managed users.
-                    </p>
-                </template>
+            <div class="error-container">
+                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
             </div>
 
             <div class="filter-accounts">
@@ -205,6 +201,18 @@
             </div>
 
             <paper-dialog-scrollable>
+
+                <div>
+                    <template is="dom-if" if="[[ _ssoResourceExists ]]">
+                        <p class="message">
+                            At least one of the selected resources is a SSO resource.
+                            SSO resources can only be shared to managed users.
+                        </p>
+                    </template>
+                </div>
+
+
+
                 <div class="dialog-container">
                     <div class="account-list">
                         <paper-progress id="accountListProgress"
