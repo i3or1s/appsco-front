@@ -74,6 +74,9 @@
             :host([mobile-screen]) {
                 --resource-width: 180px;
             }
+            :host .company-branded-login {
+                margin-top: 10px;
+            }
             hr {
                 height: 1px;
                 margin: 4px 0;
@@ -99,6 +102,10 @@
                         <iron-icon icon="communication:email"
                                    class="info-icon"></iron-icon>
                         [[ company.contact_email ]]
+                    </div>
+                    <div class="company-branded-login">
+                        <div>Company login URL: </div>
+                        <span class="branded-login-url">[[ company.meta.branded_login_url]]</span>
                     </div>
                 </div>
             </div>
