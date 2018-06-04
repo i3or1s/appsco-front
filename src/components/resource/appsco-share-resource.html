@@ -860,6 +860,7 @@
                 var list = JSON.parse(JSON.stringify(this._accountListAll)),
                     length = list.length;
 
+                this.set('_selectedAccounts', []);
                 for (var i = 0; i < length; i++) {
                     if (list[i].selected) {
                         this._selectedAccounts.push(list[i]);
