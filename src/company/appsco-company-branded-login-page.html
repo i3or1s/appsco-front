@@ -229,8 +229,6 @@
 
                 </form>
 
-
-
                 <paper-button id="submit"
                               class="submit-button"
                               on-tap="_submitForm">Save</paper-button>
@@ -359,10 +357,6 @@
                 Polymer.NeonSharedElementAnimatableBehavior
             ],
 
-            _onBack: function() {
-                this.fire('back');
-            },
-
             setupPage: function() {
                 this.$.appscoCompanySettings.setup();
             },
@@ -377,6 +371,18 @@
 
             _computeCompanyBackgroundApi: function(company) {
                 return (company.meta && company.meta.branded_login) ? company.meta.branded_login + '/background' : '';
+            },
+
+            _showLoader: function() {
+                this._loader = true;
+            },
+
+            _hideLoader: function() {
+                this._loader = false;
+            },
+
+            _onBack: function() {
+                this.fire('back');
             },
 
             _onResponse: function(event) {
@@ -470,15 +476,7 @@
 
             _onKeyUp: function() {
                 this._error = '';
-            },
-
-            _showLoader: function() {
-                this._loader = true;
-            },
-
-            _hideLoader: function() {
-                this._loader = false;
-            },
+            }
 
         });
     </script>
