@@ -1271,6 +1271,7 @@
                             on-company-settings-changed="_onCompanySettingsChanged"
                             on-company-ip-whitelist-changed="_onCompanyIPWhiteListChanged"
                             on-company-brand-settings-changed="_onCompanyBrandSettingsChanged"
+                            on-company-branded-login-changed="_onCompanyBrandedLoginChanged"
                             on-company-logo-changed="_onCompanyLogoChanged"
                             on-show-domains-page-actions="_onShowDomainsPageActions"
                             on-hide-domains-page-actions="_onHideDomainsPageActions"
@@ -5638,6 +5639,10 @@
             _onCompanyBrandSettingsChanged: function(event) {
                 this._setAccountCompany(event.detail.company);
                 this._notify('Company brand settings were successfully saved.');
+            },
+
+            _onCompanyBrandedLoginChanged: function() {
+                this._notify('Branded login settings were successfully saved.');
             },
 
             _onCompanyLogoChanged: function(event) {
