@@ -64,6 +64,7 @@
         "company_partner_admin_removed_from_customer": "Company role demoted from partner admin for customer",
         "oauth_application_created": "OAuth application registered",
         "oauth_application_updated": "OAuth application modified",
-        "oauth_application_removed": "OAuth application removed"
+        "oauth_application_removed": "OAuth application removed",
+        "company_policy_breached": "Company policy breached."
     }
 }
