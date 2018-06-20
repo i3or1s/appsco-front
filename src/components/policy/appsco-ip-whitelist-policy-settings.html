@@ -1,0 +1,245 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
+
+<link rel="import" href="../components/appsco-loader.html">
+<link rel="import" href="../components/appsco-form-error.html">
+
+<dom-module id="appsco-ip-whitelist-policy-settings">
+    <template>
+        <style>
+            :host {
+                @apply(--appsco-ip-whitelist-policy-settings);
+            }
+            :host .info {
+                @apply(--info-message);
+                margin-bottom: 0;
+            }
+            :host .save-action {
+                @apply(--primary-button);
+                width: 60px;
+                padding: 4px 8px;
+                margin-top: 10px;
+            }
+        </style>
+
+        <appsco-loader active="[[ _loader ]]"
+                       loader-alt="Appsco is processing request"
+                       multi-color></appsco-loader>
+
+        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+
+        <div class="form">
+            <p class="info">
+                Enter comma separated IP addresses you wish to whitelist.
+            </p>
+
+            <paper-input id="ipWhiteList"
+                         label="IP whitelist"
+                         name="policy[ips]"
+                         value="[[ _ipWhiteList ]]"
+                         on-keyup="_onKeyUp"></paper-input>
+
+            <paper-button type="button"
+                          class="save-action"
+                          on-tap="_onSaveAction">Save</paper-button>
+        </div>
+
+        <iron-a11y-keys target="[[ _target ]]"
+                        keys="enter"
+                        on-keys-pressed="_onEnterAction"></iron-a11y-keys>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-ip-whitelist-policy-settings',
+
+            properties: {
+
+                policy: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _headers: {
+                    type: Object,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                _loader: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _error: {
+                    type: String
+                },
+
+                _target: {
+                    type: Object,
+                    value: function() {
+                        return this;
+                    }
+                },
+
+                _ipWhiteList: {
+                    type: String,
+                    computed: '_computeIPWhiteList(policy)'
+                },
+
+                _ipWhiteListInput: {
+                    type: Object,
+                    value: function() {
+                        return this.$.ipWhiteList;
+                    }
+                }
+            },
+
+            _computeHeaders: function (authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            },
+
+            _computeIPWhiteList: function(policy) {
+                return policy.ips ? policy.ips.toString() : '';
+            },
+
+            _showLoader: function() {
+                this._loader = true;
+            },
+
+            _hideLoader: function() {
+                this._loader = false;
+            },
+
+            _showError: function(message) {
+                this._error = message;
+            },
+
+            _hideError: function() {
+                this._error = '';
+            },
+
+            _onKeyUp: function(event) {
+
+                if (13 !== event.keyCode) {
+                    this._hideError();
+                    event.target.invalid = false;
+                }
+            },
+
+            _onEnterAction: function(event) {
+                event.stopPropagation();
+                this._onSaveAction();
+            },
+
+            _onSaveAction: function() {
+
+                if (this._isValid()) {
+                    this._saveIPWhiteList();
+                }
+            },
+
+            _setInvalidIPWhiteList: function() {
+                this._ipWhiteListInput.invalid = true;
+                this._showError('IP whitelist input is not valid. Please check IP addresses you have entered.');
+            },
+
+            _resetIPWhiteList: function() {
+                this._ipWhiteListInput.invalid = false;
+            },
+
+            _isValid: function() {
+                var valid,
+                    ipWhiteList = this._ipWhiteListInput.value;
+
+                if (ipWhiteList) {
+                    ipWhiteList = ipWhiteList.split(',');
+
+                    var ipAddressRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                        length = ipWhiteList.length - 1;
+
+                    for (var i = 0; i <= length; i++) {
+
+                        if (!ipAddressRegex.test(ipWhiteList[i].trim())) {
+                            this._setInvalidIPWhiteList();
+                            valid = false;
+                        }
+                        else if (i === length) {
+                            valid = true;
+                        }
+                    }
+                }
+                else {
+                    valid = true;
+                }
+
+                return valid;
+            },
+
+            _saveIPWhiteList: function() {
+                var ipWhiteListInputValue = this._ipWhiteListInput.value.split(','),
+                    policy = this.policy;
+
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: policy.self,
+                        method: 'PUT',
+                        headers: this._headers,
+                        handleAs: 'json'
+                    },
+                    body = 'policy[name]=' + policy.name + '&policy[description]=' + policy.description +'&',
+                    length = ipWhiteListInputValue.length,
+                    ipAddress = '';
+
+                for (var i = 0; i < length; i++) {
+                    var next = (i === length) ? '' : '&';
+
+                    ipAddress = ipWhiteListInputValue[i].trim();
+                    body += 'policy[ips][' + i + ']=' + encodeURIComponent(ipAddress) + next;
+                }
+
+                options.body = body;
+
+                this._showLoader();
+
+                request.send(options).then(function() {
+
+                    if (200 === request.status) {
+
+                        this.fire('policy-updated', {
+                            policy: request.response
+                        });
+
+                        this._resetIPWhiteList();
+                        this._hideLoader();
+                    }
+
+                }.bind(this), function() {
+                    this._showError(this.apiErrors.getError(request.response.code));
+                    this._hideLoader();
+                }.bind(this));
+            }
+        });
+    </script>
+</dom-module>

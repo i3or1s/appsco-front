@@ -1,0 +1,68 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
+
+<link rel="import" href="../page/appsco-page-global.html">
+
+<dom-module id="appsco-policies-page-actions">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            :host .page-actions {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                @apply(--layout-end-justified);
+                height: 100%;
+            }
+            :host .page-actions * {
+                height: 100%;
+            }
+        </style>
+
+        <div class="page-actions">
+            <appsco-page-global info></appsco-page-global>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-policies-page-actions',
+
+            properties: {
+
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': {
+                                name: 'fade-in-animation',
+                                node: this,
+                                timing: {
+                                    delay: 200,
+                                    duration: 300
+                                }
+                            },
+                            'exit': {
+                                name: 'fade-out-animation',
+                                node: this,
+                                timing: {
+                                    duration: 200
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimatableBehavior
+            ]
+        });
+    </script>
+</dom-module>
+

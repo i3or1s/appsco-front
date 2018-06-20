@@ -1,0 +1,69 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="appsco-ip-whitelist-policy-settings.html">
+
+<dom-module id="appsco-policy-settings">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+                padding: 4px;
+                @apply(--appsco-policy-settings);
+            }
+            :host .info {
+                @apply(--info-message);
+            }
+        </style>
+
+        <template is="dom-if" if="[[ !_ipWhitelistPolicyActive ]]">
+            <p class="info">There are no additional settings for this policy.</p>
+        </template>
+
+        <template is="dom-if" if="[[ _ipWhitelistPolicyActive ]]">
+            <appsco-ip-whitelist-policy-settings policy="[[ policy ]]"
+                                                 authorization-token="[[ authorizationToken ]]"
+                                                 api-errors="[[ apiErrors ]]"></appsco-ip-whitelist-policy-settings>
+        </template>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-policy-settings',
+
+            properties: {
+
+                policy: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _ipWhitelistPolicyActive: {
+                    type: Boolean,
+                    computed: '_computeIpWhitelistPolicyActive(policy)'
+                }
+            },
+
+            _computeIpWhitelistPolicyActive: function(policy) {
+                return (policy.name && 'ip whitelist' === policy.name.toLowerCase());
+            }
+        });
+    </script>
+</dom-module>

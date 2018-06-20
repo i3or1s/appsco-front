@@ -180,6 +180,9 @@
 <link rel="import" href="components/folder/appsco-add-folder.html">
 <link rel="import" href="components/folder/appsco-dashboard-folder-page-actions.html">
 
+<link rel="import" href="components/policy/appsco-policies-page-actions.html">
+<link rel="import" href="components/policy/appsco-change-policy-status.html">
+
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="webkit-scrollbar-style.html">
 
@@ -548,6 +551,9 @@
                                 <a name="oauth-applications" href="#">
                                     <iron-icon icon="device:widgets"></iron-icon> <span class="menu-text">OAuth applications</span>
                                 </a>
+                                <a name="policies" href="#">
+                                    <iron-icon icon="icons:verified-user"></iron-icon> <span class="menu-text">Policies</span>
+                                </a>
                             </template>
                         </template>
                         <template is="dom-if" if="[[ _companyContact ]]">
@@ -792,6 +798,9 @@
                                                                   on-search="_onSearchApplications"
                                                                   on-search-clear="_onSearchApplicationsClear"
                                                                   on-back="_backFromFolderPage"></appsco-dashboard-folder-page-actions>
+
+                            <appsco-policies-page-actions id="appscoPoliciesPageActions"
+                                                          name="policies"></appsco-policies-page-actions>
                         </neon-animated-pages>
 
                     </app-toolbar>
@@ -1344,6 +1353,17 @@
                             id="appscoSamlAuthnRequestInvalidPage"
                             name="saml-authn-request-invalid"
                             on-back-to-dashboard="_showCompanyHomePage"></appsco-saml-authn-request-invalid-page>
+
+                    <appsco-policies-page
+                            id="appscoPoliciesPage"
+                            name="policies"
+                            authorization-token="[[ authorizationToken ]]"
+                            company-policies-api="[[ _companyPoliciesApi ]]"
+                            api-errors="[[ _apiErrors ]]"
+                            on-observable-list-empty="_onObservableListEmpty"
+                            on-observable-list-filled="_onObservableListFilled"
+                            on-change-policy-status="_onChangePolicyStatusAction"
+                            on-policy-updated="_onPolicyUpdated"></appsco-policies-page>
 
                     <appsco-logout-page name="logout"
                                         logout-api="[[ api.logout ]]"></appsco-logout-page>
@@ -1950,6 +1970,11 @@
                            company="[[ currentCompany.company ]]"
                            api-errors="[[ _apiErrors ]]"
                            on-folder-added="_onFolderAdded"></appsco-add-folder>
+        
+        <appsco-change-policy-status id="appscoChangePolicyStatus"
+                                     authorization-token="[[ authorizationToken ]]"
+                                     api-errors="[[ _apiErrors ]]"
+                                     on-policy-status-changed="_onPolicyStatusChanged"></appsco-change-policy-status>
 
         <template is="dom-if" if="[[ api.me ]]">
             <iron-ajax auto
@@ -2460,6 +2485,11 @@
                 _companyIconsWithoutFolderApi: {
                     type: String,
                     computed: '_computeCompanyIconsWithoutFolderApi(_companyFoldersApi)'
+                },
+
+                _companyPoliciesApi: {
+                    type: String,
+                    value: ''
                 },
 
                 _subscription: {
@@ -3000,7 +3030,9 @@
                     this._companyOAuthApplicationsApi = companyApi + '/oauth/applications';
                     this._billingReportApi = companyApi + '/reports/billing-report';
                 }
+
                 this._companyFoldersApi = companyApi + '/dashboard-groups';
+                this._companyPoliciesApi = companyApi + '/policies';
             },
 
             _computeCompanyImportResourcesApi: function(companyApplicationsApi) {
@@ -3481,8 +3513,13 @@
                     case 'customer-billing':
                         return this.$.appscoCustomerBillingPage;
                         break;
+
                     case 'billing-report':
                         return this.$.appscoBillingReportPage;
+                        break;
+
+                    case 'policies':
+                        return this.$.appscoPoliciesPage;
                         break;
                 }
             },
@@ -3536,6 +3573,10 @@
 
                     case 'dashboard-folder':
                         return this.$.appscoDashboardFolderPageActions;
+                        break;
+
+                    case 'policies':
+                        return this.$.appscoPoliciesPageActions;
                         break;
                 }
 
@@ -6842,6 +6883,46 @@
              */
 
             /**
+             * Policies page START
+             */
+            _onChangePolicyStatusAction: function(event) {
+                var statusPolicyComponent = this.$.appscoChangePolicyStatus;
+
+                if (statusPolicyComponent) {
+                    statusPolicyComponent.setPolicy(event.detail.policy);
+                    statusPolicyComponent.setAction(event.detail.action);
+                    statusPolicyComponent.open();
+                }
+            },
+
+            _onPolicyStatusChanged: function(event) {
+                var policy = event.detail.policy;
+
+                if (this.$.appscoPoliciesPage.$) {
+                    this.$.appscoPoliciesPage.modifyPolicy(policy);
+                    this.$.appscoPoliciesPage.modifyPolicies([policy]);
+                }
+
+                this._notify('Company policy successfully ' +
+                    (('active' === policy.status) ? 'enabled' : 'disabled') +
+                    '.');
+            },
+
+            _onPolicyUpdated: function(event) {
+                var policy = event.detail.policy;
+
+                if (this.$.appscoPoliciesPage.$) {
+                    this.$.appscoPoliciesPage.modifyPolicy(policy);
+                    this.$.appscoPoliciesPage.modifyPolicies([policy]);
+                }
+
+                this._notify('Company policy successfully updated.');
+            },
+            /**
+             * Policies page END
+             */
+
+            /**
              * Global START
              */
             _setProgressBar: function(page) {
@@ -6978,6 +7059,10 @@
                         this.$.appscoSamlAuthnRequestInvalidPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
                         break;
 
+                    case 'policies':
+                        this.$.appscoPoliciesPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
+                        break;
+
                     default:
                         this._hideProgressBar();
                 }
@@ -7032,7 +7117,8 @@
                         page === 'customer-billing' ||
                         page === 'billing-report' ||
                         page === 'dashboard-folder' ||
-                        page === 'saml-authn-request-invalid') && !this._personalFolderPage;
+                        page === 'saml-authn-request-invalid' ||
+                        page === 'policies') && !this._personalFolderPage;
             },
 
             _computeContactPage: function(page) {
