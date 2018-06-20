@@ -39,7 +39,8 @@
     "src/appsco-customer-billing-page.html",
     "src/appsco-dashboard-folder-page.html",
     "src/appsco-saml-authn-request-invalid-page.html",
-    "src/appsco-billing-report-page.html"
+    "src/appsco-billing-report-page.html",
+    "src/appsco-policies-page.html"
   ],
   "sources": [
     "src/**/*",

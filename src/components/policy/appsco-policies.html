@@ -1,0 +1,89 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-progress/paper-progress.html">
+
+<link rel="import" href="appsco-policy-item.html">
+<link rel="import" href="../components/appsco-list-behavior.html">
+<link rel="import" href="../components/appsco-list-styles.html">
+<link rel="import" href="../components/appsco-list-observer-behavior.html">
+
+<dom-module id="appsco-policies">
+    <template>
+        <style include="appsco-list-styles"></style>
+
+        <style>
+            :host appsco-policy-item {
+                width: 100%;
+                margin: 0 0 10px 0;
+                @apply(--appsco-policy-item);
+            }
+        </style>
+
+        <iron-ajax id="getListApiRequest"
+                   url="[[ _listApi ]]"
+                   on-error="_onGetListError"
+                   on-response="_onGetListResponse"
+                   headers="[[ _headers ]]"
+                   debounce-duration="300"></iron-ajax>
+
+        <div class="list-container">
+
+            <paper-progress id="paperProgress"
+                            class="list-progress-bar"
+                            indeterminate></paper-progress>
+
+            <template is="dom-if" if="[[ _message ]]">
+                <p class="message">[[ _message ]]</p>
+            </template>
+
+            <template is="dom-if" if="[[ !_listEmpty ]]">
+                <div class="list">
+                    <template is="dom-repeat"
+                              items="[[ _listItems ]]"
+                              on-dom-change="_onItemsDomChange">
+
+                        <appsco-policy-item id="appscoListItem_[[ index ]]"
+                                              item="[[ item ]]"
+                                              type="[[ type ]]"
+                                              list-api="[[ listApi ]]"
+                                              authorization-token="[[ authorizationToken ]]"
+                                              selectable="[[ selectable ]]"
+                                              on-item="_onListItemAction"
+                                              on-select-item="_onSelectListItemAction"></appsco-policy-item>
+
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <template is="dom-if" if="[[ !_listEmpty ]]">
+            <div class="load-more-box" hidden$="[[ !_loadMore ]]">
+                <paper-progress id="loadMoreProgress"
+                                indeterminate></paper-progress>
+                <paper-button class="load-more-action" on-tap="_onLoadMoreAction">Load More</paper-button>
+            </div>
+        </template>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-policies',
+
+            behaviors: [
+                Polymer.AppscoListBehavior,
+                Polymer.AppscoListObserverBehavior
+            ],
+
+            observers: [
+                '_observeItems(_listItems)'
+            ],
+
+            _observeItems: function(items) {
+                this.setObservableType('policies');
+                this.populateItems(items);
+            }
+        });
+    </script>
+</dom-module>

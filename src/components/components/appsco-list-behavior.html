@@ -547,6 +547,9 @@
                 case 'integration-webhook':
                     return 'integration web hook';
 
+                case 'policy':
+                    return 'policie';
+
                 default:
                     return type;
             }
@@ -669,7 +672,7 @@
 
         _onGetListResponse: function(event) {
             var response = event.detail.response,
-                meta = response.meta,
+                meta = response.meta ? response.meta : {},
                 itemList;
 
             switch (this.type) {
@@ -717,6 +720,10 @@
                     itemList = response.groups ? response.groups : [];
                     break;
 
+                case 'policy':
+                    itemList = response.policies ? response.policies : [];
+                    break;
+
                 default:
                     itemList = [];
             }
@@ -725,7 +732,7 @@
 
             if (itemList) {
                 this._hideMessage();
-                this._totalItems = meta.total;
+                this._totalItems = meta.total ? meta.total : itemList.length;
                 this._nextListPageApi = meta.next + '&limit=' + this.size;
 
                 if (0 === meta.total) {
@@ -910,6 +917,10 @@
 
                             case 'folder':
                                 resolve(request.response.groups);
+                                break;
+
+                            case 'policy':
+                                resolve(request.response.policies);
                                 break;
 
                             default:

@@ -1,0 +1,12 @@
+{
+    "en": {
+        "enforce_two-factor_info": "Force managed users to enable two-factor authentication. Your managed users will be prompted to set up two-factor authentication. You can reset two-factor authentication for each user separately in case the user needs to set it up again. Click Enable to enforce this policy.",
+        "enforce_two-factor_warning": "If you disable two-factor policy, it will no longer be enforced and your users will be able to turn it off. As soon as you turn on Enforce two-factor authentication policy, you will be sent to another page in order to configure it.",
+        "ip_whitelist_info": "You can allow your users to login only from a specific IP address. This means that users will not be able to login from an IP which is not whitelisted. \r You can enter the comma separated IP addresses in order to whitelist them in the settings tab.",
+        "disapprove_personal_dashboard_info": "If you turn off the personal dashboard for managed users they will no longer be able to view, add and share private resources. Once it's turned back on, users will get back the private dashboard. This applies to all managed users including admins in your company. Click enable to enforce this policy.",
+        "disapprove_adding_resources_info": "Users are allowed to add resources on personal dashboard by default. Once this policy is turned off, users will no longer be able to add resources on personal dashboard. This applies to all managed users including admins in your company. Click Enable to enforce this policy.",
+        "disapprove_create_company_info": "Managed users can create companies. If you disapprove this option, managed users will be prevented from creating a company. This option does not apply to admins even if they are managed users. Click Enable to enforce this policy.",
+        "disapprove_mobile_login_info": "This policy is used to prevent managed users to log in from mobile devices. Click Enable to enforce this policy.",
+        "block_tor_info": "This policy is used to prevent the users coming from TOR browsers and anonymous networks from logging in. Click Enable to enforce this policy."
+    }
+}
