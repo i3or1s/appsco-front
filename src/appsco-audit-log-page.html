@@ -294,6 +294,11 @@
                     value: ''
                 },
 
+                _filterAccountDisplay: {
+                    type: String,
+                    value: ''
+                },
+
                 _filterEventType: {
                     type: String,
                     value: ''
@@ -427,6 +432,7 @@
             initializePage: function() {
 
                 if (this.pageLoaded) {
+                    this.$.filterAccount.setValue(this._filterAccountDisplay);
                     this._filterLog();
                 }
             },
@@ -847,7 +853,8 @@
 
             _onFilterAccount: function(event) {
                 this._filterAccount = event.detail.selected;
-                this.$.filterAccount.setValue(event.detail.item.label);
+                this._filterAccountDisplay = event.detail.item.label;
+                this.$.filterAccount.setValue(this._filterAccountDisplay);
                 this._filterLog();
                 this._hideAccountList();
             },
