@@ -1230,10 +1230,12 @@
                             id="appscoReportsPage"
                             name="reports"
                             get-access-report-api="[[ _getAccessReportApi ]]"
+                            get-policies-api="[[ _companyPoliciesApi ]]"
                             authorization-token="[[ authorizationToken ]]"
                             api-errors="[[ _apiErrors ]]"
                             on-open-access-report="_showAccessReportPage"
-                            on-open-compliance-report="_showComplianceReportPage"></appsco-reports-page>
+                            on-open-compliance-report="_showComplianceReportPage"
+                            on-open-policies-report="_showPoliciesReportPage"></appsco-reports-page>
 
                     <appsco-access-report-page
                             id="appscoAccessReportPage"
@@ -2432,6 +2434,11 @@
                     value: ''
                 },
 
+                _getPoliciesReportApi: {
+                    type: String,
+                    value: ''
+                },
+
                 _exportAccessReportApi: {
                     type: String,
                     computed: '_computeExportAccessReportApi(_getAccessReportApi)'
@@ -2440,6 +2447,11 @@
                 _exportComplianceReportApi: {
                     type: String,
                     computed: '_computeExportComplianceReportApi(_getComplianceReportApi)'
+                },
+
+                _exportPoliciesReportApi: {
+                    type: String,
+                    computed: '_computeExportPoliciesReportApi(_getPoliciesReportApi)'
                 },
 
                 _exportBillingReportApi: {
@@ -2604,13 +2616,16 @@
                 'reset-page-actions': '_onResetPageActions',
                 'export-access-report': '_onExportAccessReportAction',
                 'export-compliance-report': '_onExportComplianceReportAction',
+                'export-policies-report': '_onExportPoliciesReportAction',
                 'export-billing-report': '_onExportBillingReportAction',
                 'export-access-report-finished': '_onExportAccessReportFinished',
                 'export-compliance-report-finished': '_onExportComplianceReportFinished',
+                'export-policies-report-finished': '_hideProgressBar',
                 'export-company-log-finished' : '_onExportCompanyLogFinished',
                 'export-billing-report-finished': '_onExportBillingReportFinished',
                 'export-access-report-failed': '_onExportAccessReportFailed',
                 'export-compliance-report-failed': '_onExportComplianceReportFailed',
+                'export-policies-report-failed': '_onExportPoliciesReportFailed',
                 'export-billing-report-failed': '_onExportBillingReportFailed',
                 'user-session-expired': '_onUserSessionExpired',
                 'add-item-to-group-event': '_onAddItemToGroupAction',
@@ -2966,6 +2981,10 @@
                 this._showPage('compliance-report');
             },
 
+            _showPoliciesReportPage: function() {
+                this._showPage('policies-report');
+            },
+
             _showOAuthApplicationsPage: function() {
                 this._showPage('oauth-applications');
             },
@@ -3022,6 +3041,7 @@
                     this._companyIntegrationApi = companyApi + '/integrations';
                     this._getAccessReportApi = companyApi + '/reports/application-access';
                     this._getComplianceReportApi = companyApi + '/reports/application-compliance';
+                    this._getPoliciesReportApi = companyApi + '/reports/policy-breach';
                     this._getTransferTokenApi = companyApi + '/transfer-token';
                     this._sendTransferTokenApi = companyApi + '/send_token';
                     this._saveIPWhiteListApi = companyApi + '/ip-white-list';
@@ -3073,6 +3093,10 @@
 
             _computeExportComplianceReportApi: function(getComplianceReportApi) {
                 return getComplianceReportApi ? (getComplianceReportApi + '/export') : '';
+            },
+
+            _computeExportPoliciesReportApi: function(getPoliciesReportApi) {
+                return getPoliciesReportApi ? (getPoliciesReportApi + '/export') : '';
             },
 
             _computeExportBillingReportApi: function(billingReportApi) {
@@ -6604,6 +6628,48 @@
                 }.bind(this));
             },
 
+            _exportPoliciesReport: function(url) {
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: url,
+                        method: 'GET',
+                        handleAs: 'blob',
+                        headers: {
+                            'Authorization': 'token ' + this.authorizationToken
+                        }
+                    };
+
+                request.send(options).then(function() {
+                    var fileReader = new FileReader();
+
+                    fileReader.onload = function(event) {
+                        var link = document.createElement('a');
+
+                        link.href = event.target.result;
+                        link.setAttribute('download', 'Policies Report.xlsx');
+                        document.body.appendChild(link);
+
+                        if (link.click) {
+                            link.click();
+                        }
+                        else if (document.createEvent) {
+                            var clickEvent = document.createEvent('MouseEvents');
+
+                            clickEvent.initEvent('click', true, true);
+                            link.dispatchEvent(clickEvent);
+                        }
+
+                        document.body.removeChild(link);
+                    };
+
+                    fileReader.readAsDataURL(request.response);
+
+                    this.fire('export-policies-report-finished');
+                }.bind(this), function() {
+                    this.fire('export-policies-report-failed');
+                }.bind(this));
+            },
+
             _exportComplianceReport: function(url) {
                 var request = document.createElement('iron-request'),
                         options = {
@@ -6754,6 +6820,11 @@
                 this._exportComplianceReport(this._exportComplianceReportApi);
             },
 
+            _onExportPoliciesReportAction: function() {
+                this._showProgressBar();
+                this._exportPoliciesReport(this._exportPoliciesReportApi);
+            },
+
             _onExportBillingReportAction: function() {
                 this._showProgressBar();
                 this._exportBillingReport(this._exportBillingReportApi);
@@ -6783,6 +6854,11 @@
             _onExportComplianceReportFailed: function() {
                 this._hideProgressBar();
                 this._notify('Export of Access Report failed. Please contact AppsCo support.');
+            },
+
+            _onExportPoliciesReportFailed: function() {
+                this._hideProgressBar();
+                this._notify('Export of Policies Report failed. Please contact AppsCo support.');
             },
 
             _onExportBillingReportFailed: function() {

@@ -65,45 +65,56 @@ Custom property | Description | Default
                    on-error="_onGetReportError"
                    on-response="_onGetReportResponse"></iron-ajax>
 
-        <div class="details-info">
-            <div class="details-label">Users:&nbsp</div>
-            <div class="details-value">[[ _report.users ]]</div>
-        </div>
+        <template is="dom-if" if="[[ _accessOrComplianceReport ]]">
 
-        <div class="details-info">
-            <div class="details-label">Contacts:&nbsp</div>
-            <div class="details-value">[[ _report.contacts ]]</div>
-        </div>
+            <div class="details-info">
+                <div class="details-label">Users:&nbsp</div>
+                <div class="details-value">[[ _report.users ]]</div>
+            </div>
 
-        <div class="details-info">
-            <div class="details-label">Shared resources:&nbsp</div>
-            <div class="details-value">[[ _report.shared ]]</div>
-        </div>
+            <div class="details-info">
+                <div class="details-label">Contacts:&nbsp</div>
+                <div class="details-value">[[ _report.contacts ]]</div>
+            </div>
 
-        <div class="details-info">
-            <div class="details-label">Unshared resources:&nbsp</div>
-            <div class="details-value">[[ _report.unshared ]]</div>
-        </div>
+            <div class="details-info">
+                <div class="details-label">Shared resources:&nbsp</div>
+                <div class="details-value">[[ _report.shared ]]</div>
+            </div>
 
-        <template is="dom-if" if="[[ showAuthTypes ]]">
-            <div class="auth-types">
-                <div class="subtitle">Authentication Types</div>
+            <div class="details-info">
+                <div class="details-label">Unshared resources:&nbsp</div>
+                <div class="details-value">[[ _report.unshared ]]</div>
+            </div>
 
-                <template is="dom-repeat" items="[[ _report.authTypes ]]">
-                    <div class="details-info">
-                        <div class="details-label">
-                            [[ item.type ]]:&nbsp
+            <template is="dom-if" if="[[ showAuthTypes ]]">
+                <div class="auth-types">
+                    <div class="subtitle">Authentication Types</div>
+
+                    <template is="dom-repeat" items="[[ _report.authTypes ]]">
+                        <div class="details-info">
+                            <div class="details-label">
+                                [[ item.type ]]:&nbsp
+                            </div>
+                            <div class="details-value">[[ item.value ]]</div>
                         </div>
-                        <div class="details-value">[[ item.value ]]</div>
-                    </div>
-                </template>
+                    </template>
 
-                <div class="details-info">
-                    <div class="details-label">Individual:&nbsp</div>
-                    <div class="details-value">[[ _report.individual ]]</div>
+                    <div class="details-info">
+                        <div class="details-label">Individual:&nbsp</div>
+                        <div class="details-value">[[ _report.individual ]]</div>
+                    </div>
                 </div>
+            </template>
+        </template>
+
+        <template is="dom-if" if="[[ _policiesReport ]]">
+            <div class="details-info">
+                <div class="details-label">Number of enabled policies:&nbsp</div>
+                <div class="details-value">[[ _report.numberOfEnabled ]]</div>
             </div>
         </template>
+
     </template>
 
     <script>
@@ -112,6 +123,13 @@ Custom property | Description | Default
             is: 'appsco-report-details',
 
             properties: {
+
+                report: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
 
                 reportApi: {
                     type: String,
@@ -135,6 +153,16 @@ Custom property | Description | Default
                     value: function() {
                         return {};
                     }
+                },
+
+                _accessOrComplianceReport: {
+                    type: Boolean,
+                    computed: '_computeAccessOrComplianceReport(report)'
+                },
+
+                _policiesReport: {
+                    type: Boolean,
+                    computed: '_computePoliciesReport(report)'
                 },
 
                 _report: {
@@ -188,10 +216,22 @@ Custom property | Description | Default
                 this._generateNewRequest();
             },
 
+            setReportApi: function(api) {
+                this.set('reportApi', api);
+            },
+
             _computeHeaders: function(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken
                 }
+            },
+
+            _computeAccessOrComplianceReport: function(report) {
+                return (-1 !== ['access-report', 'compliance-report'].indexOf(report.type));
+            },
+
+            _computePoliciesReport: function(report) {
+                return (report.type === 'policies-report');
             },
 
             _showMessage: function(message) {
@@ -245,40 +285,58 @@ Custom property | Description | Default
                 var response = event.detail.response;
 
                 if (response) {
-                    var authenticationTypes = response.auth_types;
 
-                    response.authTypes = [
-                        {
-                            type: 'SAML',
-                            value: authenticationTypes['SAML']
-                        },
-                        {
-                            type: 'Dropbox SAML',
-                            value: authenticationTypes['Dropbox SAML']
-                        },
-                        {
-                            type: 'Office365 SAML',
-                            value: authenticationTypes['Office 365 SAML']
-                        },
-                        {
-                            type: 'JWT',
-                            value: authenticationTypes['JWT']
-                        },
-                        {
-                            type: 'Auto Login',
-                            value: authenticationTypes['Auto Login']
-                        },
-                        {
-                            type: 'Form Fill',
-                            value: authenticationTypes['Form Fill']
-                        },
-                        {
-                            type: 'No Credentials',
-                            value: authenticationTypes['No Credentials']
-                        }
-                    ];
+                    if (this._accessOrComplianceReport) {
 
-                    this.set('_report', response);
+                        var authenticationTypes = response.auth_types;
+
+                        response.authTypes = [
+                            {
+                                type: 'SAML',
+                                value: authenticationTypes['SAML']
+                            },
+                            {
+                                type: 'Dropbox SAML',
+                                value: authenticationTypes['Dropbox SAML']
+                            },
+                            {
+                                type: 'Office365 SAML',
+                                value: authenticationTypes['Office 365 SAML']
+                            },
+                            {
+                                type: 'JWT',
+                                value: authenticationTypes['JWT']
+                            },
+                            {
+                                type: 'Auto Login',
+                                value: authenticationTypes['Auto Login']
+                            },
+                            {
+                                type: 'Form Fill',
+                                value: authenticationTypes['Form Fill']
+                            },
+                            {
+                                type: 'No Credentials',
+                                value: authenticationTypes['No Credentials']
+                            }
+                        ];
+
+                        this.set('_report', response);
+                    } else if (this._policiesReport) {
+                        var report = {
+                            numberOfEnabled: 0
+                        };
+
+                        response.policies.forEach(function(policy) {
+
+                            if ('active' === policy.status) {
+                                report.numberOfEnabled++;
+                            }
+                        });
+
+                        this.set('_report', report);
+                    }
+
                     this._showDetails();
                     this._fireAfterLoadEvent();
                 }

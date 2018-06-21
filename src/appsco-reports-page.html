@@ -22,9 +22,10 @@
                 display: block;
 
                 --info-width: 318px;
-            }
-            .content-container {
-                margin-top: 10px;
+
+                --content-container: {
+                    margin-top: 0;
+                };
             }
             :host .open-action, :host .export-action {
                 @apply(--primary-button);
@@ -72,12 +73,12 @@
 
                 <div class="info-content flex-vertical">
                     <appsco-report-details id="appscoReportDetails"
-                                                  report-api="[[ getAccessReportApi ]]"
-                                                  authorization-token="[[ authorizationToken ]]"
-                                                  api-errors="[[ apiErrors ]]"
-                                                  on-loaded="_onPageLoaded"
-                                                  show-auth-types="[[ _showAuthTypes ]]"
-                                                  report="[[ report ]]"></appsco-report-details>
+                                           report-api="[[ getAccessReportApi ]]"
+                                           authorization-token="[[ authorizationToken ]]"
+                                           api-errors="[[ apiErrors ]]"
+                                           on-loaded="_onPageLoaded"
+                                           show-auth-types="[[ _showAuthTypes ]]"
+                                           report="[[ report ]]"></appsco-report-details>
                 </div>
 
                 <div class="info-actions flex-horizontal">
@@ -111,6 +112,11 @@
                 },
 
                 getAccessReportApi: {
+                    type: String,
+                    value: ''
+                },
+
+                getPoliciesApi: {
                     type: String,
                     value: ''
                 },
@@ -196,13 +202,22 @@
                                 type: 'compliance-report',
                                 icon: 'icons:description',
                                 title: 'Compliance report',
-                                description: 'This report shows which fields with personal data are used in each shared resource. ',
+                                description: 'This report shows which fields with personal data are used in each shared resource.',
                                 activated: false,
                                 openEvent: 'open-compliance-report',
                                 exportEvent: 'export-compliance-report',
                                 self: 'compliance-report'
+                            },
+                            {
+                                type: 'policies-report',
+                                icon: 'icons:description',
+                                title: 'Policies report',
+                                description: 'This report shows which policies are breached or broken.',
+                                activated: false,
+                                openEvent: 'open-policies-report',
+                                exportEvent: 'export-policies-report',
+                                self: 'policies-report'
                             }
-
                         ]
                     }
                 }
@@ -238,6 +253,7 @@
                     report.activated = true;
                     this.set('report', {});
                     this.set('report', report);
+                    this._setReportApi();
                 }
                 else {
                     this.$.reportsList.deactivateItem(this.report);
@@ -254,12 +270,26 @@
             initializePage: function() {
                 this._setDefaultReport();
                 this.$.reportsList.addItems(this.items);
+                this._setReportApi();
                 this._reloadReportDetails();
             },
 
             resetPage: function() {
                 this._resetPageActions();
                 this.hideInfo();
+            },
+
+            _setReportApi: function() {
+                var reportDetailsComponent = this.$.appscoReportDetails;
+
+                switch (this.report.type) {
+                    case 'policies-report':
+                        reportDetailsComponent.setReportApi(this.getPoliciesApi + '?page=1&extended=1&limit=1000');
+                        break;
+
+                    default:
+                        reportDetailsComponent.setReportApi(this.getAccessReportApi);
+                }
             },
 
             _resetPageActions: function() {
@@ -290,6 +320,7 @@
 
             _handleInfo: function(report) {
                 this.set('report', report);
+                this._setReportApi();
                 this.set('_showAuthTypes', 'access-report' === report.type);
 
                 if (!this._infoVisible) {
@@ -302,7 +333,6 @@
             },
 
             _onReportAction: function(event) {
-
 
                 if (event.detail.item.activated) {
                     this._onViewInfo(event);
