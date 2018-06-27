@@ -89,7 +89,7 @@ Account image is used to present account in form of an image or initials if imag
             },
 
             _computeAccountInitials: function(account) {
-                var acc = !!account.account ? account.account : account;
+                var acc = (account && !!account.account) ? account.account : account;
                 var initials = '';
 
                 if (acc && acc.first_name && acc.last_name) {
