@@ -6733,9 +6733,9 @@
 
                     fileReader.readAsDataURL(request.response);
 
-                    this.fire('export-compliance-report-finished');
+                    this.fire('export-policies-report-finished');
                 }.bind(this), function() {
-                    this.fire('export-compliance-report-failed');
+                    this.fire('export-policies-report-failed');
                 }.bind(this));
             },
 
@@ -6927,7 +6927,7 @@
 
             _onExportPoliciesReportFailed: function() {
                 this._hideProgressBar();
-                this._notify('Export of Policies Report failed. Please contact AppsCo support.');
+                this._notify('Export of Policy Report failed. Please contact AppsCo support.');
             },
 
             _onExportBillingReportFailed: function() {
