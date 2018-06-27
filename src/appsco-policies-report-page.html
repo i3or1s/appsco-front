@@ -1,0 +1,271 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/paper-styles/shadow.html">
+
+<link rel="import" href="components/page/appsco-content.html">
+<link rel="import" href="components/report/appsco-policy-report-roles.html">
+<link rel="import" href="components/report/appsco-policy-report-page-filters.html">
+
+<dom-module id="appsco-policies-report-page">
+    <template>
+
+        <style include="shared-styles webkit-scrollbar-style">
+            :host {
+                display: block;
+
+                --resource-width: 318px;
+                --background-color: var(--body-background-color);
+                --collapsible-content-background-color: #fbfbfb;
+            }
+            :host div[resource] {
+                height: 100%;
+                overflow: auto;
+            }
+            :host div[resource] > .resource-content {
+                padding: 30px 10px 10px;
+            }
+            :host div[content] {
+                min-height: 100%;
+                background-color: #ffffff;
+            }
+            .content-container {
+                padding: 10px;
+            }
+            :host *[hidden] {
+                display: none;
+            }
+            appsco-policy-report-roles {
+                --list-container: {
+                    padding-top: 0;
+                    min-height: 60px;
+                };
+
+                --appsco-list-item: {
+                    cursor: default;
+                };
+            }
+            :host .flex-horizontal {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+            }
+            :host .flex-vertical {
+                @apply(--layout-vertical);
+            }
+            :host .flex {
+                @apply(--layout-flex);
+            }
+            :host([tablet-screen]) {
+                --resource-width: 250px;
+            }
+            :host([mobile-screen]) {
+                --resource-width: 200px;
+            }
+        </style>
+
+        <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
+        <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
+
+        <appsco-content id="appscoContent" resource-active>
+            <div class="flex-vertical" resource>
+                <div class="resource-content">
+                    <appsco-policy-report-page-filters id="policyReportPageFilters"
+                                                       policies-api="[[ policiesApi ]]"
+                                                       authorization-token="[[ authorizationToken ]]"
+                                                       on-filter-policies-report="_onFilterReportAction"></appsco-policy-report-page-filters>
+                </div>
+            </div>
+
+            <div content>
+                <div class="content-container">
+                    <appsco-policy-report-roles
+                            id="appscoPolicyReportRoles"
+                            type="account"
+                            size="100"
+                            load-more
+                            authorization-token="[[ authorizationToken ]]"
+                            list-api="[[ _rolesApi ]]"
+                            policies-report-api="[[ policiesReportApi ]]"
+                            api-errors="[[ _apiErrors ]]"
+                            load-more
+                            on-list-loaded="_onListLoaded"
+                            on-list-empty="_onPageLoaded"
+                            on-filter-done="_onPageLoaded"></appsco-policy-report-roles>
+                </div>
+            </div>
+
+        </appsco-content>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'appsco-policies-report-page',
+
+            properties: {
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                policiesApi: {
+                    type: String,
+                    value: ''
+                },
+
+                rolesApi: {
+                    type: String,
+                    value: ''
+                },
+
+                policiesReportApi: {
+                    type: String,
+                    value: ''
+                },
+
+                exportAccessReportApi: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                mobileScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                tabletScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                pageLoaded: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _rolesApi: {
+                    type: String,
+                    computed: '_computeRolesApi(rolesApi)'
+                },
+
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': {
+                                name: 'fade-in-animation',
+                                node: this,
+                                timing: {
+                                    duration: 300
+                                }
+                            },
+                            'exit': {
+                                name: 'fade-out-animation',
+                                node: this,
+                                timing: {
+                                    duration: 200
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimatableBehavior
+            ],
+
+            observers: [
+                '_updateScreen(mobileScreen, tabletScreen, screen992)',
+                '_toggleFilters(mobileScreen)'
+            ],
+
+            attached: function() {
+                 this.pageLoaded = false;
+
+                if (this.mobileScreen) {
+                    this.updateStyles();
+                }
+            },
+
+            hideResource: function() {
+                this.$.appscoContent.hideSection('resource');
+            },
+
+            showResource: function() {
+                this.$.appscoContent.showSection('resource');
+            },
+
+            resetPage: function() {
+                this._reloadLists();
+                this._resetFilters();
+            },
+
+            toggleResource: function() {
+                this.$.appscoContent.toggleSection('resource');
+            },
+
+            getReportFilters: function() {
+                return this.$.policyReportPageFilters.getFilters();
+            },
+
+            getReportRoles: function() {
+                return this.$.appscoPolicyReportRoles.getAllItems();
+            },
+
+            _computeRolesApi: function(rolesApi) {
+                return rolesApi ? (rolesApi + '?filter=managed') : '';
+            },
+
+            _updateScreen: function() {
+                this.updateStyles();
+            },
+
+            _toggleFilters: function(mobile) {
+                if (mobile) {
+                    this.hideResource();
+                } else {
+                    this.showResource();
+                }
+            },
+
+            _reloadLists: function() {
+                this.$.appscoPolicyReportRoles.reloadItems();
+            },
+
+            _resetFilters: function() {
+                this.$.policyReportPageFilters.reset();
+            },
+
+            _onListLoaded: function() {
+                this.$.appscoPolicyReportRoles.filterRoles({
+                    policy: {}
+                });
+                this._onPageLoaded();
+            },
+
+            _onPageLoaded: function() {
+                this.pageLoaded = true;
+                this.fire('page-loaded');
+            },
+
+            _onFilterReportAction: function(event) {
+                this.$.appscoPolicyReportRoles.filterRoles(event.detail.filters);
+            }
+        });
+    </script>
+
+</dom-module>

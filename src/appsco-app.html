@@ -182,6 +182,7 @@
 
 <link rel="import" href="components/policy/appsco-policies-page-actions.html">
 <link rel="import" href="components/policy/appsco-change-policy-status.html">
+<link rel="import" href="components/report/appsco-policy-report-page-actions.html">
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="webkit-scrollbar-style.html">
@@ -801,6 +802,11 @@
 
                             <appsco-policies-page-actions id="appscoPoliciesPageActions"
                                                           name="policies"></appsco-policies-page-actions>
+
+                            <appsco-policy-report-page-actions id="appscoPolicyReportPageActions"
+                                                               name="policies-report"
+                                                               on-back="_showReportsPage"
+                                                               on-resource-section="_onResourceActionPage"></appsco-policy-report-page-actions>
                         </neon-animated-pages>
 
                     </app-toolbar>
@@ -1366,6 +1372,17 @@
                             on-observable-list-filled="_onObservableListFilled"
                             on-change-policy-status="_onChangePolicyStatusAction"
                             on-policy-updated="_onPolicyUpdated"></appsco-policies-page>
+
+                    <appsco-policies-report-page
+                            id="appscoPoliciesReportPage"
+                            name="policies-report"
+                            authorization-token="[[ authorizationToken ]]"
+                            policies-api="[[ _companyPoliciesApi ]]"
+                            roles-api="[[ _companyRolesApi ]]"
+                            policies-report-api="[[ _getPoliciesReportApi ]]"
+                            export-compliance-report-api="[[ _exportComplianceReportApi ]]"
+                            api-errors="[[ _apiErrors ]]"
+                            on-filter-policies-report="_showProgressBar"></appsco-policies-report-page>
 
                     <appsco-logout-page name="logout"
                                         logout-api="[[ api.logout ]]"></appsco-logout-page>
@@ -2874,10 +2891,15 @@
 
                     case 'customer-billing':
                         return 'Customer Billing';
+
                     case 'billing-report':
                         return 'Billing Report';
+
                     case 'saml-authn-request-invalid':
                         return 'Authentication Failed';
+
+                    case 'policies-report':
+                        return 'Policies Report';
 
                     default:
                         return page;
@@ -3545,6 +3567,10 @@
                     case 'policies':
                         return this.$.appscoPoliciesPage;
                         break;
+
+                    case 'policies-report':
+                        return this.$.appscoPoliciesReportPage;
+                        break;
                 }
             },
 
@@ -3601,6 +3627,10 @@
 
                     case 'policies':
                         return this.$.appscoPoliciesPageActions;
+                        break;
+
+                    case 'policies-report':
+                        return this.$.appscoPolicyReportPageActions;
                         break;
                 }
 
@@ -6628,16 +6658,43 @@
                 }.bind(this));
             },
 
+            _computeExportPoliciesReportBody: function() {
+
+                if ('policies-report' != this.page) {
+                    return '';
+                }
+
+                var filters = this.$.appscoPoliciesReportPage.getReportFilters(),
+                    roles = this.$.appscoPoliciesReportPage.getReportRoles(),
+                    body = 'limit=1000';
+
+                body += (filters.policy.policy ? ('&policy=' + filters.policy.policy) : '') +
+                    (filters.dateFrom ? ('&from=' + filters.dateFrom) : '') +
+                    (filters.dateTo ? ('&to=' + filters.dateTo) : '');
+
+                if (0 < roles.length) {
+
+                    roles.forEach(function(role, i) {
+                        body += ('&accounts[]=' + role.account.self);
+                    });
+                }
+
+                return body;
+            },
+
             _exportPoliciesReport: function(url) {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: url,
-                        method: 'GET',
+                        method: 'POST',
                         handleAs: 'blob',
                         headers: {
-                            'Authorization': 'token ' + this.authorizationToken
+                            'Authorization': 'token ' + this.authorizationToken,
+                            'Content-Type': 'application/x-www-form-urlencoded'
                         }
                     };
+
+                options.body = this._computeExportPoliciesReportBody();
 
                 request.send(options).then(function() {
                     var fileReader = new FileReader();
@@ -6646,7 +6703,7 @@
                         var link = document.createElement('a');
 
                         link.href = event.target.result;
-                        link.setAttribute('download', 'Policies Report.xlsx');
+                        link.setAttribute('download', 'Compliance Report.xlsx');
                         document.body.appendChild(link);
 
                         if (link.click) {
@@ -6664,9 +6721,9 @@
 
                     fileReader.readAsDataURL(request.response);
 
-                    this.fire('export-policies-report-finished');
+                    this.fire('export-compliance-report-finished');
                 }.bind(this), function() {
-                    this.fire('export-policies-report-failed');
+                    this.fire('export-compliance-report-failed');
                 }.bind(this));
             },
 
@@ -7139,6 +7196,10 @@
                         this.$.appscoPoliciesPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
                         break;
 
+                    case 'policies-report':
+                        this.$.appscoPoliciesReportPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
+                        break;
+
                     default:
                         this._hideProgressBar();
                 }
@@ -7194,7 +7255,8 @@
                         page === 'billing-report' ||
                         page === 'dashboard-folder' ||
                         page === 'saml-authn-request-invalid' ||
-                        page === 'policies') && !this._personalFolderPage;
+                        page === 'policies' ||
+                        page === 'policies-report') && !this._personalFolderPage;
             },
 
             _computeContactPage: function(page) {

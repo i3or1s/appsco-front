@@ -732,7 +732,7 @@
 
             if (itemList) {
                 this._hideMessage();
-                this._totalItems = meta.total ? meta.total : itemList.length;
+                this._totalItems = meta.total;
                 this._nextListPageApi = meta.next + '&limit=' + this.size;
 
                 if (0 === meta.total) {
