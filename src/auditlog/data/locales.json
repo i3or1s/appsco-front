@@ -85,6 +85,6 @@
         "oauth_application_created": "OAuth application { application } registered.",
         "oauth_application_updated": "OAuth application { application } modified.",
         "oauth_application_removed": "OAuth application { application } removed.",
-        "company_policy_breached": "Company policy breached."
+        "company_policy_breached": "Company policy \"{ policy }\" has been breached."
     }
 }
