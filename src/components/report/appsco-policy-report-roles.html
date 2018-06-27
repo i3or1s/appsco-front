@@ -1,0 +1,245 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../../bower_components/paper-styles/typography.html">
+
+<link rel="import" href="appsco-policy-report-role-item.html">
+<link rel="import" href="../components/appsco-list-behavior.html">
+<link rel="import" href="../components/appsco-list-styles.html">
+
+<dom-module id="appsco-policy-report-roles">
+    <template>
+        <style include="appsco-list-styles"></style>
+
+        <style>
+            :host {
+                --appsco-list-item: {
+                    @apply(--appsco-compliance-report-list-item);
+                };
+                --appsco-list-item-activated: {
+                    @apply(--appsco-compliance-report-list-item-activated);
+                };
+            }
+            :host appsco-policy-report-role-item {
+                width: 100%;
+                margin: 0 0 10px 0;
+                @apply(--appsco-policy-report-role-item);
+            }
+        </style>
+
+        <iron-ajax id="getListApiRequest"
+                   url="[[ _listApi ]]"
+                   on-error="_onGetListError"
+                   on-response="_onGetListResponse"
+                   headers="[[ _headers ]]"
+                   debounce-duration="300"></iron-ajax>
+
+        <div class="list-container">
+
+            <paper-progress id="paperProgress"
+                            class="list-progress-bar"
+                            indeterminate></paper-progress>
+
+            <template is="dom-if" if="[[ _message ]]">
+                <p class="message">[[ _message ]]</p>
+            </template>
+
+            <template is="dom-if" if="[[ _displayList ]]">
+                <template is="dom-if" if="[[ !_listEmpty ]]">
+
+                    <div class="list">
+                        <template is="dom-repeat"
+                                  items="[[ _listItems ]]"
+                                  on-dom-change="_onItemsDomChange">
+
+                            <appsco-policy-report-role-item id="appscoListItem_[[ index ]]"
+                                                            item="{{ item }}"
+                                                            type="[[ type ]]"
+                                                            authorization-token="[[ authorizationToken ]]"
+                                                            policies-report-api="[[ policiesReportApi ]]"></appsco-policy-report-role-item>
+                        </template>
+                    </div>
+                </template>
+            </template>
+        </div>
+
+        <template is="dom-if" if="[[ !_listEmpty ]]">
+            <div class="load-more-box" hidden$="[[ !_loadMore ]]">
+                <paper-progress id="loadMoreProgress"
+                                indeterminate></paper-progress>
+                <paper-button class="load-more-action" on-tap="_onLoadMoreAction">Load More</paper-button>
+            </div>
+        </template>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-policy-report-roles',
+
+            properties: {
+
+                policiesReportApi: {
+                    type: String,
+                    value: ''
+                },
+
+                _displayList: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            behaviors: [
+                Polymer.AppscoListBehavior,
+                Polymer.AppscoListObserverBehavior
+            ],
+
+            observers: [
+                '_observeItems(_listItems)'
+            ],
+
+            _observeItems: function(items) {
+                this.setObservableType('accounts');
+                this.populateItems(items);
+            },
+
+            _showList: function() {
+                this._displayList = true;
+            },
+
+            _getPoliciesReport: function(policy, dateFrom, dateTo) {
+
+                return new Promise(function(resolve, reject) {
+                    var request = document.createElement('iron-request'),
+                        url = (this.policiesReportApi + '?extended=1&limit=1000' +
+                        (policy.policy ? ('&policy=' + policy.policy) : '') +
+                        (dateFrom ? ('&from=' + dateFrom) : '') +
+                        (dateTo ? ('&to=' + dateTo) : '')),
+                        options = {
+                            url: url,
+                            method: 'GET',
+                            handleAs: 'json',
+                            headers: this._headers
+                        };
+
+                    request.send(options).then(function() {
+
+                        if (200 == request.status) {
+                            resolve(request.response.logs);
+                        }
+
+                    }.bind(this), function() {
+                        reject(request.response.message);
+                    });
+                }.bind(this));
+            },
+
+            filterRoles: function(filters) {
+                var filterTerm = filters.term ? filters.term : '',
+                    filterPolicy = filters.policy ? filters.policy : null,
+                    filterDateFrom = filters.dateFrom ? filters.dateFrom : '',
+                    filterDateTo = filters.dateTo ? filters.dateTo : '',
+                    allListItems = JSON.parse(JSON.stringify(this._allListItems)),
+                    allLength = allListItems.length,
+                    filterTermLength = filterTerm.length;
+
+                if (filterTerm && !filterPolicy && !filterDateFrom && !filterDateTo) {
+                    this.filterByTerm(filterTerm);
+                }
+                else {
+
+                    this._getPoliciesReport(filterPolicy, filterDateFrom, filterDateTo).then(function(policies) {
+                        var itemsLength = policies.length;
+
+                        if (0 === itemsLength) {
+                            this._showMessage('There are no accounts with asked filters.');
+                            this._handleEmptyLoad();
+                            return false;
+                        }
+
+                        this._hideMessage();
+                        this._showProgressBar();
+                        this._hideLoadMoreAction();
+                        this._clearListLoaders();
+                        this.set('_listItems', []);
+                        this._listEmpty = false;
+
+                        if (filterTerm && 2 < filterTermLength) {
+
+                            policies.forEach(function(policy, index) {
+
+                                for (var j = 0; j < allLength; j++) {
+                                    var aItem = allListItems[j];
+
+                                    if (aItem.account.id === policy.data.account.id &&
+                                        (-1 < aItem.account.display_name.indexOf(filterTerm) ||
+                                        -1 < aItem.account.email.indexOf(filterTerm))) {
+                                        this.push('_listItems', aItem);
+                                        this._listItems = JSON.parse(JSON.stringify(this._listItems));
+                                    }
+                                }
+
+                                if (index === itemsLength - 1) {
+                                    this._hideProgressBar();
+                                }
+
+                            }.bind(this));
+                        }
+                        else {
+
+                            policies.forEach(function(policy, index) {
+
+                                for (var i = 0; i < allLength; i++) {
+                                    var currentListItem = allListItems[i];
+
+                                    if (policy.data.account.id === currentListItem.account.id) {
+                                        this.push('_listItems', currentListItem);
+                                    }
+                                }
+
+                                if (index === itemsLength - 1) {
+                                    this._hideProgressBar();
+                                }
+
+                            }.bind(this));
+                        }
+
+                        if (0 === this._listItems.length) {
+                            this._showMessage('There are no accounts with asked term.');
+                            this._handleEmptyLoad();
+                            return false;
+                        }
+                        else {
+                            this._listItems = JSON.parse(JSON.stringify(this._removeDuplicates(this._listItems, 'self')));
+                        }
+
+                        this._showList();
+                        this.fire('filter-done');
+                    }.bind(this));
+                }
+
+              },
+
+            _removeDuplicates: function(array, property) {
+                var length = array.length,
+                    obj = {},
+                    newArray = [];
+
+                for (var i = 0; i < length; i++) {
+                    if (!obj[array[i][property]]) {
+                        obj[array[i][property]] = array[i];
+                    }
+                }
+
+                for (var key in obj) {
+                    newArray.push(obj[key]);
+                }
+
+                return newArray;
+            }
+        });
+    </script>
+</dom-module>
