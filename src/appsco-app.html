@@ -473,7 +473,7 @@
                             <iron-icon icon="icons:work"></iron-icon> <span class="menu-text">Vault</span>
                         </a>
 
-                        <template is="dom-if" if="[[ account.user_allowed_to_create_company ]]">
+                        <template is="dom-if" if="[[ _accountCanCreateCompany ]]">
                             <div purchase>
                                 <div>Manage your business applications, employees and get meaningful insights.</div>
                                 <paper-button on-tap="_showTryBusinessPage">
@@ -2565,6 +2565,11 @@
                     computed: "_computeCompanyUser(currentCompany)"
                 },
 
+                _accountCanCreateCompany: {
+                    type: Boolean,
+                    computed: "_computeAccountCanCreateCompany(account)"
+                },
+
                 _brandLogo: {
                     type: String,
                     computed: '_computeBrandLogo(currentCompany, _companyPage)'
@@ -3370,6 +3375,13 @@
 
             _computeAccountManagedState: function(account) {
                 return !!account.native_company;
+            },
+
+            _computeAccountCanCreateCompany: function(account) {
+                if(account.native_company) {
+                    return account.native_company.user_allowed_to_create_company;
+                }
+                return true;
             },
 
             _getIsUserLoggedIn: function() {
