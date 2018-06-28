@@ -672,7 +672,7 @@
 
         _onGetListResponse: function(event) {
             var response = event.detail.response,
-                meta = response.meta ? response.meta : {},
+                meta = response && response.meta ? response.meta : {},
                 itemList;
 
             switch (this.type) {
