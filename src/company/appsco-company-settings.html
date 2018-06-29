@@ -63,6 +63,11 @@ Custom property | Description | Default
             :host #allowPersonalDashboard {
                 margin-top: 10px;
             }
+            :host a.link {
+                color: var(--app-primary-color-dark);
+                text-decoration: none;
+                color: #0b97c4;
+            }
         </style>
 
         <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color></appsco-loader>
@@ -118,85 +123,6 @@ Custom property | Description | Default
             ></gold-email-input>
 
             <div class="toggle-button-container mt-30">
-                <p class="info">
-                    If you turn off the personal dashboard for managed users they will no longer be able to view, add and share private resources.
-                    Once it's turned back on, users will get back the private dashboard. This applies to all managed users including admins in your company.
-                </p>
-
-                <paper-toggle-button id="allowPersonalDashboard"
-                                     name="company_settings[canHavePrivateDashboards]"
-                                     checked$="[[ _isPersonalDashboardAllowed ]]">Allow personal dashboard</paper-toggle-button>
-            </div>
-
-            <div class="toggle-button-container mt-30">
-                <p class="info">
-                    Users are allowed to add resources on personal dashboard by default. Once this policy is turned off,
-                    users will no longer be able to add resources on personal dashboard. This applies to all managed users including admins in your company.
-                </p>
-
-                <paper-toggle-button name="company_settings[addingResourceOnPersonalAllowed]"
-                                     checked$="[[ company.adding_resource_on_personal_allowed ]]">
-                    Allow users to add resources on personal dashboard
-                </paper-toggle-button>
-            </div>
-
-            <div class="toggle-button-container mt-30">
-                <p class="info">
-                    Managed users can create companies. If you disable this option,
-                    managed users will be prevented from creating a company.
-                    This option does not apply to admins even if they are managed users.
-                </p>
-
-                <paper-toggle-button name="company_settings[userAllowedToCreateCompany]"
-                                     checked$="[[ company.user_allowed_to_create_company ]]">
-                    Managed users can create company
-                </paper-toggle-button>
-            </div>
-
-            <div class="toggle-button-container mt-30">
-                <p class="info">
-                    Turning on this option will prevent managed users to log in from mobile devices.
-                </p>
-
-                <paper-toggle-button name="company_settings[mobileLoginDisapproved]"
-                                     checked$="[[ company.mobile_login_disapproved ]]">
-                    Disapprove mobile login
-                </paper-toggle-button>
-            </div>
-
-            <div class="toggle-button-container mt-30">
-                <p class="info">
-                    Force managed users to enable two-factor authentication.
-                    Your managed users will be prompted to set up two-factor authentication.
-                    You can reset two-factor authentication for each user separately in case the user needs to set it up again.
-                </p>
-                <p class="info">
-                    Warning: If you disable two-factor policy, it will no longer be enforced and your users
-                    will be able to turn it off. <br />
-                    As soon as you turn on Enforce two-factor authentication policy, you will be sent to another page in order to configure it.
-                </p>
-
-                <paper-toggle-button name="company_settings[enforced2fa]"
-                                     id="switchForce2FA"
-                                     checked$="[[ company.enforced_2fa ]]"
-                                     on-change="_enforced2faChanged">
-                    Enforce Two-factor authentication policy
-                </paper-toggle-button>
-            </div>
-
-            <div class="toggle-button-container mt-30">
-                <p class="info">
-                    You can prevent the users coming from TOR browsers and anonymous networks
-                    from logging in by turning on this option.
-                </p>
-
-                <paper-toggle-button name="company_settings[torBlocked]"
-                                     checked$="[[ company.block_tor ]]">
-                    Block TOR
-                </paper-toggle-button>
-            </div>
-
-            <div class="toggle-button-container mt-30">
                 <paper-toggle-button name="company_settings[sendEmailToAdminOnNewDevice]"
                                      id="newDeviceInfoAdminEmail"
                                      checked$="[[ company.mail_admin_on_new_device ]]"
@@ -214,20 +140,11 @@ Custom property | Description | Default
             </div>
         </form>
 
-        <div class="mt-30">
+        <div class="toggle-button-container mt-30">
             <p class="info">
-                You can allow your users to login only from a specific IP address.
-                This means that users will not be able to login from an IP which is not whitelisted.
+                Policy settings have moved to company policies page.
+                To access them please use <a href="/policies" rel="noopener noreferrer" class="link">policies page</a>
             </p>
-            <p class="info">
-                You can enter the comma separated IP addresses in order to whitelist them.
-            </p>
-
-            <paper-input id="ipWhiteList"
-                         label="IP whitelist"
-                         name="company_whitelist[whitelist]"
-                         value="[[ _ipWhiteList ]]"
-                         on-keyup="_onKeyUp"></paper-input>
         </div>
 
         <paper-button id="submit"
@@ -272,11 +189,6 @@ Custom property | Description | Default
                     type: String
                 },
 
-                saveIpWhiteListApi: {
-                    type: String,
-                    value: ''
-                },
-
                 apiErrors: {
                     type: Object,
                     value: function() {
@@ -306,14 +218,6 @@ Custom property | Description | Default
                 },
 
                 /**
-                 * Detects enabling force 2FA in order to reload page and redirect admin to 2fa configure page
-                 */
-                _2faChangedToEnable: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
                  * Target for iron-a11y-keys component.
                  * Submit form on enter.
                  */
@@ -321,23 +225,6 @@ Custom property | Description | Default
                     type: Object,
                     value: function() {
                         return this;
-                    }
-                },
-
-                _isPersonalDashboardAllowed: {
-                    type: Boolean,
-                    computed: '_computeDashboardAllowed(company)'
-                },
-
-                _ipWhiteList: {
-                    type: String,
-                    computed: '_computeIPWhiteList(company)'
-                },
-
-                _ipWhiteListInput: {
-                    type: Object,
-                    value: function() {
-                        return this.$.ipWhiteList;
                     }
                 },
 
@@ -361,14 +248,6 @@ Custom property | Description | Default
                     'Authorization': 'token ' + authorizationToken,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            },
-
-            _computeDashboardAllowed: function(company) {
-                return company.personal_dashboards_allowed;
-            },
-
-            _computeIPWhiteList: function(company) {
-                return company.ip_whitelist ? company.ip_whitelist : '';
             },
 
             _format: function (name) {
@@ -406,38 +285,7 @@ Custom property | Description | Default
             },
 
             _onSaveAction: function() {
-
-                if (this._isValid()) {
-                    this._submitSettingsForm();
-                }
-            },
-
-            _isValid: function() {
-                var valid,
-                    ipWhiteList = this._ipWhiteListInput.value;
-
-                if (ipWhiteList) {
-                    ipWhiteList = ipWhiteList.split(',');
-
-                    var ipAddressRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-                        length = ipWhiteList.length - 1;
-
-                    for (var i = 0; i <= length; i++) {
-
-                        if (!ipAddressRegex.test(ipWhiteList[i].trim())) {
-                            this._setInvalidIPWhiteList();
-                            valid = false;
-                        }
-                        else if (i === length) {
-                            valid = true;
-                        }
-                    }
-                }
-                else {
-                    valid = true;
-                }
-
-                return valid;
+                this._submitSettingsForm();
             },
 
             _onFormPresubmit: function() {
@@ -448,11 +296,9 @@ Custom property | Description | Default
             _onFormError: function(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-                this._saveIPWhiteList();
             },
 
-            _onFormResponse: function(event) {
-                this._saveIPWhiteList();
+            _onFormResponse: function(event) {;
 
                 this.$.contactEmail.invalid = false;
                 this.$.billingEmail.invalid = false;
@@ -468,64 +314,6 @@ Custom property | Description | Default
                 }
             },
 
-            _setInvalidIPWhiteList: function() {
-                this._ipWhiteListInput.invalid = true;
-                this._showError('IP whitelist input is not valid. Please check IP addresses you have entered.');
-            },
-
-            _resetIPWhiteList: function() {
-                this._ipWhiteListInput.invalid = false;
-            },
-
-            _saveIPWhiteList: function() {
-                var ipWhiteListInputValue = this._ipWhiteListInput.value;
-
-                if (ipWhiteListInputValue == this._ipWhiteList) {
-                    return false;
-                }
-                else {
-                    ipWhiteListInputValue = ipWhiteListInputValue.split(',');
-                }
-
-                var request = document.createElement('iron-request'),
-                    options = {
-                        url: this.saveIpWhiteListApi,
-                        method: 'PUT',
-                        headers: this._computedHeaders,
-                        handleAs: 'json'
-                    },
-                    body = '',
-                    length = ipWhiteListInputValue.length - 1;
-
-                var ipAddress = '';
-                for (var i = 0; i <= length; i++) {
-                    ipAddress = ipWhiteListInputValue[i].trim();
-                    var next = (i === length) ? '' : '&';
-
-                    body += 'company_whitelist[whitelist][' + i + ']=' + encodeURIComponent(ipAddress) + next;
-                }
-
-                options.body = body;
-
-                request.send(options).then(function() {
-
-                    if (200 === request.status) {
-//                        this.set('company', request.response);
-
-                        this.fire('company-ip-whitelist-changed', {
-                            company: request.response
-                        });
-
-                        this._resetIPWhiteList();
-                        this._hideLoader();
-                    }
-
-                }.bind(this), function() {
-                    this._showError(this.apiErrors.getError(request.response.code));
-                    this._hideLoader();
-                }.bind(this));
-            },
-
             _onKeyUp: function(event) {
 
                 if (13 !== event.keyCode) {
@@ -536,10 +324,6 @@ Custom property | Description | Default
 
             _reloadPage: function() {
                 window.location.reload(true);
-            },
-
-            _enforced2faChanged: function() {
-                this._2faChangedToEnable = this.$.switchForce2FA.checked;
             },
 
             _mailAdminOnNewDeviceChanged: function() {
