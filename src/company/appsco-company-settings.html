@@ -63,6 +63,11 @@ Custom property | Description | Default
             :host #allowPersonalDashboard {
                 margin-top: 10px;
             }
+            :host a.link {
+                color: var(--app-primary-color-dark);
+                text-decoration: none;
+                color: #0b97c4;
+            }
         </style>
 
         <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color></appsco-loader>
@@ -134,6 +139,13 @@ Custom property | Description | Default
                 </template>
             </div>
         </form>
+
+        <div class="toggle-button-container mt-30">
+            <p class="info">
+                Policy settings have moved to company policies page.
+                To access them please use <a href="/policies" rel="noopener noreferrer" class="link">policies page</a>
+            </p>
+        </div>
 
         <paper-button id="submit"
                       class="submit-button"
