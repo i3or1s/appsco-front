@@ -3133,7 +3133,7 @@
             _computeCompanyIconsWithoutFolderApi: function(companyFoldersApi) {
                 return companyFoldersApi ? (companyFoldersApi + '/icons') : '';
             },
-
+            
             _getLoggedAccount: function() {
                 this.$$('#getAccountRequest').generateRequest();
             },
@@ -3210,7 +3210,7 @@
              * @private
              */
             _checkPersonalDashboardPermission: function(page, account) {
-                if (!account.personal_dashboard_allowed) {
+                if (!this.isPersonalDashboardAllowed(account)) {
                     this._disablePersonalDashboard(page);
                 } else {
                     this._enablePersonalDashboard(page);
@@ -3256,6 +3256,12 @@
                 return personalPages.indexOf(page) != -1;
             },
 
+            isPersonalDashboardAllowed: function(account) {
+                return account && account.native_company 
+                    ? account.native_company.personal_dashboard_allowed
+                    : true;
+            },
+            
             _onGetAccountError: function() {
 //                this._showPage404();
             },
