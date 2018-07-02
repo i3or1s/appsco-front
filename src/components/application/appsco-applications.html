@@ -340,6 +340,12 @@ Custom property | Description | Default
                     value: function() { return []; }
                 },
 
+                _personalDashboardAllowed: {
+                    type: Boolean,
+                    value: true,
+                    computed: '_computePersonalDashboardAllowed(account)'
+                },
+                
                 /**
                  * Search term.
                  */
@@ -384,7 +390,7 @@ Custom property | Description | Default
             ready: function () {
 
                 if (this.applicationsApi && this.applicationsApi != '' &&
-                        (this.account.personal_dashboard_allowed || this.isOnCompany == true)) {
+                        (this._personalDashboardAllowed || this.isOnCompany == true)) {
                     this._currentUrl = this.applicationsApi + '?page=1&extended=1&limit=' + this.size;
                 }
 
@@ -412,9 +418,15 @@ Custom property | Description | Default
             _computeSearchApplicationsApi: function(applicationsApi, term) {
                 return applicationsApi + '?extended=1&limit=100&term=' + term;
             },
+            
+            _computePersonalDashboardAllowed: function(account) {
+                return account && account.native_company 
+                    ? account.native_company.personal_dashboard_allowed
+                    : true;
+            },
 
             _loadApplications: function() {
-                if (this.account.personal_dashboard_allowed || this.isOnCompany == true) {
+                if (this._personalDashboardAllowed || this.isOnCompany == true) {
                     this._clearApplications();
 
                     this.$$('#paperProgress').hidden = false;
@@ -426,7 +438,7 @@ Custom property | Description | Default
             },
 
             _loadMoreApps: function () {
-                if (this.account.personal_dashboard_allowed || this.isOnCompany == true) {
+                if (this._personalDashboardAllowed || this.isOnCompany == true) {
                     this.$$('#loadMoreProgress').hidden = false;
                     this._currentUrl = this._next;
                 }
