@@ -307,7 +307,7 @@
                                                selected="[[ rule.toPSO ]]"
                                                on-iron-activate="_onToPSOSelected"
                                                on-selected-changed="_onToPSOSelectedChanged">
-                                    <template is="dom-repeat" items="[[ _toPSOList ]]">
+                                    <template is="dom-repeat" items="[[ _availableToPSOList ]]">
                                         <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
                                     </template>
                                 </paper-listbox>
@@ -491,6 +491,11 @@
                     value: function() {
                         return [];
                     }
+                },
+
+                _availableToPSOList: {
+                    type: Array,
+                    value: function() { return [] }
                 },
 
                 _appscoPSOList: {
@@ -703,6 +708,7 @@
 
                 if (this._fromPSOSelected) {
                     this._setFromConditionList(this.$.fromPSOList.selected);
+                    this._setToPSOAvailableList(this.$.fromPSOList.selected);
                 }
 
                 if (this._toPSOSelected) {
@@ -766,8 +772,52 @@
                 this._setFromConditionList(event.detail.selected);
             },
 
+
+            _setToPSOAvailableList: function(selectedItem) {
+                var transformable = [],
+                    filteredTargetPsos = [];
+                this._fromPSOList.forEach(function(el) {
+                    if (el.key === selectedItem) {
+                        transformable = el.targets;
+                    }
+                });
+
+                this._toPSOList.forEach(function(el) {
+                    if (transformable.indexOf(el.key) !== -1) {
+                        filteredTargetPsos.push(el);
+                    }
+                });
+
+                this.set('_availableToPSOList', filteredTargetPsos);
+                if (transformable.indexOf(this.$.toPSOList.selected) === -1) {
+                    this.$.toPSOList.selected = null;
+                }
+            },
+
             _onFromPSOSelectedChanged:  function(event) {
+                var selectedItem = this.$.fromPSOList.selected,
+                    transformable = [],
+                    filteredTargetPsos = [];
+
                 this._setFromConditionList(event.detail.value);
+
+                this._fromPSOList.forEach(function(el) {
+                    if (el.key === selectedItem) {
+                        transformable = el.targets;
+                    }
+                });
+
+                this._toPSOList.forEach(function(el) {
+                    if (transformable.indexOf(el.key) !== -1) {
+                        filteredTargetPsos.push(el);
+                    }
+                });
+
+                this.set('_availableToPSOList', filteredTargetPsos);
+                if (transformable.indexOf(this.$.toPSOList.selected) === -1) {
+                    this.$.toPSOList.selected = null;
+                }
+
             },
 
             _setToParamsListFromRule: function() {
