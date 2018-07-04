@@ -300,7 +300,7 @@
                                                class="dropdown-content"
                                                attr-for-selected="value"
                                                on-iron-activate="_onToPSOSelected">
-                                    <template is="dom-repeat" items="[[ _toPSOList ]]">
+                                    <template is="dom-repeat" items="[[ _availableToPSOList ]]">
                                         <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
                                     </template>
                                 </paper-listbox>
@@ -476,6 +476,11 @@
                     value: function() {
                         return [];
                     }
+                },
+
+                _availableToPSOList: {
+                    type: Array,
+                    value: function() { return [] }
                 },
 
                 _appscoPSOList: {
@@ -693,7 +698,9 @@
             },
 
             _onFromPSOSelected: function(event) {
-                var selectedItem = event.detail.selected;
+                var selectedItem = event.detail.selected,
+                    transformable = [],
+                    filteredTargetPsos = [];
 
                 this._fromPSOSelected = true;
                 this._hideConditionFields();
@@ -715,6 +722,23 @@
                         return false;
                     }
                 }.bind(this));
+
+                this._fromPSOList.forEach(function(el) {
+                    if (el.key === selectedItem) {
+                        transformable = el.targets;
+                    }
+                });
+
+                this._toPSOList.forEach(function(el) {
+                    if (transformable.indexOf(el.key) !== -1) {
+                        filteredTargetPsos.push(el);
+                    }
+                });
+
+                this.set('_availableToPSOList', filteredTargetPsos);
+                if (transformable.indexOf(this.$.toPSOList.selected) === -1) {
+                    this.$.toPSOList.selected = null;
+                }
             },
 
             _onToPSOSelected: function(event) {
