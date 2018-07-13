@@ -8,6 +8,9 @@
 <link rel="import" href="../../../../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
 
 <link rel="import" href="../../components/appsco-loader.html">
 <link rel="import" href="../../components/appsco-form-error.html">
@@ -39,6 +42,9 @@ Used to update company resource - configuration fields and claims.
             }
             :host .claims-container {
                 margin-top: 20px;
+            }
+            paper-dropdown-menu {
+                width: 100%;
             }
             :host paper-toggle-button {
                 cursor: pointer;
@@ -99,6 +105,21 @@ Used to update company resource - configuration fields and claims.
                                  auto-validate
                                  error-message="Please enter a valid url."></paper-input>
                 </template>
+
+                <paper-dropdown-menu id="provisioningSupport"
+                                     label="Provisioning support"
+                                     name="configure_application[provisioning]"
+                                     horizontal-align="left">
+                    <paper-listbox id="provisioningSupportList"
+                                   class="dropdown-content"
+                                   attr-for-selected="value"
+                                   selected="[[ _preselectedProvisioningSupport ]]">
+                        <template is="dom-repeat" items="[[ _provisioningSupportList ]]">
+                            <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
+                        </template>
+
+                    </paper-listbox>
+                </paper-dropdown-menu>
             </form>
         </div>
 
@@ -439,6 +460,31 @@ Used to update company resource - configuration fields and claims.
                 isDialog: {
                     type: Boolean,
                     value: false
+                },
+
+                _provisioningSupportList: {
+                    type: Array,
+                    value: function() {
+                        return [
+                            {
+                                value: 'none',
+                                name: 'No user management'
+                            },
+                            {
+                                value: 'manual',
+                                name: 'Users handled manually'
+                            },
+                            {
+                                value: 'automatic',
+                                name: 'Users handled by AppsCo automatically'
+                            }
+                        ];
+                    }
+                },
+
+                _preselectedProvisioningSupport: {
+                    type: String,
+                    computed: '_computePreselectedProvisioningSupport(resource, _provisioningSupportList)'
                 }
             },
 
@@ -477,6 +523,10 @@ Used to update company resource - configuration fields and claims.
                     this.set('resource', {});
                     this.set('resource', resource);
                 }.bind(this), 10);
+            },
+
+            _computePreselectedProvisioningSupport: function(resource, list) {
+                return (resource && resource.provisioning) ? resource.provisioning : list[0].value;
             },
 
             _stopPropagation: function(event) {
@@ -578,6 +628,7 @@ Used to update company resource - configuration fields and claims.
                 var form = event.target;
 
                 form.request.method = 'PATCH';
+                form.request.body['configure_application[provisioning]'] = encodeURIComponent(this.$.provisioningSupportList.selectedItem.value);
             },
 
             _onConfigurationFormError: function(event) {
