@@ -23,6 +23,9 @@
                 cursor: default;
                 height: 100px;
             }
+            :host .item-info {
+                padding: 0;
+            }
             :host .info-additional {
                 font-size: 12px;
                 opacity: 0.8;
@@ -66,8 +69,10 @@
             table > tbody > tr > td {
                 border-top: 1px dashed var(--header-background-color);
             }
-            img {
-                height: 100px;
+            .icon-container, .icon {
+                height: 80px;
+            }
+            .icon {
                 margin-right: 20px;
             }
         </style>
@@ -76,10 +81,10 @@
             <div class="browser-hash">Browser fingerprint: [[ device.browserFingerprint ]]</div>
 
             <div class="item-info item-basic-info resource-list">
-                <div >
-                    <img src="[[ _deviceImg ]]" alt="[[ _deviceName ]]">
+                <div class="icon-container">
+                    <img src="[[ _deviceImg ]]" alt="[[ _deviceName ]]" class="icon">
                 </div>
-                <div >
+                <div>
                     <span class="info-label item-title">[[ _deviceName ]]</span>
                     <template is="dom-if" if="[[ _isADevice ]]">
                         <div class="info-additional">
@@ -275,16 +280,31 @@
             },
 
             _computeDeviceImg: function(device) {
-                if(this._computeIsADevice(device)) {
+                if (this._computeIsADevice(device)) {
+
                     // It is a mobile
-                    if(device.operatingSystem === "Android")
-                        return '/images/devices/android.png';
-                    if(device.operatingSystem === "Windows")
-                        return '/images/devices/unknown.png';
-                    return '/images/devices/ios.png';
+                    if ('android' === device.operatingSystem.toLowerCase())
+                        return '/images/devices/mobile-android.png';
+
+                    if ('windows' === device.operatingSystem.toLowerCase())
+                        return '/images/devices/mobile-windows.png';
+
+                    return '/images/devices/mobile-ios.png';
                 }
-                // It is a desktop
-                return '/images/devices/mac.png';
+                else {
+
+                    // It is a desktop
+                    if ('windows' === device.operatingSystem.toLowerCase())
+                        return '/images/devices/desktop-windows.png';
+
+                    if ('mac' === device.operatingSystem.toLowerCase())
+                        return '/images/devices/desktop-mac.png';
+
+                    if ('linux' === device.operatingSystem.toLowerCase())
+                        return '/images/devices/desktop-linux.png';
+
+                    return '/images/devices/desktop-windows.png';
+                }
             },
 
             _onApproveAction: function(event) {
