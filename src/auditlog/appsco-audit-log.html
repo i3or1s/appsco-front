@@ -1020,6 +1020,15 @@
                         event = this.localize('resource_admin_removed', 'application', item.data.application.title);
                         break;
 
+                    case 'company_access_on_boarding_resolved':
+                        event = this.localize(
+                            'company_access_on_boarding_resolved',
+                            'resolvedBy', item.initiatior_display_name,
+                            'user', item.data.access_on_boarding.user.display_name,
+                            'application', item.data.access_on_boarding.application_icon.title
+                        );
+                        break;
+
                     default:
                 }
 
