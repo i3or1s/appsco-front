@@ -1012,6 +1012,14 @@
                         event = this.localize('company_policy_breached', 'policy', item.data.name);
                         break;
 
+                    case 'resource_admin_added':
+                        event = this.localize('resource_admin_added', 'application', item.data.application.title);
+                        break;
+
+                    case 'resource_admin_removed':
+                        event = this.localize('resource_admin_removed', 'application', item.data.application.title);
+                        break;
+
                     default:
                 }
 
