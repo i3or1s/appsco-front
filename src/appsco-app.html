@@ -112,6 +112,8 @@
 
 <link rel="import" href="auditlog/appsco-audit-log-page-actions.html">
 
+<link rel="import" href="components/access-on-boarding/appsco-access-on-boarding-page-actions.html">
+
 <link rel="import" href="provisioning/appsco-provisioning-page-actions.html">
 <link rel="import" href="provisioning/appsco-provisioning-settings-page-actions.html">
 <link rel="import" href="provisioning/appsco-manage-integration-page-actions.html">
@@ -514,6 +516,9 @@
                                 <a name="audit-log" href="#">
                                     <iron-icon icon="icons:reorder"></iron-icon> <span class="menu-text">Audit</span>
                                 </a>
+                                <a name="access-on-boarding" href="#">
+                                    <iron-icon icon="icons:accessibility"></iron-icon> <span class="menu-text">Access On-boarding</span>
+                                </a>
                                 <a name="statistics" href="#">
                                     <iron-icon icon="icons:donut-large"></iron-icon> <span class="menu-text">Statistics</span>
                                 </a>
@@ -742,6 +747,13 @@
                                     on-resource-section="_onResourceActionAuditLogPage"
                                     on-export-audit-log="_onExportAuditLogAction"
                             ></appsco-audit-log-page-actions>
+
+                            <appsco-access-on-boarding-page-actions
+                                    id="appscoAccessOnBoardingPageActions"
+                                    name="access-on-boarding"
+                                    on-resource-section="_onResourceActionPage"
+                                    on-export-access-on-boarding="_onExportAccessOnBoardingAction"
+                            ></appsco-access-on-boarding-page-actions>
 
                             <appsco-billing-page-actions
                                     name="billing"
@@ -1215,6 +1227,17 @@
                             authorization-token="[[ authorizationToken ]]"
                             audit-log-api="[[ _companyAuditLogApi ]]"
                             company-api="[[ _companyApi ]]"></appsco-audit-log-page>
+
+                    <appsco-access-on-boarding-page
+                            id="appscoAccessOnBoardingPage"
+                            name="access-on-boarding"
+                            authorization-token="[[ authorizationToken ]]"
+                            groups-api="[[ _companyGroupsApi ]]"
+                            access-on-boarding-users-api="[[ _accessOnBoardingUsersApi ]]"
+                            export-access-on-boarding-api="[[ _exportAccessAccessOnBoardingApi ]]"
+                            on-filter-access-on-boarding="_showProgressBar"
+                            on-access-on-boarding-events-resolved="_onEventsResolved"
+                            api-errors="[[ _apiErrors ]]"></appsco-access-on-boarding-page>
 
                     <appsco-oauth-applications-page
                             id="appscoOAuthApplicationsPage"
@@ -2521,6 +2544,16 @@
                     value: ''
                 },
 
+                _accessOnBoardingUsersApi: {
+                    type: String,
+                    value: ''
+                },
+
+                _exportAccessAccessOnBoardingApi: {
+                    type: String,
+                    computed: '_computeExportAccessAccessOnBoardingApi(_accessOnBoardingUsersApi)'
+                },
+
                 _subscription: {
                     type: Object,
                     value: function() {
@@ -2643,18 +2676,21 @@
                 'export-access-report-finished': '_onExportAccessReportFinished',
                 'export-compliance-report-finished': '_onExportComplianceReportFinished',
                 'export-policies-report-finished': '_hideProgressBar',
+                'export-access-on-boarding-finished': '_hideProgressBar',
                 'export-company-log-finished' : '_onExportCompanyLogFinished',
                 'export-billing-report-finished': '_onExportBillingReportFinished',
                 'export-access-report-failed': '_onExportAccessReportFailed',
                 'export-compliance-report-failed': '_onExportComplianceReportFailed',
                 'export-policies-report-failed': '_onExportPoliciesReportFailed',
+                'export-access-on-boarding-failed': '_onExportAccessOnBoardingFailed',
                 'export-billing-report-failed': '_onExportBillingReportFailed',
                 'user-session-expired': '_onUserSessionExpired',
                 'add-item-to-group-event': '_onAddItemToGroupAction',
                 'customer-subscription-state-changed': '_onCustomerSubscriptionStateChanged',
                 'notifications-seen': '_onNotificationsSeen',
                 'resource-moved-to-folder': '_onResourceMovedToFolder',
-                'resource-removed-from-folder': '_onResourceRemovedFromFolder'
+                'resource-removed-from-folder': '_onResourceRemovedFromFolder',
+                'reload-access-of-boarding': '_onReloadAccessOnBoarding'
             },
 
             attached: function() {
@@ -2882,6 +2918,9 @@
                     case 'audit-log':
                         return 'Audit Log';
 
+                    case 'access-on-boarding':
+                        return 'Access On-boarding';
+
                     case 'oauth-applications':
                         return 'oAuth';
 
@@ -3076,6 +3115,7 @@
                     this._getActiveIntegrationsApi = companyApi + '/integrations/active';
                     this._companyOAuthApplicationsApi = companyApi + '/oauth/applications';
                     this._billingReportApi = companyApi + '/reports/billing-report';
+                    this._accessOnBoardingUsersApi = companyApi + '/reports/access-on-boarding';
                 }
 
                 this._companyFoldersApi = companyApi + '/dashboard-groups';
@@ -3128,6 +3168,10 @@
 
             _computeExportBillingReportApi: function(billingReportApi) {
                 return billingReportApi ? (billingReportApi + '/export') : '';
+            },
+
+            _computeExportAccessAccessOnBoardingApi: function(accessOnBoardingUsersApi) {
+                return accessOnBoardingUsersApi ? (accessOnBoardingUsersApi + '/export') : '';
             },
 
             _computeCompanyIconsWithoutFolderApi: function(companyFoldersApi) {
@@ -3564,6 +3608,10 @@
 
                     case 'audit-log':
                         return this.$.appscoAuditLogPage;
+                        break;
+
+                    case 'access-on-boarding':
+                        return this.$.appscoAccessOnBoardingPage;
                         break;
 
                     case 'dashboard-folder':
@@ -4542,6 +4590,7 @@
                 this.resetApplicationAssigneesPage();
                 this._notify('Selected resources were successfully shared.');
                 this._notifyReloadApplications();
+                this._notifyReloadAccessOnBoarding();
             },
 
             _onNotificationSent: function(event) {
@@ -4639,6 +4688,7 @@
 
                 this._notifyReloadApplications();
                 this._notifyReloadAccounts();
+                this._notifyReloadAccessOnBoarding();
                 this._notify('Access for ' + assignee.display_name + ' on ' + application.title + ' was revoked successfully.');
             },
 
@@ -5451,6 +5501,42 @@
             },
             /**
              * Audit Log page END
+             */
+
+            /**
+             * Access On-boarding page START
+             */
+            _onEventsResolved: function(event) {
+                this._notify((0 === event.detail.unresolvedItems.length) ?
+                    'Selected events have been resolved manually.' :
+                    'There was an error while resolving some events. Not all events were resolved.');
+            },
+
+            _notifyReloadAccessOnBoarding: function() {
+                this.fire('reload-access-of-boarding');
+            },
+
+            _onReloadAccessOnBoarding: function() {
+
+                if (this.$.appscoAccessOnBoardingPage.$) {
+                    this.$.appscoAccessOnBoardingPage.reloadRoles();
+                }
+            },
+
+            _onExportAccessOnBoardingAction: function() {
+
+                if (this.$.appscoAccessOnBoardingPage.$) {
+                    this._showProgressBar();
+                    this.$.appscoAccessOnBoardingPage.export();
+                }
+            },
+
+            _onExportAccessOnBoardingFailed: function() {
+                this._hideProgressBar();
+                this._notify('Export of Access On-boarding status list failed. Please contact AppsCo support.');
+            },
+            /**
+             * Access On-boarding page END
              */
 
             /**
@@ -7147,6 +7233,10 @@
                         this.$.appscoAuditLogPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
                         break;
 
+                    case 'access-on-boarding':
+                        this.$.appscoAccessOnBoardingPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
+                        break;
+
                     case 'provisioning':
                         this.$.appscoProvisioningPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
                         break;
@@ -7266,6 +7356,7 @@
                         page === 'billing' ||
                         page === 'company' ||
                         page === 'audit-log' ||
+                        page === 'access-on-boarding' ||
                         page === 'company-account' ||
                         page === 'contact-home' ||
                         page === 'manage-oauth-application' ||
@@ -7360,6 +7451,7 @@
                     case 'manage-group':
                     case 'manage-integration':
                     case 'audit-log':
+                    case 'access-on-boarding':
                     case 'provisioning-settings':
                     case 'oauth-applications':
                     case 'company':
@@ -7411,6 +7503,7 @@
                         break;
 
                     case 'audit-log':
+                    case 'access-on-boarding':
 
                         if (toPage.$) {
                             toPage.initializePage();

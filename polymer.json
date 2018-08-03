@@ -41,7 +41,8 @@
     "src/appsco-saml-authn-request-invalid-page.html",
     "src/appsco-billing-report-page.html",
     "src/appsco-policies-page.html",
-    "src/appsco-policies-report-page.html"
+    "src/appsco-policies-report-page.html",
+    "src/appsco-access-on-boarding-page.html"
   ],
   "sources": [
     "src/**/*",

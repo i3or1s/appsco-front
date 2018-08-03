@@ -550,6 +550,9 @@
                 case 'policy':
                     return 'policie';
 
+                case 'access-on-boarding-user':
+                    return 'access on-boarding user';
+
                 default:
                     return type;
             }
@@ -722,6 +725,10 @@
 
                 case 'policy':
                     itemList = response.policies ? response.policies : [];
+                    break;
+
+                case 'access-on-boarding-user':
+                    itemList = response.items ? response.items : [];
                     break;
 
                 default:
@@ -921,6 +928,10 @@
 
                             case 'policy':
                                 resolve(request.response.policies);
+                                break;
+
+                            case 'access-on-boarding-user':
+                                resolve(request.response.items);
                                 break;
 
                             default:
