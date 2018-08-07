@@ -228,6 +228,11 @@ Example:
                 computed: '_computeFoldersApi(index, domain)'
             },
 
+            getUserPrivilegesApi: {
+                type: String,
+                computed: '_computeGetUserPrivilegesApi(me)'
+            },
+
             name: {
                 type: Object,
                 value: function () {
@@ -270,7 +275,8 @@ Example:
                         setupTwoFAURL: this.setupTwoFAURL,
                         saveClientDataApi: this.saveClientDataApi,
                         partners: this.partners,
-                        foldersApi: this.foldersApi
+                        foldersApi: this.foldersApi,
+                        getUserPrivilegesApi: this.getUserPrivilegesApi
                     }
                 },
                 notify: true
@@ -316,7 +322,8 @@ Example:
                 setupTwoFAURL: this.setupTwoFAURL,
                 saveClientDataApi: this.saveClientDataApi,
                 partners: this.partners,
-                foldersApi: this.foldersApi
+                foldersApi: this.foldersApi,
+                getUserPrivilegesApi: this.getUserPrivilegesApi
             };
         },
 
@@ -478,6 +485,10 @@ Example:
 
         _computeFoldersApi: function(index, domain) {
             return this._computeOrigin(domain, index) + '/dashboard-groups';
+        },
+
+        _computeGetUserPrivilegesApi: function (me) {
+            return me ? (me + '/acl') : '';
         }
     });
 </script>

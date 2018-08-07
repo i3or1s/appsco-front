@@ -163,34 +163,36 @@
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
-        <appsco-content id="appscoContent" resource-active>
+        <appsco-content id="appscoContent" resource-active$="[[ !resourceAdmin ]]">
 
-            <div class="flex-vertical" resource>
+            <template is="dom-if" if="[[ !resourceAdmin ]]">
+                <div class="flex-vertical" resource>
 
-                <div class="resource-container">
+                    <div class="resource-container">
 
-                    <div class="resource-header">
-                        Groups
-                    </div>
+                        <div class="resource-header">
+                            Groups
+                        </div>
 
-                    <div class="groups">
-                        <appsco-search id="appscoSearch"
-                                       label="Search groups"
-                                       on-search="_onSearchGroups"
-                                       on-search-clear="_onSearchGroupsClear"></appsco-search>
+                        <div class="groups">
+                            <appsco-search id="appscoSearch"
+                                           label="Search groups"
+                                           on-search="_onSearchGroups"
+                                           on-search-clear="_onSearchGroupsClear"></appsco-search>
 
-                        <appsco-company-groups id="appscoCompanyGroups"
-                                               list-api="[[ groupsApi ]]"
-                                               authorization-token="[[ authorizationToken ]]"
-                                               size="100"
-                                               type="group"
-                                               preview
-                                               on-item="_onGroupSelected"></appsco-company-groups>
+                            <appsco-company-groups id="appscoCompanyGroups"
+                                                   list-api="[[ groupsApi ]]"
+                                                   authorization-token="[[ authorizationToken ]]"
+                                                   size="100"
+                                                   type="group"
+                                                   preview
+                                                   on-item="_onGroupSelected"></appsco-company-groups>
+                        </div>
+
                     </div>
 
                 </div>
-
-            </div>
+            </template>
 
             <div content>
                 <appsco-company-resources
@@ -202,7 +204,8 @@
                         selectable
                         authorization-token="[[ authorizationToken ]]"
                         list-api="[[ companyResourcesApi ]]"
-                        api-errors="[[ _apiErrors ]]"
+                        api-errors="[[ apiErrors ]]"
+                        resource-admin="[[ resourceAdmin ]]"
                         on-item="_onResourceAction"
                         on-select-item="_onResourceSelectAction"
                         on-edit-item="_onResourceEditAction"
@@ -213,71 +216,73 @@
                         on-observable-list-filled="_onObservableItemListChange"></appsco-company-resources>
             </div>
 
-            <div class="flex-vertical" info>
+            <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
+                <div class="flex-vertical" info>
 
-                <div class="application-info flex-horizontal">
-                    <appsco-application-info class="flex"
-                                             application="[[ resource ]]"
-                                             company>
-                    </appsco-application-info>
+                    <div class="application-info flex-horizontal">
+                        <appsco-application-info class="flex"
+                                                 application="[[ resource ]]"
+                                                 company>
+                        </appsco-application-info>
 
-                    <appsco-application-analytics-security
-                            application="[[ resource ]]"></appsco-application-analytics-security>
+                        <appsco-application-analytics-security
+                                application="[[ resource ]]"></appsco-application-analytics-security>
+                    </div>
+
+                    <appsco-application-assignees id="appscoApplicationAssignees"
+                                                  application="[[ resource ]]"
+                                                  authorization-token="[[ authorizationToken ]]"
+                                                  api-errors="[[ apiErrors ]]"
+                                                  size="5"
+                                                  preview
+                                                  auto-load></appsco-application-assignees>
+
+                    <div class="details-log flex-vertical">
+
+                        <paper-tabs id="paperTabs" selected="{{ _selectedTab }}">
+                            <paper-tab name="info">Info</paper-tab>
+                            <paper-tab name="log">Log</paper-tab>
+                        </paper-tabs>
+
+                        <neon-animated-pages
+                                selected="{{ _selectedTab }}"
+                                entry-animation="fade-in-animation"
+                                exit-animation="fade-out-animation"
+                                class="info-details-section">
+
+                            <div name="info" class="tab-content details">
+                                <appsco-application-analytics-info
+                                        application="[[ resource ]]"></appsco-application-analytics-info>
+                            </div>
+
+                            <div name="log" class="tab-content log">
+                                <appsco-application-log
+                                        application="[[ resource ]]"
+                                        authorization-token="[[ authorizationToken ]]"
+                                        company>
+                                </appsco-application-log>
+                            </div>
+
+                        </neon-animated-pages>
+
+                    </div>
+
+                    <div class="info-actions flex-horizontal">
+                        <paper-button
+                                class="view-button flex"
+                                on-tap="_onResourceInfoEdit">
+                            Edit
+                        </paper-button>
+
+                        <paper-button
+                                class="share-button flex"
+                                on-tap="_onShareResource">
+                            Share
+                        </paper-button>
+                    </div>
+
                 </div>
-
-                <appsco-application-assignees id="appscoApplicationAssignees"
-                                              application="[[ resource ]]"
-                                              authorization-token="[[ authorizationToken ]]"
-                                              api-errors="[[ apiErrors ]]"
-                                              size="5"
-                                              preview
-                                              auto-load></appsco-application-assignees>
-
-                <div class="details-log flex-vertical">
-
-                    <paper-tabs id="paperTabs" selected="{{ _selectedTab }}">
-                        <paper-tab name="info">Info</paper-tab>
-                        <paper-tab name="log">Log</paper-tab>
-                    </paper-tabs>
-
-                    <neon-animated-pages
-                            selected="{{ _selectedTab }}"
-                            entry-animation="fade-in-animation"
-                            exit-animation="fade-out-animation"
-                            class="info-details-section">
-
-                        <div name="info" class="tab-content details">
-                            <appsco-application-analytics-info
-                                    application="[[ resource ]]"></appsco-application-analytics-info>
-                        </div>
-
-                        <div name="log" class="tab-content log">
-                            <appsco-application-log
-                                    application="[[ resource ]]"
-                                    authorization-token="[[ authorizationToken ]]"
-                                    company>
-                            </appsco-application-log>
-                        </div>
-
-                    </neon-animated-pages>
-
-                </div>
-
-                <div class="info-actions flex-horizontal">
-                    <paper-button
-                            class="view-button flex"
-                            on-tap="_onResourceInfoEdit">
-                        Edit
-                    </paper-button>
-
-                    <paper-button
-                            class="share-button flex"
-                            on-tap="_onShareResource">
-                        Share
-                    </paper-button>
-                </div>
-
-            </div>
+            </template>
 
         </appsco-content>
 
@@ -309,6 +314,11 @@
                     value: function() {
                         return {};
                     }
+                },
+
+                resourceAdmin: {
+                    type: Boolean,
+                    value: false
                 },
 
                 _orgUnits: {
@@ -537,11 +547,11 @@
             },
 
             addGroup: function(group) {
-                this.$.appscoCompanyGroups.addItems([group]);
+                this.$$('appscoCompanyGroups').addItems([group]);
             },
 
             removeGroup: function(group) {
-                this.$.appscoCompanyGroups.removeItems([group]);
+                this.$$('appscoCompanyGroups').removeItems([group]);
             },
 
             _handleResourceInfo: function(resource) {
@@ -567,12 +577,15 @@
 
             _onResourceAction: function(event) {
 
-                if (event.detail.item.activated) {
-                    this._onViewResourceInfo(event);
-                }
-                else {
-                    this.hideInfo();
-                    this.setDefaultResource();
+                if (!this.resourceAdmin) {
+
+                    if (event.detail.item.activated) {
+                        this._onViewResourceInfo(event);
+                    }
+                    else {
+                        this.hideInfo();
+                        this.setDefaultResource();
+                    }
                 }
             },
 
@@ -653,10 +666,13 @@
             },
 
             _resetFilters: function() {
-                this.$.appscoCompanyGroups.reset();
+
+                if (this.$$('appscoCompanyGroups')) {
+                    this.$$('appscoCompanyGroups').reset();
+                }
             },
             _searchGroups: function(term) {
-                this.$.appscoCompanyGroups.filterByTerm(term);
+                this.$$('appscoCompanyGroups').filterByTerm(term);
             },
 
             _onSearchGroups: function(event) {
@@ -664,7 +680,7 @@
             },
 
             _onSearchGroupsClear: function() {
-                this.$.appscoSearch.reset();
+                this.$$('appscoSearch').reset();
                 this._searchGroups('');
             },
 

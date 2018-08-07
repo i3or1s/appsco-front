@@ -563,6 +563,15 @@
                                     <iron-icon icon="icons:verified-user"></iron-icon> <span class="menu-text">Policies</span>
                                 </a>
                             </template>
+
+                            <template is="dom-if" if="[[ _resourceAdmin ]]">
+                                <div class="section">
+                                    <span class="menu-text">Administration</span>
+                                </div>
+                                <a name="resources" href="#">
+                                    <iron-icon icon="icons:list"></iron-icon> <span class="menu-text">Resources</span>
+                                </a>
+                            </template>
                         </template>
                         <template is="dom-if" if="[[ _companyContact ]]">
                             <a name="contact-home" href="#">
@@ -640,18 +649,20 @@
                                                               on-search="_onSearchApplications"
                                                               on-search-clear="_onSearchApplicationsClear"></appsco-contact-home-page-actions>
 
-                            <appsco-resources-page-actions id="appscoResourcesPageActions"
-                                    name="resources"
-                                    authorization-token="[[ authorizationToken ]]"
-                                    filter-api="[[ api.dashboards ]]?extended=1"
-                                    on-add-item-action="_onAddCompanyItemAction"
-                                    on-import-resources="_onImportResourcesAction"
-                                    on-search="_onSearchCompanyApplications"
-                                    on-search-clear="_onSearchCompanyApplicationsClear"
-                                    on-select-all-resources="_onSelectAllResourcesAction"
-                                    on-share="_onShareResources"
-                                    on-remove="_onRemoveApplications"
-                                    on-share-to-group="_onShareResourcesToGroup"></appsco-resources-page-actions>
+                            <template is="dom-if" if="[[ !_resourceAdmin ]]">
+                                <appsco-resources-page-actions id="appscoResourcesPageActions"
+                                        name="resources"
+                                        authorization-token="[[ authorizationToken ]]"
+                                        filter-api="[[ api.dashboards ]]?extended=1"
+                                        on-add-item-action="_onAddCompanyItemAction"
+                                        on-import-resources="_onImportResourcesAction"
+                                        on-search="_onSearchCompanyApplications"
+                                        on-search-clear="_onSearchCompanyApplicationsClear"
+                                        on-select-all-resources="_onSelectAllResourcesAction"
+                                        on-share="_onShareResources"
+                                        on-remove="_onRemoveApplications"
+                                        on-share-to-group="_onShareResourcesToGroup"></appsco-resources-page-actions>
+                            </template>
 
                             <appsco-manage-resource-page-actions
                                     id="appscoManageApplicationPageActions"
@@ -983,6 +994,7 @@
                             company-resources-api="[[ _companyApplicationsApi ]]"
                             groups-api="[[ _companyGroupsApi ]]"
                             api-errors="[[ _apiErrors ]]"
+                            resource-admin="[[ _resourceAdmin ]]"
                             on-list-loaded="_onLoadedPage"
                             on-edit-resource="_onEditCompanyResource"
                             on-info-edit-resource="_onInfoEditCompanyResource"
@@ -1008,6 +1020,7 @@
                             accounts-api="[[ api.accounts ]]"
                             account="{{ account }}"
                             api-errors="[[ _apiErrors ]]"
+                            resource-admin="[[ _resourceAdmin ]]"
                             on-share-company-resource="_onShareCompanyResource"
                             on-add-resource-admin="_onAddResourceAdmin"
                             on-remove-application="_onRemoveCompanyApplication"
@@ -2344,6 +2357,11 @@
                     computed: '_computeCompanyAdmin(currentCompany)'
                 },
 
+                _resourceAdmin: {
+                    type: Boolean,
+                    value: false
+                },
+
                 _companyContact: {
                     type: Boolean,
                     computed: '_computeCompanyContact(currentCompany)'
@@ -2753,8 +2771,11 @@
             },
 
             _onCurrentCompanyChanged: function(company, oldCompany) {
+
                 if (company && company.company) {
+                    this._setResourceAdmin(company);
                     this._personalFolderPage = false;
+
                     for (key in company.company) {
                         this._storeValue('company', company.company.alias);
 
@@ -2823,6 +2844,27 @@
 
             _computeCompanyAdmin: function(company) {
                 return company.company_admin;
+            },
+
+            _setResourceAdmin: function(currentCompany) {
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: this.api.getUserPrivilegesApi,
+                        method: 'POST',
+                        handleAs: 'json',
+                        headers: {
+                            'Authorization': 'token ' + this.authorizationToken,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'company=' + encodeURIComponent(currentCompany.company.self)
+                    };
+
+                request.send(options).then(function() {
+
+                    this._resourceAdmin = ((200 == request.status) ?
+                        (request.response.scopes['COMPANY_APPLICATION_LIST'] && !this._companyAdmin) :
+                        false);
+                }.bind(this));
             },
 
             _computeCompanyContact: function(company) {
@@ -3105,11 +3147,11 @@
 
                 this._companyApi = companyApi;
                 this._companyIconsApi = company.icons;
+                this._companyApplicationsApi = companyApi + '/applications';
                 this._companyNetscalerFeatureApi = companyApi+'/feature/netscaler/sso/resourcelist';
                 this._partnerApi = partnerApi;
 
                 if (company.company_admin) {
-                    this._companyApplicationsApi = companyApi + '/applications';
                     this._companyRolesApi = companyApi + '/directory/roles';
                     this._companyNotificationsApi = companyApi + '/notification';
                     this._companyInvitationsApi = companyApi + '/invitation';

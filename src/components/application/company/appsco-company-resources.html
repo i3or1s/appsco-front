@@ -78,6 +78,7 @@ Custom property | Description | Default
                                                       item="[[ item ]]"
                                                       type="[[ type ]]"
                                                       selectable="[[ selectable ]]"
+                                                      resource-admin="[[ resourceAdmin ]]"
                                                       on-item="_onListItemAction"
                                                       on-select-item="_onSelectListItemAction"></appsco-company-resource-item>
 
@@ -99,6 +100,14 @@ Custom property | Description | Default
         Polymer({
 
             is: 'appsco-company-resources',
+
+            properties: {
+
+                resourceAdmin: {
+                    type: Boolean,
+                    value: false
+                }
+            },
 
             behaviors: [
                 Polymer.AppscoListBehavior,

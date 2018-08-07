@@ -146,18 +146,21 @@
             <div class="flex-vertical" resource>
 
                 <div class="resource-header">
-                    <paper-icon-button
-                            class="action-share"
-                            icon="social:share"
-                            title="Share"
-                            on-tap="_onShareApplication"></paper-icon-button>
+                    <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
+                        <paper-icon-button
+                                class="action-share"
+                                icon="social:share"
+                                title="Share"
+                                on-tap="_onShareApplication"></paper-icon-button>
+                    </template>
 
                     <appsco-resource-image-settings
                             id="appscoAccountImageSettings"
                             class="application-icon"
                             resource="{{ application }}"
                             authorization-token="[[ authorizationToken ]]"
-                            image-settings-api="[[ _resourceImageSettingApi ]]">
+                            image-settings-api="[[ _resourceImageSettingApi ]]"
+                            preview-only$="[[ resourceAdmin ]]">
                     </appsco-resource-image-settings>
 
                     <appsco-account-image account="[[ account ]]"></appsco-account-image>
@@ -165,13 +168,16 @@
 
                 <p class="application-title">[[ application.title ]]</p>
 
-                <appsco-application-assignees id="appscoApplicationAssignees"
-                                              class="appsco-application-assignees"
-                                              application="[[ application ]]"
-                                              authorization-token="[[ authorizationToken ]]"
-                                              size="5"
-                                              preview
-                                              auto-load></appsco-application-assignees>
+                <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
+                    <appsco-application-assignees id="appscoApplicationAssignees"
+                                                  class="appsco-application-assignees"
+                                                  application="[[ application ]]"
+                                                  authorization-token="[[ authorizationToken ]]"
+                                                  api-errors="[[ apiErrors ]]"
+                                                  size="5"
+                                                  preview
+                                                  auto-load></appsco-application-assignees>
+                </template>
 
                 <div class="info">
                         Created by: [[ application.added_by.display_name ]]
@@ -194,13 +200,15 @@
                     </div>
                 </template>
 
-                <div class="resource-actions flex-horizontal">
-                    <paper-button
-                            class="remove-button flex"
-                            on-tap="_onRemoveApplication">
-                        Remove
-                    </paper-button>
-                </div>
+                <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
+                    <div class="resource-actions flex-horizontal">
+                        <paper-button
+                                class="remove-button flex"
+                                on-tap="_onRemoveApplication">
+                            Remove
+                        </paper-button>
+                    </div>
+                </template>
 
             </div>
 
@@ -220,6 +228,7 @@
                                 groups-api="[[ _groupsApi ]]"
                                 authorization-token="[[ authorizationToken ]]"
                                 api-errors="[[ apiErrors ]]"
+                                resource-admin="[[ resourceAdmin ]]"
                                 on-application-settings="_onResourceSettings"
                                 on-all-assignees="_onAllAssignees"
                                 on-all-log="_onAllLog"
@@ -239,54 +248,56 @@
                                                                domain="[[ domain ]]"
                         ></appsco-company-resource-settings-page>
 
-                        <appsco-application-groups-page
-                                id="appscoApplicationGroupsPage"
-                                name="appsco-application-groups-page"
-                                application="[[ application ]]"
-                                groups-api="[[ _groupsApi ]]"
-                                authorization-token="[[ authorizationToken ]]"
-                                on-back="_onResourceBack">
-                        </appsco-application-groups-page>
+                        <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
+                            <appsco-application-groups-page
+                                    id="appscoApplicationGroupsPage"
+                                    name="appsco-application-groups-page"
+                                    application="[[ application ]]"
+                                    groups-api="[[ _groupsApi ]]"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    on-back="_onResourceBack">
+                            </appsco-application-groups-page>
 
-                        <appsco-application-compliance-page
-                                id="appscoApplicationCompliancePage"
-                                name="appsco-application-compliance-page"
-                                application="[[ application ]]"
-                                authorization-token="[[ authorizationToken ]]"
-                                api-errors="[[ apiErrors ]]"
-                                on-back="_onResourceBack"
-                                on-compliance-info-updated="_onComplianceInfoUpdated">
-                        </appsco-application-compliance-page>
+                            <appsco-application-compliance-page
+                                    id="appscoApplicationCompliancePage"
+                                    name="appsco-application-compliance-page"
+                                    application="[[ application ]]"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    api-errors="[[ apiErrors ]]"
+                                    on-back="_onResourceBack"
+                                    on-compliance-info-updated="_onComplianceInfoUpdated">
+                            </appsco-application-compliance-page>
 
-                        <appsco-resource-admins-page
-                                id="appscoResourceAdminsPage"
-                                name="appsco-resource-admins-page"
-                                application="[[ application ]]"
-                                authorization-token="[[ authorizationToken ]]"
-                                api-errors="[[ apiErrors ]]"
-                                on-back="_onResourceBack"
-                        ></appsco-resource-admins-page>
+                            <appsco-resource-admins-page
+                                    id="appscoResourceAdminsPage"
+                                    name="appsco-resource-admins-page"
+                                    application="[[ application ]]"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    api-errors="[[ apiErrors ]]"
+                                    on-back="_onResourceBack"
+                            ></appsco-resource-admins-page>
 
-                        <appsco-application-assignees-page
-                                id="appscoApplicationAssigneesPage"
-                                name="appsco-application-assignees-page"
-                                application="{{ application }}"
-                                authorization-token="[[ authorizationToken ]]"
-                                api-errors="[[ apiErrors ]]"
-                                on-assignee-claims="_onAssigneeClaims"
-                                on-back="_onResourceBack"
-                                account="[[ account ]]"
-                                on-assignees-empty="_pageLoaded"
-                                on-assignees-loaded="_pageLoaded"
-                        ></appsco-application-assignees-page>
+                            <appsco-application-assignees-page
+                                    id="appscoApplicationAssigneesPage"
+                                    name="appsco-application-assignees-page"
+                                    application="{{ application }}"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    api-errors="[[ apiErrors ]]"
+                                    on-assignee-claims="_onAssigneeClaims"
+                                    on-back="_onResourceBack"
+                                    account="[[ account ]]"
+                                    on-assignees-empty="_pageLoaded"
+                                    on-assignees-loaded="_pageLoaded"
+                            ></appsco-application-assignees-page>
 
-                        <appsco-application-log-page
-                                name="appsco-application-log-page"
-                                application="[[ application ]]"
-                                authorization-token="[[ authorizationToken ]]"
-                                company
-                                on-back="_onResourceBack">
-                        </appsco-application-log-page>
+                            <appsco-application-log-page
+                                    name="appsco-application-log-page"
+                                    application="[[ application ]]"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    company
+                                    on-back="_onResourceBack">
+                            </appsco-application-log-page>
+                        </template>
 
                     </neon-animated-pages>
                 </div>
@@ -333,6 +344,12 @@
 
                 domain: {
                     type: String
+                },
+
+                resourceAdmin: {
+                    type: Boolean,
+                    value: false,
+                    observer: '_onResourceAdminChanged'
                 },
 
                 _lastEditedDate: {
@@ -583,7 +600,17 @@
             _onApplicationChanged: function (application) {
                 if (application.self) {
                     this.$.appscoManageApplicationComponentsPage.load();
-                    this.$.appscoApplicationGroupsPage.loadGroups();
+
+                    if (this.$$('appscoApplicationGroupsPage') && this.$$('appscoApplicationGroupsPage').$) {
+                        this.$$('appscoApplicationGroupsPage').loadGroups();
+                    }
+                }
+            },
+
+            _onResourceAdminChanged: function(value) {
+
+                if (value) {
+                    this._pageLoaded();
                 }
             },
 
@@ -633,7 +660,7 @@
             },
 
             removeGroup: function(group) {
-                this.$.appscoApplicationGroupsPage.removeGroup(group);
+                this.$$('appscoApplicationGroupsPage').removeGroup(group);
             },
 
             _showApplicationComponentsPage: function() {
@@ -647,17 +674,17 @@
             },
 
             reloadAssignees: function() {
-                this.$.appscoApplicationAssignees.reload();
+                this.$$('appscoApplicationAssignees').reload();
                 this.$.appscoManageApplicationComponentsPage.reloadAssignees();
-                this.$.appscoApplicationAssigneesPage.reloadAssignees();
+                this.$$('#appscoApplicationAssigneesPage').reloadAssignees();
             },
 
             searchAssignees: function(term) {
-                this.$.appscoApplicationAssigneesPage.searchAssignees(term);
+                this.$$('#appscoApplicationAssigneesPage').searchAssignees(term);
             },
 
             reloadResourceAdmins: function() {
-                this.$.appscoResourceAdminsPage.reload();
+                this.$$('#appscoResourceAdminsPage').reload();
             },
 
             removeApplicationAssignee: function(application, assignee) {
@@ -668,9 +695,9 @@
             },
 
             _removeAssignee: function(assignee) {
-                this.$.appscoApplicationAssignees.removeAssignee(assignee);
+                this.$$('appscoApplicationAssignees').removeAssignee(assignee);
                 this.$.appscoManageApplicationComponentsPage.removeAssignee(assignee);
-                this.$.appscoApplicationAssigneesPage.removeAssignee(assignee);
+                this.$$('#appscoApplicationAssigneesPage').removeAssignee(assignee);
             },
 
             _onAssigneeClaims: function(event) {
