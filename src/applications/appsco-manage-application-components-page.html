@@ -11,6 +11,7 @@
 
 <link rel="import" href="../components/application/appsco-application-settings-card.html">
 <link rel="import" href="../components/application/company/appsco-application-assignees.html">
+<link rel="import" href="../components/application/company/appsco-resource-admins.html">
 <link rel="import" href="../components/application/appsco-application-log.html">
 <link rel="import" href="../components/application/appsco-application-analytics-security.html">
 <link rel="import" href="../components/application/appsco-application-details-idp.html">
@@ -135,7 +136,9 @@
             :host .appsco-application-idp-info,
             :host .appsco-application-log,
             :host .appsco-application-groups,
-            :host .appsco-application-autologin{
+            :host .appsco-application-autologin,
+            :host .appsco-compliance-info,
+            :host .appsco-resource-admin{
                 margin-bottom: 10px;
             }
             :host > * {
@@ -292,6 +295,23 @@
 
                 <div class="card-actions">
                     <paper-button on-tap="_onManageCompliance">Manage</paper-button>
+                </div>
+            </paper-card>
+
+            <paper-card heading="Resource admins" class="appsco-resource-admin">
+                <div class="card-content">
+                    <p>Assign users that which will have rights to manage given resource.</p>
+                    <appsco-resource-admins id="appscoResourceAdmins"
+                                                  application="[[ application ]]"
+                                                  authorization-token="[[ authorizationToken ]]"
+                                                  api-errors="[[ apiErrors ]]"
+                                                  size="5"
+                                                  preview
+                                                  auto-load></appsco-resource-admins>
+                </div>
+
+                <div class="card-actions">
+                    <paper-button on-tap="_onResourceAdmins">Manage</paper-button>
                 </div>
             </paper-card>
 
@@ -546,6 +566,11 @@
             _onManageCompliance: function(event) {
                 this._setSharedElement(event.target);
                 this.fire('manage-compliance');
+            },
+
+            _onResourceAdmins: function(event) {
+                this._setSharedElement(event.target);
+                this.fire('manage-resource-admins');
             },
 
             _onAutologinUnavailable: function() {

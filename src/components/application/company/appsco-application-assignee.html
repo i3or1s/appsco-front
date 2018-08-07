@@ -180,6 +180,11 @@ Example:
                     }
                 },
 
+                infoSection: {
+                    type: Boolean,
+                    value: function () { return true; }
+                },
+
                 /**
                  * Assignee to display.
                  *
@@ -204,7 +209,7 @@ Example:
 
                 _securityScorePermission: {
                     type: Boolean,
-                    computed: '_computeSecurityScorePermission(application)'
+                    computed: '_computeSecurityScorePermission(application, infoSection)'
                 },
 
                 /**
@@ -245,8 +250,8 @@ Example:
                 return application.claim_type === 'individual';
             },
 
-            _computeSecurityScorePermission: function(application) {
-                return (-1 < ['unpw', 'item'].indexOf(application.auth_type));
+            _computeSecurityScorePermission: function(application, infoSection) {
+                return (-1 < ['unpw', 'item'].indexOf(application.auth_type)) && infoSection;
             },
 
             _onAssigneeAction: function() {

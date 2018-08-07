@@ -50,9 +50,11 @@
 <link rel="import" href="components/folder/appsco-folders-rename.html">
 <link rel="import" href="components/folder/appsco-folders-remove.html">
 <link rel="import" href="components/resource/appsco-share-resource.html">
+<link rel="import" href="components/resource/appsco-add-resource-admin.html">
 <link rel="import" href="components/application/company/appsco-company-application-remove.html">
 <link rel="import" href="components/application/company/appsco-application-assignee-claims.html">
 <link rel="import" href="components/application/company/appsco-application-assignee-revoke.html">
+<link rel="import" href="components/application/company/appsco-resource-admin-revoke.html">
 <link rel="import" href="components/application/company/appsco-company-resource-settings-dialog.html">
 <link rel="import" href="components/application/appsco-import-resources.html">
 <link rel="import" href="components/application/appsco-import-personal-resources.html">
@@ -1007,8 +1009,10 @@
                             account="{{ account }}"
                             api-errors="[[ _apiErrors ]]"
                             on-share-company-resource="_onShareCompanyResource"
+                            on-add-resource-admin="_onAddResourceAdmin"
                             on-remove-application="_onRemoveCompanyApplication"
                             on-revoke-assignee="_onRevokeAssigneeAccess"
+                            on-revoke-resource-admin="_onRevokeResourceAdmin"
                             on-application-settings-saved="_onApplicationSettingsSaved"
                             on-application-settings-no-changes="_onApplicationSettingsNoChanges"
                             on-add-to-orgunit="_onAddApplicationToOrgunit"
@@ -1576,6 +1580,16 @@
                 on-resources-shared="_onResourcesShared"
                 ></appsco-share-resource>
 
+        <appsco-add-resource-admin
+                id="appscoAddResourceAdmin"
+                resources="[[ _applicationsToShare ]]"
+                authorization-token="[[ authorizationToken ]]"
+                get-roles-api="[[ _companyRolesApi ]]"
+                get-contacts-api="[[ _companyContactsApi ]]"
+                api-errors="[[ _apiErrors ]]"
+                on-resources-shared="_onResourceAdminAdded"
+        ></appsco-add-resource-admin>
+
         <appsco-company-group-notification-dialog
                 id="appscoNotifyGroup"
                 authorization-token="[[ authorizationToken ]]"
@@ -1605,6 +1619,12 @@
                 authorization-token="[[ authorizationToken ]]"
                 on-access-revoked="_onAssigneeAccessRevoked"
                 ></appsco-application-assignee-revoke>
+
+        <appsco-resource-admin-revoke
+                id="appscoResourceAdminRevoke"
+                authorization-token="[[ authorizationToken ]]"
+                on-access-revoked="_onResourceAdminRevoked"
+                ></appsco-resource-admin-revoke>
 
         <appsco-company-application-remove
                 id="appscoCompanyApplicationsRemove"
@@ -4572,6 +4592,20 @@
                 this.$.appscoShareResource.toggle();
             },
 
+            _onAddResourceAdmin: function(event) {
+                this.set('_applicationsToShare', []);
+                this.set('_applicationsToShare', [event.detail.resource]);
+                this.$.appscoAddResourceAdmin.toggle();
+            },
+
+            _onResourceAdminAdded: function(event) {
+                if (this.$.appscoManageApplicationPage.$) {
+                    this.$.appscoManageApplicationPage.reloadResourceAdmins();
+                }
+                this._notify('Resource admin successfully added.');
+                this._notifyReloadApplications();
+            },
+
             _onResourcesShared: function(event) {
                 var resources = event.detail.resources,
                     length = resources.length,
@@ -4660,6 +4694,14 @@
                 assigneeRevokeComponent.toggle();
             },
 
+            _onRevokeResourceAdmin: function(event) {
+                var resourceAdminRevokeComponent = this.$.appscoResourceAdminRevoke;
+
+                resourceAdminRevokeComponent.setAssignee(event.detail.assignee);
+                resourceAdminRevokeComponent.setApplication(event.detail.application);
+                resourceAdminRevokeComponent.toggle();
+            },
+
             _removeApplicationAssignee: function(application, assignee) {
 
                 if (this.$.appscoResourcesPage.$) {
@@ -4690,6 +4732,18 @@
                 this._notifyReloadAccounts();
                 this._notifyReloadAccessOnBoarding();
                 this._notify('Access for ' + assignee.display_name + ' on ' + application.title + ' was revoked successfully.');
+            },
+
+            _onResourceAdminRevoked: function(event) {
+                var application = event.detail.application,
+                    assignee = event.detail.assignee;
+
+                if (this.$.appscoManageApplicationPage.$) {
+                    this.$.appscoManageApplicationPage.reloadResourceAdmins();
+                }
+
+                this._notifyReloadApplications();
+                this._notify('Resource admin access for ' + assignee.display_name + ' on ' + application.title + ' was revoked successfully.');
             },
 
             _removeApplications: function(applications) {

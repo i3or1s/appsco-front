@@ -1,0 +1,192 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/hero-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-right-animation.html">
+
+<link rel="import" href="../components/application/company/appsco-resource-admins.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="appsco-resource-admins-page">
+    <template>
+        <style include="webkit-scrollbar-style">
+            :host {
+                @apply(--full-page);
+
+                --paper-card-header: {
+                    border-bottom: 1px solid var(--divider-color);
+                };
+
+                --background-color: var(--body-background-color);
+                --subscriber-initials-background-color: var(--body-background-color-darker);
+            }
+            :host paper-card {
+                @apply(--full-page-paper-card);
+            }
+            .page-close-action {
+                @apply(--page-close-action);
+            }
+            .info p {
+                margin-top: 5px;
+                margin-bottom: 0;
+            }
+            :host paper-button {
+                @apply(--primary-button);
+                display: inline-block;
+            }
+        </style>
+
+        <paper-card heading="Resource Admins" id="card">
+            <paper-icon-button
+                    icon="close"
+                    title="Close"
+                    class="page-close-action"
+                    on-tap="_back"></paper-icon-button>
+
+            <div class="card-content layout vertical">
+
+                <div class="actions">
+                    <paper-button on-tap="_addResourceAdmins">Add Resource Admin</paper-button>
+                </div>
+
+                <appsco-resource-admins
+                        id="appscoApplicationAssignees"
+                        application="[[ application ]]"
+                        authorization-token="[[ authorizationToken ]]"
+                        api-errors="[[ apiErrors ]]"
+                        size="10"
+                        auto-load
+                        load-more
+                        on-assignees-empty="_onAssigneesEmpty"
+                        on-assignees-loaded="_onAssigneesLoaded"
+                        on-assignees-loaded="_onAssigneesLoaded"
+                        on-revoke-assignee="_onRevokeAssignee"
+                ></appsco-resource-admins>
+
+            </div>
+        </paper-card>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-resource-admins-page',
+
+            properties: {
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _assigneesEmpty: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * Animation config with hero animation.
+                 */
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': [{
+                                name: 'hero-animation',
+                                id: 'hero',
+                                toPage: this
+                            }, {
+                                name: 'fade-in-animation',
+                                node: this,
+                                timing: {
+                                    duration: 600
+                                }
+                            }],
+                            'exit': {
+                                name: 'slide-right-animation',
+                                node: this,
+                                timing: {
+                                    duration: 200
+                                }
+                            }
+                        }
+                    }
+                },
+
+                /**
+                 * Defines shared element of hero animation.
+                 */
+                sharedElements: {
+                    value: function() {
+                        return {
+                            'hero': this.$.card
+                        }
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonSharedElementAnimatableBehavior
+            ],
+
+            _onAssigneesEmpty: function() {
+                this._assigneesEmpty = true;
+            },
+
+            _onAssigneesLoaded: function() {
+                this._assigneesEmpty = false;
+            },
+
+            _onRevokeAssignee: function (event) {
+                event.stopPropagation();
+                this.fire('revoke-resource-admin', {
+                    assignee: event.detail.assignee,
+                    application: this.application
+                });
+            },
+
+            reload: function() {
+                this.reloadAssignees();
+            },
+
+            reloadAssignees: function() {
+                this.$.appscoApplicationAssignees.reload();
+            },
+
+            searchAssignees: function(term) {
+                this.$.appscoApplicationAssignees.search(term);
+            },
+
+            removeAssignee: function(assignee) {
+                this.$.appscoApplicationAssignees.removeAssignee(assignee);
+            },
+
+            _addResourceAdmins: function() {
+                this.fire('add-resource-admin', {
+                    resource: this.application
+                });
+            },
+
+            _back: function() {
+                this.fire('back');
+            },
+
+            setupPage: function() {
+                this.fire('enable-assignees-search-action');
+            },
+
+            resetPage: function() {
+                this.fire('disable-assignees-search-action');
+            }
+        });
+    </script>
+</dom-module>

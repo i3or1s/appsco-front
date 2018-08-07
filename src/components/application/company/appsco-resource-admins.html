@@ -1,0 +1,569 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="appsco-application-assignee.html">
+
+<dom-module id="appsco-resource-admins">
+    <template>
+        <style>
+            :host {
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+                position: relative;
+                color: var(--primary-text-color);
+            }
+            :host .progress {
+                height: 6px;
+            }
+            :host paper-progress {
+                width: 100%;
+            }
+            :host .info-total {
+                margin-bottom: 10px;
+            }
+            :host .total {
+                @apply(--paper-font-caption);
+                opacity: 0.6;
+            }
+            :host .assignees {
+                @apply(--layout-horizontal);
+                @apply(--layout-wrap);
+                width: 100%;
+            }
+            :host .load-more-box {
+                margin-top: 10px;
+                padding-top: 4px;
+                position: relative;
+            }
+            :host .load-more-box paper-progress {
+                width: 100%;
+                position: absolute;
+                top: 4px;
+                left: 0;
+            }
+            :host .load-more-button {
+                display: block;
+                width: 120px;
+                margin: 20px auto 0;
+                text-align: center;
+                @apply(--load-more-button);
+            }
+            :host .message {
+                width: 100%;
+                color: var(--secondary-text-color);
+                font-style: italic;
+                @apply(--paper-font-body2);
+                @apply(--info-message);
+            }
+            :host appsco-application-assignee {
+                width: 100%;
+                margin: 0 0 10px 0;
+                @apply(--appsco-application-assignee);
+            }
+            :host([preview]) {
+                @apply(--layout-flex-none);
+                display: block;
+            }
+            :host([preview]) appsco-application-assignee {
+                width: auto;
+                margin: 0 2px 0 0;
+                @apply(--appsco-application-assignee-preview);
+            }
+        </style>
+
+        <iron-ajax id="getAssigneesCall"
+                   url="[[ _listApi ]]"
+                   headers="[[ _headers ]]"
+                   method="GET"
+                   handle-as="json"
+                   on-response="_onResponse"
+                   on-error="_onError">
+        </iron-ajax>
+
+        <div class="assignees">
+            <div class="progress">
+                <paper-progress id="progress" indeterminate></paper-progress>
+            </div>
+
+            <template is="dom-if" if="[[ !preview ]]">
+                <div class="info-total" hidden$="[[ !_totalAssignees ]]">
+                    <span class="total">Number of Resource Admins: [[ _totalAssignees ]]</span>
+                </div>
+            </template>
+
+            <template is="dom-repeat" items="[[ _admins ]]">
+                <appsco-application-assignee
+                        application="[[ application ]]"
+                        assignee="[[ item.user.account ]]"
+                        info-section="[[ _infoSection ]]"
+                        preview="[[ preview ]]"></appsco-application-assignee>
+            </template>
+        </div>
+
+        <template is="dom-if" if="[[ preview ]]">
+            <div hidden$="[[ !_totalAssignees ]]">
+                <span class="total">Number of Resource Admins: [[ _totalAssignees ]]</span>
+            </div>
+        </template>
+
+        <template is="dom-if" if="[[ loadMore ]]">
+            <div class="load-more-box" hidden$="[[ !_loadMore ]]">
+                <paper-progress id="loadMoreProgress" indeterminate></paper-progress>
+                <paper-button class="load-more-button"
+                              on-tap="_onLoadMoreAction">Load More</paper-button>
+            </div>
+        </template>
+
+        <template is="dom-if" if="{{ _message }}">
+            <p class="message">
+                [[ _message ]]
+            </p>
+        </template>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-resource-admins',
+
+            properties: {
+
+                /**
+                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
+                 */
+                application: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                /**
+                 * Number of assignees to load.
+                 */
+                size: {
+                    type: Number,
+                    value: 5
+                },
+
+                /**
+                 * Indicates if load more action should be available or not.
+                 */
+                loadMore: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * Indicates if assignees should be in preview mode rather then full detailed view.
+                 */
+                preview: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                /**
+                 * Indicates if assignees should be loaded on API change or manually by calling 'load' method.
+                 */
+                autoLoad: {
+                    type: Boolean,
+                    value: false
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _infoSection: {
+                    type: Boolean,
+                    value: false
+                },
+
+
+                /**
+                 * API link to load list from.
+                 */
+                _listApi: {
+                    type: String,
+                    computed: '_computeListApi(application, size)'
+                },
+
+                /**
+                 * Computed headers.
+                 */
+                _headers: {
+                    type: Object,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                _searchListApi: {
+                    type: String,
+                    computed: '_computeSearchListApi(application)'
+                },
+
+                /**
+                 * Next page of assignees to load.
+                 */
+                _nextListPageApiUrl: {
+                    type: String,
+                    value: ''
+                },
+
+                /**
+                 * [Accounts](https://developers.appsco.com/api/accounts/id) that is to be rendered.
+                 */
+                _admins: {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                },
+
+                _allAdmins: {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                },
+
+                _totalAssignees: {
+                    type: Number,
+                    value: 0
+                },
+
+                _loadMore: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _message: {
+                    type: String,
+                    value: ''
+                }
+            },
+
+            observers: [
+                '_onListApiChanged(_listApi, autoLoad)'
+            ],
+
+            load: function() {
+                this._clearList();
+                this._hideMessage();
+                this._showProgressBar();
+                this._generateNewRequest();
+            },
+
+            reload: function() {
+                this.load();
+            },
+
+            removeAssignee: function(assignee) {
+                var assignees = this._admins,
+                    length = assignees.length,
+                    allAssignees = this._allAdmins,
+                    allLength = allAssignees.length;
+
+                for (var i = 0; i < length; i++) {
+
+                    if (assignee.self === assignees[i].self) {
+                        this.splice('_admins', i, 1);
+                        break;
+                    }
+                }
+
+                for (var j = 0; j < allLength; j++) {
+
+                    if (assignee.self === allAssignees[j].self) {
+                        this.splice('_allAdmins', j, 1);
+                        break;
+                    }
+                }
+
+                this._totalAssignees--;
+                this._setLoadMoreAction();
+
+                if (0 === this._admins.length) {
+                    this._showMessage('You haven\'t shared this resource to anyone yet.');
+                    this._handleEmptyLoad();
+                }
+            },
+
+            search: function(term) {
+
+                if (term.length < 3) {
+                    this._hideMessage();
+                    this.set('_admins', JSON.parse(JSON.stringify(this._allAdmins)));
+                    this.fire('filter-done');
+                    this._setLoadMoreAction();
+                    return false;
+                }
+
+                this.set('_admins', []);
+                this._hideMessage();
+                this._hideLoadMoreAction();
+
+                this._searchAssignees(term).then(function(assignees) {
+                    var length = assignees.length;
+
+                    if (length > 0) {
+                        assignees.forEach(function(assignee, index) {
+                            this.push('_admins', assignee);
+
+                            if (index === (length - 1)) {
+                                this._hideProgressBar();
+                                this.fire('assignees-loaded');
+                            }
+
+                        }.bind(this));
+
+                    }
+                    else {
+                        this._showMessage('There are no assignees with asked term.');
+                        this.fire('assignees-empty');
+                    }
+
+                }.bind(this), function(message) {
+                    this._showMessage(message);
+                }.bind(this));
+            },
+
+            /**
+             * Computes authorization headers.
+             *
+             * @param {Object} authorizationToken
+             * @returns {{ Authorization: string }}
+             * @private
+             */
+            _computeHeaders: function (authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken
+                }
+            },
+
+            _computeListApi: function(application, size) {
+
+                for (key in application) {
+                    return (application.meta && size) ? application.meta.resource_admins + '?page=1' + '&limit=' + this.size + '&extended=1' : '';
+                }
+
+                return '';
+            },
+
+            _computeSearchListApi: function(application) {
+
+                for (key in application) {
+                    return application.meta ? application.meta.resource_admins + '?page=1&limit=100&extended=1' : '';
+                }
+
+                return '';
+            },
+
+            _clearList: function() {
+                this.set('_admins', []);
+                this.set('_allAdmins', []);
+                this._nextListPageApiUrl = '';
+                this._totalAssignees = 0;
+            },
+
+            _showMessage: function(message) {
+                this._message = message;
+            },
+
+            _hideMessage: function() {
+                this._message = '';
+            },
+
+            _showProgressBar: function() {
+                this.$.progress.hidden = false;
+            },
+
+            _hideProgressBar: function() {
+                setTimeout(function() {
+                    this.$.progress.hidden = true;
+                }.bind(this), 500);
+            },
+
+            _showLoadMoreAction: function() {
+                this._loadMore = true;
+            },
+
+            _hideLoadMoreAction: function() {
+                this._loadMore = false;
+            },
+
+            _showLoadMoreProgressBar: function() {
+                this.$$('#loadMoreProgress').hidden = false;
+            },
+
+            _hideLoadMoreProgressBar: function() {
+
+                setTimeout(function() {
+                    if (this.$$('#loadMoreProgress')) {
+                        this.$$('#loadMoreProgress').hidden = true;
+                    }
+                }.bind(this), 300);
+
+            },
+
+            _setLoadMoreAction: function() {
+                (this.loadMore && this._allAdmins.length < this._totalAssignees) ?
+                    this._showLoadMoreAction() :
+                    this._hideLoadMoreAction();
+            },
+
+            _setListApiRequestUrl: function(url) {
+                this.$.getAssigneesCall.url = url;
+            },
+
+            _handleEmptyLoad: function() {
+                this._hideProgressBar();
+                this._hideLoadMoreProgressBar();
+                this.fire('assignees-empty');
+            },
+
+            /**
+             * Aborts previous request in order to get only one and valid response (from next request)
+             *
+             * @private
+             */
+            _abortPreviousRequest: function() {
+                var assigneesCall = this.$.getAssigneesCall;
+                if (assigneesCall.lastRequest) {
+                    assigneesCall.lastRequest.abort();
+                }
+            },
+
+            _generateNewRequest: function() {
+                this._abortPreviousRequest();
+                this.$.getAssigneesCall.generateRequest();
+            },
+
+            _onLoadMoreAction: function() {
+                this._showLoadMoreProgressBar();
+                this._setListApiRequestUrl(this._nextListPageApiUrl);
+                this._generateNewRequest();
+            },
+
+            /**
+             * Handles error on get assignees API request.
+             * @param {Object} event Event from error response.
+             *
+             * @private
+             */
+            _onError: function(event) {
+
+                if (!event.detail.request.aborted) {
+                    this._showMessage(this.apiErrors.getError(event.detail.request.response.code));
+                }
+
+                this._totalAssignees = 0;
+                this._handleEmptyLoad();
+            },
+
+            /**
+             * Handles response on get log API request.
+             * @param {Object} event Event from response.
+             *
+             * @private
+             */
+            _onResponse: function(event) {
+                var response = event.detail.response;
+
+                if (response && response.resource_admins) {
+                    var assignees = response.resource_admins,
+                        meta = response.meta;
+
+                    this._hideMessage();
+
+                    this._totalAssignees = meta.total;
+                    this._nextListPageApiUrl = meta.next + '&limit=' + this.size;
+
+                    if (0 === meta.total) {
+                        this._showMessage('There are no resource admins for this resource.');
+                        this._handleEmptyLoad();
+                        return false;
+                    }
+
+                    if (assignees && assignees.length > 0) {
+                        var assigneesCount = assignees.length - 1;
+
+                        assignees.forEach(function(el, index) {
+
+                            setTimeout( function() {
+
+                                this.push('_admins', el);
+                                this.push('_allAdmins', el);
+
+                                if (index == assigneesCount) {
+                                    this._hideProgressBar();
+                                    this._hideLoadMoreProgressBar();
+                                    this._setLoadMoreAction();
+
+                                    this.fire('assignees-loaded', {
+                                        assignees: assignees
+                                    });
+                                }
+
+                            }.bind(this), (index + 1) * 30 );
+
+                        }.bind(this));
+
+                    }
+                    else {
+                        (assignees && !assignees.length) ?
+                            this._showMessage('You haven\'t shared this resource to anyone yet.') :
+                            this._showMessage('We couldn\'t load assignees at the moment. Please contact AppsCo support.');
+
+                        this._hideLoadMoreAction();
+                        this._handleEmptyLoad();
+                    }
+                }
+            },
+
+            _onListApiChanged: function(api, auto) {
+
+                if (api && auto) {
+                    this.load();
+                }
+            },
+
+            _searchAssignees: function(term) {
+
+                return new Promise(function(resolve, reject) {
+                    var request = document.createElement('iron-request'),
+                        options = {
+                            url: this._searchListApi + '&term=' + term,
+                            method: 'GET',
+                            handleAs: 'json',
+                            headers: this._headers
+                        };
+
+                    request.send(options).then(function() {
+
+                        if (200 === request.status) {
+                            resolve(request.response.resource_admins);
+                        }
+
+                    }, function() {
+                        reject(this.apiErrors.getError(request.response.code));
+                    });
+                }.bind(this));
+            }
+        });
+    </script>
+</dom-module>
