@@ -182,140 +182,144 @@
                 </div>
             </paper-card>
 
-            <paper-card heading="Assignees" class="appsco-application-assignees">
-                <div class="card-content">
-                    <appsco-application-assignees id="appscoApplicationAssignees"
-                                                  application="[[ application ]]"
-                                                  authorization-token="[[ authorizationToken ]]"
-                                                  api-errors="[[ apiErrors ]]"
-                                                  size="5"
-                                                  preview
-                                                  auto-load></appsco-application-assignees>
-                </div>
-
-                <div class="card-actions">
-                    <paper-button on-tap="_onAllAssignees">ALL</paper-button>
-                </div>
-            </paper-card>
-
-            <paper-card heading="Resource Log" class="appsco-application-log">
-                <div class="card-content">
-                    <appsco-application-log
-                            id="appscoApplicationLog"
-                            size="5"
-                            application="[[ application ]]"
-                            authorization-token="[[ authorizationToken ]]"
-                            company></appsco-application-log>
-                </div>
-
-                <div class="card-actions">
-                    <paper-button on-tap="_onAllLog">ALL</paper-button>
-                </div>
-            </paper-card>
-
-            <template is="dom-if" if="[[ _viewSecurityPermission ]]" restamp>
-                <div class="security-sharing">
-                    <paper-card heading="Security" class="appsco-application-security">
-                        <div class="card-content">
-                            <appsco-application-analytics-security application="[[ application ]]"
-                                                                   info></appsco-application-analytics-security>
-                        </div>
-                    </paper-card>
-                </div>
-            </template>
-
-        </div>
-
-        <div class="middle-column">
-            <template is="dom-if" if="[[ _isSAMLApp ]]" restamp>
-                <div class="details-idp">
-                    <paper-card heading="Appsco IdP information" class="appsco-application-idp-info">
-                        <div class="card-content">
-                            <appsco-application-details-idp
-                                    idp-metadata-xml-url="[[ companyIdpSamlMetadataXmlUrl ]]"
-                                    idp-metadata="[[ _idpMetadata ]]"
-                            >
-                            </appsco-application-details-idp>
-                        </div>
-                    </paper-card>
-                </div>
-            </template>
-
-            <paper-card heading="Groups" class="appsco-application-groups">
-                <div class="card-content">
-                    <appsco-application-groups
-                        id="appscoApplicationGroup"
-                        authorization-token="[[ authorizationToken ]]"
-                        groups-api="[[ groupsApi ]]"
-                        application="[[ application ]]"
-                        size="5"
-                        preview></appsco-application-groups>
+            <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
+                <paper-card heading="Assignees" class="appsco-application-assignees">
+                    <div class="card-content">
+                        <appsco-application-assignees id="appscoApplicationAssignees"
+                                                      application="[[ application ]]"
+                                                      authorization-token="[[ authorizationToken ]]"
+                                                      api-errors="[[ apiErrors ]]"
+                                                      size="5"
+                                                      preview
+                                                      auto-load></appsco-application-assignees>
                     </div>
 
-                <div class="card-actions">
-                    <paper-button on-tap="_onManageGroups">Manage</paper-button>
-                </div>
-            </paper-card>
+                    <div class="card-actions">
+                        <paper-button on-tap="_onAllAssignees">ALL</paper-button>
+                    </div>
+                </paper-card>
 
-            <template is="dom-if" if="[[ _isUnPwAuthType ]]">
-                <div class="security-autologin">
-                    <paper-card heading="Autologin" class="appsco-application-autologin">
-                        <div class="card-content">
-                            <appsco-application-autologin
-                                    application="[[ application ]]"
-                                    authorization-token="[[ authorizationToken ]]"
-                                    on-autologin-unavailable="_onAutologinUnavailable"
-                                    on-autologin-changed="_onAutologinChanged"></appsco-application-autologin>
+                <paper-card heading="Resource Log" class="appsco-application-log">
+                    <div class="card-content">
+                        <appsco-application-log
+                                id="appscoApplicationLog"
+                                size="5"
+                                application="[[ application ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                company></appsco-application-log>
+                    </div>
 
-                            <template is="dom-if" if="[[ _autologinUnavailable ]]">
-                                <p>Auto Login sign on method for this resource is unavailable.</p>
-                            </template>
+                    <div class="card-actions">
+                        <paper-button on-tap="_onAllLog">ALL</paper-button>
+                    </div>
+                </paper-card>
 
-                            <template is="dom-if" if="[[ !_autologinUnavailable ]]">
-
-                                <template is="dom-if" if="[[ _autologinItem ]]">
-                                    <p>Turn on Auto Login to automate sign-in process.</p>
-                                </template>
-
-                                <template is="dom-if" if="[[ !_autologinItem ]]">
-                                    <p>Turn off Auto Login if you prefer to choose login account manually after resource opens in browser.</p>
-                                </template>
-
-                            </template>
-                        </div>
-                    </paper-card>
-                </div>
+                <template is="dom-if" if="[[ _viewSecurityPermission ]]" restamp>
+                    <div class="security-sharing">
+                        <paper-card heading="Security" class="appsco-application-security">
+                            <div class="card-content">
+                                <appsco-application-analytics-security application="[[ application ]]"
+                                                                       info></appsco-application-analytics-security>
+                            </div>
+                        </paper-card>
+                    </div>
+                </template>
             </template>
 
-            <paper-card heading="Compliance info" class="appsco-compliance-info">
-                <div class="card-content">
-                    <p>Register user information which this application stores. Information can be used for
-                        reporting purposes or provided to external systems, in order to accomplish transparency on personal data usage.</p>
-                </div>
-
-                <div class="card-actions">
-                    <paper-button on-tap="_onManageCompliance">Manage</paper-button>
-                </div>
-            </paper-card>
-
-            <paper-card heading="Resource admins" class="appsco-resource-admin">
-                <div class="card-content">
-                    <p>Assign users that which will have rights to manage given resource.</p>
-                    <appsco-resource-admins id="appscoResourceAdmins"
-                                                  application="[[ application ]]"
-                                                  authorization-token="[[ authorizationToken ]]"
-                                                  api-errors="[[ apiErrors ]]"
-                                                  size="5"
-                                                  preview
-                                                  auto-load></appsco-resource-admins>
-                </div>
-
-                <div class="card-actions">
-                    <paper-button on-tap="_onResourceAdmins">Manage</paper-button>
-                </div>
-            </paper-card>
-
         </div>
+
+        <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
+            <div class="middle-column">
+                <template is="dom-if" if="[[ _isSAMLApp ]]" restamp>
+                    <div class="details-idp">
+                        <paper-card heading="Appsco IdP information" class="appsco-application-idp-info">
+                            <div class="card-content">
+                                <appsco-application-details-idp
+                                        idp-metadata-xml-url="[[ companyIdpSamlMetadataXmlUrl ]]"
+                                        idp-metadata="[[ _idpMetadata ]]"
+                                >
+                                </appsco-application-details-idp>
+                            </div>
+                        </paper-card>
+                    </div>
+                </template>
+
+                <paper-card heading="Groups" class="appsco-application-groups">
+                    <div class="card-content">
+                        <appsco-application-groups
+                            id="appscoApplicationGroups"
+                            authorization-token="[[ authorizationToken ]]"
+                            groups-api="[[ groupsApi ]]"
+                            application="[[ application ]]"
+                            size="5"
+                            preview></appsco-application-groups>
+                        </div>
+
+                    <div class="card-actions">
+                        <paper-button on-tap="_onManageGroups">Manage</paper-button>
+                    </div>
+                </paper-card>
+
+                <template is="dom-if" if="[[ _isUnPwAuthType ]]">
+                    <div class="security-autologin">
+                        <paper-card heading="Autologin" class="appsco-application-autologin">
+                            <div class="card-content">
+                                <appsco-application-autologin
+                                        application="[[ application ]]"
+                                        authorization-token="[[ authorizationToken ]]"
+                                        on-autologin-unavailable="_onAutologinUnavailable"
+                                        on-autologin-changed="_onAutologinChanged"></appsco-application-autologin>
+
+                                <template is="dom-if" if="[[ _autologinUnavailable ]]">
+                                    <p>Auto Login sign on method for this resource is unavailable.</p>
+                                </template>
+
+                                <template is="dom-if" if="[[ !_autologinUnavailable ]]">
+
+                                    <template is="dom-if" if="[[ _autologinItem ]]">
+                                        <p>Turn on Auto Login to automate sign-in process.</p>
+                                    </template>
+
+                                    <template is="dom-if" if="[[ !_autologinItem ]]">
+                                        <p>Turn off Auto Login if you prefer to choose login account manually after resource opens in browser.</p>
+                                    </template>
+
+                                </template>
+                            </div>
+                        </paper-card>
+                    </div>
+                </template>
+
+                <paper-card heading="Compliance info" class="appsco-compliance-info">
+                    <div class="card-content">
+                        <p>Register user information which this application stores. Information can be used for
+                            reporting purposes or provided to external systems, in order to accomplish transparency on personal data usage.</p>
+                    </div>
+
+                    <div class="card-actions">
+                        <paper-button on-tap="_onManageCompliance">Manage</paper-button>
+                    </div>
+                </paper-card>
+
+                <paper-card heading="Resource admins" class="appsco-resource-admin">
+                    <div class="card-content">
+                        <p>Assign users that which will have rights to manage given resource.</p>
+                        <appsco-resource-admins id="appscoResourceAdmins"
+                                                application="[[ application ]]"
+                                                authorization-token="[[ authorizationToken ]]"
+                                                api-errors="[[ apiErrors ]]"
+                                                size="5"
+                                                preview
+                                                auto-load></appsco-resource-admins>
+                    </div>
+
+                    <div class="card-actions">
+                        <paper-button on-tap="_onResourceAdmins">Manage</paper-button>
+                    </div>
+                </paper-card>
+
+            </div>
+        </template>
 
     </template>
 
@@ -358,6 +362,11 @@
                     value: function() {
                         return {};
                     }
+                },
+
+                resourceAdmin: {
+                    type: Boolean,
+                    value: false
                 },
 
                 /**
@@ -492,7 +501,10 @@
             },
 
             _loadGroups: function() {
-                this.$.appscoApplicationGroup.loadGroups();
+
+                if (this.$$('appscoApplicationGroups') && this.$$('appscoApplicationGroups').$) {
+                    this.$$('appscoApplicationGroups').loadGroups();
+                }
             },
 
             /**

@@ -38,6 +38,14 @@ Custom property | Description | Default
             :host {
                 --icon-action-border-radius: 16px;
             }
+            :host([resource-admin]) .item {
+                cursor: default;
+                @apply(--appsco-list-item);
+            }
+            :host([resource-admin]) .item:hover, :host([resource-admin][activated]) .item {
+                @apply(--shadow-elevation-2dp);
+                @apply(--appsco-list-item-activated);
+            }
             :host([tablet-screen]) .item-additional-info {
                 display: none;
             }
@@ -47,7 +55,7 @@ Custom property | Description | Default
 
         <div class="item" on-tap="_onItemAction">
 
-            <template is="dom-if" if="[[ selectable ]]">
+            <template is="dom-if" if="[[ _selectable ]]">
                 <div class="select-action"
                      on-tap="_onSelectItemAction">
                     <iron-image class="item-icon"
@@ -65,7 +73,7 @@ Custom property | Description | Default
                 </div>
             </template>
 
-            <template is="dom-if" if="[[ !selectable ]]">
+            <template is="dom-if" if="[[ !_selectable ]]">
                 <iron-image class="item-icon"
                             placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII="
                             sizing="cover"
@@ -79,15 +87,17 @@ Custom property | Description | Default
                 <span class="info-value">[[ _resourceType ]]</span>
             </div>
 
-            <div class="item-info item-additional-info">
+            <template is="dom-if" if="!resourceAdmin">
+                <div class="item-info item-additional-info">
 
-                <template is="dom-if" if="[[ _groups ]]">
-                    <div class="info">
-                        <span class="info-label">Groups:&nbsp;</span>
-                        <span class="info-value">[[ _groups ]]</span>
-                    </div>
-                </template>
-            </div>
+                    <template is="dom-if" if="[[ _groups ]]">
+                        <div class="info">
+                            <span class="info-label">Groups:&nbsp;</span>
+                            <span class="info-value">[[ _groups ]]</span>
+                        </div>
+                    </template>
+                </div>
+            </template>
 
             <div class="actions">
                 <paper-button on-tap="_onEditItemAction">Edit</paper-button>
@@ -102,6 +112,17 @@ Custom property | Description | Default
             is: 'appsco-company-resource-item',
 
             properties: {
+
+                resourceAdmin: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                _selectable: {
+                    type: Boolean,
+                    computed: '_computeSelectableState(selectable, resourceAdmin)'
+                },
 
                 _resourceIcon: {
                     type: String,
@@ -124,6 +145,10 @@ Custom property | Description | Default
                 Polymer.NeonAnimationRunnerBehavior,
                 Polymer.AppscoListItemBehavior
             ],
+
+            _computeSelectableState: function(selectable, resourceAdmin) {
+                return (selectable && !resourceAdmin);
+            },
 
             _computeResourceIcon: function(resource) {
                 return resource.application_url ? resource.application_url : (resource.icon_url ? resource.icon_url : '');
