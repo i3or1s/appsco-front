@@ -14,6 +14,7 @@
 <link rel="import" href="applications/appsco-application-assignees-page.html">
 <link rel="import" href="applications/appsco-application-groups-page.html">
 <link rel="import" href="applications/appsco-application-compliance-page.html">
+<link rel="import" href="applications/appsco-resource-admins-page.html">
 <link rel="import" href="components/account/appsco-account-image.html">
 <link rel="import" href="application/appsco-resource-image-settings.html">
 
@@ -224,6 +225,7 @@
                                 on-all-log="_onAllLog"
                                 on-manage-groups="_onManageGroups"
                                 on-manage-compliance="_onManageCompliance"
+                                on-manage-resource-admins="_onManageResourceAdmins"
                                 on-log-empty="_pageLoaded"
                                 on-log-loaded="_pageLoaded">
                         </appsco-manage-application-components-page>
@@ -255,6 +257,15 @@
                                 on-back="_onResourceBack"
                                 on-compliance-info-updated="_onComplianceInfoUpdated">
                         </appsco-application-compliance-page>
+
+                        <appsco-resource-admins-page
+                                id="appscoResourceAdminsPage"
+                                name="appsco-resource-admins-page"
+                                application="[[ application ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                api-errors="[[ apiErrors ]]"
+                                on-back="_onResourceBack"
+                        ></appsco-resource-admins-page>
 
                         <appsco-application-assignees-page
                                 id="appscoApplicationAssigneesPage"
@@ -600,6 +611,10 @@
                 this._selected = 'appsco-application-compliance-page';
             },
 
+            _onManageResourceAdmins: function() {
+                this._selected = 'appsco-resource-admins-page';
+            },
+
             _onResourceSettingsSaved: function(event) {
                 this.application = event.detail.application;
                 this._showApplicationComponentsPage();
@@ -639,6 +654,10 @@
 
             searchAssignees: function(term) {
                 this.$.appscoApplicationAssigneesPage.searchAssignees(term);
+            },
+
+            reloadResourceAdmins: function() {
+                this.$.appscoResourceAdminsPage.reload();
             },
 
             removeApplicationAssignee: function(application, assignee) {

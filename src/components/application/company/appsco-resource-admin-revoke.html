@@ -1,0 +1,132 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../../../bower_components/neon-animation/animations/scale-up-animation.html">
+
+<link rel="import" href="../../components/appsco-loader.html">
+
+<dom-module id="appsco-resource-admin-revoke">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+            }
+            :host paper-dialog {
+                width: 670px;
+                top: 20vh;
+                @apply(--appsco-paper-dialog);
+            }
+            :host .buttons paper-button {
+                @apply(--paper-dialog-button);
+            }
+            :host .buttons paper-button[dialog-confirm] {
+                @apply(--paper-dialog-confirm-button);
+            }
+            :host .buttons paper-button[dialog-dismiss] {
+                @apply(--paper-dialog-dismiss-button);
+            }
+        </style>
+
+        <paper-dialog
+                with-backdrop
+                id="dialog"
+                entry-animation="scale-up-animation"
+                exit-animation="fade-out-animation">
+
+            <h2>Revoke access</h2>
+
+            <div class="remove-container">
+                <appsco-loader active="[[ _loader ]]" loader-alt="AppsCo is revoking access" multi-color></appsco-loader>
+                <p>Please confirm access revoking for [[ assignee.display_name ]].</p>
+            </div>
+
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button dialog-confirm autofocus on-tap="_onRevokeAccessAction">Revoke</paper-button>
+            </div>
+        </paper-dialog>
+
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-resource-admin-revoke',
+
+            properties: {
+
+                /**
+                 * Assignee to revoke access for.
+                 */
+                assignee: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                /**
+                 * Authorization token.
+                 */
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                _loader: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            toggle: function () {
+                this.$.dialog.toggle();
+            },
+
+            setAssignee: function(assignee) {
+                this.set('assignee', assignee);
+            },
+
+            setApplication: function(application) {
+                this.set('application', application);
+            },
+
+            _onRevokeAccessAction: function () {
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: this.application.meta.resource_admin_remove,
+                        method: 'POST',
+                        handleAs: 'json',
+                        headers: {
+                            'Authorization': 'token ' + this.authorizationToken,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    };
+
+                options.body = 'accounts[]=' + encodeURIComponent(this.assignee.self);
+
+                this._loader = true;
+
+                request.send(options).then(function() {
+                    this._loader = false;
+
+                    /**
+                     * Fired when access for assignee is revoked.
+                     *
+                     * @event access-revoked
+                     * @param {Object} assignee
+                     * @param {Object} application
+                     */
+                    this.fire('access-revoked', {
+                        assignee: this.assignee,
+                        application: this.application
+                    });
+
+                    this.$.dialog.close();
+                }.bind(this));
+            }
+        });
+    </script>
+</dom-module>
