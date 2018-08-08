@@ -694,7 +694,9 @@
                             <appsco-manage-account-page-actions
                                     name="manage-account"
                                     on-back="_showCompanyDirectoryPage"
-                                    on-resource-section="_onResourceActionManageAccountPage"></appsco-manage-account-page-actions>
+                                    on-resource-section="_onResourceActionManageAccountPage"
+                                    on-advanced-settings="_showAdvanced"
+                            ></appsco-manage-account-page-actions>
 
                             <appsco-contacts-page-actions
                                     id="appscoContactsPageActions"
@@ -4188,6 +4190,17 @@
 
             _onAccountAdvancedSettings: function() {
                 this.getCurrentAppscoPageElement()._onAccountAdvancedSettings();
+            },
+
+            _showAdvanced: function(event) {
+                if (this.$.appscoManageAccountPage) {
+                    if (event.detail.showAdvanced) {
+                        this.$.appscoManageAccountPage.showAdvanced();
+                        return;
+                    }
+
+                    this.$.appscoManageAccountPage.hideAdvanced();
+                }
             },
 
             _updateIfAdministrator: function(account) {
@@ -7873,6 +7886,10 @@
                 if (currentActions && currentActions.resetPageActions) {
                     currentActions.resetPageActions();
                 }
+            },
+
+            _toggleAdvanced: function() {
+
             }
             /**
              * Global END

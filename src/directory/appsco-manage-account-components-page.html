@@ -392,20 +392,22 @@
                 </template>
             </paper-card>
 
-            <paper-card heading="Resource admin" class="appsco-resource-admin">
-                <div class="card-content">
-                    <appsco-directory-role-resource-admin-applications
-                            id="resourceAdminApplications"
-                            company-role="[[ role ]]"
-                            authorization-token="[[ authorizationToken ]]"
-                            size="5"
-                            preview></appsco-directory-role-resource-admin-applications>
-                </div>
+            <template is="dom-if" if="[[ _shouldShowAdvanced ]]">
+                <paper-card heading="Resource admin" class="appsco-resource-admin">
+                    <div class="card-content">
+                        <appsco-directory-role-resource-admin-applications
+                                id="resourceAdminApplications"
+                                company-role="[[ role ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                size="5"
+                                preview></appsco-directory-role-resource-admin-applications>
+                    </div>
 
-                <div class="card-actions">
-                    <paper-button on-tap="_onResourceAdminApplications">ALL</paper-button>
-                </div>
-            </paper-card>
+                    <div class="card-actions">
+                        <paper-button on-tap="_onResourceAdminApplications">ALL</paper-button>
+                    </div>
+                </paper-card>
+            </template>
 
         </div>
 
@@ -517,6 +519,11 @@
                     type: Boolean,
                     value: true,
                     computed: '_computeUserManaged(role)'
+                },
+
+                _shouldShowAdvanced: {
+                    type: Boolean,
+                    value: false
                 },
 
                 /**
@@ -725,7 +732,16 @@
 
             reloadResourceAdmins: function() {
                 this.$.resourceAdminApplications.reload();
+            },
+
+            showAdvanced: function() {
+                this._shouldShowAdvanced = true;
+            },
+
+            hideAdvanced: function() {
+                this._shouldShowAdvanced = false;
             }
+
         });
     </script>
 </dom-module>
