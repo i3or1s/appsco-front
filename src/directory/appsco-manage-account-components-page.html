@@ -151,7 +151,13 @@
                 @apply(--layout-horizontal);
                 @apply(--layout-center);
             }
-            .appsco-account-details, .appsco-account-2fa, .appsco-account-notifications, .appsco-account-roles, .appsco-account-log, .appsco-application-assignees {
+            .appsco-account-details,
+            .appsco-account-2fa,
+            .appsco-account-notifications,
+            .appsco-account-roles,
+            .appsco-account-log,
+            .appsco-application-assignees,
+            .appsco-account-device {
                 margin-bottom: 10px;
             }
             :host .info-item {
@@ -182,6 +188,9 @@
                 @apply(--layout-flex);
             }
             :host([medium-screen]) > .log-card .appsco-account-log {
+                margin-right: 20px;
+            }
+            :host([medium-screen]) > .log-card .appsco-account-device {
                 margin-right: 20px;
             }
             :host([tablet-screen]) > .log-card {
@@ -381,6 +390,21 @@
                         </p>
                     </div>
                 </template>
+            </paper-card>
+
+            <paper-card heading="Resource admin" class="appsco-resource-admin">
+                <div class="card-content">
+                    <appsco-directory-role-resource-admin-applications
+                            id="resourceAdminApplications"
+                            company-role="[[ role ]]"
+                            authorization-token="[[ authorizationToken ]]"
+                            size="5"
+                            preview></appsco-directory-role-resource-admin-applications>
+                </div>
+
+                <div class="card-actions">
+                    <paper-button on-tap="_onResourceAdminApplications">ALL</paper-button>
+                </div>
             </paper-card>
 
         </div>
@@ -679,9 +703,15 @@
                 this._setSharedElement(event.target);
                 this.fire('whole-log');
             },
+
             _onAllApplications: function(event) {
                 this._setSharedElement(event.target);
                 this.fire('manage-applications');
+            },
+
+            _onResourceAdminApplications: function(event) {
+                this._setSharedElement(event.target);
+                this.fire('manage-resource-admin-applications');
             },
 
             _onManageDevices: function(event) {
@@ -691,6 +721,10 @@
 
             reloadApplications: function() {
                 this.$.roleApplications.reload();
+            },
+
+            reloadResourceAdmins: function() {
+                this.$.resourceAdminApplications.reload();
             }
         });
     </script>

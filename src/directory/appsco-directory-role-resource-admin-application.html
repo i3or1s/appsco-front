@@ -1,0 +1,304 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+
+<!--
+`appsco-directory-role-resource-admin-application`
+Is used to represent companyRole for application.
+
+Example:
+
+    <body>
+      <appsco-directory-role-resource-admin-application companyRole="{}" preview>
+     </appsco-directory-role-resource-admin-application>
+
+ Custom property | Description | Default
+----------------|-------------|----------
+`--appsco-directory-role-resource-admin-application` | Mixin applied to root element | `{}`
+`--appsco-directory-role-resource-admin-application-image` | Mixin applied to inner image element | `{}`
+`--appsco-directory-role-resource-admin-application-image-contain` | Mixin applied to iron-image #sizedImgDiv | `{}`
+
+@demo demo/company/appsco-directory-role-resource-admin-application.html
+-->
+
+<dom-module id="appsco-directory-role-resource-admin-application">
+    <template>
+        <style include="iron-flex iron-flex-alignment">
+            :host {
+                display: none;
+                color: var(--primary-text-color);
+                @apply(--appsco-directory-role-application);
+                margin-bottom: 4px;
+                font-size: 14px;
+            }
+            :host .iron-image {
+                border-radius: 50%;
+            }
+            :host .iron-image::shadow #sizedImgDiv, :host .iron-image::shadow #placeholder {
+                border-radius: 50%;
+            }
+            :host .companyRole-image-preview {
+                width: 28px;
+                height: 28px;
+                @apply(--appsco-directory-role-application-image);
+            }
+            :host .companyRole-image-preview::shadow #sizedImgDiv, :host .companyRole-image-preview::shadow #placeholder {
+                @apply(--appsco-directory-role-application-image-contain);
+            }
+            :host .account-initials {
+                position: relative;
+                background-color: var(--body-background-color, #f5f8fa);
+                color: var(--primary-text-color);
+                cursor: default;
+                @apply(--subscriber-initials);
+            }
+            :host .account-initials .initials {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                margin: auto;
+                line-height: 28px;
+                text-align: center;
+                text-transform: uppercase;
+                font-size: 12px;
+            }
+            paper-tooltip {
+                --paper-tooltip: {
+                    font-size: 11px;
+                    line-height: 12px;
+                };
+            }
+            :host .companyRole {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                @apply(--shadow-elevation-2dp);
+                width: 100%;
+                height: 70px;
+                padding: 0 10px;
+                box-sizing: border-box;
+                border-radius: 3px;
+                overflow: hidden;
+                position: relative;
+                background-color: var(--background-color, #fafafa);
+                @apply(--appsco-directory-role-resource-admin-application);
+            }
+            :host .companyRole:hover {
+                @apply(--shadow-elevation-4dp);
+            }
+            :host .companyRole .companyRole-image-preview {
+                width: 52px;
+                height: 52px;
+                margin: 0;
+                border-radius: 50%;
+                @apply(--layout-flex-none);
+            }
+            :host .companyRole .initials {
+                line-height: 52px;
+                font-size: 18px;
+            }
+            :host .companyRole-info {
+                @apply(--layout-vertical);
+                @apply(--layout-start);
+                padding: 0 10px;
+            }
+            :host .companyRole-basic-info {
+                width: 220px;
+            }
+            :host.companyRole-basic-info .info-label, :host .companyRole-basic-info .info-value {
+                width: 226px;
+                @apply(--paper-font-common-nowrap);
+            }
+            :host .companyRole-security-info {
+                border-left: 1px solid var(--divider-color);
+            }
+            :host .info-label {
+                font-size: 16px;
+                height: auto;
+                line-height: normal;
+            }
+            :host .info-value {
+                display: block;
+                font-size: 12px;
+            }
+            :host .companyRole-name {
+                display: block;
+                @apply(--paper-font-common-base);
+                font-size: 16px;
+                font-weight: 400;
+                overflow: hidden;
+            }
+            :host .actions {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                position: absolute;
+                right: 4px;
+                bottom: 4px;
+            }
+            :host paper-button {
+                @apply(--paper-font-common-base);
+                @apply(--paper-font-common-nowrap);
+                padding: 4px;
+                font-size: 12px;
+                font-weight: 400;
+                letter-spacing: 0.018em;
+                line-height: 18px;
+                text-transform: uppercase;
+            }
+            :host paper-button[disabled] {
+                background: transparent;
+            }
+            :host .application-icon {
+                width: 24px;
+                height: 24px;
+                margin-right: 5px;
+            }
+            :host .flex-horizontal {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+            }
+            :host .flex-vertical {
+                @apply(--layout-vertical);
+            }
+        </style>
+
+        <template is="dom-if" if="[[ preview ]]">
+            <div class="flex-horizontal">
+                <iron-image
+                        class="application-icon"
+                        preload
+                        fade
+                        sizing="cover"
+                        placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII="
+                        src="[[ application.application_url ]]"></iron-image>
+                <span>[[ application.title ]]</span>
+            </div>
+        </template>
+
+        <template is="dom-if" if="[[ !preview ]]">
+            <div class="companyRole">
+
+                <iron-image class="iron-image companyRole-image-preview"
+                            sizing="cover"
+                            preload fade
+                            src="[[ application.application_url ]]"
+                            alt="[[ application.title ]]"></iron-image>
+
+
+                <div class="companyRole-info companyRole-basic-info">
+                    <span class="info-label companyRole-name">[[ application.title ]]</span>
+                    <span class="info-value">
+                        [[ _orgUnits ]]
+                    </span>
+                </div>
+                <div class="actions">
+                    <paper-button on-tap="_onRevokeAction">Revoke</paper-button>
+                </div>
+            </div>
+        </template>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-directory-role-resource-admin-application',
+
+            _computeOrganizationUnits: function(application) {
+                if (application.org_units) {
+                    var result = '',
+                            orgUnits = application.org_units,
+                            length = orgUnits.length;
+
+                    for (var i = 0; i < length; i++) {
+                        result += orgUnits[i].name;
+                        result += (i === length -1) ? '' : ', ';
+                    }
+
+                    return result;
+                }
+
+                return '';
+            },
+
+            properties: {
+
+                companyRole: {
+                    type: Object,
+                    value: function() { return {}; }
+                },
+
+                /**
+                 * Application which is assigned to account.
+                 */
+                application: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                /**
+                 * Indicates if companyRole should be in preview mode rather then full detailed view.
+                 */
+                preview: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * Animation for loader appearance.
+                 */
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': {
+                                name: 'fade-in-animation',
+                                node: this,
+                                timing: {
+                                    duration: 300
+                                }
+                            },
+                            'exit': {
+                                name: 'fade-out-animation',
+                                node: this,
+                                timing: {
+                                    duration: 100
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimationRunnerBehavior
+            ],
+
+            attached: function() {
+                this.style.display = 'inline-block';
+                this.playAnimation('entry');
+            },
+
+            _onRevokeAction: function(event) {
+                this.fire('revoke-resource-admin', {
+                    assignee: this.companyRole.account,
+                    application: this.application
+                });
+            }
+        });
+    </script>
+</dom-module>

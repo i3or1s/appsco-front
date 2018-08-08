@@ -51,6 +51,7 @@
 <link rel="import" href="components/folder/appsco-folders-remove.html">
 <link rel="import" href="components/resource/appsco-share-resource.html">
 <link rel="import" href="components/resource/appsco-add-resource-admin.html">
+<link rel="import" href="components/resource/appsco-add-resource-to-resource-admin.html">
 <link rel="import" href="components/application/company/appsco-company-application-remove.html">
 <link rel="import" href="components/application/company/appsco-application-assignee-claims.html">
 <link rel="import" href="components/application/company/appsco-application-assignee-revoke.html">
@@ -1135,6 +1136,8 @@
                             on-approve-device="_onApproveDevice"
                             on-disapprove-device="_onDisapproveDevice"
                             on-image-upload-error="_onImageUploadError"
+                            on-add-resource-admin="_onAddResourceToResourceAdmin"
+                            on-revoke-resource-admin="_onRevokeResourceAdmin"
                     ></appsco-manage-account-page>
 
                     <appsco-manage-contact-page
@@ -1602,6 +1605,14 @@
                 api-errors="[[ _apiErrors ]]"
                 on-resources-shared="_onResourceAdminAdded"
         ></appsco-add-resource-admin>
+
+        <appsco-add-resource-to-resource-admin
+                id="appscoAddResourceAdmin"
+                authorization-token="[[ authorizationToken ]]"
+                get-resources-api="[[ _companyApplicationsApi ]]"
+                api-errors="[[ _apiErrors ]]"
+                on-resource-admin-assigned="_onResourceAdminAssigned"
+        ></appsco-add-resource-to-resource-admin>
 
         <appsco-company-group-notification-dialog
                 id="appscoNotifyGroup"
@@ -4648,6 +4659,16 @@
                 this._notifyReloadApplications();
             },
 
+            _onAddResourceToResourceAdmin: function(event) {
+                var role = event.detail.role;
+                this.$.appscoAddResourceAdmin.setRole(role);
+                this.$.appscoAddResourceAdmin.toggle();
+            },
+
+            _onResourceAdminAssigned: function(event) {
+                this.$.appscoManageAccountPage.reloadResourceAdmins();
+            },
+
             _onResourcesShared: function(event) {
                 var resources = event.detail.resources,
                     length = resources.length,
@@ -4782,6 +4803,10 @@
 
                 if (this.$.appscoManageApplicationPage.$) {
                     this.$.appscoManageApplicationPage.reloadResourceAdmins();
+                }
+
+                if (this.$.appscoManageAccountPage) {
+                    this.$.appscoManageAccountPage.reloadResourceAdmins();
                 }
 
                 this._notifyReloadApplications();
