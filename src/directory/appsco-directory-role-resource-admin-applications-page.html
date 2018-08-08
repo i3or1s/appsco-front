@@ -1,0 +1,174 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/hero-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-right-animation.html">
+
+<link rel="import" href="appsco-directory-role-resource-admin-applications.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="appsco-directory-role-resource-admin-applications-page">
+    <template>
+        <style include="webkit-scrollbar-style">
+            :host {
+                @apply(--full-page);
+
+                --paper-card-header: {
+                    border-bottom: 1px solid var(--divider-color);
+                };
+
+                --appsco-directory-role-application: {
+                     background-color: var(--body-background-color);
+                 };
+            }
+            :host paper-card {
+                @apply(--full-page-paper-card);
+            }
+            .page-close-action {
+                @apply(--page-close-action);
+            }
+            .info p {
+                margin-top: 5px;
+                margin-bottom: 0;
+            }
+            .info {
+                margin-bottom: 20px;
+            }
+            .add-action {
+                @apply(--primary-button);
+                display: inline-block;
+            }
+        </style>
+
+        <paper-card heading="Resource admin" id="card">
+            <paper-icon-button
+                    icon="close"
+                    title="Close"
+                    class="page-close-action"
+                    on-tap="_back"></paper-icon-button>
+
+            <div class="card-content layout vertical">
+
+                <div>
+                    <paper-button class="add-action"
+                                  on-tap="_onAddResourceAction">Add resource</paper-button>
+                </div>
+
+                <template is="dom-if" if="[[ !_applicationsEmpty ]]">
+                    <div class="info">
+                        <p>The user can modify setting for the following resources</p>
+                    </div>
+                </template>
+
+                <appsco-directory-role-resource-admin-applications
+                        id="appscoDirectoryRoleResourceAdminApplications"
+                        company-role="[[ role ]]"
+                        authorization-token="[[ authorizationToken ]]"
+                        load-more
+                        size="5"
+                        on-resource-admin-applications-empty="_onApplicationsEmpty"
+                        on-resource-admin-applications-loaded="_onApplicationsLoaded"
+                ></appsco-directory-role-resource-admin-applications>
+
+            </div>
+        </paper-card>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-directory-role-resource-admin-applications-page',
+
+            properties: {
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                role: {
+                    type: Object,
+                    value: function() { return {}; }
+                },
+
+                _applicationsEmpty: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * Animation config with hero animation.
+                 */
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': [{
+                                name: 'hero-animation',
+                                id: 'hero',
+                                toPage: this
+                            }, {
+                                name: 'fade-in-animation',
+                                node: this,
+                                timing: {
+                                    duration: 600
+                                }
+                            }],
+                            'exit': {
+                                name: 'slide-right-animation',
+                                node: this,
+                                timing: {
+                                    duration: 200
+                                }
+                            }
+                        }
+                    }
+                },
+
+                /**
+                 * Defines shared element of hero animation.
+                 */
+                sharedElements: {
+                    value: function() {
+                        return {
+                            'hero': this.$.card
+                        }
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonSharedElementAnimatableBehavior
+            ],
+
+            _onApplicationsEmpty: function() {
+                this._applicationsEmpty = true;
+            },
+
+            _onApplicationsLoaded: function() {
+                this._applicationsEmpty = false;
+            },
+
+            _back: function() {
+                this.fire('back');
+            },
+
+            reloadApplications: function() {
+                this.$.appscoDirectoryRoleApplications.reload();
+            },
+
+            reloadResourceAdmins: function() {
+                this.$.appscoDirectoryRoleResourceAdminApplications.reload();
+            },
+
+            _onAddResourceAction: function() {
+                this.fire('add-resource-admin', {
+                    role: this.role
+                });
+            }
+        });
+    </script>
+</dom-module>
+

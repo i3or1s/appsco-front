@@ -17,6 +17,7 @@
 <link rel="import" href="directory/appsco-account-orgunits-page.html">
 <link rel="import" href="directory/appsco-manage-account-change-password-page.html">
 <link rel="import" href="directory/appsco-directory-role-applications-page.html">
+<link rel="import" href="directory/appsco-directory-role-resource-admin-applications-page.html">
 <link rel="import" href="directory/appsco-account-groups-page.html">
 <link rel="import" href="directory/appsco-account-devices-page.html">
 <link rel="import" href="directory/appsco-manage-account-twofa-page.html">
@@ -211,6 +212,7 @@
                                 on-manage-groups="_onManageGroups"
                                 on-manage-devices="_onManageDevices"
                                 on-manage-applications="_onManageApplications"
+                                on-manage-resource-admin-applications="_onManageResourceAdminApplications"
                                 on-log-loaded="_pageLoaded"
                                 on-log-empty="_pageLoaded">
                         </appsco-manage-account-components-page>
@@ -286,6 +288,14 @@
                                 authorization-token="[[ authorizationToken ]]"
                                 on-back="_onResourceBack">
                         </appsco-directory-role-applications-page>
+
+                        <appsco-directory-role-resource-admin-applications-page
+                                id="appscoDirectoryRoleResourceAdminApplicationsPage"
+                                name="appsco-directory-role-resource-admin-applications-page"
+                                role="[[ role ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                on-back="_onResourceBack">
+                        </appsco-directory-role-resource-admin-applications-page>
 
                     </neon-animated-pages>
                 </div>
@@ -699,6 +709,10 @@
                 this._selected = 'appsco-directory-role-applications-page';
             },
 
+            _onManageResourceAdminApplications: function() {
+                this._selected = 'appsco-directory-role-resource-admin-applications-page';
+            },
+
             _onChangePassword: function() {
 
                 this.$.appscoManageAccountComponentsPage.sharedElements = {
@@ -745,7 +759,12 @@
             reloadApplications: function() {
                 this.$.appscoManageAccountComponentsPage.reloadApplications();
                 this.$.appscoDirectoryRoleApplicationsPage.reloadApplications();
+            },
+
+            reloadResourceAdmins: function() {
+                this.$.appscoDirectoryRoleResourceAdminApplicationsPage.reloadResourceAdmins();
             }
+
         });
     </script>
 </dom-module>
