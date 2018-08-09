@@ -1609,7 +1609,7 @@
         ></appsco-add-resource-admin>
 
         <appsco-add-resource-to-resource-admin
-                id="appscoAddResourceAdmin"
+                id="appscoAddResourceToResourceAdmin"
                 authorization-token="[[ authorizationToken ]]"
                 get-resources-api="[[ _companyApplicationsApi ]]"
                 api-errors="[[ _apiErrors ]]"
@@ -4674,8 +4674,8 @@
 
             _onAddResourceToResourceAdmin: function(event) {
                 var role = event.detail.role;
-                this.$.appscoAddResourceAdmin.setRole(role);
-                this.$.appscoAddResourceAdmin.toggle();
+                this.$.appscoAddResourceToResourceAdmin.setRole(role);
+                this.$.appscoAddResourceToResourceAdmin.toggle();
             },
 
             _onResourceAdminAssigned: function(event) {
