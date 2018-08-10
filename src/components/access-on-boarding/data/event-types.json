@@ -2,13 +2,13 @@
     {
         "name": "resource_shared",
         "event": "Application shared.",
-        "action": "Share application manually."
+        "action": "Add user manually."
 
     },
     {
         "name": "resource_revoked",
         "event": "Access to application revoked.",
-        "action": "Revoke access manually."
+        "action": "Remove user manually."
 
     }
 ]
