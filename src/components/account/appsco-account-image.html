@@ -82,6 +82,9 @@ Account image is used to present account in form of an image or initials if imag
             },
 
             _computePictureUrl: function(account) {
+                if (!account) {
+                    return '';
+                }
                 if (account.account && account.account.picture_url) {
                     return account.account.picture_url;
                 }

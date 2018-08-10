@@ -100,6 +100,9 @@ Custom property | Description | Default
             },
 
             _computeApplicationIcon: function (company, application) {
+                if (!application) {
+                    return '';
+                }
                 return company ? application.application_url : application.icon_url;
             }
         });

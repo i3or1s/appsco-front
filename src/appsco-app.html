@@ -4689,7 +4689,7 @@
 
                 for (var i = 0; i < length; i++) {
 
-                    if (this._companyApplication.self === resources[i].self) {
+                    if (this.__companyApplication && this._companyApplication.self === resources[i].self) {
                         resource = resources[i];
                         break;
                     }
@@ -4701,6 +4701,10 @@
                 this._notify('Selected resources were successfully shared.');
                 this._notifyReloadApplications();
                 this._notifyReloadAccessOnBoarding();
+
+                if (this.$.appscoAccessOnBoardingPage.$) {
+                    this.$.appscoAccessOnBoardingPage.reloadRoles();
+                }
             },
 
             _onNotificationSent: function(event) {
