@@ -442,7 +442,7 @@
                         role="main"
                         on-neon-animation-finish="_onPageAnimationFinish">
 
-                    <appsco-home-page name="home"
+                    <appsco-home-page name="home" page
                             id="appscoHomePage"
                             application="{{ application }}"
                             account="[[ account ]]"
@@ -462,7 +462,7 @@
                             on-folder-tapped="_onFolderTapped"
                             on-applications-removed="_onApplicationsRemovedFromHomePage"></appsco-home-page>
 
-                    <appsco-resource-page name="resource"
+                    <appsco-resource-page name="resource" page
                             id="appscoApplicationPage"
                             route="[[ subroute ]]"
                             company="[[ _companyPage ]]"
@@ -484,7 +484,7 @@
                             on-page-error="_onError"
                             on-image-upload-error="_onImageUploadError"></appsco-resource-page>
 
-                    <appsco-account-page name="account"
+                    <appsco-account-page name="account" page
                             id="appscoAccountPage"
                             account="{{ account }}"
                             authorization-token="[[ authorizationToken ]]"
@@ -506,7 +506,7 @@
                             logout-api="[[ api.logout ]]"
                             account-managed="[[ _accountManaged ]]"></appsco-account-page>
 
-                    <appsco-company-account-page name="company-account" company-page
+                    <appsco-company-account-page name="company-account" page company-page
                             id="appscoCompanyAccountPage"
                             account="{{ account }}"
                             authorization-token="[[ authorizationToken ]]"
@@ -526,7 +526,7 @@
                             on-import-personal-resources="_onImportPersonalResourcesAction"
                             on-image-upload-error="_onImageUploadError"></appsco-company-account-page>
 
-                    <appsco-vault-page name="vault"
+                    <appsco-vault-page name="vault" page
                             id="appscoVaultPage"
                             authorization-token="[[ authorizationToken ]]"
                             api="[[ api ]]"
@@ -535,7 +535,7 @@
                             on-remove-vault-item="_onRemoveVaultAction">
                     </appsco-vault-page>
 
-                    <appsco-trybusiness-page name="trybusiness"
+                    <appsco-trybusiness-page name="trybusiness" page
                             id="appscoUpgradePage"
                             authorization-token="[[ authorizationToken ]]"
                             company-upgrade-api="[[ api.upgradeToBusiness ]]"
@@ -543,7 +543,7 @@
                             on-upgrade-failed="_onUpgradeToCompanyFailed"
                     ></appsco-trybusiness-page>
 
-                    <appsco-company-home-page name="company-home" company-page
+                    <appsco-company-home-page name="company-home" page company-page
                             id="appscoCompanyHomePage"
                             authorization-token="[[ authorizationToken ]]"
                             applications-api="[[ _companyIconsWithoutFolderApi ]]"
@@ -559,7 +559,7 @@
                             on-edit-shared-application="_onEditSharedApplication"
                     ></appsco-company-home-page>
 
-                    <appsco-contact-home-page name="contact-home" company-page
+                    <appsco-contact-home-page name="contact-home" page company-page
                             id="appscoContactHomePage"
                             authorization-token="[[ authorizationToken ]]"
                             applications-api="[[ _contactIconsApi ]]"
@@ -570,7 +570,7 @@
                             on-revoke-application="_onRevokeApplication"
                     ></appsco-contact-home-page>
 
-                    <appsco-resources-page name="resources" company-page
+                    <appsco-resources-page name="resources" page company-page
                             id="appscoResourcesPage"
                             resource="{{ _companyApplication }}"
                             account="[[ account ]]"
@@ -593,7 +593,7 @@
                             on-observable-list-empty="_onObservableListEmpty"
                             on-observable-list-filled="_onObservableListFilled"></appsco-resources-page>
 
-                    <appsco-manage-resource-page name="manage-resource" company-page
+                    <appsco-manage-resource-page name="manage-resource" page company-page
                             id="appscoManageApplicationPage"
                             route="[[ subroute ]]"
                             application="{{ _companyApplication }}"
@@ -622,7 +622,7 @@
                             on-image-upload-error="_onImageUploadError"
                             on-compliance-info-updated="_onComplianceInfoUpdated"></appsco-manage-resource-page>
 
-                    <appsco-directory-page name="directory" company-page
+                    <appsco-directory-page name="directory" page company-page
                             id="appscoDirectoryPage"
                             role="{{ _role }}"
                             selected-accounts="{{ _selectedAccounts }}"
@@ -650,7 +650,7 @@
                             on-observable-list-filled="_onObservableListFilled"
                             on-company-subscription-loaded="_onSubscriptionLoaded"></appsco-directory-page>
 
-                    <appsco-contacts-page name="contacts" company-page
+                    <appsco-contacts-page name="contacts" page company-page
                             id="appscoContactsPage"
                             authorization-token="[[ authorizationToken ]]"
                             groups-api="[[ _companyGroupsApi ]]"
@@ -663,7 +663,7 @@
                             on-observable-list-empty="_onObservableListEmpty"
                             on-observable-list-filled="_onObservableListFilled"></appsco-contacts-page>
 
-                    <appsco-customers-page name="customers" company-page
+                    <appsco-customers-page name="customers" page company-page
                             id="appscoCustomersPage"
                             customers-api="[[ _companyCustomersApi ]]"
                             customers-export-api="[[ _companyCustomersExportApi ]]"
@@ -676,7 +676,7 @@
                             on-observable-list-filled="_onObservableListFilled"
                     ></appsco-customers-page>
 
-                    <appsco-groups-page name="groups" company-page
+                    <appsco-groups-page name="groups" page company-page
                             id="appscoGroupsPage"
                             group="{{ _group }}"
                             authorization-token="[[ authorizationToken ]]"
@@ -689,7 +689,7 @@
                             on-observable-list-filled="_onObservableListFilled"
                     ></appsco-groups-page>
 
-                    <appsco-manage-account-page name="manage-account" company-page
+                    <appsco-manage-account-page name="manage-account" page company-page
                             id="appscoManageAccountPage"
                             route="[[ subroute ]]"
                             role="{{ _role }}"
@@ -719,7 +719,7 @@
                             on-revoke-resource-admin="_onRevokeResourceAdmin"
                     ></appsco-manage-account-page>
 
-                    <appsco-manage-contact-page name="manage-contact" company-page
+                    <appsco-manage-contact-page name="manage-contact" page company-page
                             id="appscoManageContactPage"
                             route="[[ subroute ]]"
                             authorization-token="[[ authorizationToken ]]"
@@ -731,7 +731,7 @@
                             on-revoke-assignee="_onRevokeAssigneeAccess"
                     ></appsco-manage-contact-page>
 
-                    <appsco-manage-customer-page name="manage-customer" company-page
+                    <appsco-manage-customer-page name="manage-customer" page company-page
                             id="appscoManageCustomerPage"
                             route="[[ subroute ]]"
                             authorization-token="[[ authorizationToken ]]"
@@ -744,7 +744,7 @@
                             on-manage-customer-subscription="_onManageCustomerSubscription"
                     ></appsco-manage-customer-page>
 
-                    <appsco-manage-group-page name="manage-group" company-page
+                    <appsco-manage-group-page name="manage-group" page company-page
                             id="appscoManageGroupPage"
                             route="[[ subroute ]]"
                             group="{{ _group }}"
@@ -757,7 +757,7 @@
                             on-remove-company-resource-from-group="_onRemoveCompanyResourceFromGroup"
                     ></appsco-manage-group-page>
 
-                    <appsco-provisioning-page name="provisioning" company-page
+                    <appsco-provisioning-page name="provisioning" page company-page
                             id="appscoProvisioningPage"
                             active-integrations-api="[[ _getActiveIntegrationsApi ]]"
                             authorization-token="[[ authorizationToken ]]"
@@ -765,7 +765,7 @@
                             on-active-integration="_onIntegrationSetup"
                     ></appsco-provisioning-page>
 
-                    <appsco-manage-integration-page name="manage-integration" company-page
+                    <appsco-manage-integration-page name="manage-integration" page company-page
                             id="appscoManageIntegrationPage"
                             route="[[ subroute ]]"
                             integration="[[ _selectedIntegration ]]"
@@ -784,7 +784,7 @@
                             on-integration-reauthorized="_onIntegrationRequested"
                     ></appsco-manage-integration-page>
 
-                    <appsco-provisioning-settings-page name="provisioning-settings" company-page
+                    <appsco-provisioning-settings-page name="provisioning-settings" page company-page
                             id="appscoProvisioningSettingsPage"
                             authorization-token="[[ authorizationToken ]]"
                             integration="[[ _selectedIntegration ]]"
@@ -802,23 +802,23 @@
                             on-hide-bulk-actions="_onHideBulkActionsProvisioningPage"
                     ></appsco-provisioning-settings-page>
 
-                    <appsco-provisioning-integration-authorization-success-page name="provisioning-integration-authorization-success" company-page
+                    <appsco-provisioning-integration-authorization-success-page name="provisioning-integration-authorization-success" page company-page
                             id="appscoProvisioningIntegrationSuccessPage"
                             on-provisioning="_showCompanyProvisioningPage"
                     ></appsco-provisioning-integration-authorization-success-page>
 
-                    <appsco-provisioning-integration-authorization-failed-page name="provisioning-integration-authorization-failed" company-page
+                    <appsco-provisioning-integration-authorization-failed-page name="provisioning-integration-authorization-failed" page company-page
                             id="appscoProvisioningIntegrationFailedPage"
                             on-provisioning="_showCompanyProvisioningPage"
                     ></appsco-provisioning-integration-authorization-failed-page>
 
-                    <appsco-audit-log-page name="audit-log" company-page
+                    <appsco-audit-log-page name="audit-log" page company-page
                             id="appscoAuditLogPage"
                             authorization-token="[[ authorizationToken ]]"
                             audit-log-api="[[ _companyAuditLogApi ]]"
                             company-api="[[ _companyApi ]]"></appsco-audit-log-page>
 
-                    <appsco-access-on-boarding-page name="access-on-boarding" company-page
+                    <appsco-access-on-boarding-page name="access-on-boarding" page company-page
                             id="appscoAccessOnBoardingPage"
                             authorization-token="[[ authorizationToken ]]"
                             groups-api="[[ _companyGroupsApi ]]"
@@ -828,7 +828,7 @@
                             on-access-on-boarding-events-resolved="_onEventsResolved"
                             api-errors="[[ _apiErrors ]]"></appsco-access-on-boarding-page>
 
-                    <appsco-oauth-applications-page name="oauth-applications" company-page
+                    <appsco-oauth-applications-page name="oauth-applications" page company-page
                             id="appscoOAuthApplicationsPage"
                             authorization-token="[[ authorizationToken ]]"
                             o-auth-applications-api="[[ _companyOAuthApplicationsApi ]]"
@@ -836,13 +836,13 @@
                             on-edit-oauth-application="_onEditOAuthApplicationAction"
                     ></appsco-oauth-applications-page>
 
-                    <appsco-statistics-page name="statistics" company-page
+                    <appsco-statistics-page name="statistics" page company-page
                             id="appscoStatisticsPage"
                             company-api="[[ _companyApi ]]"
                             authorization-token="[[ authorizationToken ]]"
                     ></appsco-statistics-page>
 
-                    <appsco-reports-page name="reports" company-page
+                    <appsco-reports-page name="reports" page company-page
                             id="appscoReportsPage"
                             get-access-report-api="[[ _getAccessReportApi ]]"
                             get-policies-api="[[ _companyPoliciesApi ]]"
@@ -852,7 +852,7 @@
                             on-open-compliance-report="_showComplianceReportPage"
                             on-open-policies-report="_showPoliciesReportPage"></appsco-reports-page>
 
-                    <appsco-access-report-page name="access-report" company-page
+                    <appsco-access-report-page name="access-report" page company-page
                             id="appscoAccessReportPage"
                             authorization-token="[[ authorizationToken ]]"
                             groups-api="[[ _companyGroupsApi ]]"
@@ -861,7 +861,7 @@
                             export-access-report-api="[[ _exportAccessReportApi ]]"
                             api-errors="[[ _apiErrors ]]"></appsco-access-report-page>
 
-                    <appsco-compliance-report-page name="compliance-report" company-page
+                    <appsco-compliance-report-page name="compliance-report" page company-page
                             id="appscoComplianceReportPage"
                             authorization-token="[[ authorizationToken ]]"
                             groups-api="[[ _companyGroupsApi ]]"
@@ -870,7 +870,7 @@
                             export-compliance-report-api="[[ _exportComplianceReportApi ]]"
                             api-errors="[[ _apiErrors ]]"></appsco-compliance-report-page>
 
-                    <appsco-billing-page name="billing" company-page
+                    <appsco-billing-page name="billing" page company-page
                             id="appscoBillingPage"
                             company-api="[[ _companyApi ]]"
                             account="[[ account ]]"
@@ -878,7 +878,7 @@
                             on-manage-credit-card="_onManageCreditCard"
                             on-send-invoice="_onSendInvoice"></appsco-billing-page>
 
-                    <appsco-company-page name="company" company-page
+                    <appsco-company-page name="company" page company-page
                             id="appscoCompanyPage"
                             company="{{ currentCompany.company }}"
                             account="[[ account ]]"
@@ -910,7 +910,7 @@
                             on-transfer-token-sent="_onTransferTokenSent"
                     ></appsco-company-page>
 
-                    <appsco-manage-oauth-application-page name="manage-oauth-application" company-page
+                    <appsco-manage-oauth-application-page name="manage-oauth-application" page company-page
                             id="appscoManageOAuthApplicationPage"
                             route="[[ subroute ]]"
                             authorization-token="[[ authorizationToken ]]"
@@ -924,7 +924,7 @@
                             on-resource-image-changed="_onResourceImageChanged"
                             on-image-upload-error="_onImageUploadError"></appsco-manage-oauth-application-page>
 
-                    <appsco-customer-billing-page name="customer-billing" company-page
+                    <appsco-customer-billing-page name="customer-billing" page company-page
                             id="appscoCustomerBillingPage"
                             company-api="[[ _companyApi ]]"
                             account="[[ account ]]"
@@ -936,14 +936,14 @@
                             on-send-invoice="_onSendInvoice"
                     ></appsco-customer-billing-page>
 
-                    <appsco-billing-report-page name="billing-report" company-page
+                    <appsco-billing-report-page name="billing-report" page company-page
                             id="appscoBillingReportPage"
                             billing-report-api="[[ _billingReportApi ]]"
                             customers-api="[[ _companyCustomersApi ]]"
                             authorization-token="[[ authorizationToken ]]"
                     ></appsco-billing-report-page>
 
-                    <appsco-dashboard-folder-page name="dashboard-folder" company-page
+                    <appsco-dashboard-folder-page name="dashboard-folder" page company-page
                             id="appscoDashboardFolderPage"
                             route="[[ subroute ]]"
                             is-on-personal="[[ _personalFolderPage ]]"
@@ -958,12 +958,12 @@
                             on-edit-shared-application="_onEditSharedApplication"
                     ></appsco-dashboard-folder-page>
 
-                    <appsco-saml-authn-request-invalid-page name="saml-authn-request-invalid" company-page
+                    <appsco-saml-authn-request-invalid-page name="saml-authn-request-invalid" page company-page
                             id="appscoSamlAuthnRequestInvalidPage"
                             on-back-to-dashboard="_showCompanyHomePage"
                     ></appsco-saml-authn-request-invalid-page>
 
-                    <appsco-policies-page name="policies" company-page
+                    <appsco-policies-page name="policies" page company-page
                             id="appscoPoliciesPage"
                             authorization-token="[[ authorizationToken ]]"
                             company-policies-api="[[ _companyPoliciesApi ]]"
@@ -973,7 +973,7 @@
                             on-change-policy-status="_onChangePolicyStatusAction"
                             on-policy-updated="_onPolicyUpdated"></appsco-policies-page>
 
-                    <appsco-policies-report-page name="policies-report" company-page
+                    <appsco-policies-report-page name="policies-report" page company-page
                             id="appscoPoliciesReportPage"
                             authorization-token="[[ authorizationToken ]]"
                             policies-api="[[ _companyPoliciesApi ]]"
@@ -983,10 +983,10 @@
                             api-errors="[[ _apiErrors ]]"
                             on-filter-policies-report="_showProgressBar"></appsco-policies-report-page>
 
-                    <appsco-logout-page name="logout"
+                    <appsco-logout-page name="logout" page
                                         logout-api="[[ api.logout ]]"></appsco-logout-page>
 
-                    <appsco-not-found-page name="404"
+                    <appsco-not-found-page name="404" page
                                            on-back-to-home-page="_onBackToHomePageAction"></appsco-not-found-page>
                 </neon-animated-pages>
             </app-header-layout>
@@ -6855,155 +6855,14 @@
              * Global START
              */
             _setProgressBar: function(page) {
-
-                switch (page) {
-                    case 'home':
-                        this.$.appscoHomePage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'resource':
-                        this.$.appscoApplicationPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'account':
-                        this.$.appscoAccountPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'vault':
-                        this.$.appscoVaultPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'resources':
-                        this.$.appscoResourcesPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'company-home':
-                        this.$.appscoCompanyHomePage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'contact-home':
-                        this.$.appscoContactHomePage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'manage-resource':
-                        this.$.appscoManageApplicationPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'directory':
-                        this.$.appscoDirectoryPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'manage-account':
-                        this.$.appscoManageAccountPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'contacts':
-                        this.$.appscoContactsPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'groups':
-                        this.$.appscoGroupsPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'manage-contact':
-                        this.$.appscoManageContactPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'manage-customer':
-                        this.$.appscoManageCustomerPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'manage-group':
-                        this.$.appscoManageGroupPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'manage-integration':
-                        this.$.appscoManageIntegrationPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'audit-log':
-                        this.$.appscoAuditLogPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'access-on-boarding':
-                        this.$.appscoAccessOnBoardingPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'provisioning':
-                        this.$.appscoProvisioningPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'oauth-applications':
-                        this.$.appscoOAuthApplicationsPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'provisioning-settings':
-                        this.$.appscoProvisioningSettingsPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'provisioning-integration-authorization-success':
-                        this.$.appscoProvisioningIntegrationSuccessPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'provisioning-integration-authorization-failed':
-                        this.$.appscoProvisioningIntegrationFailedPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'company':
-                        this.$.appscoCompanyPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'company-account':
-                        this.$.appscoCompanyAccountPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'customers':
-                        this.$.appscoCustomersPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'reports':
-                        this.$.appscoReportsPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'access-report':
-                        this.$.appscoAccessReportPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'compliance-report':
-                        this.$.appscoComplianceReportPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'manage-oauth-application':
-                        this.$.appscoManageOAuthApplicationPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'customer-billing':
-                        this.$.appscoCustomerBillingPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'billing-report':
-                        this.$.appscoBillingReportPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-
-                    case 'dashboard-folder':
-                        this.$.appscoDashboardFolderPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'saml-authn-request-invalid':
-                        this.$.appscoSamlAuthnRequestInvalidPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'policies':
-                        this.$.appscoPoliciesPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    case 'policies-report':
-                        this.$.appscoPoliciesReportPage.pageLoaded ? this._hideProgressBar() : this._showProgressBar();
-                        break;
-
-                    default:
-                        this._hideProgressBar();
+                var pages = Polymer.dom(this.root).querySelectorAll('[page]');
+                for(var index = 0; index< pages.length; index++) {
+                    if(pages[index].getAttribute('name') === page) {
+                            pages[index].pageLoaded ? this._hideProgressBar() : this._showProgressBar();
+                            return;
+                    }
                 }
-
+                this._hideProgressBar();
             },
 
             _onPageLoaded: function() {
