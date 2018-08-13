@@ -1,0 +1,418 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animation-runner-behavior.html">
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/device-icons.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+
+<link rel="import" href="components/header/appsco-header.html">
+<link rel="import" href="components/header/appsco-account-chat.html">
+<link rel="import" href="components/components/appsco-api.html">
+<link rel="import" href="components/components/appsco-api-errors.html">
+
+<link rel="import" href="components/application/appsco-application-add.html">
+<link rel="import" href="components/application/appsco-application-share.html">
+<link rel="import" href="components/application/appsco-application-remove.html">
+<link rel="import" href="components/application/appsco-application-subscriber-revoke.html">
+<link rel="import" href="components/application/appsco-application-revoke.html">
+<link rel="import" href="components/application/company/appsco-company-application-add.html">
+<link rel="import" href="components/application/company/appsco-company-sso-application-add.html">
+<link rel="import" href="components/folder/appsco-folders-application-add.html">
+<link rel="import" href="components/folder/appsco-folders-rename.html">
+<link rel="import" href="components/folder/appsco-folders-remove.html">
+<link rel="import" href="components/resource/appsco-share-resource.html">
+<link rel="import" href="components/resource/appsco-add-resource-admin.html">
+<link rel="import" href="components/resource/appsco-add-resource-to-resource-admin.html">
+<link rel="import" href="components/application/company/appsco-company-application-remove.html">
+<link rel="import" href="components/application/company/appsco-application-assignee-claims.html">
+<link rel="import" href="components/application/company/appsco-application-assignee-revoke.html">
+<link rel="import" href="components/application/company/appsco-resource-admin-revoke.html">
+<link rel="import" href="components/application/company/appsco-company-resource-settings-dialog.html">
+<link rel="import" href="components/application/appsco-import-resources.html">
+<link rel="import" href="components/application/appsco-import-personal-resources.html">
+<link rel="import" href="components/application/appsco-application-remove-group.html">
+
+<link rel="import" href="components/group/appsco-company-remove-group.html">
+<link rel="import" href="components/group/appsco-company-add-group.html">
+<link rel="import" href="components/group/appsco-resource-add-groups.html">
+<link rel="import" href="components/group/appsco-group-add-resource.html">
+<link rel="import" href="components/group/appsco-resource-remove-from-group.html">
+<link rel="import" href="components/group/appsco-manage-group-page-actions.html">
+<link rel="import" href="components/group/appsco-delete-groups.html">
+<link rel="import" href="components/group/appsco-company-group-notification-dialog.html">
+
+<link rel="import" href="components/account/appsco-account-authorized-app-revoke.html">
+
+<link rel="import" href="application/appsco-application-settings-dialog.html">
+<link rel="import" href="application/appsco-home-page-actions.html">
+<link rel="import" href="application/appsco-resource-page-actions.html">
+<link rel="import" href="account/appsco-account-page-actions.html">
+<link rel="import" href="upgrade/appsco-upgrade-page-actions.html">
+<link rel="import" href="company/appsco-company-home-page-actions.html">
+<link rel="import" href="company/appsco-contact-home-page-actions.html">
+<link rel="import" href="applications/appsco-resources-page-actions.html">
+<link rel="import" href="applications/appsco-manage-resource-page-actions.html">
+<link rel="import" href="billing/appsco-billing-page-actions.html">
+
+<link rel="import" href="components/group/appsco-groups-page-actions.html">
+
+<link rel="import" href="directory/appsco-directory-page-actions.html">
+<link rel="import" href="directory/appsco-manage-account-page-actions.html">
+<link rel="import" href="components/account/appsco-invitation-remove.html">
+<link rel="import" href="directory/appsco-directory-add-account.html">
+<link rel="import" href="directory/appsco-import-accounts.html">
+
+<link rel="import" href="upgrade/appsco-upgrade-action.html">
+<link rel="import" href="billing/appsco-subscription-cancel.html">
+<link rel="import" href="billing/appsco-credit-card.html">
+<link rel="import" href="billing/appsco-billing-send-invoice.html">
+<link rel="import" href="billing/appsco-update-subscription-action.html">
+
+<link rel="import" href="vault/appsco-vault-page-actions.html">
+<link rel="import" href="vault/appsco-vault-manage-item.html">
+<link rel="import" href="components/vault/appsco-vault-remove.html">
+
+<link rel="import" href="components/orgunit/appsco-orgunit-modify.html">
+<link rel="import" href="components/orgunit/appsco-orgunit-remove.html">
+
+<link rel="import" href="components/account/company/appsco-account-orgunit.html">
+<link rel="import" href="components/account/company/appsco-account-remove-orgunit.html">
+<link rel="import" href="components/account/company/appsco-account-remove-group.html">
+<link rel="import" href="components/account/company/appsco-account-remove.html">
+<link rel="import" href="components/account/company/appsco-account-approve-device.html">
+<link rel="import" href="components/account/company/appsco-account-disapprove-device.html">
+<link rel="import" href="account/appsco-account-disable-2fa.html">
+<link rel="import" href="components/contact/appsco-contact-remove-group.html">
+
+<link rel="import" href="auditlog/appsco-audit-log-page-actions.html">
+
+<link rel="import" href="components/access-on-boarding/appsco-access-on-boarding-page-actions.html">
+
+<link rel="import" href="provisioning/appsco-provisioning-page-actions.html">
+<link rel="import" href="provisioning/appsco-provisioning-settings-page-actions.html">
+<link rel="import" href="provisioning/appsco-manage-integration-page-actions.html">
+<link rel="import" href="provisioning/appsco-add-integration.html">
+
+<link rel="import" href="components/oauth-application/appsco-oauth-applications-page-actions.html">
+<link rel="import" href="components/oauth-application/appsco-remove-oauth-application.html">
+
+<link rel="import" href="components/integration/appsco-remove-integration.html">
+<link rel="import" href="components/integration/appsco-add-integration-rule.html">
+<link rel="import" href="components/integration/appsco-edit-integration-rule.html">
+<link rel="import" href="components/integration/appsco-run-integration-rule.html">
+<link rel="import" href="components/integration/appsco-remove-integration-rule.html">
+<link rel="import" href="components/integration/appsco-register-integration-webhook.html">
+<link rel="import" href="components/integration/appsco-unregister-integration-webhook.html">
+
+<link rel="import" href="company/appsco-company-page-actions.html">
+<link rel="import" href="company/appsco-company-add-domain.html">
+<link rel="import" href="company/appsco-company-add-certificate.html">
+<link rel="import" href="company/appsco-company-remove-domain.html">
+<link rel="import" href="company/appsco-company-domain-token.html">
+<link rel="import" href="company-account/appsco-company-account-page-actions.html">
+<link rel="import" href="company/appsco-deactivate-idp-settings.html">
+
+<link rel="import" href="application/appsco-dialog-application-add.html">
+<link rel="import" href="applications/appsco-dialog-application-company-add.html">
+
+<link rel="import" href="components/contact/appsco-contacts-page-actions.html">
+<link rel="import" href="components/contact/appsco-manage-contact-page-actions.html">
+<link rel="import" href="components/contact/appsco-import-contacts.html">
+<link rel="import" href="components/contact/appsco-add-contact.html">
+<link rel="import" href="components/contact/appsco-delete-contact.html">
+<link rel="import" href="components/contact/appsco-convert-contact.html">
+<link rel="import" href="components/contact/appsco-delete-contacts.html">
+
+<link rel="import" href="components/customer/appsco-remove-customer.html">
+<link rel="import" href="components/customer/appsco-customers-page-actions.html">
+<link rel="import" href="components/customer/appsco-add-customer.html">
+<link rel="import" href="components/customer/appsco-add-partner-admin.html">
+<link rel="import" href="components/customer/appsco-remove-customers.html">
+<link rel="import" href="components/customer/appsco-manage-customer-subscription.html">
+<link rel="import" href="components/customer/appsco-add-partner-admin-to-customers.html">
+<link rel="import" href="components/customer/appsco-manage-customer-page-actions.html">
+<link rel="import" href="components/customer/appsco-customer-partner-admin-remove.html">
+
+<link rel="import" href="components/customer/appsco-import-customers.html">
+<link rel="import" href="components/customer/appsco-import-customer-resources.html">
+
+<link rel="import" href="components/report/appsco-reports-page-actions.html">
+<link rel="import" href="components/report/appsco-access-report-page-actions.html">
+<link rel="import" href="components/report/appsco-compliance-report-page-actions.html">
+<link rel="import" href="components/report/appsco-billing-report-page-actions.html">
+
+<link rel="import" href="components/company-role/appsco-role-reset-two-fa.html">
+<link rel="import" href="components/company-role/appsco-role-save-client-data.html">
+
+<link rel="import" href="components/company/appsco-company-notice.html">
+<link rel="import" href="components/notifications/appsco-send-notification.html">
+
+<link rel="import" href="components/oauth-application/appsco-add-oauth-application.html">
+<link rel="import" href="components/oauth-application/appsco-remove-oauth-application.html">
+<link rel="import" href="components/oauth-application/appsco-add-oauth-application-certificate.html">
+<link rel="import" href="components/oauth-application/appsco-remove-oauth-application-certificate.html">
+<link rel="import" href="components/oauth-application/appsco-manage-oauth-application-page-actions.html">
+
+<link rel="import" href="components/folder/appsco-add-folder.html">
+<link rel="import" href="components/folder/appsco-dashboard-folder-page-actions.html">
+
+<link rel="import" href="components/policy/appsco-policies-page-actions.html">
+<link rel="import" href="components/policy/appsco-change-policy-status.html">
+<link rel="import" href="components/report/appsco-policy-report-page-actions.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="webkit-scrollbar-style.html">
+
+<dom-module id="appsco-app-header">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                min-height: 100vh;
+
+                --brand-color: var(--app-primary-color);
+                --brand-text-color: #ffffff;
+                --brand-default-text-color: #ffffff;
+
+                --app-primary-color: #279FBC;
+                --app-primary-color-1: #39C2D7;
+                --app-secondary-color: #273441;
+                --app-secondary-color-1: #1183A4;
+                --app-danger-color: #db4437;
+                --app-warning-color: var(--paper-orange-300);
+                --body-background-color: #f5f8fa;
+                --body-background-color-darker: #dbdbdb;
+                --app-primary-color-dark: #414042;
+                --success-color: #5AC099;
+
+                --primary-text-color: #414042;
+                --secondary-text-color: #969696;
+
+                --header-background-color: var(--brand-color);
+                --header-text-color: var(--brand-text-color);
+                --header-icon-color: var(--header-text-color);
+                --header-divider-color: var(--header-text-color);
+
+                --appsco-product-text-color: var(--header-text-color);
+
+                --primary-button-background-color: var(--brand-color);
+
+                --border-radius-base: 3px;
+
+                --paper-progress-active-color: var(--success-color);
+
+                --border-color: var(--divider-color);
+            }
+
+            /* Top header style START */
+            appsco-header {
+                height: 64px;
+                padding: 16px 10px;
+                box-sizing: border-box;
+                background-color: var(--header-background-color);
+
+                --appsco-brand: {
+                    display: block;
+                };
+                --appsco-product: {
+                    height: 32px;
+                    line-height: 35px;
+                };
+
+                --paper-listbox: {
+                    color: var(--app-secondary-color);
+                };
+
+                --notifications-paper-card-header-text: {
+                    color: var(--primary-text-color);
+                };
+
+                --appsco-brand-logo: {
+                    width: auto;
+                }
+            }
+            /* Top header style END */
+
+            /* Bottom header style START */
+            app-header {
+                background-color: #ffffff;
+                box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.4);
+            }
+            app-header paper-icon-button {
+                --paper-icon-button-ink-color: white;
+            }
+            app-header .actions {
+                height: 100%;
+            }
+            .page-title {
+                margin-right: 10px;
+                font-size: 18px;
+                color: var(--primary-text-color);
+                text-transform: capitalize;
+            }
+            /* Bottom header style END */
+
+            /* Menu list style START */
+            .drawer-list {
+            }
+            .drawer-list > a,
+            .drawer-list div[disabled],
+            .drawer-list div[head]
+            {
+                display: block;
+                padding: 0 16px;
+                text-decoration: none;
+                color: var(--app-secondary-color);
+                line-height: 36px;
+                border-bottom: 1px solid var(--divider-color);
+                outline: none;
+                font-size: 14px;
+            }
+            .drawer-list div[head] {
+                background-color: #279FBC;
+                color: #ffffff;
+            }
+            .section {
+                display: block;
+                padding: 0 16px;
+                color: var(--secondary-text-color);
+                line-height: 36px;
+                border-bottom: 1px solid var(--divider-color);
+                outline: none;
+                font-size: 14px;
+            }
+            .drawer-list div[head].business {
+                background-color: #5AC099;
+            }
+            .drawer-list div[disabled] {
+                opacity: 0.4;
+            }
+            .drawer-list a.iron-selected {
+                background-color: var(--google-grey-300);
+            }
+            /* Menu list style END */
+
+            :host app-drawer-layout[fullbleed] {
+                top: 64px;
+                overflow: hidden;
+            }
+            app-drawer {
+                top: 64px;
+                border-top: 1px solid #ffffff;
+                height: calc(100vh - 64px);
+                --app-drawer-content-container: {
+                    padding-top: 0;
+                    background: var(--body-background-color);
+                    overflow: auto;
+                };
+            }
+            app-drawer iron-icon {
+                --iron-icon-fill-color: var(--app-primary-color-dark);
+            }
+            app-toolbar {
+                padding: 0 10px;
+            }
+            :host .flex-horizontal {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+            }
+            :host .flex {
+                @apply(--layout-flex);
+            }
+            .pages {
+                height: 100%;
+            }
+            .menu-text {
+                display: inline-block;
+                vertical-align: middle;
+                padding-left: 8px;
+            }
+            paper-progress {
+                width: 100%;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                z-index: 10;
+            }
+            paper-progress::shadow #primaryProgress {
+                background-color: var(--paper-progress-active-color);
+            }
+            :host([tablet-screen]) {
+                --appsco-paper-dialog: {
+                    width: 90%;
+                    top: 20vh;
+                };
+            }
+            :host([mobile-screen]) {
+                --appsco-account-notifications-dropdown: {
+                    width: 300px;
+                };
+
+                --appsco-account-info-dropdown: {
+                    width: 300px;
+                };
+            }
+            :host div[purchase] {
+                margin-top: 20px;
+                padding: 0 18px;
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+                @apply(--paper-font-body1);
+                color: var(--primary-text-color);
+            }
+            :host div[purchase] a {
+                width: 100%;
+            }
+            :host div[purchase] paper-button {
+                @apply(--primary-button);
+                background-color: var(--brand-color);
+                border-color: var(--brand-color);
+                width: 100%;
+                margin-top: 10px;
+            }
+            :host div[purchase] a {
+                display: block;
+                text-decoration: none;
+                outline: none;
+            }
+            .toast-close-action {
+                position: absolute;
+                top: 0;
+                right: 2px;
+                width: 18px;
+                height: 18px;
+                margin: 0;
+                color: #ffffff;
+            }
+        </style>
+    </template>
+</dom-module>
