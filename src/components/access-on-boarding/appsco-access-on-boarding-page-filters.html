@@ -296,9 +296,10 @@
 
             _hideGroupList: function() {
                 var groupFilter = this.$.filterListGroups,
-                    appscoGroupSearch = this.$.appscoSearchGroup;
+                    appscoGroupSearch = this.$.appscoSearchGroup
+                    value = appscoGroupSearch.getValue() || '';
 
-                if (0 === appscoGroupSearch.getValue().length && groupFilter.selectedItem) {
+                if (0 === value.length && groupFilter.selectedItem) {
                     appscoGroupSearch.setValue(groupFilter.selectedItem.name);
                 }
 
