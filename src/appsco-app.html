@@ -3723,7 +3723,7 @@
                         break;
 
                     case 'resources':
-                        return this.$.appscoResourcesPageActions;
+                        return this.$$('#appscoResourcesPageActions');
                         break;
 
                     case 'directory':
@@ -3790,7 +3790,7 @@
             },
 
             _onHideResourcesBulkActions: function() {
-                this.$.appscoResourcesPageActions.hideBulkActions();
+                this.$$('#appscoResourcesPageActions').hideBulkActions();
             },
 
             _onHideContactBulkActions: function() {
