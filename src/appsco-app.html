@@ -7379,41 +7379,30 @@
             },
 
             _changeTheme: function(companyPage, currentCompany) {
-                var company = currentCompany.company ? currentCompany.company : {};
+                var company = currentCompany.company ? currentCompany.company : {},
+                    headerBackgroundColor   = 'var(--app-primary-color)',
+                    headerTextColor         = 'var(--brand-default-text-color)',
+                    brandColor              = 'var(--app-primary-color)',
+                    brandTextColor          = 'var(--brand-default-text-color)'
+                ;
 
                 if (companyPage) {
-
                     if (company.primary_color) {
-
-                        this.customStyle['--header-background-color'] = company.primary_color;
-
-                        if ('#fff' != company.primary_color && '#ffffff' != company.primary_color) {
-                            this.customStyle['--brand-color'] = company.primary_color;
-                        }
-                        else {
-                            this.customStyle['--brand-color'] = 'var(--app-primary-color)';
+                        headerBackgroundColor = company.primary_color;
+                        if ('#fff' !== company.primary_color && '#ffffff' !== company.primary_color) {
+                            brandColor = company.primary_color;
                         }
                     }
-                    else {
-                        this.customStyle['--header-background-color'] = 'var(--app-primary-color)';
-                        this.customStyle['--brand-color'] = 'var(--app-primary-color)';
-                    }
-
                     if (company.secondary_color) {
-                        this.customStyle['--brand-text-color'] = company.secondary_color;
-                        this.customStyle['--header-text-color'] = company.secondary_color;
-                    }
-                    else {
-                        this.customStyle['--brand-text-color'] = 'var(--brand-default-text-color)';
-                        this.customStyle['--header-text-color'] = 'var(--brand-default-text-color)';
+                        brandTextColor = company.secondary_color;
+                        headerTextColor = company.secondary_color;
                     }
                 }
-                else {
-                    this.customStyle['--header-background-color'] = 'var(--app-primary-color)';
-                    this.customStyle['--header-text-color'] = 'var(--brand-default-text-color)';
-                    this.customStyle['--brand-color'] = 'var(--app-primary-color)';
-                    this.customStyle['--brand-text-color'] = 'var(--brand-default-text-color)';
-                }
+
+                this.customStyle['--header-background-color'] = headerBackgroundColor;
+                this.customStyle['--header-text-color'] = headerTextColor;
+                this.customStyle['--brand-color'] = brandColor;
+                this.customStyle['--brand-text-color'] = brandTextColor;
 
                 this.updateStyles();
             },
@@ -7484,9 +7473,6 @@
                 }
             },
 
-            _toggleAdvanced: function() {
-
-            }
             /**
              * Global END
              */
