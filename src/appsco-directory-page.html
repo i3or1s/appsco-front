@@ -572,6 +572,10 @@
 
             },
 
+            initializePage: function() {
+                this.setDefaultAccount();
+            },
+
             _onObservableItemListChange: function(event, data) {
                 if((data.type === 'accounts' && this._accountsVisible) || (data.type === 'invitations' && this._invitationsVisible)) {
                     this.setObservableType('account-page');

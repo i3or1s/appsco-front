@@ -121,15 +121,6 @@
 
         </style>
 
-        <!--<iron-ajax-->
-                <!--id="applicationUsageAjax"-->
-                <!--auto-->
-                <!--url="[[ _applicationUsageApi ]]"-->
-                <!--handle-as="json"-->
-                <!--headers="[[ _computedHeaders ]]"-->
-                <!--on-response="_handleApplicationUsageResponse"-->
-                <!--on-error="_handleApplicationUsageError"></iron-ajax>-->
-
         <iron-ajax
                 id="applicationSecurityAjax"
                 auto
@@ -224,31 +215,6 @@
                         </template>
                     </div>
 
-                    <!--<div class="chart-container">-->
-                        <!--<template is="dom-if" if="[[ _applicationUsageMessage ]]">-->
-                            <!--<div class="no-data-info">-->
-                                <!--<h2 class="title-h2">Application instances</h2>-->
-                                <!--<p class="info">-->
-                                    <!--[[ _applicationUsageMessage ]]-->
-                                <!--</p>-->
-
-                                <!--<h3 class="title-h3">Example:</h3>-->
-                                <!--<google-chart id="applicationsUsageChartExample"-->
-                                              <!--class="chart-h-380"-->
-                                              <!--type="column"></google-chart>-->
-                            <!--</div>-->
-                        <!--</template>-->
-
-                        <!--<template is="dom-if" if="[[ !_applicationUsageMessage ]]">-->
-                            <!--<appsco-loader multi-color active="[[ _applicationsUsageChartLoader ]]"></appsco-loader>-->
-
-                            <!--<h2 class="title-h2">Application instances</h2>-->
-                            <!--<google-chart id="applicationsUsageChart"-->
-                                          <!--class="chart-h-380"-->
-                                          <!--type="column"-->
-                                          <!--on-google-chart-ready="_onApplicationsUsageChartReady"></google-chart>-->
-                        <!--</template>-->
-                    <!--</div>-->
                 </div>
 
                 <div class="two-charts">
@@ -568,6 +534,10 @@
                 this.pageLoaded = false;
 
                 this._pageLoaded();
+            },
+
+            initializePage: function() {
+                this.reloadStatistics();
             },
 
             _updateScreen: function(medium) {

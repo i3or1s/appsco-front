@@ -316,6 +316,10 @@
                 this.set('_itemsComponent', this.$.appscoGroups);
             },
 
+            initializePage: function() {
+                this.setDefaultGroup();
+            },
+
             toggleInfo: function() {
 
                 if (this._groupExists) {

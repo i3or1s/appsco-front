@@ -7154,136 +7154,29 @@
                 return companyA < companyB ? -1 : companyA > companyB ? 1 : 0;
             },
 
+            /**
+             * This method will reload page content for both from page and to page
+             */
             _onPageAnimationFinish: function(event) {
-                var fromPage = event.detail.fromPage,
-                    toPage = event.detail.toPage;
-
-                switch (fromPage.getAttribute('name')) {
-
-                    case 'home':
-                        if (fromPage.$) {
-                            this._applicationsApi = this.api.foldersApi + '/icons';
-                            fromPage.resetPage();
-                        }
-
-                        break;
-
-                    case 'resource':
-                    case 'account':
-                    case 'company-home':
-                    case 'resources':
-                    case 'manage-resource':
-                    case 'directory':
-                    case 'contacts':
-                    case 'manage-account':
-                    case 'manage-contact':
-                    case 'manage-customer':
-                    case 'manage-group':
-                    case 'manage-integration':
-                    case 'audit-log':
-                    case 'access-on-boarding':
-                    case 'provisioning-settings':
-                    case 'oauth-applications':
-                    case 'company':
-                    case 'company-account':
-                    case 'contact-home':
-                    case 'groups':
-                    case 'customers':
-                    case 'reports':
-                    case 'access-report':
-                    case 'compliance-report':
-                    case 'billing':
-                    case 'manage-oauth-application':
-                    case 'customer-billing':
-                    case 'billing-report':
-                    case 'dashboard-folder':
-
-                        if (fromPage.$) {
-                            fromPage.resetPage();
-                        }
-
-                        break;
-
-                    default:
-                        break;
+                if (event.detail.fromPage.$ && typeof event.detail.fromPage.resetPage !== 'undefined') {
+                    if(event.detail.fromPage.getAttribute('name') === 'home') {
+                        this._applicationsApi = this.api.foldersApi + '/icons';
+                    }
+                    event.detail.fromPage.resetPage();
                 }
 
-                switch (toPage.getAttribute('name')) {
-                    case 'home':
-                    case 'company-home':
-                    case 'resources':
-                    case 'provisioning-settings':
-                    case 'contacts':
-                    case 'customers':
-                    case 'reports':
-                    case 'dashboard-folder':
-
-                        if (toPage.$) {
-                            toPage.initializePage();
-                        }
-
-                        break;
-
-                    case 'directory':
-
-                        if (toPage.$) {
-                            toPage.setDefaultAccount();
-                        }
-
-                        break;
-
-                    case 'audit-log':
-                    case 'access-on-boarding':
-
-                        if (toPage.$) {
-                            toPage.initializePage();
-                        }
-
-                        break;
-
-                    case 'statistics':
-
-                        if (toPage.$) {
-                            toPage.reloadStatistics();
-                        }
-
-                        break;
-
-                    case 'groups':
-
-                        if (toPage.$) {
-                            toPage.setDefaultGroup();
-                        }
-
-                        break;
-
-                    default:
-                        break;
+                if (event.detail.toPage.$ && typeof event.detail.toPage.initializePage !== 'undefined') {
+                    event.detail.toPage.initializePage();
                 }
-
             },
 
+            /**
+             * This method will reload page actions in the previous page.
+             * Reason to do so is to reset the filters once user leaves the page.
+             */
             _onPageActionsAnimationFinish: function(event) {
-                var fromPage = event.detail.fromPage;
-
-                switch (fromPage.getAttribute('name')) {
-
-                    case 'home':
-                    case 'resources':
-                    case 'directory':
-                    case 'contacts':
-                    case 'customers':
-                    case 'account':
-                    case 'dashboard-folder':
-
-                        if (fromPage.$) {
-                            fromPage.resetPage();
-                        }
-
-                        break;
-
-                    default:
-                        break;
+                if (event.detail.fromPage.$ && typeof event.detail.fromPage.resetPage !== 'undefined') {
+                    event.detail.fromPage.resetPage();
                 }
             },
 
