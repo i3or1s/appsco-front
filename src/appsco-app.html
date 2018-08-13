@@ -7075,17 +7075,13 @@
                         break;
                     }
                 }
-                companies.sort(this._compareCompaniesByName);
+                companies.sort(function(a, b){
+                    return a.company.name.toLowerCase() < b.company.name.toLowerCase() ? -1 :
+                        a.company.name.toLowerCase() < b.company.name.toLowerCase() ? 1: 0;
+                });
 
                 this.set('account.companies', []);
                 this.set('account.companies', companies);
-            },
-
-            _compareCompaniesByName: function(companyA, companyB) {
-                companyA = companyA.company.name.toLowerCase();
-                companyB = companyB.company.name.toLowerCase();
-
-                return companyA < companyB ? -1 : companyA > companyB ? 1 : 0;
             },
 
             /**
