@@ -1666,6 +1666,10 @@
         Polymer({
             is: 'appsco-app',
 
+            behaviors: [
+                Polymer.AppscoBehaviourExportReport
+            ],
+
             properties: {
 
                 _companyPage: {
@@ -2274,21 +2278,28 @@
                 'revoke-authorized-application': '_onRevokeAuthorizedApplication',
                 'token-generated': '_onTokenGenerated',
                 'reset-page-actions': '_onResetPageActions',
+
+                // export
                 'export-access-report': '_onExportAccessReportAction',
                 'export-compliance-report': '_onExportComplianceReportAction',
                 'export-policies-report': '_onExportPoliciesReportAction',
                 'export-billing-report': '_onExportBillingReportAction',
-                'export-access-report-finished': '_onExportAccessReportFinished',
-                'export-compliance-report-finished': '_onExportComplianceReportFinished',
-                'export-policies-report-finished': '_hideProgressBar',
-                'export-access-on-boarding-finished': '_hideProgressBar',
-                'export-company-log-finished' : '_onExportCompanyLogFinished',
-                'export-billing-report-finished': '_onExportBillingReportFinished',
-                'export-access-report-failed': '_onExportAccessReportFailed',
-                'export-compliance-report-failed': '_onExportComplianceReportFailed',
-                'export-policies-report-failed': '_onExportPoliciesReportFailed',
-                'export-access-on-boarding-failed': '_onExportAccessOnBoardingFailed',
-                'export-billing-report-failed': '_onExportBillingReportFailed',
+
+                // success
+                'export-company-log-finished' : '_onExportReportFinished',
+                'export-access-on-boarding-finished': '_onExportReportFinished',
+                'export-access-report-finished': '_onExportReportFinished',
+                'export-compliance-report-finished': '_onExportReportFinished',
+                'export-policies-report-finished': '_onExportReportFinished',
+                'export-billing-report-finished': '_onExportReportFinished',
+
+                // fails
+                'export-access-on-boarding-failed': '_onExportReportFailed',
+                'export-access-report-failed': '_onExportReportFailed',
+                'export-compliance-report-failed': '_onExportReportFailed',
+                'export-policies-report-failed': '_onExportReportFailed',
+                'export-billing-report-failed': '_onExportReportFailed',
+
                 'user-session-expired': '_onUserSessionExpired',
                 'add-item-to-group-event': '_onAddItemToGroupAction',
                 'customer-subscription-state-changed': '_onCustomerSubscriptionStateChanged',
@@ -6384,187 +6395,21 @@
              * Customers page END
              */
 
-            /**
-             * Access Report page START
-             */
-            _computeExportAccessReportApiUrl: function() {
-                var url = this._exportAccessReportApi,
-                    filters = this.$.appscoAccessReportPage.getAccessReportFilters();
-
-                switch (filters.type) {
-                    case 'users':
-                        url += '?company_roles=true&contacts=false';
-                        break;
-
-                    case 'contacts':
-                        url += '?company_roles=false&contacts=true';
-                        break;
-                }
-
-                if (filters.group.alias && 'all' != filters.group.alias) {
-                    url += (-1 < url.indexOf(this._exportAccessReportApi + '?')) ? ('&group=' + filters.group.self) : ('?group=' + filters.group.self);
-                }
-
-                if (3 <= filters.term.length) {
-                    url += (-1 < url.indexOf(this._exportAccessReportApi + '?')) ? ('&term=' + filters.term) : ('?term=' + filters.term);
-                }
-
-                return url;
-            },
-
-            _exportAccessReport: function(url) {
-                this.exportStuff(url, 'GET', 'Access Report.xlsx', {}, 'export-access-report-finished', 'export-access-report-failed');
-            },
-
-            _exportPoliciesReport: function(url) {
-                var data = this.$.appscoPoliciesReportPage.getFilters();
-                this.exportStuff(url, 'POST', 'Policy Report.xlsx', data, 'export-policies-report-finished', 'export-policies-report-failed');
-            },
-
-            _exportComplianceReport: function(url) {
-                var data = this.$.appscoComplianceReportPage.getFilters();
-                this.exportStuff(url, 'POST', 'Compliance Report.xlsx', data, 'export-compliance-report-finished', 'export-compliance-report-failed');
-            },
-
-            _exportBillingReport: function(url) {
-                var data = this.$.appscoBillingReportPage.getFilters();
-                this.exportStuff(url, 'GET', 'Billing Report.xlsx', data, 'export-billing-report-finished', 'export-billing-report-failed');
-            },
-
-            /**
-             * @todo move this into behaviour DASH-3508
-             */
-            exportStuff: function(url, method, fileName, data, successEvent, failedEvent) {
-                var request = document.createElement('iron-request'),
-                    options = {
-                        url: url,
-                        method: method.toUpperCase(),
-                        handleAs: 'blob',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
-                    };
-
-
-                function glueStuff(data) {
-                    var glued = glue = '';
-                    for (var property in data) {
-                        if (data.hasOwnProperty(property) === false) {
-                            continue;
-                        }
-                        if(Array.isArray(data[property])) {
-                            for(var i in data[property]) {
-                                glued += glue + property + "[]=" + encodeURIComponent(data[property][i]);
-                                glue = '&';
-                            }
-                            continue;
-                        }
-                        glued += glue + property + "=" + encodeURIComponent(data[property]);
-                        glue = '&';
-                    }
-                    return glued;
-                }
-                if(options.method === 'GET') {
-                    options.url += '?'+glueStuff(data);
-                }
-                if(options.method === 'POST') {
-                    options.body += glueStuff(data);
-                }
-
-                request.send(options).then(function() {
-                    var fileReader = new FileReader();
-
-                    fileReader.onload = function(event) {
-                        var link = document.createElement('a');
-
-                        link.href = event.target.result;
-                        link.setAttribute('download', fileName);
-                        document.body.appendChild(link);
-
-                        if (link.click) {
-                            link.click();
-                        }
-                        else if (document.createEvent) {
-                            var clickEvent = document.createEvent('MouseEvents');
-
-                            clickEvent.initEvent('click', true, true);
-                            link.dispatchEvent(clickEvent);
-                        }
-                        document.body.removeChild(link);
-                    };
-
-                    fileReader.readAsDataURL(request.response);
-
-                    this.fire(successEvent, {
-                        response: request.response
-                    });
-                }.bind(this), function(e) {
-                    this.fire(failedEvent, {
-                        error: e
-                    });
-                }.bind(this));
-            },
-
             _onExportAccessReportAction: function() {
-                this._showProgressBar();
-                this._exportAccessReport(('access-report' === this.page) ? this._computeExportAccessReportApiUrl() : this._exportAccessReportApi);
+                this.exportReport(this._exportAccessReportApi, 'GET', this.$.appscoAccessReportPage);
             },
 
             _onExportComplianceReportAction: function() {
-                this._showProgressBar();
-                this._exportComplianceReport(this._exportComplianceReportApi);
+                this.exportReport(this._exportComplianceReportApi, 'POST', this.$.appscoComplianceReportPage);
             },
 
             _onExportPoliciesReportAction: function() {
-                this._showProgressBar();
-                this._exportPoliciesReport(this._exportPoliciesReportApi);
+                this.exportReport(this._exportPoliciesReportApi, 'POST', this.$.appscoPoliciesReportPage);
             },
 
             _onExportBillingReportAction: function() {
-                this._showProgressBar();
-                this._exportBillingReport(this._exportBillingReportApi);
+                this.exportReport(this._exportBillingReportApi, 'GET', this.$.appscoBillingReportPage);
             },
-
-            _onExportAccessReportFinished: function() {
-                this._hideProgressBar();
-            },
-
-            _onExportComplianceReportFinished: function() {
-                this._hideProgressBar();
-            },
-
-            _onExportCompanyLogFinished: function() {
-                this._hideProgressBar();
-            },
-
-            _onExportBillingReportFinished: function () {
-                this._hideProgressBar();
-            },
-
-            _onExportAccessReportFailed: function() {
-                this._hideProgressBar();
-                this._notify('Export of Access Report failed. Please contact AppsCo support.');
-            },
-
-            _onExportComplianceReportFailed: function() {
-                this._hideProgressBar();
-                this._notify('Export of Access Report failed. Please contact AppsCo support.');
-            },
-
-            _onExportPoliciesReportFailed: function() {
-                this._hideProgressBar();
-                this._notify('Export of Policy Report failed. Please contact AppsCo support.');
-            },
-
-            _onExportBillingReportFailed: function() {
-                this._hideProgressBar();
-                this._notify('Export of Billing Report failed. Please contact AppsCo support.');
-            },
-
-            /**
-             * Access Report page END
-             */
 
             /**
              * Oauth page START
@@ -6996,7 +6841,7 @@
                 if (currentActions && currentActions.resetPageActions) {
                     currentActions.resetPageActions();
                 }
-            },
+            }
 
             /**
              * Global END

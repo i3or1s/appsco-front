@@ -12,6 +12,8 @@
 <link rel="import" href="components/report/appsco-compliance-report-accounts.html">
 <link rel="import" href="components/report/appsco-compliance-report-page-filters.html">
 
+<link rel="import" href="components/components/appsco-behavior-report-page.html">
+
 <dom-module id="appsco-compliance-report-page">
     <template>
 
@@ -229,7 +231,8 @@
 
             behaviors: [
                 Polymer.NeonAnimatableBehavior,
-                Polymer.NeonAnimationRunnerBehavior
+                Polymer.NeonAnimationRunnerBehavior,
+                Polymer.AppscoBehaviourReportPage
             ],
 
             observers: [
@@ -296,6 +299,22 @@
                 }
 
                 return data;
+            },
+
+            getFileName: function() {
+                return 'Compliance Report.xlsx';
+            },
+
+            getOnSuccessEvent: function() {
+                return 'export-compliance-report-finished';
+            },
+
+            getOnFailEvent: function() {
+                return 'export-compliance-report-failed';
+            },
+
+            getFailMessage: function() {
+                return 'Export of Compliance Report failed. Please contact AppsCo support.';
             },
 
             _updateScreen: function() {

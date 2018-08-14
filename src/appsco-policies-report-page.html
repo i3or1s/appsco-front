@@ -11,6 +11,8 @@
 <link rel="import" href="components/report/appsco-policy-report-roles.html">
 <link rel="import" href="components/report/appsco-policy-report-page-filters.html">
 
+<link rel="import" href="components/components/appsco-behavior-report-page.html">
+
 <dom-module id="appsco-policies-report-page">
     <template>
 
@@ -185,7 +187,8 @@
             },
 
             behaviors: [
-                Polymer.NeonAnimatableBehavior
+                Polymer.NeonAnimatableBehavior,
+                Polymer.AppscoBehaviourReportPage
             ],
 
             observers: [
@@ -242,6 +245,22 @@
                     });
                 }
                 return data;
+            },
+
+            getFileName: function() {
+                return 'Policy Report.xlsx';
+            },
+
+            getOnSuccessEvent: function() {
+                return 'export-policies-report-finished';
+            },
+
+            getOnFailEvent: function() {
+                return 'export-policies-report-failed';
+            },
+
+            getFailMessage: function() {
+                return 'Export of Policies Report failed. Please contact AppsCo support.';
             },
 
             _computeRolesApi: function(rolesApi) {
