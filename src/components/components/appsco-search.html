@@ -239,6 +239,7 @@ Custom property | Description | Default
             },
 
             setValue: function(value) {
+                if (!value) { value = ''; }
                 this._searchValue = value;
 
                 this.set('_clearSearch', (value.length > 0));
