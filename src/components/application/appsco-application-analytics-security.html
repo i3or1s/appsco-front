@@ -161,7 +161,7 @@ Custom property | Description | Default
             },
 
             _computeAssigness: function(application) {
-                return (application.security && (application.security.info.not_configured + application.security.info.configured) != 0);
+                return (application && application.security && (application.security.info.not_configured + application.security.info.configured) != 0);
             },
 
             _onApplicationChanged: function(application) {
