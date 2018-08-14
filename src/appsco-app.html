@@ -6417,67 +6417,17 @@
             },
 
             _exportPoliciesReport: function(url) {
-                var filters = this.$.appscoPoliciesReportPage.getReportFilters(),
-                    roles = this.$.appscoPoliciesReportPage.getReportRoles(),
-                    data = {
-                        limit: 1000
-                    };
-
-                if(filters.policy.policy) {
-                    data.policy = filters.policy.policy;
-                }
-                if(filters.dateFrom) {
-                    data.from = filters.dateFrom;
-                }
-                if(filters.dateTo) {
-                    data.to = filters.dateTo;
-                }
-
-                if (0 < roles.length) {
-                    data.accounts = [];
-                    roles.forEach(function(role, i) {
-                        data.accounts.push(role.account.self);
-                    });
-                }
+                var data = this.$.appscoPoliciesReportPage.getFilters();
                 this.exportStuff(url, 'POST', 'Policy Report.xlsx', data, 'export-policies-report-finished', 'export-policies-report-failed');
             },
 
             _exportComplianceReport: function(url) {
-                var filters = this.$.appscoComplianceReportPage.getComplianceReportFilters(),
-                    data = {};
-                switch (filters.type) {
-                    case 'users':
-                        data.assignee_type = 'user';
-                        break;
-
-                    case 'contacts':
-                        data.assignee_type = 'contact';
-                        break;
-                }
-                if (filters.group && filters.group.alias && filters.group.alias !== 'all') {
-                    data.groups = [filters.group.alias];
-                }
-                if (filters.term) {
-                    data.term = filters.term;
-                }
+                var data = this.$.appscoComplianceReportPage.getFilters();
                 this.exportStuff(url, 'POST', 'Compliance Report.xlsx', data, 'export-compliance-report-finished', 'export-compliance-report-failed');
             },
 
             _exportBillingReport: function(url) {
-                var filters = this.$.appscoBillingReportPage.getFilters(),
-                    data = {}
-                ;
-
-                if (filters.term) {
-                    data.term = filters.term;
-                }
-                if (filters.paymentType) {
-                    data.payment_type = filters.paymentType;
-                }
-                if (filters.period) {
-                    data.period = filters.period;
-                }
-
+                var data = this.$.appscoBillingReportPage.getFilters();
                 this.exportStuff(url, 'GET', 'Billing Report.xlsx', data, 'export-billing-report-finished', 'export-billing-report-failed');
             },
 
