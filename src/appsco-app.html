@@ -367,14 +367,6 @@
                                     name="billing"
                                     on-resource-section="_onResourceActionBillingPage"></appsco-billing-page-actions>
 
-                            <appsco-provisioning-settings-page-actions
-                                    id="appscoProvisioningSettingsPageActions"
-                                    name="provisioning-settings"
-                                    on-back="_showCompanyProvisioningPage"
-                                    on-resource-section="_onResourceActionProvisioningSettingsPage"
-                                    on-sync-accounts="_onSyncAccounts"
-                                    on-refresh-accounts="_onRefreshAccounts"></appsco-provisioning-settings-page-actions>
-
                             <appsco-company-page-actions
                                     id="appscoCompanyPageActions"
                                     name="company"
@@ -783,24 +775,6 @@
                             on-integration-settings-changed="_onIntegrationSettingsChanged"
                             on-integration-reauthorized="_onIntegrationRequested"
                     ></appsco-manage-integration-page>
-
-                    <appsco-provisioning-settings-page name="provisioning-settings" page company-page
-                            id="appscoProvisioningSettingsPage"
-                            authorization-token="[[ authorizationToken ]]"
-                            integration="[[ _selectedIntegration ]]"
-                            company-roles-api="[[ _companyRolesApi ]]"
-                            api-errors="[[ _apiErrors ]]"
-                            on-back="_showCompanyProvisioningPage"
-                            on-local-account-synced="_onLocalAccountSynced"
-                            on-new-account-synced="_onNewAccountSynced"
-                            on-accounts-sync-new-account-synced="_onNewAccountSynced"
-                            on-accounts-sync-finished="_onAccountsSyncFinished"
-                            on-synced-account-removed="_onSyncedAccountRemoved"
-                            on-initialize-page="_onInitializeProvisioningPage"
-                            on-reset-page="_onResetProvisioningPage"
-                            on-show-bulk-actions="_onShowBulkActionsProvisioningPage"
-                            on-hide-bulk-actions="_onHideBulkActionsProvisioningPage"
-                    ></appsco-provisioning-settings-page>
 
                     <appsco-provisioning-integration-authorization-success-page name="provisioning-integration-authorization-success" page company-page
                             id="appscoProvisioningIntegrationSuccessPage"
@@ -5369,68 +5343,6 @@
             _onIntegrationSetup: function(event) {
                 this._selectedIntegration = event.detail.integration;
                 this.set('routeData.page', 'provisioning-settings');
-            },
-
-            _onResourceActionProvisioningSettingsPage: function() {
-                this.$.appscoProvisioningSettingsPage.toggleResource();
-            },
-
-            _onLocalAccountSynced: function(event) {
-                this._reloadCompanyAccounts();
-                this._notify('Remote account ' + event.detail.item.remoteAccount.display_name + ' was successfully synced with ' + event.detail.item.localAccount.account.display_name + ' AppsCo account.');
-            },
-
-            _onNewAccountSynced: function(event) {
-                this._reloadCompanyAccounts();
-                this._notify('Remote account ' + event.detail.item.remoteAccount.display_name + ' was successfully imported.');
-            },
-
-            _onAccountsSyncFinished: function(event) {
-                this._reloadCompanyAccounts();
-                this._notify('Selected accounts were successfully synced.');
-            },
-
-            _onSyncAccounts: function() {
-                this.$.appscoProvisioningSettingsPage.syncAccounts();
-            },
-
-            _onRefreshAccounts: function() {
-                this.$.appscoProvisioningSettingsPage.refreshAccounts();
-            },
-
-            _reloadProvisioningIntegrationAccounts: function() {
-
-                if (this.$.appscoProvisioningSettingsPage.$) {
-                    this.$.appscoProvisioningSettingsPage.reloadAccounts();
-                }
-            },
-
-            _onSyncedAccountRemoved: function(event) {
-                this._notify('Synced account ' + event.detail.item.remoteAccount.display_name + ' was successfully removed.');
-            },
-
-            _onInitializeProvisioningPage: function() {
-                this.$.appscoProvisioningSettingsPageActions.initializePage();
-            },
-
-            _onResetProvisioningPage: function() {
-                this.$.appscoProvisioningSettingsPageActions.resetPage();
-            },
-
-            _onShowBulkActionsProvisioningPage: function() {
-                this.$.appscoProvisioningSettingsPageActions.showBulkActions();
-            },
-
-            _onHideBulkActionsProvisioningPage: function() {
-                this.$.appscoProvisioningSettingsPageActions.hideBulkActions();
-            },
-
-            _onIntegrationSettingsChanged: function(event) {
-                var integration = event.detail.integration,
-                    message = integration.name + ' integration has been modified.';
-                this.$.appscoProvisioningPage.reloadIntegrations();
-
-                this._notify(message);
             },
 
             _onAddIntegrationRuleAction: function(event) {
