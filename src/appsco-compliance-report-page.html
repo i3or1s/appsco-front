@@ -9,6 +9,7 @@
 <link rel="import" href="../bower_components/paper-styles/shadow.html">
 
 <link rel="import" href="components/page/appsco-content.html">
+<link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="components/report/appsco-compliance-report-accounts.html">
 <link rel="import" href="components/report/appsco-compliance-report-page-filters.html">
 
@@ -17,13 +18,10 @@
 <dom-module id="appsco-compliance-report-page">
     <template>
 
-        <style include="shared-styles webkit-scrollbar-style">
+        <style include="appsco-page-styles">
             :host {
-                display: block;
-
-                --resource-width: 318px;
+                --content-background-color: #ffffff;
                 --background-color: var(--body-background-color);
-                --collapsible-content-background-color: #fbfbfb;
                 --compliance-report-account-initials-background-color: var(--body-background-color-darker);
                 --appsco-compliance-report-list-item: {
                     cursor: default;
@@ -32,43 +30,13 @@
                     @apply(--shadow-elevation-2dp);
                 };
             }
-            :host div[resource] {
-                height: 100%;
-                overflow: auto;
-            }
-            :host div[resource] > .resource-content {
-                padding: 30px 10px 10px;
-            }
-            :host div[content] {
-                min-height: 100%;
-                background-color: #ffffff;
-            }
-            .content-container {
-                padding: 10px;
-            }
-            :host *[hidden] {
-                display: none;
+            :host div[resource] .resource-content {
+                padding-top: 30px;
             }
             appsco-compliance-report-accounts {
                 --list-container: {
                     min-height: 60px;
                 };
-            }
-            :host .flex-horizontal {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-            }
-            :host .flex-vertical {
-                @apply(--layout-vertical);
-            }
-            :host .flex {
-                @apply(--layout-flex);
-            }
-            :host([tablet-screen]) {
-                --resource-width: 250px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 200px;
             }
         </style>
 
