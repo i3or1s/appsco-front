@@ -2,14 +2,13 @@
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-request.html">
 
 <link rel="import" href="components/page/appsco-content.html">
-<link rel="import" href="components/page/appsco-page-styles.html">
+<link rel="import" href="components/page/appsco-manage-page-styles.html">
 <link rel="import" href="components/account/appsco-account-image-settings.html">
 <link rel="import" href="directory/appsco-manage-account-components-page.html">
 <link rel="import" href="account/appsco-account-settings-page.html">
@@ -27,32 +26,9 @@
 
 <dom-module id="appsco-manage-account-page">
     <template>
-        <style include="appsco-page-styles">
-            :host {
-                --resource-width: 300px;
-            }
-            :host paper-icon-button::shadow paper-ripple {
-                width: 150%;
-                height: 150%;
-                top: -25%;
-                left: -25%;
-            }
+        <style include="appsco-manage-page-styles">
             :host div[resource] {
-                padding: 10px;
-                height: calc(100% - 32px - 20px - 10px);
-            }
-            :host div[resource] > .resource-header {
-                padding: 20px 10px 30px;
-                position: relative;
-            }
-            :host div[resource] > .resource-content, :host .content-container {
-                padding: 0;
-            }
-            :host div[content], :host .content-container, :host .content-container neon-animated-pages {
-                height: 100%;
-            }
-            appsco-manage-account-components-page {
-                padding: 10px;
+                height: calc(100% - 32px - 20px);
             }
             appsco-account-image-settings {
                 display: block;
@@ -68,24 +44,8 @@
                 --account-initials-background-color: var(--body-background-color-darker);
                 --account-initials-font-size: 24px;
             }
-            .account-info {
-                margin-top: 10px;
-                font-size: 14px;
-            }
-            .account-info p {
-                margin: 4px 0;
-            }
             .account-managed-by {
                 margin-top: 10px;
-            }
-            :host .resource-actions > .change-password-button {
-                @apply(--secondary-button);
-            }
-            :host([medium-screen]) {
-                --resource-width: 240px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 180px;
             }
             .change-password-hero {
                 position: fixed;
@@ -98,12 +58,6 @@
                 height: 100px;
                 opacity: 0;
                 visibility: hidden;
-            }
-            hr {
-                height: 1px;
-                margin: 4px 0;
-                border: none;
-                background-color: var(--divider-color);
             }
         </style>
 
@@ -148,7 +102,7 @@
 
                 <div class="resource-actions flex-horizontal">
                     <paper-button
-                            class="change-password-button flex"
+                            class="button secondary-button flex"
                             on-tap="_onChangePassword"
                             disabled$="[[ !_canManage ]]"
                     >
@@ -430,10 +384,6 @@
                     notify: true
                 },
 
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
                 mediumScreen: {
                     type: Boolean,
                     value: false,
