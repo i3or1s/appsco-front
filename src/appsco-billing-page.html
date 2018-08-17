@@ -80,9 +80,6 @@
                 height: auto;
                 max-height: 48px;
             }
-            :host .manage-button {
-                @apply(--secondary-button);
-            }
             :host .flex-start {
                 @apply(--layout-start);
             }
@@ -170,9 +167,6 @@
                 right: 0;
                 padding: 0;
                 color: #ffffff;
-            }
-            :host .send-invoice-button {
-                @apply(--primary-button);
             }
             :host .plan-upcoming-invoice {
                 min-height: 260px;
@@ -291,7 +285,7 @@
                 <div class="resource-actions flex-horizontal">
                     <template is="dom-if" if="[[ !_paymentMethod ]]">
                         <paper-button
-                                class="manage-button flex"
+                                class="button secondary-button flex"
                                 on-tap="_onManageCreditCard">
                             Add payment method
                         </paper-button>
@@ -299,7 +293,7 @@
 
                     <template is="dom-if" if="[[ _paymentMethod ]]">
                         <paper-button
-                                class="manage-button flex"
+                                class="button secondary-button flex"
                                 on-tap="_onManageCreditCard">
                             Change payment method
                         </paper-button>
@@ -542,7 +536,7 @@
 
                 <div class="info-actions flex-horizontal">
                     <paper-button
-                            class="send-invoice-button flex"
+                            class="button flex"
                             on-tap="_onSendInvoice">
                         Send invoice
                     </paper-button>

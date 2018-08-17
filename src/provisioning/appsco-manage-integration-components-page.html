@@ -19,8 +19,10 @@
             :host {
                 display: block;
                 overflow-y: auto;
-                font-size: 14px;
-                color: var(--primary-text-color);
+                @apply(--layout-horizontal);
+                @apply(--layout-wrap);
+                @apply(--layout-justified);
+                @apply(--appsco-components-page);
 
                 --paper-button: {
                     padding: 6px 0;
@@ -60,8 +62,7 @@
             :host > * {
                 width: calc(100% / 3 - 10px);
                 margin-bottom: 10px;
-                padding: 5px;
-                float: left;
+                @apply(--layout-self-start);
             }
             :host([_twoColumnsView]) > * {
                 width: calc(100% / 2 - 10px);

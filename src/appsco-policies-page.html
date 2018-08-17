@@ -40,9 +40,6 @@
             :host .info-actions > .enable-button {
                 margin-right: 1px;
             }
-            :host .info-actions > .disable-button {
-                @apply(--danger-button);
-            }
             :host([mobile-screen]) {
                 --resource-width: 100%;
             }
@@ -133,11 +130,11 @@
                 </div>
 
                 <div class="info-actions flex-horizontal">
-                    <paper-button class="info-button enable-button flex"
+                    <paper-button class="button enable-button flex"
                                   on-tap="_onEnablePolicyAction">
                         Enable
                     </paper-button>
-                    <paper-button class="info-button disable-button flex"
+                    <paper-button class="button danger-button flex"
                                   on-tap="_onDisablePolicyAction">
                         Disable
                     </paper-button>

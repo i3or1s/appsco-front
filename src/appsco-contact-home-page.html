@@ -55,20 +55,8 @@
                     font-size: 14px;
                 };
             }
-            :host .info {
-                margin-top: 20px;
-                color: var(--primary-text-color);
-            }
-            :host .info p {
-                margin: 0;
-                font-size: 14px;
-            }
-            :host div[info] .details-log {
-                height: calc(100% - 50px - 65px);
-            }
-            :host .details-log paper-tabs {
-                height: 38px;
-                color: var(--primary-text-color);
+            :host appsco-application-subscribers {
+                height: 50px;
             }
             :host div[info] .info-details-section {
                 margin-top: 6px;
@@ -79,14 +67,8 @@
                 padding-right: 10px;
                 overflow: auto;
             }
-            :host .view-button, :host .share-button, :host .revoke-button {
-                @apply(--primary-button);
-            }
             :host .view-button {
                 margin-right: 1px;
-            }
-            :host .share-button {
-                @apply(--secondary-button);
             }
             appsco-application-share {
                 --appsco-application-share-button: {
@@ -151,25 +133,27 @@
         <appsco-content id="appscoContent">
 
             <div content>
-                <appsco-applications
-                        id="appscoApplications"
-                        size="100"
-                        load-more
-                        is-on-company
-                        authorization-token="[[ authorizationToken ]]"
-                        applications-api="[[ applicationsApi ]]"
-                        on-info="_onViewApplicationInfo"
-                        on-edit="_onApplicationEdit"
-                        on-edit-shared-application="_onEditSharedApplication"
-                        on-application="_onApplication"
-                        on-application-removed="_onApplicationRemoved"
-                        on-loaded="_pageLoaded"
-                        on-empty-load="_pageLoaded"></appsco-applications>
+                <div class="content-container">
+                    <appsco-applications
+                            id="appscoApplications"
+                            size="100"
+                            load-more
+                            is-on-company
+                            authorization-token="[[ authorizationToken ]]"
+                            applications-api="[[ applicationsApi ]]"
+                            on-info="_onViewApplicationInfo"
+                            on-edit="_onApplicationEdit"
+                            on-edit-shared-application="_onEditSharedApplication"
+                            on-application="_onApplication"
+                            on-application-removed="_onApplicationRemoved"
+                            on-loaded="_pageLoaded"
+                            on-empty-load="_pageLoaded"></appsco-applications>
+                </div>
             </div>
 
             <div class="flex-vertical" info>
 
-                <div class="application-info flex-horizontal">
+                <div class="info-header flex-horizontal">
                     <appsco-application-info
                             class="flex"
                             application="[[ application ]]">
@@ -181,17 +165,14 @@
                     </template>
                 </div>
 
-                <template is="dom-if" if="[[ !_shared ]]">
-                    <appsco-application-subscribers
-                            application="[[ application ]]"
-                            authorization-token="[[ authorizationToken ]]"
-                            preview>
-                    </appsco-application-subscribers>
-                </template>
-
-
-
-                <div class="details-log flex-vertical">
+                <div class="info-content flex-vertical">
+                    <template is="dom-if" if="[[ !_shared ]]">
+                        <appsco-application-subscribers
+                                application="[[ application ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                preview>
+                        </appsco-application-subscribers>
+                    </template>
 
                     <template is="dom-if" if="[[ !_shared ]]">
                         <paper-tabs id="paperTabs" selected="{{ _selectedTab }}">
@@ -228,19 +209,18 @@
                             </appsco-application-details>
                         </div>
                     </template>
-
                 </div>
 
                 <template is="dom-if" if="[[ !_shared ]]">
                     <div class="info-actions flex-horizontal">
                         <paper-button
-                                class="view-button flex"
+                                class="button view-button flex"
                                 on-tap="_onApplicationInfoEdit">
                             Edit
                         </paper-button>
 
                         <paper-button
-                                class="share-button flex"
+                                class="button secondary-button flex"
                                 on-tap="_onShareApplication">
                             Share
                         </paper-button>
@@ -250,7 +230,7 @@
                 <template is="dom-if" if="[[ _editClaims ]]">
                     <div class="info-actions flex-horizontal">
                         <paper-button
-                                class="view-button flex"
+                                class="button view-button flex"
                                 on-tap="_onApplicationEditCredentials">
                             Edit Credentials
                         </paper-button>
@@ -260,7 +240,7 @@
                 <template is="dom-if" if="[[ application.permisions.revoke ]]">
                     <div class="info-actions flex-horizontal">
                         <paper-button
-                                class="revoke-button flex"
+                                class="button danger-button flex"
                                 on-tap="_onRevokeApplication">
                             Revoke
                         </paper-button>

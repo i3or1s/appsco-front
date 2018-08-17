@@ -7,7 +7,7 @@
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 
 <link rel="import" href="components/page/appsco-content.html">
-<link rel="import" href="components/page/appsco-page-styles.html">
+<link rel="import" href="components/page/appsco-manage-page-styles.html">
 <link rel="import" href="components/account/appsco-account-image.html">
 <link rel="import" href="provisioning/appsco-manage-integration-components-page.html">
 <link rel="import" href="provisioning/appsco-integration-settings-page.html">
@@ -16,26 +16,9 @@
 
 <dom-module id="appsco-manage-integration-page">
     <template>
-        <style include="appsco-page-styles">
-            :host {
-                --resource-width: 300px;
-            }
+        <style include="appsco-manage-page-styles">
             :host div[resource] {
-                padding: 10px;
-                height: calc(100% - 32px - 20px - 10px);
-            }
-            :host div[resource] > .resource-header {
-                padding: 20px 10px 30px;
-                position: relative;
-            }
-            :host div[resource] > .resource-content, :host .content-container {
-                padding: 0;
-            }
-            :host div[content], :host .content-container, :host .content-container neon-animated-pages {
-                height: 100%;
-            }
-            appsco-manage-integration-components-page {
-                padding: 10px;
+                height: calc(100% - 32px - 20px);
             }
             .integration-image {
                 width: 96px;
@@ -55,18 +38,6 @@
                 bottom: 0;
                 left: 0;
                 margin: auto;
-            }
-            :host .resource-actions > .reauthorize {
-                @apply(--secondary-button);
-            }
-            :host .resource-actions > .remove-action {
-                @apply(--danger-button);
-            }
-            :host([medium-screen]) {
-                --resource-width: 240px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 180px;
             }
             :host div.help-title {
                 padding-top: 4px;
@@ -151,60 +122,60 @@
 
                 <div class="resource-content integration-info">
                     <p>[[ integration.name ]]</p>
+
+                    <template is="dom-if" if="[[ _isIntegrationRA ]]">
+                        <div class="kind-info">
+                            <strong>[[ integration.integration.title ]]</strong> is integrated with <strong>AppsCo</strong> in such a way that data is moved
+                            from <strong>[[ integration.integration.title ]]</strong> to <strong>AppsCo</strong> either through sync or through the use of events.
+                        </div>
+                    </template>
+
+                    <template is="dom-if" if="[[ _isIntegrationPST ]]">
+                        <div class="kind-info">
+                            <strong>AppsCo</strong> is integrated with <strong>[[ integration.integration.title ]]</strong> in such a way that data is moved from
+                            <strong>AppsCo</strong> to <strong>[[ integration.integration.title ]]</strong>.
+                        </div>
+                    </template>
+
+                    <template is="dom-if" if="[[ integration.authorized_by ]]">
+                        <div class="info">
+                            Authorized by: [[ integration.authorized_by.display_name ]] ([[ integration.authorized_by.email ]])
+                        </div>
+
+                        <div class="info">
+                            Authorized on: [[ _authorizedDate ]].
+                        </div>
+                    </template>
+
+                    <template is="dom-if" if="[[ integration.tutorialUrl.length ]]">
+                        <div class="info tutorial">
+                            <div class="help-title">Need help?</div>
+                                <a href="[[ integration.tutorialUrl ]]" target="_blank" rel="noopener noreferrer">
+                                    If you need help please visit our knowledgebase.
+                                </a>
+                        </div>
+                    </template>
+
+                    <template is="dom-if" if="[[ _hasDownloadableConfig ]]">
+                        <div class="help-title">AppsCo AD Reader service</div>
+                        <div class="info config-file" on-tap="_downloadConfig">
+                            Download preconfigured configuration file.
+                        </div>
+                        <div class="info service-application">
+                            <a href="/appscoAdfsReader.zip" target="_blank">
+                                Download AppsCo AD Reader service application.
+                            </a>
+                        </div>
+                    </template>
                 </div>
 
-                <template is="dom-if" if="[[ _isIntegrationRA ]]">
-                    <div class="kind-info">
-                        <strong>[[ integration.integration.title ]]</strong> is integrated with <strong>AppsCo</strong> in such a way that data is moved
-                        from <strong>[[ integration.integration.title ]]</strong> to <strong>AppsCo</strong> either through sync or through the use of events.
-                    </div>
-                </template>
-
-                <template is="dom-if" if="[[ _isIntegrationPST ]]">
-                    <div class="kind-info">
-                        <strong>AppsCo</strong> is integrated with <strong>[[ integration.integration.title ]]</strong> in such a way that data is moved from
-                        <strong>AppsCo</strong> to <strong>[[ integration.integration.title ]]</strong>.
-                    </div>
-                </template>
-
-                <template is="dom-if" if="[[ integration.authorized_by ]]">
-                    <div class="info">
-                        Authorized by: [[ integration.authorized_by.display_name ]] ([[ integration.authorized_by.email ]])
-                    </div>
-
-                    <div class="info">
-                        Authorized on: [[ _authorizedDate ]].
-                    </div>
-                </template>
-
-                <template is="dom-if" if="[[ integration.tutorialUrl.length ]]">
-                    <div class="info tutorial">
-                        <div class="help-title">Need help?</div>
-                            <a href="[[ integration.tutorialUrl ]]" target="_blank" rel="noopener noreferrer">
-                                If you need help please visit our knowledgebase.
-                            </a>
-                    </div>
-                </template>
-
-                <template is="dom-if" if="[[ _hasDownloadableConfig ]]">
-                    <div class="help-title">AppsCo AD Reader service</div>
-                    <div class="info config-file" on-tap="_downloadConfig">
-                        Download preconfigured configuration file.
-                    </div>
-                    <div class="info service-application">
-                        <a href="/appscoAdfsReader.zip" target="_blank">
-                            Download AppsCo AD Reader service application.
-                        </a>
-                    </div>
-                </template>
-
                 <div class="resource-actions flex-horizontal">
-                    <paper-button class="reauthorize flex"
+                    <paper-button class="button secondary-button flex"
                                   on-tap="_onReauthorizeIntegration">
                         Reauthorize
                     </paper-button>
 
-                    <paper-button class="remove-action flex"
+                    <paper-button class="button danger-button flex"
                                   on-tap="_onRemoveIntegration">
                         Remove
                     </paper-button>

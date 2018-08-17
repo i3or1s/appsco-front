@@ -7,7 +7,7 @@
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 
 <link rel="import" href="components/page/appsco-content.html">
-<link rel="import" href="components/page/appsco-page-styles.html">
+<link rel="import" href="components/page/appsco-manage-page-styles.html">
 <link rel="import" href="components/application/company/appsco-application-assignees.html">
 <link rel="import" href="application/appsco-application-log-page.html">
 <link rel="import" href="applications/appsco-company-resource-settings-page.html">
@@ -21,33 +21,15 @@
 
 <dom-module id="appsco-manage-resource-page">
     <template>
-        <style include="appsco-page-styles">
+        <style include="appsco-manage-page-styles">
             :host {
-                --resource-width: 300px;
                 --account-initials-background-color: var(--body-background-color-darker);
             }
-            :host paper-icon-button::shadow paper-ripple {
-                width: 150%;
-                height: 150%;
-                top: -25%;
-                left: -25%;
-            }
             :host div[resource] {
-                padding: 10px;
-                height: calc(100% - 32px - 20px - 10px);
+                height: calc(100% - 32px - 20px);
             }
-            :host div[resource] > .resource-header {
-                padding: 20px 10px 30px;
-                position: relative;
-            }
-            :host div[resource] > .resource-content, :host .content-container {
-                padding: 0;
-            }
-            :host div[content], :host .content-container, :host .content-container neon-animated-pages {
-                height: 100%;
-            }
-            appsco-manage-application-components-page {
-                padding: 10px;
+            :host div[resource] > .resource-content {
+                padding-top: 30px;
             }
             :host .resource-header .action-share {
                 color: var(--app-secondary-color);
@@ -87,15 +69,6 @@
             :host .info {
                 @apply(--paper-font-body1);
                 margin-top: 10px;
-            }
-            :host .resource-actions > .remove-button {
-                @apply(--danger-button);
-            }
-            :host([medium-screen]) {
-                --resource-width: 240px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 180px;
             }
             :host div.help-title {
                 padding-top: 4px;
@@ -173,17 +146,17 @@
                             </template>
                         </div>
                     </template>
-
-                    <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
-                        <div class="resource-actions flex-horizontal">
-                            <paper-button
-                                    class="remove-button flex"
-                                    on-tap="_onRemoveApplication">
-                                Remove
-                            </paper-button>
-                        </div>
-                    </template>
                 </div>
+
+                <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
+                    <div class="resource-actions flex-horizontal">
+                        <paper-button
+                                class="button danger-button flex"
+                                on-tap="_onRemoveApplication">
+                            Remove
+                        </paper-button>
+                    </div>
+                </template>
             </div>
 
             <div content>

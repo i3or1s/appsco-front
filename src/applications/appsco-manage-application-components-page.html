@@ -26,8 +26,8 @@
                 overflow-y: auto;
                 @apply(--layout-horizontal);
                 @apply(--layout-wrap);
-                font-size: 14px;
-                color: var(--primary-text-color);
+                @apply(--layout-justified);
+                @apply(--appsco-components-page);
 
                 --paper-card: {
                      min-height: 150px;
@@ -124,12 +124,6 @@
                      top: 2px;
                  };
             }
-            :host .details-subscribers,
-            :host .security-sharing,
-            :host .details-idp,
-            :host .appsco-application-groups {
-                /*margin-right: 10px;*/
-            }
             :host .appsco-application-settings-card,
             :host .appsco-application-assignees,
             :host .appsco-application-security,
@@ -156,6 +150,10 @@
             }
             :host([mobile-screen]) > * {
                 width: 100%;
+            }
+            :host([mobile-screen]) > .details-subscribers {
+                margin-right: 0;
+                margin-bottom: 0;
             }
         </style>
 

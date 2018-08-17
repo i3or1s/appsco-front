@@ -7,7 +7,7 @@
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 
 <link rel="import" href="components/page/appsco-content.html">
-<link rel="import" href="components/page/appsco-page-styles.html">
+<link rel="import" href="components/page/appsco-manage-page-styles.html">
 <link rel="import" href="company/appsco-company-components-page.html">
 <link rel="import" href="company/appsco-company-settings-page.html">
 <link rel="import" href="company/appsco-company-brand-settings-page.html">
@@ -19,49 +19,22 @@
 
 <dom-module id="appsco-company-page">
     <template>
-        <style include="appsco-page-styles">
-            :host {
-                --resource-width: 300px;
-            }
-            :host .content-components, :host .content-components neon-animated-pages {
+        <style include="appsco-manage-page-styles">
+            :host div[resource] {
                 height: 100%;
+                padding: 0;
             }
-            appsco-company-components-page {
+            :host div[resource] > .resource-header, :host div[resource] > .resource-content {
                 padding: 10px;
-            }
-            :host .resource-header {
-                margin-bottom:20px;
-                font-size: 18px;
-                @apply(--text-wrap-break);
-            }
-            .resource-content {
-                margin-top: 10px;
-                font-size: 14px;
-            }
-            :host div[content] {
-                height: 100%;
             }
             .info-icon {
                 margin-right: 4px;
             }
-            :host([medium-screen]) {
-                --resource-width: 240px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 180px;
-            }
             :host .company-branded-login {
                 margin-top: 10px;
             }
-            hr {
-                height: 1px;
-                margin: 4px 0;
-                border: none;
-                background-color: var(--divider-color);
-            }
         </style>
 
-        <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
@@ -88,7 +61,7 @@
 
             <div content>
 
-                <div class="content-components">
+                <div class="content-container">
                     <neon-animated-pages class="flex"
                                          selected="[[ _selected ]]"
                                          attr-for-selected="name"
@@ -285,16 +258,6 @@
                     observer: '_observeShowDomainsPage'
                 },
 
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
                 tabletScreen: {
                     type: Boolean,
                     value: false,
@@ -323,14 +286,14 @@
             ],
 
             observers: [
-                '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+                '_updateScreen(tabletScreen, mobileScreen)'
             ],
 
             attached: function() {
 
                 this.pageLoaded = false;
 
-                if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                if (this.mobileScreen || this.tabletScreen) {
                     this.updateStyles();
                 }
 

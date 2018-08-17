@@ -76,9 +76,6 @@
             :host .info-actions > .view-button {
                 margin-right: 1px;
             }
-            :host .info-actions > .share-button {
-                @apply(--secondary-button);
-            }
             appsco-application-share {
                 --appsco-application-share-button: {
                      border-radius: 0;
@@ -201,13 +198,13 @@
 
                     <div class="info-actions flex-horizontal">
                         <paper-button
-                                class="view-button flex"
+                                class="button view-button flex"
                                 on-tap="_onResourceInfoEdit">
                             Edit
                         </paper-button>
 
                         <paper-button
-                                class="share-button flex"
+                                class="button secondary-button flex"
                                 on-tap="_onShareResource">
                             Share
                         </paper-button>

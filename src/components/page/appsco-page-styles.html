@@ -16,6 +16,21 @@
                 --info-width: 318px;
                 --collapsible-content-background-color: #fbfbfb;
             }
+            :host hr {
+                height: 1px;
+                margin: 4px 0;
+                border: none;
+                background-color: var(--divider-color);
+            }
+            :host .button {
+                @apply(--primary-button);
+            }
+            :host .secondary-button {
+                @apply(--secondary-button);
+            }
+            :host .danger-button {
+                @apply(--danger-button);
+            }
             :host div[resource] {
                 height: 100%;
                 overflow: auto;
@@ -35,7 +50,6 @@
                 right: 0;
             }
             :host .resource-actions > paper-button, :host .info-actions > paper-button {
-                @apply(--primary-button);
                 border-radius: 0;
                 white-space: nowrap;
                 text-overflow: ellipsis;
