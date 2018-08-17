@@ -2,12 +2,11 @@
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 
 <link rel="import" href="components/page/appsco-content.html">
-<link rel="import" href="components/page/appsco-page-styles.html">
+<link rel="import" href="components/page/appsco-manage-page-styles.html">
 <link rel="import" href="components/account/appsco-account-image-settings.html">
 <link rel="import" href="account/appsco-account-components-page.html">
 <link rel="import" href="account/appsco-account-settings-page.html">
@@ -21,62 +20,17 @@
 
 <dom-module id="appsco-account-page">
     <template>
-        <style include="appsco-page-styles">
-            :host {
-                --resource-width: 300px;
-            }
-            :host paper-icon-button::shadow paper-ripple {
-                width: 150%;
-                height: 150%;
-                top: -25%;
-                left: -25%;
-            }
+        <style include="appsco-manage-page-styles">
             :host div[resource] {
-                padding: 10px;
-                height: calc(100% - 32px - 20px - 10px);
+                height: calc(100% - 32px - 20px);
             }
-            :host div[resource] > .resource-header {
-                padding: 20px 10px 30px;
-                position: relative;
-            }
-            :host div[resource] > .resource-content, :host .content-container {
-                padding: 0;
-            }
-            :host div[content] {
-                height: 100%;
-            }
-            :host .content-container, :host .content-container neon-animated-pages {
-                height: 100%;
-            }
-            appsco-account-components-page {
-                padding: 10px;
-            }
-            appsco-account-image-settings {
+            :host appsco-account-image-settings {
                 display: block;
             }
-            .account-info {
-                margin-top: 10px;
-                font-size: 14px;
-            }
-            .account-info p {
-                margin: 4px 0;
-            }
-            .account-managed-by {
+            :host .account-managed-by {
                 margin-top: 10px;
             }
-            :host .resource-actions > .change-password-button {
-                @apply(--secondary-button);
-            }
-            :host .resource-actions > .delete-account-button {
-                @apply(--danger-button);
-            }
-            :host([medium-screen]) {
-                --resource-width: 240px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 180px;
-            }
-            .change-password-hero {
+            :host .change-password-hero {
                 position: fixed;
                 top: 0;
                 right: 0;
@@ -87,12 +41,6 @@
                 height: 100px;
                 opacity: 0;
                 visibility: hidden;
-            }
-            hr {
-                height: 1px;
-                margin: 4px 0;
-                border: none;
-                background-color: var(--divider-color);
             }
         </style>
 
@@ -106,11 +54,7 @@
                                         logout-api="[[ logoutApi ]]"></appsco-account-remove-personal>
 
         <appsco-content id="appscoContent" resource-active>
-
-
-
             <div class="flex-vertical" resource>
-
                 <div class="resource-header">
                     <appsco-account-image-settings
                             id="appscoAccountImageSettings"
@@ -120,7 +64,7 @@
                     </appsco-account-image-settings>
                 </div>
 
-                <div class="resource-content account-info">
+                <div class="resource-content">
                     <template is="dom-if" if="[[ _accountName ]]">
                         <div class="account-name">[[ _accountName ]]</div>
                     </template>
@@ -139,24 +83,21 @@
 
                 <div class="resource-actions flex-horizontal">
                     <paper-button
-                            class="change-password-button flex"
+                            class="button secondary-button flex"
                             on-tap="_onChangePassword">
                         Change password
                     </paper-button>
                     <template is="dom-if" if="![[ accountManaged ]]">
                         <paper-button
-                                class="delete-account-button flex"
+                                class="button danger-button flex"
                                 on-tap="_onRemoveAccount">
                             Remove account
                         </paper-button>
                     </template>
-
                 </div>
-
             </div>
 
             <div content>
-
                 <div class="content-container">
                     <neon-animated-pages class="flex"
                                          selected="[[ _selected ]]"
@@ -369,10 +310,6 @@
                     notify: true
                 },
 
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
                 mediumScreen: {
                     type: Boolean,
                     value: false,
@@ -448,13 +385,11 @@
             },
 
             attached: function() {
-
                 this.pageLoaded = false;
 
                 if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
                     this.updateStyles();
                 }
-
             },
 
             setupAfterTwoFaDisabled: function () {

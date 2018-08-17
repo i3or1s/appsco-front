@@ -60,20 +60,8 @@
                     font-size: 14px;
                 };
             }
-            :host .info {
-                margin-top: 20px;
-                color: var(--primary-text-color);
-            }
-            :host .info p {
-                margin: 0;
-                font-size: 14px;
-            }
-            :host div[info] .details-log {
-                height: calc(100% - 50px - 65px);
-            }
-            :host .details-log paper-tabs {
-                height: 38px;
-                color: var(--primary-text-color);
+            :host appsco-application-subscribers {
+                height: 50px;
             }
             :host div[info] .info-details-section {
                 margin-top: 6px;
@@ -86,9 +74,6 @@
             }
             :host .info-actions > .view-button {
                 margin-right: 1px;
-            }
-            :host .info-actions > .share-button {
-                @apply(--secondary-button);
             }
             appsco-application-share {
                 --appsco-application-share-button: {
@@ -231,17 +216,14 @@
                     </template>
                 </div>
 
-                <template is="dom-if" if="[[ !_shared ]]">
-                    <appsco-application-subscribers
-                            application="[[ application ]]"
-                            authorization-token="[[ authorizationToken ]]"
-                            preview>
-                    </appsco-application-subscribers>
-                </template>
-
-
-
-                <div class="details-log flex-vertical">
+                <div class="info-content flex-vertical">
+                    <template is="dom-if" if="[[ !_shared ]]">
+                        <appsco-application-subscribers
+                                application="[[ application ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                preview>
+                        </appsco-application-subscribers>
+                    </template>
 
                     <template is="dom-if" if="[[ !_shared ]]">
                         <paper-tabs id="paperTabs" selected="{{ _selectedTab }}">
@@ -278,19 +260,18 @@
                             </appsco-application-details>
                         </div>
                     </template>
-
                 </div>
 
                 <template is="dom-if" if="[[ !_shared ]]">
                     <div class="info-actions flex-horizontal">
                         <paper-button
-                                class="view-button flex"
+                                class="button view-button flex"
                                 on-tap="_onApplicationInfoEdit">
                             Edit
                         </paper-button>
 
                         <paper-button
-                                class="share-button flex"
+                                class="button secondary-button flex"
                                 on-tap="_onShareApplication">
                             Share
                         </paper-button>
@@ -300,7 +281,7 @@
                 <template is="dom-if" if="[[ _editClaims ]]">
                     <div class="info-actions flex-horizontal">
                         <paper-button
-                                class="view-button flex"
+                                class="button view-button flex"
                                 on-tap="_onApplicationEditCredentials">
                             Edit Credentials
                         </paper-button>
@@ -310,7 +291,7 @@
                 <template is="dom-if" if="[[ application.permisions.revoke ]]">
                     <div class="info-actions flex-horizontal">
                         <paper-button
-                                class="revoke-button flex"
+                                class="button danger-button flex"
                                 on-tap="_onRevokeApplication">
                             Revoke
                         </paper-button>

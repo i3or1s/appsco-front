@@ -9,39 +9,15 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 
 <link rel="import" href="components/page/appsco-content.html">
-<link rel="import" href="components/page/appsco-page-styles.html">
+<link rel="import" href="components/page/appsco-manage-page-styles.html">
 <link rel="import" href="components/customer/appsco-manage-customer-components-page.html">
 <link rel="import" href="components/customer/appsco-customer-partner-admins-page.html">
 
 <dom-module id="appsco-manage-customer-page">
     <template>
-        <style include="appsco-page-styles">
-            :host {
-                --resource-width: 300px;
-            }
+        <style include="appsco-manage-page-styles">
             :host div[resource] {
-                padding: 10px;
-                height: calc(100% - 32px - 20px - 10px);
-            }
-            :host div[resource] > .resource-header {
-                padding: 20px 10px 30px;
-                position: relative;
-            }
-            :host div[resource] > .resource-content, :host .content-container {
-                padding: 0;
-            }
-            :host div[content], :host .content-container, :host .content-container neon-animated-pages {
-                height: 100%;
-            }
-            appsco-manage-customer-components-page {
-                padding: 10px;
-            }
-            .customer-info {
-                margin-top: 10px;
-                font-size: 14px;
-            }
-            .customer-info p {
-                margin: 4px 0;
+                height: calc(100% - 32px - 20px);
             }
             :host div[label] {
                 color: var(--secondary-text-color);
@@ -76,15 +52,6 @@
                 margin-bottom: 16px;
                 @apply(--text-wrap-break);
             }
-            :host .resource-actions > .delete-button {
-                @apply(--danger-button);
-            }
-            :host([medium-screen]) {
-                --resource-width: 240px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 180px;
-            }
         </style>
 
         <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
@@ -106,7 +73,7 @@
                     </div>
                 </div>
 
-                <div class="resource-content customer-info">
+                <div class="resource-content">
                     <div class="customer-name">[[ customer.name ]]</div>
                     <div label>Customer ID</div>
                     <div class="customer-id">[[ customer.company_uuid ]]</div>
@@ -115,7 +82,7 @@
                 </div>
 
                 <div class="resource-actions flex-horizontal">
-                    <paper-button class="delete-button flex"
+                    <paper-button class="button danger-button flex"
                                   on-tap="_onDeleteCustomerAction">
                         Delete
                     </paper-button>
@@ -209,10 +176,6 @@
                     computed: '_computeHeaders(authorizationToken)'
                 },
 
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
                 mediumScreen: {
                     type: Boolean,
                     value: false,

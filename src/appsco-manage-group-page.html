@@ -8,7 +8,7 @@
 <link rel="import" href="../bower_components/iron-icons/social-icons.html">
 
 <link rel="import" href="components/page/appsco-content.html">
-<link rel="import" href="components/page/appsco-page-styles.html">
+<link rel="import" href="components/page/appsco-manage-page-styles.html">
 <link rel="import" href="components/components/appsco-date-format.html">
 <link rel="import" href="components/group/appsco-manage-group-components-page.html">
 <link rel="import" href="components/group/appsco-group-roles-page.html">
@@ -17,26 +17,9 @@
 
 <dom-module id="appsco-manage-group-page">
     <template>
-        <style include="appsco-page-styles">
-            :host {
-                --resource-width: 300px;
-            }
+        <style include="appsco-manage-page-styles">
             :host div[resource] {
-                padding: 10px;
-                height: calc(100% - 32px - 20px - 10px);
-            }
-            :host div[resource] > .resource-header {
-                padding: 20px 10px 30px;
-                position: relative;
-            }
-            :host div[resource] > .resource-content, :host .content-container {
-                padding: 0;
-            }
-            :host div[content], :host .content-container, :host .content-container neon-animated-pages {
-                height: 100%;
-            }
-            appsco-manage-group-components-page {
-                padding: 10px;
+                height: calc(100% - 32px - 20px);
             }
             .group-icon {
                 width: 96px;
@@ -66,15 +49,6 @@
             .group-info p {
                 margin: 4px 0;
                 @apply(--text-wrap-break);
-            }
-            :host .resource-actions > .remove-action {
-                @apply(--danger-button);
-            }
-            :host([medium-screen]) {
-                --resource-width: 240px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 180px;
             }
         </style>
 
@@ -107,7 +81,7 @@
                 </div>
 
                 <div class="resource-actions flex-horizontal">
-                    <paper-button class="remove-action flex"
+                    <paper-button class="button danger-button flex"
                                   on-tap="_onRemoveGroupAction">
                         Remove
                     </paper-button>
@@ -228,10 +202,6 @@
                     computed: '_computeGroupResourcesApi(group)'
                 },
 
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
                 mediumScreen: {
                     type: Boolean,
                     value: false,

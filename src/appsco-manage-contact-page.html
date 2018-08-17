@@ -6,7 +6,7 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
 <link rel="import" href="components/page/appsco-content.html">
-<link rel="import" href="components/page/appsco-page-styles.html">
+<link rel="import" href="components/page/appsco-manage-page-styles.html">
 <link rel="import" href="components/account/appsco-account-image.html">
 <link rel="import" href="components/contact/appsco-manage-contact-components-page.html">
 <link rel="import" href="components/contact/appsco-contact-applications-page.html">
@@ -15,26 +15,9 @@
 
 <dom-module id="appsco-manage-contact-page">
     <template>
-        <style include="appsco-page-styles">
-            :host {
-                --resource-width: 300px;
-            }
+        <style include="appsco-manage-page-styles">
             :host div[resource] {
-                padding: 10px;
-                height: calc(100% - 32px - 20px - 10px);
-            }
-            :host div[resource] > .resource-header {
-                padding: 20px 10px 30px;
-                position: relative;
-            }
-            :host div[resource] > .resource-content, :host .content-container {
-                padding: 0;
-            }
-            :host div[content], :host .content-container, :host .content-container neon-animated-pages {
-                height: 100%;
-            }
-            appsco-manage-contact-components-page {
-                padding: 10px;
+                height: calc(100% - 32px - 20px);
             }
             appsco-account-image {
                 --account-image: {
@@ -46,28 +29,6 @@
 
                 --account-initials-background-color: var(--body-background-color-darker);
                 --account-initials-font-size: 24px;
-            }
-            .account-info {
-                margin-top: 10px;
-                font-size: 14px;
-            }
-            .account-info p {
-                margin: 4px 0;
-            }
-            :host .resource-actions > .convert-to-user-button {
-                @apply(--secondary-button);
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
-            }
-            :host .resource-actions > .delete-button {
-                @apply(--danger-button);
-            }
-            :host([medium-screen]) {
-                --resource-width: 240px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 180px;
             }
         </style>
 
@@ -94,12 +55,12 @@
                 </div>
 
                 <div class="resource-actions flex-horizontal">
-                    <paper-button class="convert-to-user-button flex"
+                    <paper-button class="button secondary-button flex"
                                   on-tap="_onConvertContactToUserAction">
                         Convert to user
                     </paper-button>
 
-                    <paper-button class="delete-button flex"
+                    <paper-button class="button danger-button flex"
                                   on-tap="_onDeleteContactAction">
                         Delete
                     </paper-button>
@@ -214,10 +175,6 @@
                     computed: '_computeHeaders(authorizationToken)'
                 },
 
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
                 mediumScreen: {
                     type: Boolean,
                     value: false,

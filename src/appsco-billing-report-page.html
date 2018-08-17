@@ -26,16 +26,6 @@
             :host paper-item:hover {
                 @apply(--paper-item-hover);
             }
-            :host .resource-header {
-                padding: 10px;
-                position: relative;
-            }
-            :host([tablet-screen]) {
-                --resource-width: 250px;
-            }
-            :host([mobile-screen]) {
-                --resource-width: 0;
-            }
             .filter {
                 position: relative;
             }
@@ -62,9 +52,11 @@
                 transform-origin: top center;
                 transition: all 0.1s linear;
             }
+            :host([mobile-screen]) {
+                --resource-width: 0;
+            }
         </style>
 
-        <iron-media-query query="(max-width: 992px)" query-matches="{{ screen992 }}"></iron-media-query>
         <iron-media-query query="(max-width: 880px)" query-matches="{{ tabletScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
@@ -160,11 +152,6 @@
             is: 'appsco-billing-report-page',
 
             properties: {
-                screen992: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
 
                 tabletScreen: {
                     type: Boolean,
@@ -248,13 +235,13 @@
             ],
 
             observers: [
-                '_updateScreen(mobileScreen, tabletScreen, screen992)'
+                '_updateScreen(mobileScreen, tabletScreen)'
             ],
 
             attached: function() {
                 this.pageLoaded = false;
 
-                if (this.mobileScreen || this.tabletScreen || this.screen992) {
+                if (this.mobileScreen || this.tabletScreen) {
                     this.updateStyles();
                 }
             },

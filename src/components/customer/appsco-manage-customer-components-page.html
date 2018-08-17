@@ -17,8 +17,10 @@
             :host {
                 display: block;
                 overflow-y: auto;
-                font-size: 14px;
-                color: var(--primary-text-color);
+                @apply(--layout-horizontal);
+                @apply(--layout-wrap);
+                @apply(--layout-justified);
+                @apply(--appsco-components-page);
 
                 --paper-button: {
                      padding: 6px 0;

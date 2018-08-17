@@ -51,9 +51,6 @@
             :host([mobile-screen]) {
                 --resource-width: 180px;
             }
-            :host .manage-button {
-                @apply(--secondary-button);
-            }
             :host .mt20 {
                 margin-top: 20px;
             }
@@ -276,7 +273,7 @@
                         <div class="resource-actions flex-horizontal">
                             <template is="dom-if" if="[[ !_paymentMethod ]]">
                                 <paper-button
-                                        class="manage-button flex"
+                                        class="button secondary-button flex"
                                         on-tap="_onManageCreditCard">
                                     Add payment method
                                 </paper-button>
@@ -284,7 +281,7 @@
 
                             <template is="dom-if" if="[[ _paymentMethod ]]">
                                 <paper-button
-                                        class="manage-button flex"
+                                        class="button secondary-button flex"
                                         on-tap="_onManageCreditCard">
                                     Change payment method
                                 </paper-button>

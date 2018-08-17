@@ -24,8 +24,8 @@
                 overflow-y: auto;
                 @apply(--layout-horizontal);
                 @apply(--layout-wrap);
-                font-size: 14px;
-                color: var(--primary-text-color);
+                @apply(--layout-justified);
+                @apply(--appsco-components-page);
 
                 --paper-button: {
                      padding: 6px 0;
@@ -47,6 +47,7 @@
                 @apply(--layout-self-start);
             }
             paper-card {
+                width: 100%;
                  min-height: 150px;
                  box-sizing: border-box;
 
@@ -82,31 +83,23 @@
                      top: 2px;
                  };
             }
-            .shared-applications {
+            :host .shared-applications. :host .activity-log, :host.groups {
                 @apply(--layout-vertical);
-                margin-left: 10px;
+            }
+            :host .shared-applications {
+                margin-right: 10px;
+            }
+            :host .groups {
                 margin-top: 10px;
             }
-            .activity-log {
-                @apply(--layout-vertical);
-                margin-left: 10px;
-                margin-top: 10px;
-            }
-            .groups {
-                @apply(--layout-vertical);
-                margin-top: 10px;
-            }
-
             :host([medium-screen]) > * {
                 width: calc(100% / 2 - 10px);
             }
-
             :host([tablet-screen]) > * {
                 width: 100%;
             }
-
-            :host([tablet-screen]) .activity-log {
-                margin-top: 0;
+            :host([tablet-screen]) .shared-applications {
+                margin-right: 0;
             }
 
         </style>
