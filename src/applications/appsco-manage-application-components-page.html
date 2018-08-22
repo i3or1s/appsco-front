@@ -475,11 +475,11 @@
             },
 
             reloadAssignees: function() {
-                this.$.appscoApplicationAssignees.reload();
+                this.$$('#appscoApplicationAssignees').reload();
             },
 
             removeAssignee: function(assignee) {
-                this.$.appscoApplicationAssignees.removeAssignee(assignee);
+                this.$$('#appscoApplicationAssignees').removeAssignee(assignee);
             },
 
             _onApplicationChanged: function() {
