@@ -480,7 +480,7 @@
             removeResourceAssignee: function(resource, assignee) {
 
                 if (resource.alias === this.resource.alias) {
-                    this.$.appscoApplicationAssignees.removeAssignee(assignee);
+                    this.$$('#appscoApplicationAssignees').removeAssignee(assignee);
                 }
             },
 
