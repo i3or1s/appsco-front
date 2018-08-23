@@ -85,13 +85,6 @@ Custom property | Description | Default
             </div>
 
             <div class="layout horizontal center">
-                <paper-icon-button
-                        id="vaultAction"
-                        class="action-icon"
-                        icon="icons:work"
-                        title="Vault"
-                        on-tap="_onVaultAction">
-                </paper-icon-button>
 
                 <appsco-header-account-actions
                         id="appscoHeaderAccountActions"
@@ -253,23 +246,7 @@ Custom property | Description | Default
 
             notifyNotificationsSeen: function () {
                 this.$.appscoHeaderAccountActions.notifyNotificationsSeen();
-            },
-
-            /**
-             * Fires an event after vault action is tapped.
-             *
-             * @private
-             */
-            _onVaultAction: function() {
-
-                /**
-                 * Fired after vault action is tapped.
-                 *
-                 * @event vault-action
-                 */
-                this.fire('vault-action');
             }
-
         });
     </script>
 </dom-module>

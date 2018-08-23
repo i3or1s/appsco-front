@@ -148,36 +148,6 @@ Example:
                 computed: '_profileImage(index, domain)'
             },
 
-            vaultLogin: {
-                type: String,
-                computed: '_vaultLogin(index, domain)'
-            },
-
-            vaultCreditCard: {
-                type: String,
-                computed: '_vaultCreditCard(index, domain)'
-            },
-
-            vaultIdentity: {
-                type: String,
-                computed: '_vaultIdentity(index, domain)'
-            },
-
-            vaultSoftwareLicence: {
-                type: String,
-                computed: '_vaultSoftwareLicence(index, domain)'
-            },
-
-            vaultPassport: {
-                type: String,
-                computed: '_vaultPassport(index, domain)'
-            },
-
-            vaultSecureNote: {
-                type: String,
-                computed: '_vaultSecureNote(index, domain)'
-            },
-
             companies: {
                 type: String,
                 computed: '_companies(index, domain)'
@@ -260,12 +230,6 @@ Example:
                         accountLog: this.accountLog,
                         partner: this.partner,
                         profileImage: this.profileImage,
-                        vaultLogin: this.vaultLogin,
-                        vaultCreditCard: this.vaultCreditCard,
-                        vaultIdentity: this.vaultIdentity,
-                        vaultSoftwareLicence: this.vaultSoftwareLicence,
-                        vaultPassport: this.vaultPassport,
-                        vaultSecureNote: this.vaultSecureNote,
                         companies: this.companies,
                         upgradeToBusiness: this.upgradeToBusiness,
                         companiesAccountIsContactInApi: this.companiesAccountIsContactInApi,
@@ -307,12 +271,6 @@ Example:
                 accountLog: this.accountLog,
                 partner: this.partner,
                 profileImage: this.profileImage,
-                vaultLogin: this.vaultLogin,
-                vaultCreditCard: this.vaultCreditCard,
-                vaultIdentity: this.vaultIdentity,
-                vaultSoftwareLicence: this.vaultSoftwareLicence,
-                vaultPassport: this.vaultPassport,
-                vaultSecureNote: this.vaultSecureNote,
                 companies: this.companies,
                 upgradeToBusiness: this.upgradeToBusiness,
                 companiesAccountIsContactInApi: this.companiesAccountIsContactInApi,
@@ -421,30 +379,6 @@ Example:
 
         _profileImage: function(index, domain) {
             return this._computeOrigin(domain, index) + '/me/profile-image';
-        },
-
-        _vaultLogin: function(index, domain) {
-            return this._computeOrigin(domain, index) + '/vault';
-        },
-
-        _vaultCreditCard: function(index, domain) {
-            return this._computeOrigin(domain, index) + '/vault-cc';
-        },
-
-        _vaultIdentity: function(index, domain) {
-            return this._computeOrigin(domain, index) + '/vault-identity';
-        },
-
-        _vaultSoftwareLicence: function(index, domain) {
-            return this._computeOrigin(domain, index) + '/vault-software-licence';
-        },
-
-        _vaultPassport: function(index, domain) {
-            return this._computeOrigin(domain, index) + '/vault-passport';
-        },
-
-        _vaultSecureNote: function(index, domain) {
-            return this._computeOrigin(domain, index) + '/vault-secure-note';
         },
 
         _companies: function(index, domain) {
