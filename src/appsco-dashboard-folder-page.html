@@ -45,10 +45,6 @@
                 --applications-container: {
                     margin-right: -30px;
                 };
-
-                --subscriber-initials: {
-                    background-color: var(--divider-color);
-                };
             }
             :host .citrix-item {
                 margin: 0 10px 10px 0;
@@ -61,12 +57,8 @@
                     font-size: 14px;
                 };
             }
-            :host div[info] appsco-application-subscribers {
-                height: 90px;
-                padding-top: 14px;
-                color: var(--primary-text-color);
-                box-sizing: border-box;
-                @apply(--layout-flex-none);
+            :host appsco-application-subscribers {
+                height: 50px;
             }
             :host paper-tabs {
                 height: 38px;
