@@ -46,7 +46,6 @@
                 product-partner="[[ account.partner ]]"
                 domain="{{ domain }}"
                 on-brand-action="_onBrandAction"
-                on-vault-action="_onVaultAction"
                 on-appsco-product-changed="_onAppscoProductChangeAction"
                 on-account-chat="_onAccountChat"
                 on-account-settings="_onAccountSettingsAction"
@@ -65,9 +64,6 @@
                     <template is="dom-if" if="[[ !_companyPage ]]">
                         <a name="home" href="#">
                             <iron-icon icon="icons:home"></iron-icon> <span class="menu-text">Home</span>
-                        </a>
-                        <a name="vault" href="#">
-                            <iron-icon icon="icons:work"></iron-icon> <span class="menu-text">Vault</span>
                         </a>
 
                         <template is="dom-if" if="[[ _accountCanCreateCompany ]]">
@@ -220,11 +216,6 @@
                                     on-back="_onBackFromAccountAction"
                                     on-resource-section="_onResourceActionPage"
                                     on-advanced-settings="_onAccountAdvancedSettings"></appsco-company-account-page-actions>
-
-                            <appsco-vault-page-actions
-                                    name="vault"
-                                    authorization-token="[[ authorizationToken ]]"
-                                    on-add-vault-action="_onAddVaultAction"></appsco-vault-page-actions>
 
                             <appsco-upgrade-page-actions
                                     name="upgrade"
@@ -517,15 +508,6 @@
                             on-password-changed="_onAccountPasswordChanged"
                             on-import-personal-resources="_onImportPersonalResourcesAction"
                             on-image-upload-error="_onImageUploadError"></appsco-company-account-page>
-
-                    <appsco-vault-page name="vault" page
-                            id="appscoVaultPage"
-                            authorization-token="[[ authorizationToken ]]"
-                            api="[[ api ]]"
-                            on-loaded="_onLoadedVaultItems"
-                            on-edit="_onEditVaultAction"
-                            on-remove-vault-item="_onRemoveVaultAction">
-                    </appsco-vault-page>
 
                     <appsco-trybusiness-page name="trybusiness" page
                             id="appscoUpgradePage"
@@ -1048,19 +1030,6 @@
                 api-errors="[[ _apiErrors ]]"
                 on-folder-removed="_onFolderRemoved">
         </appsco-folders-remove>
-
-        <appsco-vault-remove
-                id="appscoVaultItemRemove"
-                authorization-token="[[ authorizationToken ]]"
-                on-vault-item-removed="_onVaultItemRemoved"
-        ></appsco-vault-remove>
-
-        <appsco-vault-manage-item
-                id="appscoVaultItemManage"
-                authorization-token="[[ authorizationToken ]]"
-                api="[[ api ]]"
-                on-item-saved="_onItemSaved"
-        ></appsco-vault-manage-item>
 
         <appsco-orgunit-modify
                 id="appscoOrgunitModify"
@@ -2578,10 +2547,6 @@
                 this._showPage('home');
             },
 
-            _showVaultPage: function() {
-                this._showPage('vault');
-            },
-
             _showAccountPage: function() {
                 this._showPage('account');
             },
@@ -2903,7 +2868,7 @@
              * @private
              */
             _isPersonalPage: function(page) {
-                var personalPages = ['home', 'resource', 'vault', 'trybusiness', 'account'];
+                var personalPages = ['home', 'resource', 'trybusiness', 'account'];
                 return personalPages.indexOf(page) != -1;
             },
 
@@ -3077,11 +3042,6 @@
                 this._companyPage ? this._showCompanyHomePage() : this._showHomePage();
             },
 
-            _onVaultAction: function() {
-                this._setProduct(false);
-                this._showVaultPage();
-            },
-
             _onAppscoProductChangeAction: function(event) {
                 var panel = event.detail.product,
                     company = event.detail.company;
@@ -3163,10 +3123,6 @@
 
                     case 'company':
                         return this.$.appscoCompanyPage;
-                        break;
-
-                    case 'vault':
-                        return this.$.appscoVaultPage;
                         break;
 
                     case 'contacts':
@@ -3345,10 +3301,6 @@
                 if (element !== undefined && typeof element.hideBulkSelectAll === 'function') {
                     element.hideBulkSelectAll();
                 }
-            },
-
-            _onInfoVaultAction: function() {
-                this.$.appscoVaultPage.toggleInfo();
             },
 
             _onSearchApplications: function(event) {
@@ -3842,59 +3794,6 @@
             },
             /**
              * Account page END
-             */
-
-            /**
-             * Vault page START
-             */
-            _onLoadedVaultItems: function() {
-
-                if (this.page === 'vault') {
-                    this.$.appscoVaultPage.setDefaultItem();
-                }
-
-            },
-
-            _onAddVaultAction: function(event) {
-                var appscoVaultItemManage = this.$.appscoVaultItemManage;
-
-                appscoVaultItemManage.open(event.detail.action);
-            },
-
-            _onEditVaultAction: function(event) {
-                var appscoVaultItemManage = this.$.appscoVaultItemManage;
-
-                appscoVaultItemManage.set('item', event.detail.item);
-                appscoVaultItemManage.open(event.detail.item.vaultType);
-            },
-
-            _onRemoveVaultAction: function(event) {
-                var appscoVaultItemRemove = this.$.appscoVaultItemRemove;
-
-                appscoVaultItemRemove.item = event.detail.item;
-                appscoVaultItemRemove.open();
-            },
-
-            _onItemSaved: function(event) {
-                var item = event.detail.item,
-                    appscoVaultPage = this.$.appscoVaultPage;
-
-                appscoVaultPage.item = item;
-                appscoVaultPage.setItem(item);
-                this._notify('Vault item ' + item.displayTitle + ' has been successfully saved.');
-            },
-
-            _onVaultItemRemoved: function(event) {
-                var appscoVaultPage = this.$.appscoVaultPage;
-
-                appscoVaultPage.removeItem(event.detail.item);
-                appscoVaultPage.hideInfo();
-                appscoVaultPage.setDefaultItem();
-                this._notify('Vault item ' + event.detail.item.displayTitle + ' removed.');
-
-            },
-            /**
-             * Vault page END
              */
 
             /**
