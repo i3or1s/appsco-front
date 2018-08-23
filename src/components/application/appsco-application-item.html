@@ -20,7 +20,7 @@ Application item is used to present application in form of an item.
 
 Custom property | Description | Default
 ----------------|-------------|----------
-`--background-color` | Background color applied to the root element | `#fff`
+`--item-background-color` | Background color applied to the root element | `#fff`
 `--color` | Color applied to all the text | `#33`
 `--appsco-application-item` | Mixin for the root element | `{}`
 
@@ -40,7 +40,7 @@ Custom property | Description | Default
                 overflow: hidden;
             @apply(--shadow-elevation-2dp);
                 position: relative;
-                background-color: var(--background-color, #fff);
+                background-color: var(--item-background-color, #fff);
                 color: var(--color, #333);
                 padding: 0 4px;
                 cursor: pointer;
