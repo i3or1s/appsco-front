@@ -22,7 +22,7 @@ Account item is used to present account in form of an item.
 
 Custom property | Description | Default
 ----------------|-------------|----------
-`--background-color` | Background color applied to the root element | `#fff`
+`--item-background-color` | Background color applied to the root element | `#fff`
 `--color` | Color applied to all the text | `#33`
 `--appsco-company-group-contact-item` | Mixin applied to contact item | `{}`
 
@@ -63,7 +63,7 @@ Custom property | Description | Default
                 box-sizing: border-box;
                 overflow: hidden;
                 position: relative;
-                background-color: var(--background-color, #fff);
+                background-color: var(--item-background-color, #fff);
                 border-radius: 3px;
                 @apply(--shadow-elevation-2dp);
                 @apply(--layout-horizontal);
