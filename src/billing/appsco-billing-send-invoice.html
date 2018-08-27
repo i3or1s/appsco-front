@@ -186,7 +186,7 @@
                      * @event invoice-sent
                      */
                     this.fire('invoice-sent', {
-                        sentTo: this.company.company.contact_email
+                        sentTo: this.company.company.billing_email
                     });
                 }.bind(this));
             },
