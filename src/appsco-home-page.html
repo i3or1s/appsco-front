@@ -317,7 +317,7 @@
 
                 _editClaims: {
                     type: Boolean,
-                    computed: '_computeEditClaims(application)',
+                    computed: '_computeEditClaims(application)'
                 },
 
                 _infoShown: {
@@ -544,6 +544,10 @@
 
             filterApplicationsByTerm: function(term) {
                 this.$.appscoApplications.filterByTerm(term);
+            },
+
+            filterApplicationsByStatus: function(api) {
+                this.$.appscoApplications.filterByStatus(api);
             },
 
             addFolder: function(folder) {

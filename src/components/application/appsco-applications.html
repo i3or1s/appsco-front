@@ -235,7 +235,7 @@ Custom property | Description | Default
 
                 _searchApplicationsApi: {
                     type: String,
-                    computed: '_computeSearchApplicationsApi(applicationsApi, _filterTerm)'
+                    value: ''
                 },
 
                 /**
@@ -384,8 +384,12 @@ Custom property | Description | Default
             ],
 
             listeners: {
-                'applications-api-changed': '_loadApplications'
+                'applications-api-changed': '_onApplicationsApiChanged'
             },
+
+            observers: [
+                '_setSearchApplicationsApi(applicationsApi)'
+            ],
 
             ready: function () {
 
@@ -415,14 +419,18 @@ Custom property | Description | Default
                 }.bind(this), 500);
             },
 
-            _computeSearchApplicationsApi: function(applicationsApi, term) {
-                return applicationsApi + '?extended=1&limit=100&term=' + term;
-            },
-            
             _computePersonalDashboardAllowed: function(account) {
                 return account && account.native_company 
                     ? account.native_company.personal_dashboards_allowed
                     : true;
+            },
+
+            _setSearchApplicationsApi: function(api) {
+                this._searchApplicationsApi = (api + '?extended=1&limit=100&term=');
+            },
+
+            _onApplicationsApiChanged: function(api) {
+                this._loadApplications();
             },
 
             _loadApplications: function() {
@@ -808,6 +816,56 @@ Custom property | Description | Default
                 }
             },
 
+            filterByStatus: function(api, status) {
+
+                this._getApplications(api + '?page=1&extended=1&limit=100').then(function(applications) {
+                    var applicationsLength = applications.length;
+
+                    this._clearLoaders();
+                    this._clearApplications();
+                    this._hideLoadMoreAction();
+                    this._totalApplications = applicationsLength;
+                    this._setSearchApplicationsApi(api);
+
+                    if (0 === applicationsLength) {
+                        this._message = 'There are no applications.';
+                        this._handleEmptyLoad();
+                        return false;
+                    }
+
+                    this.set('_allApplications', applications);
+
+                    if (this._filterTerm.length >= this.minSearchTermLength) {
+                        this._filterByTerm();
+                        return false;
+                    }
+
+                    this._applicationsEmpty = false;
+                    this._message = '';
+
+                    applications.forEach(function(el, index) {
+
+                        this._loaders.push(setTimeout( function() {
+
+                            if (this.company) {
+                                el.selected = false;
+                            }
+
+                            this.push('_applications', el);
+
+                            if (index == applicationsLength - 1) {
+
+                                this.fire('loaded', {
+                                    applications: applications
+                                });
+                            }
+
+                        }.bind(this), (index + 1) * 30 ));
+
+                    }.bind(this));
+                }.bind(this));
+            },
+
             filterByTerm: function(term) {
                 this._filterTerm = term;
                 this._filterByTerm();
@@ -818,12 +876,12 @@ Custom property | Description | Default
                 this._filterByOrgunit();
             },
 
-            _getApplicationsByTerm: function() {
+            _getApplications: function(api) {
 
                 return new Promise(function(resolve, reject) {
                     var request = document.createElement('iron-request'),
                         options = {
-                            url: this._searchApplicationsApi,
+                            url: api,
                             method: 'GET',
                             handleAs: 'json',
                             headers: this._computedHeaders
@@ -866,7 +924,7 @@ Custom property | Description | Default
                 this._showProgressBar();
                 this._hideLoadMoreAction();
 
-                this._getApplicationsByTerm().then(function(applications) {
+                this._getApplications(this._searchApplicationsApi + term).then(function(applications) {
                     var applicationsLength = applications.length;
 
                     this.set('_searchedApplications', applications);
