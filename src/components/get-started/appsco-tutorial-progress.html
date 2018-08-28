@@ -1,0 +1,48 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="appsco-tutorial-progress">
+    <template>
+        <style>
+            :host{
+                width:100px;
+                height: 100px;
+                display: block;
+                background-color: red;
+                position: absolute;
+                top: 100px;
+                left: 100px;
+                z-index: 9000;
+            }
+        </style>
+        <template is="dom-if" if="{{ show }}">
+            Prikazi
+        </template>
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-tutorial-progress',
+
+            properties: {
+                show: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                },
+
+                tutorials: {
+                    type: Object,
+                    value: function () { return {}; }
+                }
+            },
+
+            showProgress: function() {
+                this.show = true;
+            },
+
+            hideProgress: function() {
+                this.show = false;
+            }
+        });
+    </script>
+</dom-module>

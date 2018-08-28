@@ -1,0 +1,57 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<script>
+
+    /**
+     * @polymerBehavior
+     */
+    Polymer.AppscoTutorialBehaviour = {
+
+        properties: {
+            status: {
+                type: String,
+                default: 'PENDING',
+                observer: '_enumStatus'
+            },
+
+            step: {
+                type: Number,
+                value: 0
+            },
+
+            maxSteps: {
+                type: Number,
+                value: 0
+            },
+
+            name: {
+                type: String,
+                value: 'anon'
+            }
+        },
+
+        _enumStatus: function(newValue, oldValue) {
+            if(['PENDING', 'IN_PROGRESS', 'DONE'].indexOf(newValue) === -1) {
+                this.status = oldValue;
+            }
+        },
+
+        incrementStep: function() {
+            if(this.maxSteps === this.step) return;
+            this.step++;
+        },
+
+        getObject: function() {
+            return {
+                status: this.status,
+                step: this.step,
+                maxSteps: this.maxSteps
+            };
+        },
+
+        getName: function() {
+            return this.name;
+        }
+
+    }
+</script>
