@@ -3,19 +3,34 @@
 <dom-module id="appsco-tutorial-progress">
     <template>
         <style>
-            :host{
-                width:100px;
-                height: 100px;
-                display: block;
-                background-color: red;
+            :host .progress-container{
+                display: inline-block;
+                background-color: var(--header-background-color);
+                color: var(--header-text-color);
                 position: absolute;
-                top: 100px;
-                left: 100px;
+                top: 140px;
+                right: 100px;
                 z-index: 9000;
+                opacity: 0.7;
+                padding: 0;
+                margin: 0;
+                @apply(--shadow-elevation-2dp);
+            }
+            .head{
+                display: inline-block;
+                padding: 5px 10px;
+            }
+            .head:first-child {
+                border-right: 1px solid white;
             }
         </style>
         <template is="dom-if" if="{{ show }}">
-            Prikazi
+            <div class="progress-container" on-click="hideProgress">
+                <div>
+                    <div class="head">{{ progress }}%</div>
+                    <div class="head">AppsCo setup progress</div>
+                </div>
+            </div>
         </template>
     </template>
     <script>
@@ -30,10 +45,29 @@
                     notify: true
                 },
 
+                progress: {
+                    type: Number,
+                    value: 0
+                },
+
                 tutorials: {
                     type: Object,
-                    value: function () { return {}; }
+                    value: function () { return {}; },
+                    notify: true,
+                    observer: "_tutorialsChanged"
                 }
+            },
+
+            _tutorialsChanged: function(newValue, oldValue) {
+                this.progress = 0;
+                var finishedTuts = numOfTuts = 0;
+                for(property in newValue) {
+                    this.numOfTuts++;
+                    if(newValue.hasOwnProperty(property) && newValue.isDone()) {
+                        finishedTuts++;
+                    }
+                }
+                this.progress = numOfTuts <= 0 ? 0 : Math.round(100*finishedTuts/numOfTuts);
             },
 
             showProgress: function() {
