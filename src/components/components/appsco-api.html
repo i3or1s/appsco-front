@@ -203,6 +203,11 @@ Example:
                 computed: '_computeGetUserPrivilegesApi(me)'
             },
 
+            tutorialsApi: {
+                type: String,
+                computed: '_computeTutorialsApi(me)'
+            },
+
             name: {
                 type: Object,
                 value: function () {
@@ -240,7 +245,8 @@ Example:
                         saveClientDataApi: this.saveClientDataApi,
                         partners: this.partners,
                         foldersApi: this.foldersApi,
-                        getUserPrivilegesApi: this.getUserPrivilegesApi
+                        getUserPrivilegesApi: this.getUserPrivilegesApi,
+                        tutorialsApi: this.tutorialsApi
                     }
                 },
                 notify: true
@@ -281,7 +287,8 @@ Example:
                 saveClientDataApi: this.saveClientDataApi,
                 partners: this.partners,
                 foldersApi: this.foldersApi,
-                getUserPrivilegesApi: this.getUserPrivilegesApi
+                getUserPrivilegesApi: this.getUserPrivilegesApi,
+                tutorialsApi: this.tutorialsApi
             };
         },
 
@@ -423,6 +430,10 @@ Example:
 
         _computeGetUserPrivilegesApi: function (me) {
             return me ? (me + '/acl') : '';
+        },
+
+        _computeTutorialsApi: function (me) {
+            return me ? (me + '/tutorial') : '';
         }
     });
 </script>

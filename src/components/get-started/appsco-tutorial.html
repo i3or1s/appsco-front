@@ -1,0 +1,113 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="appsco-tutorial">
+    <template>
+
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-tutorial',
+
+            properties: {
+                tutorialsApi: {
+                    type: String,
+                    value: 'asd',
+                    notify: true
+                },
+
+                _computedHeaders: {
+                    type: Object,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                tutorials: {
+                    type: Object,
+                    value: function () {
+                        return {
+                            "company_profile": {
+                                "status": "PENDING",
+                                "step": "0"
+                            },
+                            "company_branding": {
+                                "status": "PENDING",
+                                "step": "0"
+                            },
+                            "branded_login": {
+                                "status": "PENDING",
+                                "step": "0"
+                            },
+                            "directory": {
+                                "status": "PENDING",
+                                "step": "0"
+                            },
+                            "resources": {
+                                "status": "PENDING",
+                                "step": "0"
+                            },
+                            "share_resources": {
+                                "status": "PENDING",
+                                "step": "0"
+                            },
+                            "company_domain": {
+                                "status": "PENDING",
+                                "step": "0"
+                            },
+                            "identity_provider": {
+                                "status": "PENDING",
+                                "step": "0"
+                            },
+                            "provisioning": {
+                                "status": "PENDING",
+                                "step": "0"
+                            }
+                        }
+                    }
+                }
+            },
+
+            _computeHeaders: function (authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            },
+
+            getTutorials: function() {
+                return this.tutorials;
+            },
+
+            getTutorial: function(tutorialId) {
+                return this.tutorials[tutorialId];
+            },
+
+            attached: function() {
+                var tutorialsRequest = document.createElement('iron-request'),
+                    tutorials = JSON.parse(JSON.stringify(this.tutorials));
+
+                tutorialsRequest.send({
+                    url: this.tutorialsApi,
+                    method: "GET",
+                    handleAs: 'json',
+                    headers: {
+                        "Authorization": "token " + this.authorizationToken
+                    }
+                }).then(function(request) {
+                    for (var idx in request.response) {
+                        if (request.response.hasOwnProperty(idx)) {
+                            tutorials[idx]['status'] = request.response[idx]['status'];
+                            tutorials[idx]['step'] = request.response[idx]['step'];
+                        }
+                    }
+                    this.set('tutorials', tutorials);
+                }.bind(this));
+            }
+        });
+    </script>
+</dom-module>
