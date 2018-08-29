@@ -1,0 +1,186 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-request.html">
+
+<link rel="import" href="components/get-started/appsco-tutorial-card.html">
+
+<dom-module id="appsco-get-started-page">
+    <template>
+        <style include="appsco-page-styles">
+            :host .tutorials-holder {
+                margin-left: 12%;
+                margin-right: 12%;
+            }
+            :host .get-started-header h1 {
+                text-align: center;
+                font-size: 26px;
+                border-bottom: 1px solid #CCC;
+                padding-bottom: 10px;
+            }
+            :host .get-started-header p {
+                text-align: center;
+                margin: 0px;
+                padding: 2px;
+            }
+        </style>
+
+        <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
+        <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
+
+        <appsco-content id="appscoContent">
+
+            <div content>
+                <div class="content-container">
+
+                    <div class="get-started-header">
+                        <h1>Welcome to AppsCo Business, [[ account.display_name ]]</h1>
+                        <p>Let's guide you through setting up the company</p>
+                        <p>You can take time and complete any section of the guide whenever you like</p>
+                        <p>Do not worry we will keep the menu active and save your progress until you are done</p>
+                    </div>
+
+                    <div class="tutorials-holder">
+                        <template is="dom-repeat" items="[[ tutorialsArray ]]">
+                            <appsco-tutorial-card
+                                    tutorial="[[ item ]]"
+                                    index="[[ index ]]"
+                                    first-unfinished-index="[[ firstUnfinishedIndex ]]"
+                            ></appsco-tutorial-card>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+        </appsco-content>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'appsco-get-started-page',
+
+            properties: {
+
+                account: {
+                    type: Object,
+                    value: function() { return {} }
+                },
+
+                tutorials: {
+                    type: Object,
+                    notify: true,
+                    observer: "_tutorialsChanged"
+                },
+
+                tutorialsArray: {
+                    type: Array,
+                    value: function() { return []; },
+                    computed: '_computeTutorialsArray(tutorials)'
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                mobileScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                tabletScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': {
+                                name: 'fade-in-animation',
+                                node: this,
+                                timing: {
+                                    duration: 300
+                                }
+                            },
+                            'exit': {
+                                name: 'fade-out-animation',
+                                node: this,
+                                timing: {
+                                    duration: 200
+                                }
+                            }
+                        }
+                    }
+                },
+
+                pageLoaded: {
+                    type: Boolean,
+                    value: false
+                },
+
+                firstUnfinishedIndex: {
+                    type: Number,
+                    value: 0,
+                    computed: '_computeFirstUnfinishedIndex(tutorials)'
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimatableBehavior
+            ],
+
+            observers: [
+                '_updateScreen(mobileScreen, tabletScreen, screen992)'
+            ],
+
+            _updateScreen: function() {
+                this.updateStyles();
+            },
+
+            attached: function() {
+                this._pageLoaded();
+            },
+
+            _pageLoaded: function() {
+                this.pageLoaded = true;
+                this.fire('page-loaded');
+            },
+
+            _computeTutorialsArray: function(tutorials) {
+                var tutsArray = [];
+                for(var idx in tutorials) {
+                    if (tutorials.hasOwnProperty(idx)) {
+                        tutsArray.push(Object.assign({tutorial_id: idx}, tutorials[idx]));
+                    }
+                }
+
+                return tutsArray;
+            },
+
+            _tutorialsChanged: function(tutorials) {
+                this.tutsArray = this._computeTutorialsArray(tutorials);
+            },
+
+            _computeFirstUnfinishedIndex: function(tutorials) {
+                var index = 0;
+                for (var idx in this.tutorials) {
+                    if (this.tutorials.hasOwnProperty(idx) && !(tutorials[idx].status === 'DONE')) {
+                        return index;
+                    }
+                    index++;
+                }
+
+                return index;
+            }
+
+        });
+    </script>
+
+</dom-module>

@@ -1,0 +1,135 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html">
+
+<link rel="import" href="../components/appsco-list-item-behavior.html">
+<link rel="import" href="../components/appsco-list-item-styles.html">
+
+<dom-module id="appsco-tutorial-card">
+    <template>
+        <style include="appsco-list-item-styles"></style>
+
+        <style>
+            :host {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            :host .info-value {
+                font-size: 14px;
+            }
+            :host a {
+                text-decoration: none;
+                color: inherit;
+            }
+        </style>
+
+        <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
+
+        <div class="item" on-tap="_onItemAction">
+            <iron-image class="item-icon"
+                        placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII="
+                        sizing="cover"
+                        preload
+                        fade
+                        src="[[ _tutorialIcon ]]"></iron-image>
+
+            <div class="item-info item-basic-info">
+                <span class="info-label item-title">[[ tutorial.title ]]</span>
+                <span class="info-value">[[ tutorial.description ]]</span>
+            </div>
+
+            <div class="actions">
+                <template is="dom-if" if="[[ tutorial.documentation ]]">
+                    <paper-button><a target="_blank" href="[[ tutorial.documentation ]]">Read more</a></paper-button>
+                </template>
+                <template is="dom-if" if="[[ _isDone ]]">
+                    <paper-button>Done</paper-button>
+                    <paper-button on-tap="_onStartAction">Replay</paper-button>
+                </template>
+                <template is="dom-if" if="[[ !_isDone ]]">
+                    <paper-button on-tap="_onStartAction">[[ _startCaption ]]</paper-button>
+                </template>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-tutorial-card',
+
+            properties: {
+
+                tutorial: {
+                    type: Object,
+                    value: function() { return {}; }
+                },
+
+                tabletScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                _tutorialIcon: {
+                    type: String,
+                    value: '',
+                    computed: '_computeTutorialIcon(tutorial)'
+                },
+
+                _isDone: {
+                    type: Boolean,
+                    value: false,
+                    computed: '_isTutorialDone(tutorial)'
+                },
+
+                index: {
+                    type: Number,
+                    value: 0
+                },
+
+                firstUnfinishedIndex: {
+                    type: Number,
+                    value: 0
+                },
+
+                _startCaption: {
+                    type: String,
+                    value: 'Start',
+                    computed: '_computeStartCaption(index, firstUnfinishedIndex)'
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimationRunnerBehavior,
+                Polymer.AppscoListItemBehavior
+            ],
+
+            _computeTutorialIcon: function(tutorial) {
+                return tutorial.icon ? tutorial.icon : '';
+            },
+
+            _onStartAction: function(evt) {
+                this.fire('tutorial-start', {
+                    tutorial: this.tutorial
+                });
+            },
+
+            _isTutorialDone: function(tutorial) {
+                return (tutorial.status === 'DONE');
+            },
+
+            _computeStartCaption: function(index, firstUnfinishedIndex) {
+                return index == firstUnfinishedIndex ? 'Start' : 'Next up';
+            }
+
+        });
+    </script>
+</dom-module>

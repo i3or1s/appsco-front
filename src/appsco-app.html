@@ -62,7 +62,8 @@
 
         <appsco-tutorial-progress
                 id="appscoTutorialProgress"
-                tutorials="{{ _tutorials }}"
+                tutorials="[[ _tutorials ]]"
+                show="true"
         ></appsco-tutorial-progress>
 
         <app-drawer-layout fullbleed force-narrow>
@@ -93,6 +94,11 @@
 
                     <template is="dom-if" if="[[ _companyPage ]]">
                         <template is="dom-if" if="[[ _companyUser ]]">
+                            <template is="dom-if" if="[[ _tutorialsPageVisible ]]">
+                                <a name="get-started" href="#">
+                                    <iron-icon icon="icons:help"></iron-icon> <span class="menu-text">Get started</span>
+                                </a>
+                            </template>
                             <a name="company-home" href="#">
                                 <iron-icon icon="icons:apps"></iron-icon> <span class="menu-text">Dashboard</span>
                             </a>
@@ -800,6 +806,14 @@
                             on-filter-access-on-boarding="_showProgressBar"
                             on-access-on-boarding-events-resolved="_onEventsResolved"
                             api-errors="[[ _apiErrors ]]"></appsco-access-on-boarding-page>
+
+                    <appsco-get-started-page
+                            name="get-started" page company-page
+                            id="appscoGetStartedPage"
+                            account="[[ account ]]"
+                            authorization-token="[[ authorizationToken ]]"
+                            tutorials="[[ _tutorials ]]">
+                    </appsco-get-started-page>
 
                     <appsco-oauth-applications-page name="oauth-applications" page company-page
                             id="appscoOAuthApplicationsPage"
@@ -2199,6 +2213,12 @@
                     type: Object,
                     value: function(){ return {}; },
                     notify: true
+                },
+
+                _tutorialsPageVisible: {
+                    type: Boolean,
+                    value: false,
+                    computed: "_computeTutorialsPageVisible(_tutorials, _companyAdmin)"
                 }
             },
 
@@ -2417,6 +2437,16 @@
                 return currentCompany.company && !currentCompany.company.subscription_paid_externally;
             },
 
+            _computeTutorialsPageVisible: function (tutorials, _companyAdmin) {
+                var numFinished = 0;
+                for (var idx in tutorials) {
+                    if (tutorials.hasOwnProperty(idx) && (tutorials[idx].status === 'DONE')) {
+                        numFinished++;
+                    }
+                }
+                return (numFinished < 5) && _companyAdmin;
+            },
+
             _setProduct: function(company) {
                 var appscoHeader = this.$.appscoHeader;
 
@@ -2543,6 +2573,9 @@
 
                     case 'policies-report':
                         return 'Policies Report';
+
+                    case 'get-started':
+                        return 'Get started';
 
                     default:
                         return page;
@@ -3222,6 +3255,10 @@
 
                     case 'policies-report':
                         return this.$.appscoPoliciesReportPage;
+                        break;
+
+                    case 'get-started':
+                        return this.$.appscoGetStartedPage;
                         break;
                 }
             },
