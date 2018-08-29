@@ -1,0 +1,144 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="appsco-tutorial-progress">
+    <template>
+        <style>
+            :host .progress-container{
+                display: inline-block;
+                background-color: var(--header-background-color);
+                color: var(--header-text-color);
+                position: absolute;
+                top: 140px;
+                right: 0px;
+                z-index: 9000;
+                opacity: 0.7;
+                padding: 0;
+                margin: 0;
+                @apply(--shadow-elevation-4dp);
+            }
+            :host .progress-container:hover{
+                opacity:1;
+            }
+            .head{
+                display: inline-block;
+                padding: 5px 10px;
+            }
+            .head:first-child {
+                border-right: 1px solid white;
+            }
+            .progress {
+                border-top: 1px solid white;
+                padding: 10px 10px 10px 6px;
+            }
+            .tut-item {
+                padding: 5px;
+            }
+            .tut-name {
+                padding: 10px 10px;
+            }
+        </style>
+        <template is="dom-if" if="{{ show }}">
+            <div class="progress-container" on-mouseover="_showProgressContent" on-mouseout="_hideProgressContent">
+                <div>
+                    <div class="head">{{ progress }}%</div>
+                    <div class="head">AppsCo setup progress</div>
+                </div>
+                <div class="progress" hidden="[[ _hiddenContent ]]">
+                    <template is="dom-repeat" items="{{ _tutorialsList }}">
+                        <div class="tut-item">
+                            <template is="dom-if" if="[[ item.done ]]">
+                                <iron-icon icon="icons:check-circle"></iron-icon>
+                            </template>
+                            <template is="dom-if" if="[[ !item.done ]]">
+                                <iron-icon icon="icons:radio-button-unchecked"></iron-icon>
+                            </template>
+                            <span class="tut-name">{{ item.name }}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-tutorial-progress',
+
+            properties: {
+                _show: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                },
+
+                progress: {
+                    type: Number,
+                    value: 0
+                },
+
+                tutorials: {
+                    type: Object,
+                    value: function () {
+                        return {}
+                    },
+                    notify: true,
+                    observer: "_tutorialsChanged"
+                },
+
+                _hiddenContent: {
+                    type: Boolean,
+                    value: true
+                },
+
+                _tutorialsList: {
+                    type: Array,
+                    computed: "_computeTutorialsList(tutorials)"
+                }
+
+            },
+
+            _tutorialsChanged: function(newValue, oldValue) {
+                this.progress = 0;
+                var finishedTuts = numOfTuts = 0;
+                for(property in newValue) {
+                    numOfTuts++;
+                    if(newValue.hasOwnProperty(property) && newValue[property].isDone()) {
+                        finishedTuts++;
+                    }
+                }
+                this.progress = numOfTuts <= 0 ? 0 : Math.round(100*finishedTuts/numOfTuts);
+            },
+
+            _computeTutorialsList: function (tutorials) {
+                var list = [];
+                for(id in tutorials) {
+                    if(tutorials.hasOwnProperty(id)) {
+                        list.push({
+                            name: tutorials[id].getName(),
+                            done: tutorials[id].isDone()
+                        });
+                    }
+                }
+                return list;
+            },
+
+            showProgress: function() {
+                this._show = true;
+            },
+
+            hideProgress: function() {
+                this._show = false;
+            },
+
+            _showProgressContent: function() {
+                this._hiddenContent = false;
+            },
+
+            _hideProgressContent: function() {
+                this._hiddenContent = true;
+            }
+        });
+    </script>
+</dom-module>

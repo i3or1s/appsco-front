@@ -3,7 +3,6 @@
 
 <dom-module id="appsco-tutorial">
     <template>
-
     </template>
     <script>
         Polymer({
@@ -13,7 +12,7 @@
             properties: {
                 tutorialsApi: {
                     type: String,
-                    value: 'asd',
+                    value: '',
                     notify: true
                 },
 
@@ -27,6 +26,10 @@
                     value: ''
                 },
 
+                tuts: {
+                    type: Array,
+                    value: function(){ return ['companyProfile']; }
+                },
                 tutorials: {
                     type: Object,
                     value: function () {
@@ -88,8 +91,21 @@
             },
 
             attached: function() {
-                var tutorialsRequest = document.createElement('iron-request'),
-                    tutorials = JSON.parse(JSON.stringify(this.tutorials));
+                this.initTutorials();
+                this.getCurrentState();
+            },
+
+            initTutorials: function() {
+                this.tuts.forEach(function(item, key){
+                    var tutorial = this.$$('#'+item);
+                    if(tutorial) {
+                        this.tutorials[tutorial.getName()] = tutorial.getObject();
+                    }
+                }.bind(this));
+            },
+
+            getCurrentState: function() {
+                var tutorialsRequest = document.createElement('iron-request');
 
                 tutorialsRequest.send({
                     url: this.tutorialsApi,
@@ -101,10 +117,12 @@
                 }).then(function(request) {
                     for (var idx in request.response) {
                         if (request.response.hasOwnProperty(idx)) {
-                            tutorials[idx]['status'] = request.response[idx]['status'];
-                            tutorials[idx]['step'] = request.response[idx]['step'];
+                            this.tutorials[idx].status = request.response[idx]['status'];
+                            this.tutorials[idx].step = request.response[idx]['step'];
                         }
                     }
+                    var tutorials = JSON.parse(JSON.stringify(this.tutorials));
+                    this.set('tutorials', {});
                     this.set('tutorials', tutorials);
                 }.bind(this));
             }

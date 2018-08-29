@@ -56,7 +56,13 @@
                 id="appscoTutorial"
                 tutorials-api="[[ api.tutorialsApi ]]"
                 authorization-token="[[ authorizationToken ]]"
+                tutorials="{{ _tutorials }}"
         ></appsco-tutorial>
+
+        <appsco-tutorial-progress
+                id="appscoTutorialProgress"
+                tutorials="{{ _tutorials }}"
+        ></appsco-tutorial-progress>
 
         <app-drawer-layout fullbleed force-narrow>
 
@@ -2184,6 +2190,12 @@
                 _personalFolderPage: {
                     type: Boolean,
                     value: false
+                },
+
+                _tutorials: {
+                    type: Object,
+                    value: function(){ return {}; },
+                    notify: true
                 }
             },
 
