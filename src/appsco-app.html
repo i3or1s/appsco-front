@@ -193,12 +193,14 @@
                                 attr-for-selected="name"
                                 on-neon-animation-finish="_onPageActionsAnimationFinish">
 
-                            <appsco-home-page-actions id="appscoHomePageActions"
+                            <appsco-home-page-actions
+                                    id="appscoHomePageActions"
                                     name="home"
                                     account="[[ account ]]"
                                     on-add-item-action="_onAddItemAction"
                                     on-search="_onSearchApplications"
                                     on-search-clear="_onSearchApplicationsClear"
+                                    on-filter-items="_onFilterItemsAction"
                                     on-add-new-folder="_onAddNewFolderAction"></appsco-home-page-actions>
 
                             <appsco-resource-page-actions
@@ -3316,6 +3318,37 @@
 
             _onSearchApplicationsClear: function() {
                 this.getCurrentAppscoPageElement().filterApplicationsByTerm('');
+            },
+
+            _onFilterItemsAction: function(event) {
+                var id = parseInt(event.detail.id);
+
+                if (id !== this._selectedApplicationsGroup) {
+                    var getResourcesApi = '';
+
+                    this._selectedApplicationsGroup = id;
+                    this._showProgressBar();
+
+                    switch (id) {
+                        case 0:
+                            getResourcesApi = this.api.icons;
+                            break;
+
+                        case 1:
+                            getResourcesApi = this.api.personalItems;
+                            break;
+
+                        case 2:
+                            getResourcesApi = this.api.sharedWithMeItems;
+                            break;
+
+                        default:
+                            getResourcesApi = this._applicationsApi;
+                    }
+
+                    this.$.appscoHomePage.filterApplicationsByStatus(getResourcesApi);
+                }
+
             },
 
             _onAddItemAction: function(event) {
