@@ -3,6 +3,7 @@
 
 
 <link rel="import" href="appsco-tutorial-company-settings.html">
+<link rel="import" href="appsco-tutorial-company-branding.html">
 
 <dom-module id="appsco-tutorial">
     <template>
@@ -10,6 +11,10 @@
                 id="companyProfile"
                 page="[[ currentPage ]]"
         ></appsco-tutorial-company-settings>
+        <appsco-tutorial-company-branding
+                id="companyBranding"
+                page="[[ currentPage ]]"
+        ></appsco-tutorial-company-branding>
     </template>
     <script>
         Polymer({
@@ -49,7 +54,7 @@
 
                 tuts: {
                     type: Array,
-                    value: function(){ return ['companyProfile']; }
+                    value: function(){ return ['companyProfile', 'companyBranding']; }
                 },
                 tutorials: {
                     type: Object,
@@ -120,32 +125,32 @@
                 this.tuts.forEach(function(item, key){
                     var tutorial = this.$$('#'+item);
                     if(tutorial) {
-                        this.tutorials[tutorial.getName()] = tutorial.getObject();
+                        this.tutorials[tutorial.getName()] = tutorial;
                     }
                 }.bind(this));
             },
 
             getCurrentState: function() {
-                var tutorialsRequest = document.createElement('iron-request');
-
-                tutorialsRequest.send({
-                    url: this.tutorialsApi,
-                    method: "GET",
-                    handleAs: 'json',
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken
-                    }
-                }).then(function(request) {
-                    for (var idx in request.response) {
-                        if (request.response.hasOwnProperty(idx)) {
-                            this.tutorials[idx].status = request.response[idx]['status'];
-                            this.tutorials[idx].step = request.response[idx]['step'];
-                        }
-                    }
-                    var tutorials = JSON.parse(JSON.stringify(this.tutorials));
-                    this.set('tutorials', {});
-                    this.set('tutorials', tutorials);
-                }.bind(this));
+                // var tutorialsRequest = document.createElement('iron-request');
+                //
+                // tutorialsRequest.send({
+                //     url: this.tutorialsApi,
+                //     method: "GET",
+                //     handleAs: 'json',
+                //     headers: {
+                //         "Authorization": "token " + this.authorizationToken
+                //     }
+                // }).then(function(request) {
+                //     for (var idx in request.response) {
+                //         if (request.response.hasOwnProperty(idx)) {
+                //             this.tutorials[idx].status = request.response[idx]['status'];
+                //             this.tutorials[idx].step = request.response[idx]['step'];
+                //         }
+                //     }
+                //     var tutorials = JSON.parse(JSON.stringify(this.tutorials));
+                //     this.set('tutorials', {});
+                //     this.set('tutorials', tutorials);
+                // }.bind(this));
             }
         });
     </script>
