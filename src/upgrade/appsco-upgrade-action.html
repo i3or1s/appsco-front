@@ -143,14 +143,14 @@
                                         <appsco-price
                                                 price="{{ _reCalculate(item) }}"
                                                 currency="[[ item.currency ]]"
-                                        ></appsco-price> / year
+                                        ></appsco-price>&nbsp;/&nbsp;year
                                         <br/>
                                         <span class="op6">
                                             <appsco-price
                                                     price="[[ item.amount ]]"
                                                     currency="[[ item.currency ]]"
                                             ></appsco-price>
-                                            per user / [[ item.interval ]]</span>
+                                            &nbsp;per user / [[ item.interval ]]</span>
                                         <br/>
                                         <template is="dom-if" if="[[ _isPlanYearly(item) ]]">
                                             <span class="savings">20% Savings</span>
