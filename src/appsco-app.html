@@ -57,6 +57,7 @@
                 tutorials-api="[[ api.tutorialsApi ]]"
                 authorization-token="[[ authorizationToken ]]"
                 tutorials="{{ _tutorials }}"
+                current-page="[[ page ]]"
         ></appsco-tutorial>
 
         <appsco-tutorial-progress
@@ -72,7 +73,9 @@
                                attr-for-selected="name"
                                class="drawer-list"
                                role="navigation"
-                               on-iron-select="_onMenuItemSelected">
+                               on-iron-select="_onMenuItemSelected"
+                               id="menuContainer"
+                >
                     <template is="dom-if" if="[[ !_companyPage ]]">
                         <a name="home" href="#">
                             <iron-icon icon="icons:home"></iron-icon> <span class="menu-text">Home</span>
@@ -134,8 +137,8 @@
                                         <iron-icon icon="icons:payment"></iron-icon> <span class="menu-text">Billing</span>
                                     </a>
                                 </template>
-                                <a name="company" href="#">
-                                    <iron-icon icon="icons:settings"></iron-icon> <span class="menu-text">Settings</span>
+                                <a name="company" href="#" id="menuCompanySettings">
+                                    <iron-icon icon="icons:settings"></iron-icon> <span class="menu-text" id="menuCompanySettingsText">Settings</span>
                                 </a>
 
                                 <template is="dom-if" if="[[ currentCompany.company.is_partner ]]">
@@ -189,7 +192,7 @@
 
                 <app-header>
                     <app-toolbar class="flex-horizontal">
-                        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                        <paper-icon-button id="menuBurger" icon="menu" drawer-toggle></paper-icon-button>
                         <div class="page-title" condense-title>[[ _pageName ]]</div>
 
                         <neon-animated-pages

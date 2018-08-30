@@ -1,15 +1,36 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 
+
+<link rel="import" href="appsco-tutorial-company-settings.html">
+
 <dom-module id="appsco-tutorial">
     <template>
+        <appsco-tutorial-company-settings
+                id="companyProfile"
+                page="[[ currentPage ]]"
+        ></appsco-tutorial-company-settings>
     </template>
     <script>
         Polymer({
 
             is: 'appsco-tutorial',
 
+            _pageChanged: function(){
+                this.tuts.forEach(function(item, key){
+                    var tutorial = this.$$('#'+item);
+                    if(tutorial) {
+                        tutorial.pageChanged(this.currentPage);
+                    }
+                }.bind(this));
+            },
+
             properties: {
+                currentPage: {
+                    type: String,
+                    notify: true,
+                    observer: '_pageChanged'
+                },
                 tutorialsApi: {
                     type: String,
                     value: '',

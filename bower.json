@@ -49,7 +49,8 @@
     "vaadin-date-picker": "^1.2.0",
     "vaadin-context-menu": "^1.0.0",
     "google-chart": "GoogleWebComponents/google-chart#^1.1.1",
-    "clientjs": "^0.1.5"
+    "clientjs": "^0.1.5",
+    "popper.js": "^1.14.4"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

@@ -31,14 +31,14 @@
             }
         </style>
 
-        <paper-card heading="Settings" id="card">
+        <paper-card heading="Settings" id="companySettingsSettings">
             <paper-icon-button
                     icon="close"
                     title="Close"
                     class="page-close-action"
                     on-tap="_onBack"></paper-icon-button>
 
-            <div class="card-content">
+            <div class="card-content" id="">
                 <appsco-company-settings
                         id="appscoCompanySettings"
                         company="[[ company ]]"
@@ -125,7 +125,7 @@
                 sharedElements: {
                     value: function() {
                         return {
-                            'hero': this.$.card
+                            'hero': this.$.companySettingsSettings
                         }
                     }
                 }
