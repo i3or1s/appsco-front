@@ -268,7 +268,9 @@
                                     on-back="_showCompanyResourcesPage"
                                     on-resource-section="_onResourceActionManageApplicationPage"
                                     on-search-assignees="_onSearchAssignees"
-                                    on-search-assignees-clear="_onSearchAssigneesClear"></appsco-manage-resource-page-actions>
+                                    on-search-assignees-clear="_onSearchAssigneesClear"
+                                    on-advanced-settings="_showAdvancedManageResourcePageOptions"
+                            ></appsco-manage-resource-page-actions>
 
                             <appsco-directory-page-actions
                                     id="appscoDirectoryPageActions"
@@ -292,7 +294,7 @@
                                     name="manage-account"
                                     on-back="_showCompanyDirectoryPage"
                                     on-resource-section="_onResourceActionManageAccountPage"
-                                    on-advanced-settings="_showAdvanced"
+                                    on-advanced-settings="_showAdvancedManageAccountPageOptions"
                             ></appsco-manage-account-page-actions>
 
                             <appsco-contacts-page-actions
@@ -3727,7 +3729,7 @@
                 this.getCurrentAppscoPageElement()._onAccountAdvancedSettings();
             },
 
-            _showAdvanced: function(event) {
+            _showAdvancedManageAccountPageOptions: function(event) {
                 if (this.$.appscoManageAccountPage) {
                     if (event.detail.showAdvanced) {
                         this.$.appscoManageAccountPage.showAdvanced();
@@ -3735,6 +3737,17 @@
                     }
 
                     this.$.appscoManageAccountPage.hideAdvanced();
+                }
+            },
+
+            _showAdvancedManageResourcePageOptions: function(event) {
+                if (this.$.appscoManageApplicationPage) {
+                    if (event.detail.showAdvanced) {
+                        this.$.appscoManageApplicationPage.showAdvanced();
+                        return;
+                    }
+
+                    this.$.appscoManageApplicationPage.hideAdvanced();
                 }
             },
 

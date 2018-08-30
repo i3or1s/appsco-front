@@ -49,6 +49,19 @@
             :host([tablet-screen]) .info-action {
                 display: block;
             }
+            :host .advanced-settings-button {
+                @apply(--account-advanced-settings-action);
+                @apply(--primary-button);
+                margin-right: 10px;
+            }
+            :host .advanced-settings-button[active] {
+                @apply(--shadow-elevation-2dp);
+                @apply(--account-advanced-settings-action-active);
+                @apply(--primary-button-active);
+            }
+            :host .advanced-settings-button[disabled] {
+                opacity: 0.5;
+            }
         </style>
 
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
@@ -64,6 +77,14 @@
         </template>
 
         <div class="global-page-actions">
+
+            <paper-button
+                    id="advancedSettingsAction"
+                    class="advanced-settings-button"
+                    toggles
+                    on-tap="_onAdvancedSettingsAction">Advanced settings</paper-button>
+
+
             <paper-icon-button
                     class="back-action"
                     icon="arrow-back"
@@ -86,6 +107,14 @@
             properties: {
 
                 _searchAssigneesActive: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * Indicates if advanced action(s) should be visible or not.
+                 */
+                advanced: {
                     type: Boolean,
                     value: false
                 },
@@ -167,6 +196,41 @@
 
             resetApplicationAssigneesPageActions: function() {
                 this._resetAssigneesSearch();
+            },
+
+            /**
+             * Called on account advanced settings action.
+             *
+             * @private
+             */
+            _onAdvancedSettingsAction: function() {
+
+                /**
+                 * Fired when advanced settings action is triggered.
+                 *
+                 * @event advanced-settings
+                 */
+                this.fire('advanced-settings', {
+                    showAdvanced: this.$$('#advancedSettingsAction').active
+                });
+            },
+
+            /**
+             * Disables advanced settings action.
+             */
+            disableAdvancedSettings: function() {
+                this.$$('#advancedSettingsAction').disabled = true;
+            },
+
+            /**
+             * Enables advanced settings action.
+             */
+            enableAdvancedSettings: function() {
+                this.$$('#advancedSettingsAction').disabled = false;
+            },
+
+            resetAdvancedSettingsAction: function() {
+                this.$$('#advancedSettingsAction').active = false;
             }
         });
     </script>

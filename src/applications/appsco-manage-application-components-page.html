@@ -299,23 +299,24 @@
                     </div>
                 </paper-card>
 
-                <paper-card heading="Resource admins" class="appsco-resource-admin">
-                    <div class="card-content">
-                        <p>Assign users that which will have rights to manage given resource.</p>
-                        <appsco-resource-admins id="appscoResourceAdmins"
-                                                application="[[ application ]]"
-                                                authorization-token="[[ authorizationToken ]]"
-                                                api-errors="[[ apiErrors ]]"
-                                                size="5"
-                                                preview
-                                                auto-load></appsco-resource-admins>
-                    </div>
+                <template is="dom-if" if="[[ _shouldShowAdvanced ]]">
+                    <paper-card heading="Resource admins" class="appsco-resource-admin">
+                        <div class="card-content">
+                            <p>Assign users that which will have rights to manage given resource.</p>
+                            <appsco-resource-admins id="appscoResourceAdmins"
+                                                    application="[[ application ]]"
+                                                    authorization-token="[[ authorizationToken ]]"
+                                                    api-errors="[[ apiErrors ]]"
+                                                    size="5"
+                                                    preview
+                                                    auto-load></appsco-resource-admins>
+                        </div>
 
-                    <div class="card-actions">
-                        <paper-button on-tap="_onResourceAdmins">Manage</paper-button>
-                    </div>
-                </paper-card>
-
+                        <div class="card-actions">
+                            <paper-button on-tap="_onResourceAdmins">Manage</paper-button>
+                        </div>
+                    </paper-card>
+                </template>
             </div>
         </template>
 
@@ -428,6 +429,11 @@
                 },
 
                 _autologinUnavailable: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _shouldShowAdvanced: {
                     type: Boolean,
                     value: false
                 },
@@ -592,6 +598,14 @@
 
                 this.$.appscoApplicationLog.load();
             },
+
+            showAdvanced: function() {
+                this._shouldShowAdvanced = true;
+            },
+
+            hideAdvanced: function() {
+                this._shouldShowAdvanced = false;
+            }
 
         });
     </script>

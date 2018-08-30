@@ -674,7 +674,9 @@ Custom property | Description | Default
 
             reset: function() {
                 this.$.appscoSearch.reset();
-                this.$$('#filterItemsList').selected = 0;
+                if (this.$$('#filterItemsList')) {
+                    this.$$('#filterItemsList').selected = 0;
+                }
 
                 if (this.company) {
                     this.hideBulkActions();
