@@ -169,13 +169,17 @@
         <div class="idp-settings">
 
             <paper-card heading="Branding"
-                        class="appsco-company-brand-details">
+                        class="appsco-company-brand-details"
+                        id="companySettingsBrandingCard"
+            >
                 <div class="card-content">
                     <appsco-company-brand-details company="[[ company ]]"></appsco-company-brand-details>
                 </div>
 
                 <div class="card-actions">
-                    <paper-button on-tap="_onManageCompanyBrandSettings">Manage</paper-button>
+                    <paper-button on-tap="_onManageCompanyBrandSettings"
+                                  id="companySettingsBrandingCardBtn"
+                    >Manage</paper-button>
                 </div>
             </paper-card>
 
