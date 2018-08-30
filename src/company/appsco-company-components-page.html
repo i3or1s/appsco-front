@@ -106,13 +106,16 @@
 
         <div class="details-branding">
             <paper-card heading="Settings"
+                        id="companySettingsCard"
                         class="appsco-company-details">
                 <div class="card-content">
                     <appsco-company-details company="[[ company ]]"></appsco-company-details>
                 </div>
 
                 <div class="card-actions">
-                    <paper-button on-tap="_onManageCompanySettings">Manage</paper-button>
+                    <paper-button on-tap="_onManageCompanySettings"
+                                  id="companySettingsCardBtn"
+                    >Manage</paper-button>
                 </div>
             </paper-card>
 

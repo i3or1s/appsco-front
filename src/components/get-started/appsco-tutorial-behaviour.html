@@ -3,7 +3,7 @@
 <script>
 
     /**
-     * @polymerBehavior
+     * @polymerBehavior Polymer.AppscoTutorialBehaviour
      */
     Polymer.AppscoTutorialBehaviour = {
 
@@ -16,7 +16,9 @@
 
             step: {
                 type: Number,
-                value: 0
+                value: 0,
+                notify: true,
+                observer: "_stepChanged"
             },
 
             maxSteps: {
@@ -27,6 +29,88 @@
             name: {
                 type: String,
                 value: 'anon'
+            },
+
+            currentStep: {
+                type: Object,
+                value: function() { return {}; },
+                observer: '_currentStepChanged'
+            },
+
+            popperStep: {
+                type: Object,
+                value: function() { return {}; }
+            }
+        },
+
+        init: function() {
+            this.maxSteps = Polymer.dom(this.root).querySelectorAll('.step').length;
+        },
+
+        _buildPopperStep: function(doneBuildingPopperHandler){
+            Polymer.dom(this.root).querySelectorAll('.step').forEach(function(item, index){
+                if(this.step !== index+1) return;
+
+                if(typeof this['step'+(index+1)] === "function") {
+
+                    this['step'+(index+1)](item);
+                    doneBuildingPopperHandler();
+                    // Post step fire
+                    if(typeof this['postStep'+(index+1)] === "function") {
+                        this['postStep'+(index+1)]();
+                    }
+                } else {
+                    var popperConfig = this.getPopperConfig();
+                    var options = popperConfig['step'+(index+1)];
+                    if(options) {
+                        var interval = setInterval(function(){
+                            if(document.querySelector(options.coverTarget) &&
+                                document.querySelector(options.reference)
+                            ) {
+                                this._createPopper(index+1, item, options);
+                                clearInterval(interval);
+                                doneBuildingPopperHandler();
+                                // Post step fire
+                                if(typeof this['postStep'+(index+1)] === "function") {
+                                    this['postStep'+(index+1)]();
+                                }
+                            }
+                        }.bind(this), 200);
+
+                    }
+                }
+            }.bind(this));
+        },
+
+        _createPopper: function(index, elem, options) {
+            var cover = this.buildCover(document.querySelector(options.coverTarget));
+            this.popperStep[index] = {
+                popper: new Popper(document.querySelector(options.reference), elem, options.popperOptions),
+                cover: cover,
+                elem: elem,
+                options: options,
+                reference: document.querySelector(options.reference)
+            };
+            var me = this;
+            document.querySelector(options.reference).addEventListener('click', function(){
+                // me.currentStep.hidden = true;
+                // cover.hide();
+                me.nextStep();
+                document.querySelector(options.reference).removeEventListener('click', this);
+            });
+        },
+
+        _stepChanged: function(newValue, oldValue) {
+            this._buildPopperStep(function(){
+                if(this.popperStep && this.popperStep[newValue]) {
+                    this.currentStep = this.popperStep[newValue];
+                }
+            }.bind(this));
+        },
+
+        _currentStepChanged: function() {
+            if(this.step > 0) {
+                this.showStep();
             }
         },
 
@@ -34,18 +118,65 @@
             if(['PENDING', 'IN_PROGRESS', 'DONE'].indexOf(newValue) === -1) {
                 this.status = oldValue;
             }
+            if(this.status === 'DONE') {
+                this.fire('done');
+            }
+        },
+
+        getPopperConfig: function() {
+            return {};
         },
 
         incrementStep: function() {
             if(this.maxSteps === this.step) return;
+            if(this.step > 0 ) {
+                this.status = 'IN_PROGRESS';
+            }
             this.step++;
+        },
+
+        nextStep: function() {
+            if(this.step < this.maxSteps) {
+                this.hideStep();
+                this.incrementStep();
+            } else {
+                this.reset();
+            }
+        },
+
+        showStep: function(){
+            if(this.currentStep) {
+                this.currentStep.elem.hidden = false;
+                this.currentStep.cover.show();
+            }
+        },
+
+        hideStep: function() {
+            if(this.step > 0 && this.step <= this.maxSteps) {
+                this.currentStep.elem.hidden = true;
+                this.currentStep.cover.hide();
+            }
+        },
+
+        reset: function(){
+            for(var index in this.popperStep) {
+                if(this.popperStep.hasOwnProperty(index)) {
+                    this.popperStep[index].elem.hidden = true;
+                    this.popperStep[index].cover.destroy();
+                    this.popperStep[index].popper.destroy();
+                }
+            }
+            if(this.step === this.maxSteps) {
+                this.status = 'DONE';
+            }
         },
 
         getObject: function() {
             return {
                 status: this.status,
                 step: this.step,
-                maxSteps: this.maxSteps
+                maxSteps: this.maxSteps,
+                name: this.name
             };
         },
 
@@ -55,7 +186,6 @@
 
         isDone: function() {
             return this.status === 'DONE';
-        }
-
+        },
     }
 </script>
