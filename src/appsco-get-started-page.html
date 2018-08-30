@@ -1,9 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
-<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
-<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
-<link rel="import" href="../bower_components/neon-animation/neon-animatable-behavior.html">
-<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-request.html">
 
@@ -28,9 +23,6 @@
                 padding: 2px;
             }
         </style>
-
-        <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
-        <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent">
 
@@ -78,25 +70,12 @@
 
                 tutorialsArray: {
                     type: Array,
-                    value: function() { return []; },
                     computed: '_computeTutorialsArray(tutorials)'
                 },
 
                 authorizationToken: {
                     type: String,
                     value: ''
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
                 },
 
                 animationConfig: {
@@ -127,7 +106,6 @@
 
                 firstUnfinishedIndex: {
                     type: Number,
-                    value: 0,
                     computed: '_computeFirstUnfinishedIndex(tutorials)'
                 }
             },
@@ -135,14 +113,6 @@
             behaviors: [
                 Polymer.NeonAnimatableBehavior
             ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, screen992)'
-            ],
-
-            _updateScreen: function() {
-                this.updateStyles();
-            },
 
             attached: function() {
                 this._pageLoaded();
