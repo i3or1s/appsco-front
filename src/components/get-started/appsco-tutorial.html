@@ -4,17 +4,25 @@
 
 <link rel="import" href="appsco-tutorial-company-settings.html">
 <link rel="import" href="appsco-tutorial-company-branding.html">
+<link rel="import" href="appsco-tutorial-branded-login.html">
 
 <dom-module id="appsco-tutorial">
     <template>
         <appsco-tutorial-company-settings
                 id="companyProfile"
                 page="[[ currentPage ]]"
+                on-tutorial-done="_onTutorialDone"
         ></appsco-tutorial-company-settings>
         <appsco-tutorial-company-branding
                 id="companyBranding"
                 page="[[ currentPage ]]"
+                on-tutorial-done="_onTutorialDone"
         ></appsco-tutorial-company-branding>
+        <appsco-tutorial-branded-login
+                id="brandedLogin"
+                page="[[ currentPage ]]"
+                on-tutorial-done="_onTutorialDone"
+        ></appsco-tutorial-branded-login>
     </template>
     <script>
         Polymer({
@@ -54,7 +62,7 @@
 
                 tuts: {
                     type: Array,
-                    value: function(){ return ['companyProfile', 'companyBranding']; }
+                    value: function(){ return ['companyProfile', 'companyBranding', 'brandedLogin']; }
                 },
 
                 tutorials: {
@@ -95,28 +103,69 @@
                 }.bind(this));
             },
 
+            _onTutorialDone: function(event) {
+                var tutorial = event.detail.tutorial,
+                    tutorialsRequest = document.createElement('iron-request');
+
+                tutorialsRequest.send({
+                    url: this.tutorialsApi,
+                    method: "PUT",
+                    handleAs: 'json',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        "Authorization": "token " + this.authorizationToken
+                    },
+                    body: 'tutorial_info[tutorial_id]=' + tutorial.getId()
+                            + '&tutorial_info[status]=DONE'
+                            + '&tutorial_info[step]=' + tutorial.maxSteps
+                }).then(function(request) {
+                    this._applyTutorialStatus(request.response);
+                }.bind(this));
+            },
+
+            _applyTutorialStatus: function(tutorialsInfo) {
+                for (var idx in tutorialsInfo) {
+                    if (tutorialsInfo.hasOwnProperty(idx)) {
+                        this.tuts.forEach(function(tut) {
+                            var tutorial = this.$$('#'+tut);
+                            if (!tutorial) { return; }
+                            if (tutorial.getId() === idx) {
+                                tutorial.status = tutorialsInfo[idx]['status'];
+                            }
+                        }.bind(this));
+                    }
+                }
+
+                var tutorials = this.tutorials;
+                this.set('tutorials', {});
+                this.set('tutorials', tutorials);
+           },
+
             getCurrentState: function() {
-                // var tutorialsRequest = document.createElement('iron-request');
-                //
-                // tutorialsRequest.send({
-                //     url: this.tutorialsApi,
-                //     method: "GET",
-                //     handleAs: 'json',
-                //     headers: {
-                //         "Authorization": "token " + this.authorizationToken
-                //     }
-                // }).then(function(request) {
-                //     for (var idx in request.response) {
-                //         if (request.response.hasOwnProperty(idx)) {
-                //             this.tutorials[idx].status = request.response[idx]['status'];
-                //             this.tutorials[idx].step = request.response[idx]['step'];
-                //         }
-                //     }
-                //     var tutorials = JSON.parse(JSON.stringify(this.tutorials));
-                //     this.set('tutorials', {});
-                //     this.set('tutorials', tutorials);
-                // }.bind(this));
+                var tutorialsRequest = document.createElement('iron-request');
+
+                tutorialsRequest.send({
+                    url: this.tutorialsApi,
+                    method: "GET",
+                    handleAs: 'json',
+                    headers: {
+                        "Authorization": "token " + this.authorizationToken
+                    }
+                }).then(function(request) {
+                    this._applyTutorialStatus(request.response);
+                }.bind(this));
+            },
+
+            startTutorial: function(tutorialId) {
+                this.tuts.forEach(function(tut) {
+                    var tutorial = this.$$('#'+tut);
+                    if (!tutorial) { return; }
+                    if (tutorial.getId() === tutorialId) {
+                        tutorial.start();
+                    }
+                }.bind(this));
             }
+
         });
     </script>
 </dom-module>

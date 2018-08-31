@@ -73,14 +73,14 @@
                 on-response="_onResponse"
                 debounce-duration="300"></iron-ajax>
 
-        <paper-card heading="Branded Login" id="card">
+        <paper-card heading="Branded Login" id="brandedLoginCard">
             <paper-icon-button
                     icon="close"
                     title="Close"
                     class="page-close-action"
                     on-tap="_onBack"></paper-icon-button>
 
-            <div class="card-content">
+            <div class="card-content" id="brandedLoginFormCard">
                 <p class="message">
                     On this page you can customize the login form.
                     You can modify the logo, or the fields and text showing on the login form. This branding and setup will be visible to all users and contacts logging in trough your login page.
@@ -229,7 +229,7 @@
 
                 </form>
 
-                <paper-button id="submit"
+                <paper-button id="submitBrandedLoginForm"
                               class="submit-button"
                               on-tap="_submitForm">Save</paper-button>
 
@@ -347,7 +347,7 @@
                 sharedElements: {
                     value: function() {
                         return {
-                            'hero': this.$.card
+                            'hero': this.$.brandedLoginCard
                         }
                     }
                 }

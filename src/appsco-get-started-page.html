@@ -42,6 +42,7 @@
                                     tutorial="[[ item ]]"
                                     index="[[ index ]]"
                                     first-unfinished-index="[[ firstUnfinishedIndex ]]"
+                                    on-start="_onTutorialStart"
                             ></appsco-tutorial-card>
                         </template>
                     </div>
@@ -70,7 +71,7 @@
 
                 tutorialsArray: {
                     type: Array,
-                    computed: '_computeTutorialsArray(tutorials)'
+                    value: function() { return []; }
                 },
 
                 authorizationToken: {
@@ -127,7 +128,14 @@
                 var tutsArray = [];
                 for(var idx in tutorials) {
                     if (tutorials.hasOwnProperty(idx)) {
-                        tutsArray.push(tutorials[idx]);
+                        tutsArray.push({
+                            id: tutorials[idx].getId(),
+                            tutorialTitle: tutorials[idx].tutorialTitle,
+                            icon: tutorials[idx].icon,
+                            description: tutorials[idx].description,
+                            readme: tutorials[idx].readme,
+                            isDone: tutorials[idx].isDone()
+                        });
                     }
                 }
 
@@ -135,7 +143,8 @@
             },
 
             _tutorialsChanged: function(tutorials) {
-                this.tutsArray = this._computeTutorialsArray(tutorials);
+                this.set('tutorialsArray', []);
+                this.set('tutorialsArray', this._computeTutorialsArray(tutorials));
             },
 
             _computeFirstUnfinishedIndex: function(tutorials) {

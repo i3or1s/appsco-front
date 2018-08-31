@@ -43,8 +43,8 @@
             </div>
 
             <div class="actions">
-                <template is="dom-if" if="[[ tutorial.documentation ]]">
-                    <paper-button><a target="_blank" href="[[ tutorial.documentation ]]">Read more</a></paper-button>
+                <template is="dom-if" if="[[ tutorial.readme ]]">
+                    <paper-button><a target="_blank" href="[[ tutorial.readme ]]">Read more</a></paper-button>
                 </template>
                 <template is="dom-if" if="[[ _isDone ]]">
                     <paper-button>Done</paper-button>
@@ -115,11 +115,13 @@
             },
 
             _onStartAction: function(evt) {
-                this.tutorial.start();
+                this.fire('tutorial-start', {
+                    tutorialId: this.tutorial.id
+                });
             },
 
             _isTutorialDone: function(tutorial) {
-                return tutorial.isDone();
+                return tutorial.isDone;
             },
 
             _computeStartCaption: function(index, firstUnfinishedIndex) {
