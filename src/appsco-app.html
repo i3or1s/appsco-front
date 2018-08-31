@@ -2439,7 +2439,7 @@
             _computeTutorialsPageVisible: function (tutorials, _companyAdmin) {
                 var numFinished = 0;
                 for (var idx in tutorials) {
-                    if (tutorials.hasOwnProperty(idx) && (tutorials[idx].status === 'DONE')) {
+                    if (tutorials.hasOwnProperty(idx) && (tutorials[idx].isDone())) {
                         numFinished++;
                     }
                 }

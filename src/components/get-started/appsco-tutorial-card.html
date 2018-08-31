@@ -27,20 +27,18 @@
                 text-decoration: none;
                 color: inherit;
             }
+            :host .item-basic-info .info-value {
+                overflow: visible;
+            }
         </style>
 
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
 
         <div class="item" on-tap="_onItemAction">
-            <iron-image class="item-icon"
-                        placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII="
-                        sizing="cover"
-                        preload
-                        fade
-                        src="[[ _tutorialIcon ]]"></iron-image>
+            <iron-icon icon="[[ tutorial.icon ]]" item-icon></iron-icon>
 
             <div class="item-info item-basic-info">
-                <span class="info-label item-title">[[ tutorial.title ]]</span>
+                <span class="info-label item-title">[[ tutorial.tutorialTitle ]]</span>
                 <span class="info-value">[[ tutorial.description ]]</span>
             </div>
 
@@ -117,13 +115,11 @@
             },
 
             _onStartAction: function(evt) {
-                this.fire('tutorial-start', {
-                    tutorial: this.tutorial
-                });
+                this.tutorial.start();
             },
 
             _isTutorialDone: function(tutorial) {
-                return (tutorial.status === 'DONE');
+                return tutorial.isDone();
             },
 
             _computeStartCaption: function(index, firstUnfinishedIndex) {

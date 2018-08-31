@@ -127,7 +127,7 @@
                 var tutsArray = [];
                 for(var idx in tutorials) {
                     if (tutorials.hasOwnProperty(idx)) {
-                        tutsArray.push(Object.assign({tutorial_id: idx}, tutorials[idx]));
+                        tutsArray.push(tutorials[idx]);
                     }
                 }
 
@@ -141,7 +141,7 @@
             _computeFirstUnfinishedIndex: function(tutorials) {
                 var index = 0;
                 for (var idx in this.tutorials) {
-                    if (this.tutorials.hasOwnProperty(idx) && !(tutorials[idx].status === 'DONE')) {
+                    if (this.tutorials.hasOwnProperty(idx) && !(tutorials[idx].isDone())) {
                         return index;
                     }
                     index++;

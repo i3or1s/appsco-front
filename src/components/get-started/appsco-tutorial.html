@@ -90,7 +90,7 @@
                 this.tuts.forEach(function(item, key){
                     var tutorial = this.$$('#'+item);
                     if(tutorial) {
-                        this.tutorials[tutorial.getName()] = tutorial;
+                        this.tutorials[tutorial.getId()] = tutorial;
                     }
                 }.bind(this));
             },
