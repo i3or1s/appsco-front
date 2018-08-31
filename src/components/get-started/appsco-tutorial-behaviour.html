@@ -40,6 +40,11 @@
             popperStep: {
                 type: Object,
                 value: function() { return {}; }
+            },
+
+            tutorialId: {
+                type: String,
+                value: 'anon'
             }
         },
 
@@ -154,7 +159,8 @@
         hideStep: function() {
             if(this.step > 0 && this.step <= this.maxSteps) {
                 this.currentStep.elem.hidden = true;
-                this.currentStep.cover.hide();
+                this.currentStep.cover.destroy();
+                this.currentStep.popper.destroy();
             }
         },
 
@@ -171,21 +177,12 @@
             }
         },
 
-        getObject: function() {
-            return {
-                status: this.status,
-                step: this.step,
-                maxSteps: this.maxSteps,
-                name: this.name
-            };
-        },
-
-        getName: function() {
-            return this.name;
+        getId: function() {
+            return this.tutorialId;
         },
 
         isDone: function() {
             return this.status === 'DONE';
-        },
+        }
     }
 </script>

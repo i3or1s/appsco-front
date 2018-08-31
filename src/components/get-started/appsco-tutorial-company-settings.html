@@ -110,7 +110,12 @@
             },
 
             attached: function() {
-                this.name = 'company-settings';
+                this.tutorialId = 'company-settings';
+                this.tutorialTitle = 'Company settings';
+                this.description = 'Populate your company profile';
+                this.icon = 'icons:settings';
+                this.readme = '';
+
                 this.init();
             },
 
@@ -150,7 +155,7 @@
                         popperOptions: {
                             placement: 'right-start'
                         }
-                    },
+                    }
                 };
             },
 
@@ -162,6 +167,7 @@
             _nextStep: function() {
                 this.currentStep.reference.click();
             },
+
             _nextStep5: function() {
                 this.nextStep();
             }

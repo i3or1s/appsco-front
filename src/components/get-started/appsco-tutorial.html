@@ -56,47 +56,12 @@
                     type: Array,
                     value: function(){ return ['companyProfile', 'companyBranding']; }
                 },
+
                 tutorials: {
                     type: Object,
+                    notify: true,
                     value: function () {
-                        return {
-                            "company_profile": {
-                                "status": "PENDING",
-                                "step": "0"
-                            },
-                            "company_branding": {
-                                "status": "PENDING",
-                                "step": "0"
-                            },
-                            "branded_login": {
-                                "status": "PENDING",
-                                "step": "0"
-                            },
-                            "directory": {
-                                "status": "PENDING",
-                                "step": "0"
-                            },
-                            "resources": {
-                                "status": "PENDING",
-                                "step": "0"
-                            },
-                            "share_resources": {
-                                "status": "PENDING",
-                                "step": "0"
-                            },
-                            "company_domain": {
-                                "status": "PENDING",
-                                "step": "0"
-                            },
-                            "identity_provider": {
-                                "status": "PENDING",
-                                "step": "0"
-                            },
-                            "provisioning": {
-                                "status": "PENDING",
-                                "step": "0"
-                            }
-                        }
+                        return {}
                     }
                 }
             },
@@ -125,7 +90,7 @@
                 this.tuts.forEach(function(item, key){
                     var tutorial = this.$$('#'+item);
                     if(tutorial) {
-                        this.tutorials[tutorial.getName()] = tutorial;
+                        this.tutorials[tutorial.getId()] = tutorial;
                     }
                 }.bind(this));
             },
