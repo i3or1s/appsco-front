@@ -814,7 +814,9 @@
                             id="appscoGetStartedPage"
                             account="[[ account ]]"
                             authorization-token="[[ authorizationToken ]]"
-                            tutorials="[[ _tutorials ]]">
+                            tutorials="[[ _tutorials ]]"
+                            on-tutorial-start="_onTutorialStart"
+                    >
                     </appsco-get-started-page>
 
                     <appsco-oauth-applications-page name="oauth-applications" page company-page
@@ -5173,6 +5175,17 @@
             },
             /**
              * Audit Log page END
+             */
+
+            /**
+             * Get started page START
+             */
+            _onTutorialStart: function(event) {
+                this.$.appscoTutorial.startTutorial(event.detail.tutorialId);
+            },
+
+            /**
+             * Get started page END
              */
 
             /**

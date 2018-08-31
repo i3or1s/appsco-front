@@ -58,33 +58,36 @@
 
                 if(typeof this['step'+(index+1)] === "function") {
 
-                    this['step'+(index+1)](item);
+                    this['step'+(index+1)](index, item, doneBuildingPopperHandler);
                     doneBuildingPopperHandler();
                     // Post step fire
                     if(typeof this['postStep'+(index+1)] === "function") {
                         this['postStep'+(index+1)]();
                     }
                 } else {
-                    var popperConfig = this.getPopperConfig();
-                    var options = popperConfig['step'+(index+1)];
-                    if(options) {
-                        var interval = setInterval(function(){
-                            if(document.querySelector(options.coverTarget) &&
-                                document.querySelector(options.reference)
-                            ) {
-                                this._createPopper(index+1, item, options);
-                                clearInterval(interval);
-                                doneBuildingPopperHandler();
-                                // Post step fire
-                                if(typeof this['postStep'+(index+1)] === "function") {
-                                    this['postStep'+(index+1)]();
-                                }
-                            }
-                        }.bind(this), 200);
-
-                    }
+                    this.handleStep(index, item, doneBuildingPopperHandler);
                 }
             }.bind(this));
+        },
+
+        handleStep: function(index, item, doneBuildingPopperHandler) {
+            var popperConfig = this.getPopperConfig();
+            var options = popperConfig['step'+(index+1)];
+            if(options) {
+                var interval = setInterval(function(){
+                    if(document.querySelector(options.coverTarget) &&
+                        document.querySelector(options.reference)
+                    ) {
+                        this._createPopper(index+1, item, options);
+                        clearInterval(interval);
+                        doneBuildingPopperHandler();
+                        // Post step fire
+                        if(typeof this['postStep'+(index+1)] === "function") {
+                            this['postStep'+(index+1)]();
+                        }
+                    }
+                }.bind(this), 200);
+            }
         },
 
         _createPopper: function(index, elem, options) {
@@ -96,13 +99,12 @@
                 options: options,
                 reference: document.querySelector(options.reference)
             };
-            var me = this;
-            document.querySelector(options.reference).addEventListener('click', function(){
-                // me.currentStep.hidden = true;
-                // cover.hide();
-                me.nextStep();
-                document.querySelector(options.reference).removeEventListener('click', this);
-            });
+            var me = this,
+                listener = function() {
+                    me.nextStep();
+                    document.querySelector(options.reference).removeEventListener('click', listener);
+                };
+            document.querySelector(options.reference).addEventListener('click', listener);
         },
 
         _stepChanged: function(newValue, oldValue) {
@@ -124,7 +126,9 @@
                 this.status = oldValue;
             }
             if(this.status === 'DONE') {
-                this.fire('done');
+                this.fire('tutorial-done', {
+                    tutorial: this
+                });
             }
         },
 
@@ -133,7 +137,9 @@
         },
 
         incrementStep: function() {
-            if(this.maxSteps === this.step) return;
+            if(this.maxSteps === this.step) {
+                return;
+            }
             if(this.step > 0 ) {
                 this.status = 'IN_PROGRESS';
             }
@@ -172,6 +178,7 @@
                     this.popperStep[index].popper.destroy();
                 }
             }
+            this.set('popperStep', {});
             if(this.step === this.maxSteps) {
                 this.status = 'DONE';
             }
