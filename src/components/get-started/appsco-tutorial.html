@@ -5,6 +5,7 @@
 <link rel="import" href="appsco-tutorial-company-settings.html">
 <link rel="import" href="appsco-tutorial-company-branding.html">
 <link rel="import" href="appsco-tutorial-branded-login.html">
+<link rel="import" href="appsco-tutorial-add-company-user.html">
 
 <dom-module id="appsco-tutorial">
     <template>
@@ -23,6 +24,12 @@
                 page="[[ currentPage ]]"
                 on-tutorial-done="_onTutorialDone"
         ></appsco-tutorial-branded-login>
+        <appsco-tutorial-add-company-user
+                id="addCompanyUser"
+                page="[[ currentPage ]]"
+                on-tutorial-done="_onTutorialDone"
+                directory-page-loaded="[[ directoryPageLoaded ]]"
+        ></appsco-tutorial-add-company-user>
     </template>
     <script>
         Polymer({
@@ -62,7 +69,7 @@
 
                 tuts: {
                     type: Array,
-                    value: function(){ return ['companyProfile', 'companyBranding', 'brandedLogin']; }
+                    value: function(){ return ['companyProfile', 'companyBranding', 'brandedLogin', 'addCompanyUser']; }
                 },
 
                 tutorials: {
@@ -71,6 +78,12 @@
                     value: function () {
                         return {}
                     }
+                },
+
+                directoryPageLoaded: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
                 }
             },
 
@@ -165,7 +178,6 @@
                     }
                 }.bind(this));
             }
-
         });
     </script>
 </dom-module>

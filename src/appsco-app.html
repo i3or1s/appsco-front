@@ -57,6 +57,7 @@
                 tutorials-api="[[ api.tutorialsApi ]]"
                 authorization-token="[[ authorizationToken ]]"
                 tutorials="{{ _tutorials }}"
+                directory-page-loaded="[[ _directoryPageLoaded ]]"
                 current-page="[[ page ]]"
         ></appsco-tutorial>
 
@@ -110,7 +111,7 @@
                                     <iron-icon icon="icons:list"></iron-icon> <span class="menu-text">Resources</span>
                                 </a>
                                 <a name="directory" href="#">
-                                    <iron-icon icon="icons:social:person"></iron-icon> <span class="menu-text">Directory</span>
+                                    <iron-icon icon="icons:social:person"></iron-icon> <span class="menu-text" id="menuCompanyDirectoryText">Directory</span>
                                 </a>
                                 <a name="contacts" href="#">
                                     <iron-icon icon="icons:perm-contact-calendar"></iron-icon> <span class="menu-text">Contacts</span>
@@ -647,7 +648,9 @@
                             on-reset-type-filter="_onResetDirectoryTypeFilter"
                             on-observable-list-empty="_onObservableListEmpty"
                             on-observable-list-filled="_onObservableListFilled"
-                            on-company-subscription-loaded="_onSubscriptionLoaded"></appsco-directory-page>
+                            on-company-subscription-loaded="_onSubscriptionLoaded"
+                            on-page-loaded="_onDirectoryPageLoaded"
+                    ></appsco-directory-page>
 
                     <appsco-contacts-page name="contacts" page company-page
                             id="appscoContactsPage"
@@ -2222,6 +2225,12 @@
                 _tutorialsPageVisible: {
                     type: Boolean,
                     computed: "_computeTutorialsPageVisible(_tutorials, _companyAdmin)"
+                },
+
+                _directoryPageLoaded: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
                 }
             },
 
@@ -3052,6 +3061,10 @@
                 this._subscription = subscription;
                 this._setSubscription(subscription);
                 this._evaluateSubscriptionLicences();
+            },
+
+            _onDirectoryPageLoaded: function(event) {
+                this._directoryPageLoaded = true;
             },
 
             _computeAccountManagedState: function(account) {
