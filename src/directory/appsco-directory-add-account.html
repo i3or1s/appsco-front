@@ -83,7 +83,7 @@
             }
         </style>
 
-        <paper-dialog id="dialog"
+        <paper-dialog id="addAccountDialog"
                       with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
@@ -170,7 +170,7 @@
 
             <div class="buttons">
                 <paper-button dialog-dismiss>Cancel</paper-button>
-                <paper-button autofocus on-tap="_submitForm">Add</paper-button>
+                <paper-button autofocus on-tap="_submitForm" id="addAccountDialogButton">Add</paper-button>
             </div>
         </paper-dialog>
 
@@ -232,7 +232,7 @@
              * Toggles the dialog.
              */
             toggle: function() {
-                this.$.dialog.toggle();
+                this.$.addAccountDialog.toggle();
             },
 
             _computeHeaders: function(authorizationToken) {
@@ -312,7 +312,7 @@
                 var response = event.detail.response;
 
                 if (200 === event.detail.status && response) {
-                    this.$.dialog.close();
+                    this.$.addAccountDialog.close();
 
                     /**
                      * Fired when company role is created.
@@ -348,7 +348,7 @@
                 request.send(options).then(function() {
 
                     if (200 == request.status) {
-                        this.$.dialog.close();
+                        this.$.addAccountDialog.close();
 
                         /**
                          * Fired when new invitation of type 'user' is created.
