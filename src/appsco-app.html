@@ -58,6 +58,7 @@
                 authorization-token="[[ authorizationToken ]]"
                 tutorials="{{ _tutorials }}"
                 directory-page-loaded="[[ _directoryPageLoaded ]]"
+                resources-page-loaded="[[ _resourcesPageLoaded ]]"
                 current-page="[[ page ]]"
         ></appsco-tutorial>
 
@@ -108,7 +109,7 @@
                                     <span class="menu-text">Administration</span>
                                 </div>
                                 <a name="resources" href="#">
-                                    <iron-icon icon="icons:list"></iron-icon> <span class="menu-text">Resources</span>
+                                    <iron-icon icon="icons:list"></iron-icon> <span class="menu-text" id="menuCompanyResourcesText">Resources</span>
                                 </a>
                                 <a name="directory" href="#">
                                     <iron-icon icon="icons:social:person"></iron-icon> <span class="menu-text" id="menuCompanyDirectoryText">Directory</span>
@@ -591,7 +592,9 @@
                             on-modify-orgunit="_onModifyOrgunit"
                             on-remove-orgunit="_onRemoveOrgunit"
                             on-observable-list-empty="_onObservableListEmpty"
-                            on-observable-list-filled="_onObservableListFilled"></appsco-resources-page>
+                            on-observable-list-filled="_onObservableListFilled"
+                            on-page-loaded="_onResourcesPageLoaded"
+                    ></appsco-resources-page>
 
                     <appsco-manage-resource-page name="manage-resource" page company-page
                             id="appscoManageApplicationPage"
@@ -2231,7 +2234,14 @@
                     type: Boolean,
                     value: false,
                     notify: true
+                },
+
+                _resourcesPageLoaded : {
+                    type: Boolean,
+                    value: false,
+                    notify: true
                 }
+
             },
 
             observers: [
@@ -3065,6 +3075,10 @@
 
             _onDirectoryPageLoaded: function(event) {
                 this._directoryPageLoaded = true;
+            },
+
+            _onResourcesPageLoaded: function(event) {
+                this._resourcesPageLoaded = true;
             },
 
             _computeAccountManagedState: function(account) {
