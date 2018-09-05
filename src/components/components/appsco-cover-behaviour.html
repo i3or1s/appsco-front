@@ -10,7 +10,7 @@
         buildCover: function(elem, onclick) {
             var cover = document.createElement('div');
             var rect = elem.getBoundingClientRect();
-            var response = "position: fixed ;z-index: 8000 ;top: 0 ;right: 0 ;bottom: 0 ;left: 0 ;background-color: rgba(0,0,0,0.5);"
+            var response = "position: fixed ;z-index: 8000 ;top: 0 ;right: 0 ;bottom: 0 ;left: 0 ;background-color: rgba(0,0,0,0.5);";
 
             var topCover = document.createElement('div');
             topCover.setAttribute('style', response);
@@ -52,9 +52,9 @@
                     if(cover.parentElement) {
                         cover.parentElement.removeChild(cover);
                     }
-                },
+                }
             };
-        },
+        }
     }
 </script>
 

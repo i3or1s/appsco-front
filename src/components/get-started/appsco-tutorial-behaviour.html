@@ -99,6 +99,10 @@
                 options: options,
                 reference: document.querySelector(options.reference)
             };
+            if (options.popperListenerBuilder && typeof(options.popperListenerBuilder) === 'function') {
+                options.popperListenerBuilder(this);
+                return;
+            }
             var me = this,
                 listener = function() {
                     me.nextStep();
@@ -126,6 +130,10 @@
                 this.status = oldValue;
             }
             if(this.status === 'DONE') {
+                if (typeof(this.afterTutorialDone) === 'function') {
+                    this.afterTutorialDone();
+                }
+
                 this.fire('tutorial-done', {
                     tutorial: this
                 });

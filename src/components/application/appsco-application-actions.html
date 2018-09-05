@@ -233,7 +233,7 @@ Custom property | Description | Default
         </template>
 
         <template is="dom-if" if="[[ addingResourceAllowed ]]">
-            <div class="action flex-none">
+            <div class="action flex-none" id="addItemActionWrapper">
                 <paper-button id="addItemAction"
                               class="add-item-action"
                               on-tap="_onAddItemAction">Add</paper-button>
@@ -245,7 +245,7 @@ Custom property | Description | Default
                 <paper-tooltip for="addItemActionIconButton"
                                position="bottom">Add resource</paper-tooltip>
 
-                <paper-listbox id="actionList"
+                <paper-listbox id="resourcesActionList"
                                class="item-action-list"
                                on-iron-select="_onAddItemActionSelect">
 
@@ -500,7 +500,7 @@ Custom property | Description | Default
 
                 this._addItemActionsVisible = false;
 
-                this.$$('#actionList').selected = -1;
+                this.$$('#resourcesActionList').selected = -1;
             },
 
             _onAddItemAction: function() {
