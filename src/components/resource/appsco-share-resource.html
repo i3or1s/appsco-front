@@ -275,7 +275,7 @@
                     Selected [[ _numberOfSelectedAccounts ]] out of [[ _accountsCount ]]
                 </div>
                 <paper-button dialog-dismiss>Cancel</paper-button>
-                <paper-button autofocus on-tap="_onShareResourcesAction">Share</paper-button>
+                <paper-button autofocus on-tap="_onShareResourcesAction" id="shareResourceConfirmShareButton">Share</paper-button>
             </div>
         </paper-dialog>
 
@@ -419,6 +419,12 @@
                 _filterType: {
                     type: String,
                     value: 'all'
+                },
+
+                itemsLoaded: {
+                    type: Boolean,
+                    notify: true,
+                    computed: '_computeItemsLoaded(_contactsLoaded, _rolesLoaded)'
                 }
             },
 
@@ -432,6 +438,10 @@
                     'Authorization': 'token ' + authorizationToken,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
+            },
+
+            _computeItemsLoaded: function(contactsLoaded, rolesLoaded) {
+                return contactsLoaded && rolesLoaded;
             },
 
             toggle: function() {
