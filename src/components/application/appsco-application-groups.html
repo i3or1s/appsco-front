@@ -50,7 +50,9 @@
                 url="[[ groupsApi ]]"
                 on-response="_onGroupResponse"
                 on-error="_handleError"
-                headers="{{ _computedHeaders }}"></iron-ajax>
+                headers="{{ _computedHeaders }}"
+                auto
+        ></iron-ajax>
 
         <paper-progress id="progress" indeterminate></paper-progress>
 

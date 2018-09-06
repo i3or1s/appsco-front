@@ -544,10 +544,13 @@
 
             _onApplicationChanged: function (application) {
                 if (application.self) {
-                    this.$.appscoManageApplicationComponentsPage.load();
 
-                    if (this.$$('appscoApplicationGroupsPage') && this.$$('appscoApplicationGroupsPage').$) {
-                        this.$$('appscoApplicationGroupsPage').loadGroups();
+                    if (this.$$('#appscoManageApplicationComponentsPage') && this.$$('#appscoManageApplicationComponentsPage').$) {
+                        this.$$('#appscoManageApplicationComponentsPage').load();
+                    }
+
+                    if (this.$$('#appscoApplicationGroupsPage') && this.$$('#appscoApplicationGroupsPage').$) {
+                        this.$$('#appscoApplicationGroupsPage').loadGroups();
                     }
                 }
             },
