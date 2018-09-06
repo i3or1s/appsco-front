@@ -45,6 +45,11 @@
             tutorialId: {
                 type: String,
                 value: 'anon'
+            },
+
+            addedListeners: {
+                type: Array,
+                value: function() { return []; }
             }
         },
 
@@ -109,6 +114,7 @@
                     document.querySelector(options.reference).removeEventListener('click', listener);
                 };
             document.querySelector(options.reference).addEventListener('click', listener);
+            this.registerAddedListener(document.querySelector(options.reference), 'click', listener);
         },
 
         _stepChanged: function(newValue, oldValue) {
@@ -187,6 +193,11 @@
                 }
             }
             this.set('popperStep', {});
+            this.addedListeners.forEach(function(listenerInfo) {
+                if (listenerInfo.element) {
+                    listenerInfo.element.removeEventListener(listenerInfo.eventName, listenerInfo.listener);
+                }
+            });
             if(this.step === this.maxSteps) {
                 this.status = 'DONE';
             }
@@ -198,6 +209,14 @@
 
         isDone: function() {
             return this.status === 'DONE';
+        },
+
+        registerAddedListener: function(element, eventName, listener) {
+            this.addedListeners.push({
+                element: element,
+                listener: listener,
+                eventName: eventName
+            });
         }
     }
 </script>

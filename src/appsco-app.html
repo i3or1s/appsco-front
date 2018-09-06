@@ -59,6 +59,7 @@
                 tutorials="{{ _tutorials }}"
                 directory-page-loaded="[[ _directoryPageLoaded ]]"
                 resources-page-loaded="[[ _resourcesPageLoaded ]]"
+                resource-share-accounts-loaded="[[ shareResourceDialogAccountsLoaded ]]"
                 current-page="[[ page ]]"
         ></appsco-tutorial>
 
@@ -1127,6 +1128,7 @@
                 get-contacts-api="[[ _companyContactsApi ]]"
                 api-errors="[[ _apiErrors ]]"
                 on-resources-shared="_onResourcesShared"
+                items-loaded="{{ shareResourceDialogAccountsLoaded }}"
                 ></appsco-share-resource>
 
         <appsco-add-resource-admin
@@ -2240,8 +2242,13 @@
                     type: Boolean,
                     value: false,
                     notify: true
-                }
+                },
 
+                shareResourceDialogAccountsLoaded: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                }
             },
 
             observers: [

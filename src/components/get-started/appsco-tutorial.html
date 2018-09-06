@@ -7,6 +7,7 @@
 <link rel="import" href="appsco-tutorial-branded-login.html">
 <link rel="import" href="appsco-tutorial-add-company-user.html">
 <link rel="import" href="appsco-tutorial-resources.html">
+<link rel="import" href="appsco-tutorial-share-resources.html">
 
 <dom-module id="appsco-tutorial">
     <template>
@@ -37,6 +38,14 @@
                 on-tutorial-done="_onTutorialDone"
                 resources-page-loaded="[[ resourcesPageLoaded ]]"
         ></appsco-tutorial-resources>
+
+        <appsco-tutorial-share-resources
+                id="shareResource"
+                page="[[ currentPage ]]"
+                on-tutorial-done="_onTutorialDone"
+                resources-page-loaded="[[ resourcesPageLoaded ]]"
+                resource-share-accounts-loaded="[[ resourceShareAccountsLoaded ]]"
+        ></appsco-tutorial-share-resources>
     </template>
     <script>
         Polymer({
@@ -81,7 +90,8 @@
                         'companyBranding',
                         'brandedLogin',
                         'addCompanyUser',
-                        'addResource'
+                        'addResource',
+                        'shareResource'
                     ]; }
                 },
 
@@ -100,6 +110,12 @@
                 },
 
                 resourcesPageLoaded: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                },
+
+                resourceShareAccountsLoaded: {
                     type: Boolean,
                     value: false,
                     notify: true
