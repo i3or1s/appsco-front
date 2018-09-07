@@ -47,6 +47,7 @@
                         domains-api="[[ domainsApi ]]"
                         size="10"
                         load-more
+                        on-loaded="_onDomainsLoaded"
                         on-remove="_onRemoveDomain"></appsco-company-domains>
             </div>
         </paper-card>
@@ -147,6 +148,10 @@
                 this.fire('remove-domain', {
                     domain: event.detail.domain
                 })
+            },
+
+            _onDomainsLoaded: function() {
+                this.fire('company-domains-loaded');
             }
         });
     </script>

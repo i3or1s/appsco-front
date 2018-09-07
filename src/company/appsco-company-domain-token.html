@@ -93,7 +93,7 @@ Shows dialog screen with confirmation for account removal from organization unit
                     </p>
                     <p class="token-container">
                         <span class="token">[[ domain.verification_code ]]</span>
-                        <appsco-copy value="[[ domain.verification_code ]]"></appsco-copy>
+                        <appsco-copy value="[[ domain.verification_code ]]" id="companyTokenCopyButton"></appsco-copy>
                     </p>
                     <p>
                         <a href="https://support.appsco.com/hc/en-gb/articles/115002896305-Domain-Verification-guideline"
@@ -105,7 +105,7 @@ Shows dialog screen with confirmation for account removal from organization unit
             </paper-dialog-scrollable>
 
             <div class="buttons">
-                <paper-button dialog-dismiss>Close</paper-button>
+                <paper-button dialog-dismiss id="companyTokenCloseButton">Close</paper-button>
             </div>
         </paper-dialog>
 

@@ -45,7 +45,7 @@
             }
         </style>
 
-        <paper-dialog id="dialog"
+        <paper-dialog id="addCompanyDomainDialog"
                       with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
@@ -95,8 +95,8 @@
             </paper-dialog-scrollable>
 
             <div class="buttons">
-                <paper-button dialog-dismiss>Cancel</paper-button>
-                <paper-button autofocus on-tap="_submitForm">Add</paper-button>
+                <paper-button dialog-dismiss id="companyDomainDialogCancelButton">Cancel</paper-button>
+                <paper-button autofocus on-tap="_submitForm" id="companyDomainDialogAddButton">Add</paper-button>
             </div>
         </paper-dialog>
 
@@ -185,21 +185,21 @@
              * Opens add domain dialog.
              */
             open: function() {
-                this.$.dialog.open();
+                this.$.addCompanyDomainDialog.open();
             },
 
             /**
              * Closes add domain dialog.
              */
             close: function() {
-                this.$.dialog.close();
+                this.$.addCompanyDomainDialog.close();
             },
 
             /**
              * Toggles add domain dialog.
              */
             toggle: function() {
-                this.$.dialog.toggle();
+                this.$.addCompanyDomainDialog.toggle();
             },
 
             _showLoader: function() {

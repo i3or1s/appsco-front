@@ -59,14 +59,17 @@
                 tutorials="{{ _tutorials }}"
                 directory-page-loaded="[[ _directoryPageLoaded ]]"
                 resources-page-loaded="[[ _resourcesPageLoaded ]]"
+                company-domains-loaded="[[ _companyDomainsLoaded ]]"
                 resource-share-accounts-loaded="[[ shareResourceDialogAccountsLoaded ]]"
                 current-page="[[ page ]]"
+                is-tutorial-active="{{ isTutorialActive }}"
         ></appsco-tutorial>
 
         <appsco-tutorial-progress
                 id="appscoTutorialProgress"
                 tutorials="[[ _tutorials ]]"
                 show="true"
+                is-tutorial-active="[[ isTutorialActive ]]"
         ></appsco-tutorial-progress>
 
         <app-drawer-layout fullbleed force-narrow>
@@ -906,6 +909,7 @@
                             on-deactivate-domain-idp-settings="_onDeactivateDomainIdPSettings"
                             on-idp-certificate-add="_onAddIdpCertificate"
                             on-transfer-token-sent="_onTransferTokenSent"
+                            on-company-domains-loaded="_onCompanyDomainsLoaded"
                     ></appsco-company-page>
 
                     <appsco-manage-oauth-application-page name="manage-oauth-application" page company-page
@@ -2248,6 +2252,18 @@
                     type: Boolean,
                     value: false,
                     notify: true
+                },
+
+                _companyDomainsLoaded: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                },
+
+                isTutorialActive: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
                 }
             },
 
@@ -5556,6 +5572,7 @@
                 }
 
                 this.$.appscoCompanyPage.addDomain(domain);
+                this.$.appscoTutorial.notifyDomainAdded(domain);
                 this._notify('Domain ' + domain.domain + ' was successfully saved.');
             },
 
@@ -5629,6 +5646,10 @@
 
             _onTransferTokenSent: function() {
                 this._notify('Transfer token email has been successfully sent.');
+            },
+
+            _onCompanyDomainsLoaded: function() {
+                this._companyDomainsLoaded = true;
             },
             /**
              * Company page END

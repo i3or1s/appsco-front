@@ -7,6 +7,7 @@
 <link rel="import" href="appsco-tutorial-branded-login.html">
 <link rel="import" href="appsco-tutorial-add-company-user.html">
 <link rel="import" href="appsco-tutorial-resources.html">
+<link rel="import" href="appsco-tutorial-company-domain.html">
 <link rel="import" href="appsco-tutorial-share-resources.html">
 
 <dom-module id="appsco-tutorial">
@@ -15,28 +16,33 @@
                 id="companyProfile"
                 page="[[ currentPage ]]"
                 on-tutorial-done="_onTutorialDone"
+                on-tutorial-step-changed="_onStepChanged"
         ></appsco-tutorial-company-settings>
         <appsco-tutorial-company-branding
                 id="companyBranding"
                 page="[[ currentPage ]]"
                 on-tutorial-done="_onTutorialDone"
+                on-tutorial-step-changed="_onStepChanged"
         ></appsco-tutorial-company-branding>
         <appsco-tutorial-branded-login
                 id="brandedLogin"
                 page="[[ currentPage ]]"
                 on-tutorial-done="_onTutorialDone"
+                on-tutorial-step-changed="_onStepChanged"
         ></appsco-tutorial-branded-login>
         <appsco-tutorial-add-company-user
                 id="addCompanyUser"
                 page="[[ currentPage ]]"
                 on-tutorial-done="_onTutorialDone"
                 directory-page-loaded="[[ directoryPageLoaded ]]"
+                on-tutorial-step-changed="_onStepChanged"
         ></appsco-tutorial-add-company-user>
         <appsco-tutorial-resources
                 id="addResource"
                 page="[[ currentPage ]]"
                 on-tutorial-done="_onTutorialDone"
                 resources-page-loaded="[[ resourcesPageLoaded ]]"
+                on-tutorial-step-changed="_onStepChanged"
         ></appsco-tutorial-resources>
 
         <appsco-tutorial-share-resources
@@ -45,7 +51,15 @@
                 on-tutorial-done="_onTutorialDone"
                 resources-page-loaded="[[ resourcesPageLoaded ]]"
                 resource-share-accounts-loaded="[[ resourceShareAccountsLoaded ]]"
+                on-tutorial-step-changed="_onStepChanged"
         ></appsco-tutorial-share-resources>
+        <appsco-tutorial-company-domain
+                id="companyDomain"
+                page="[[ currentPage ]]"
+                on-tutorial-done="_onTutorialDone",
+                company-domains-loaded="[[ companyDomainsLoaded ]]"
+                on-tutorial-step-changed="_onStepChanged"
+        ></appsco-tutorial-company-domain>
     </template>
     <script>
         Polymer({
@@ -91,7 +105,8 @@
                         'brandedLogin',
                         'addCompanyUser',
                         'addResource',
-                        'shareResource'
+                        'shareResource',
+                        'companyDomain'
                     ]; }
                 },
 
@@ -115,7 +130,23 @@
                     notify: true
                 },
 
+                companyDomainsLoaded: {
+                    type: Boolean,
+                    notify: true
+                },
+
                 resourceShareAccountsLoaded: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                },
+
+                currentSteps: {
+                    type: Object,
+                    value: function() { return {}; }
+                },
+
+                isTutorialActive: {
                     type: Boolean,
                     value: false,
                     notify: true
@@ -212,7 +243,31 @@
                         tutorial.start();
                     }
                 }.bind(this));
+            },
+
+            notifyDomainAdded: function(domain) {
+                this.$.companyDomain.domainAdded(domain);
+            },
+
+            _computeIsTutorialActive: function() {
+                for(var idx in this.currentSteps) {
+                    if (this.currentSteps.hasOwnProperty(idx) && this.currentSteps[idx] > 0) {
+                        this.isTutorialActive = true;
+                        return;
+                    }
+                }
+
+                this.isTutorialActive = false;
+            },
+
+            _onStepChanged: function(event) {
+                if (!this.currentSteps) {
+                    this.currentSteps = {};
+                }
+                this.currentSteps[event.detail.id] = event.detail.step;
+                this._computeIsTutorialActive();
             }
+
         });
     </script>
 </dom-module>
