@@ -118,6 +118,10 @@
         },
 
         _stepChanged: function(newValue, oldValue) {
+            this.fire('tutorial-step-changed', {
+                id: this.id,
+                step: newValue
+            });
             this._buildPopperStep(function(){
                 if(this.popperStep && this.popperStep[newValue]) {
                     this.currentStep = this.popperStep[newValue];
@@ -201,6 +205,7 @@
             if(this.step === this.maxSteps) {
                 this.status = 'DONE';
             }
+            this.step = 0;
         },
 
         getId: function() {

@@ -39,8 +39,8 @@
                 padding: 10px 10px;
             }
         </style>
-        <template is="dom-if" if="{{ show }}">
-            <div class="progress-container" on-mouseover="_showProgressContent" on-mouseout="_hideProgressContent">
+        <template is="dom-if" if="{{ isTutorialActive }}">
+            <div class="progress-container" on-mouseover="_showProgressContent" on-mouseout="_hideProgressContent" hidden="[[ isTutorialActive ]]">
                 <div>
                     <div class="head">{{ progress }}%</div>
                     <div class="head">AppsCo setup progress</div>
@@ -95,6 +95,13 @@
                 _tutorialsList: {
                     type: Array,
                     computed: "_computeTutorialsList(tutorials)"
+                },
+
+                isTutorialActive: {
+                    type: Boolean,
+                    value: false,
+                    notify: true,
+                    observer: '_isActiveChanged'
                 }
 
             },
@@ -124,21 +131,18 @@
                 return list;
             },
 
-            showProgress: function() {
-                this._show = true;
-            },
-
-            hideProgress: function() {
-                this._show = false;
-            },
-
             _showProgressContent: function() {
                 this._hiddenContent = false;
             },
 
             _hideProgressContent: function() {
                 this._hiddenContent = true;
+            },
+
+            _isActiveChanged: function(newValue, oldValue) {
+                this._show = newValue;
             }
+
         });
     </script>
 </dom-module>

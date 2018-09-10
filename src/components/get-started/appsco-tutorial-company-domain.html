@@ -1,0 +1,378 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="appsco-tutorial-behaviour.html">
+<link rel="import" href="../components/appsco-cover-behaviour.html">
+
+<script src="../../../bower_components/popper.js/dist/umd/popper.js"></script>
+<script src="../../../bower_components/popper.js/dist/umd/popper-utils.js"></script>
+
+<dom-module id="appsco-tutorial-company-domain">
+    <template>
+        <style>
+            :host {
+            }
+            :host .step{
+                z-index: 9000;
+                background-color: var(--header-background-color);
+                color: var(--header-text-color);
+                border: 1px solid rgba(0,0,0,0.3);
+
+                padding: 10px;
+                @apply(--shadow-elevation-8dp);
+                margin-left:10px;
+            }
+            .flex-horizontal {
+                @apply(--layout-horizontal);
+            }
+            .empty {
+                @apply(--layout-flex);
+            }
+        </style>
+        <div id="step-1" class="step" hidden>
+            <p>To get started - open the company menu.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-2" class="step" hidden>
+            <p>You can add a company domain in Settings.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-3" class="step" hidden>
+            <p>Go to Domains to add and verify a company domain.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-4" class="step" hidden style="position: absolute">
+            <p>Add your company's domain.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-5" class="step" hidden>
+            <p>Enter your domain and click Add when you're done</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-6" class="step" hidden>
+            <p>Once the domain is added, you will have to verify your <br />
+                ownership over this domain. This process have several <br />
+                steps and you might need help to complete them. Click <br />
+                Get token to continue.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-7" class="step" hidden>
+            <p>You will have to copy and paste the verification <br />
+                token to your DNS records as a TXT record. Only <br />
+                when this step is completed, can you verify the <br />
+                domain. You can read more about the domain <br />
+                verification in the linked articles. Click <br />
+                here to continue with the tutorial.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-8" class="step" hidden>
+            <p> If you have completed the previous step, <br />
+                click Verify to verify your domain. It might <br />
+                take up to 24 hours until the DNS is refreshed <br />
+                and the domain is verified.
+            </p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-9" class="step" hidden>
+            <p>You have now learned how to verify your <br />
+                company's domain. To continue with Getting <br />
+                started tutorial, open the company menu.
+            </p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Done</paper-button>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-tutorial-company-domain',
+
+            property: {
+                page: {
+                    type: String
+                },
+
+                companyDomainsLoaded: {
+                    type: Boolean,
+                    notify: true
+                }
+            },
+
+            behaviors: [
+                Polymer.AppscoTutorialBehaviour,
+                Polymer.AppscoCoverBehaviour
+            ],
+
+            pageChanged: function() {
+                if(this.page !== 'company' && this.step === 2) {
+                    this.reset();
+                }
+            },
+
+            attached: function() {
+                this.tutorialId = 'company_domain';
+                this.tutorialTitle = 'Company domain';
+                this.description = 'Verify your company\'s domain';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109091-How-to-add-a-company-domain-';
+
+                this.init();
+            },
+
+            getPopperConfig: function() {
+                return {
+                    step1: {
+                        reference: '* /deep/ #menuBurger',
+                        coverTarget: '* /deep/ #menuBurger',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    },
+                    step2: {
+                        reference: '* /deep/ #menuCompanySettingsText',
+                        coverTarget: '* /deep/ #menuContainer',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    },
+                    step3: {
+                        reference: '* /deep/ #companySettingsDomainsCardButton',
+                        coverTarget: '* /deep/ #companySettingsDomainsCard',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    },
+                    step4: {
+                        reference: '* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain',
+                        coverTarget: '* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain',
+                        popperOptions: {
+                            placement: 'left'
+                        }
+                    },
+                    step5: {
+                        reference: '* /deep/ #companyDomainDialogAddButton',
+                        coverTarget: '* /deep/ #addCompanyDomainDialog',
+                        popperOptions: {
+                            placement: 'bottom'
+                        },
+                        popperListenerBuilder: function(tutorial) {
+                            var cancelButton =  document.querySelector('* /deep/ #companyDomainDialogCancelButton'),
+                                addButton = document.querySelector('* /deep/ #companyDomainDialogAddButton'),
+                                cancelListener = function() {
+                                    cancelButton.removeEventListener('click', cancelListener);
+
+                                    document
+                                        .querySelector('* /deep/ #addCompanyDomainDialog')
+                                        .removeAttribute('no-cancel-on-outside-click');
+                                    document
+                                        .querySelector('* /deep/ #addCompanyDomainDialog')
+                                        .removeAttribute('no-cancel-on-esc-key');
+
+                                    tutorial.reset();
+                                },
+                                addListener = function() {};
+
+                            cancelButton.addEventListener('click', cancelListener);
+                            addButton.addEventListener('click', addListener);
+
+                            tutorial.registerAddedListener(cancelButton, 'click', cancelListener);
+                            tutorial.registerAddedListener(addButton, 'click', addListener);
+                        }
+                    },
+                    step6: {
+                        reference: '* /deep/ #appscoCompanyDomains /deep/ appsco-company-domain-item /deep/ paper-button.appsco-company-domain-item-get-token',
+                        coverTarget: '* /deep/ #appscoCompanyDomains /deep/ appsco-company-domain-item /deep/ paper-button.appsco-company-domain-item-get-token',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    },
+                    step7: {
+                        reference: '* /deep/ #companyTokenCopyButton',
+                        coverTarget: '* /deep/ #companyTokenCopyButton',
+                        popperOptions: {
+                            placement: 'right-start'
+                        },
+                        popperListenerBuilder: function(tutorial) {
+                            var copyButton =  document.querySelector('* /deep/ #companyTokenCopyButton'),
+                                closeButton = document.querySelector('* /deep/ #companyTokenCloseButton'),
+                                closeListener = function() {
+                                    document
+                                        .querySelector('* /deep/ #companyTokenCloseButton')
+                                        .removeEventListener('click', closeListener);
+                                    tutorial.reset();
+                                },
+                                copyListener = function() {
+                                    closeButton.removeEventListener('click', closeListener);
+                                    closeButton.click();
+                                    tutorial.nextStep();
+                                };
+
+                            closeButton.addEventListener('click', closeListener);
+                            copyButton.addEventListener('click', copyListener);
+
+                            tutorial.registerAddedListener(closeButton, 'click', closeListener);
+                            tutorial.registerAddedListener(copyButton, 'click', copyListener);
+                        }
+                    },
+                    step8: {
+                        reference: '* /deep/ #appscoCompanyDomains /deep/ appsco-company-domain-item /deep/ paper-button.appsco-company-domain-item-verify-token',
+                        coverTarget: '* /deep/ #appscoCompanyDomains /deep/ appsco-company-domain-item /deep/ paper-button.appsco-company-domain-item-verify-token',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    },
+                    step9: {
+                        reference: '* /deep/ #menuBurger',
+                        coverTarget: '* /deep/ #menuBurger',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    }
+                };
+            },
+
+            step3: function(index, item, doneBuildingPopperHandler) {
+                var handleFunction = function() {
+                    var element = document.querySelector('* /deep/ #appscoCompanyComponentsPage');
+                    if (this.page !== 'company') {
+                        return;
+                    }
+                    if (!element || this.page !== 'company' || !this.companyDomainsLoaded) {
+                        setTimeout(handleFunction, 200);
+                        return;
+                    }
+                    element.scrollTop = 0;
+                    this.handleStep(index, item, doneBuildingPopperHandler);
+                }.bind(this);
+                setTimeout(handleFunction, 300);
+            },
+
+            step4: function(index, item, doneBuildingPopperHandler) {
+                var handleFunction = function() {
+                    var element = document.querySelector('* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain');
+                    if (this.page !== 'company') {
+                        return;
+                    }
+                    if (!element || this.page !== 'company' || element.display === 'none') {
+                        setTimeout(handleFunction, 200);
+                        return;
+                    }
+                    this.handleStep(index, item, doneBuildingPopperHandler);
+                }.bind(this);
+                setTimeout(handleFunction, 50);
+            },
+
+            step5: function(index, item, doneBuildingPopperHandler) {
+                setTimeout(function() {
+                    var dialog = document.querySelector('* /deep/ #addCompanyDomainDialog'),
+                        initialHeight = dialog.clientHeight,
+                        sizer = function() {
+                            var dialog = document.querySelector('* /deep/ #addCompanyDomainDialog');
+                            if (!dialog || this.page !== 'company' || this.step !== 5 || dialog.style.display === 'none') {
+                                return;
+                            }
+
+                            if (dialog.clientHeight !== initialHeight) {
+                                this.popperStep[index + 1].cover.destroy();
+                                this.popperStep[index + 1].cover = this.buildCover(dialog);
+                                this.popperStep[index + 1].cover.show();
+                                initialHeight = dialog.clientHeight;
+                            }
+
+                            setTimeout(sizer, 100);
+                        }.bind(this);
+                    dialog.setAttribute('no-cancel-on-outside-click', true);
+                    dialog.setAttribute('no-cancel-on-esc-key', true);
+                    this.handleStep(index, item, doneBuildingPopperHandler);
+                    sizer();
+                }.bind(this), 500);
+            },
+
+            step7: function(index, item, doneBuildingPopperHandler) {
+                setTimeout(function() {
+                    this.handleStep(index, item, doneBuildingPopperHandler);
+                }.bind(this), 800);
+            },
+
+            start: function() {
+                this.step = 0;
+                this.nextStep();
+            },
+
+            _nextStep: function() {
+                this.currentStep.reference.click();
+            },
+
+            domainAdded: function(domain) {
+                document
+                    .querySelector('* /deep/ #addCompanyDomainDialog')
+                    .removeAttribute('no-cancel-on-outside-click');
+
+                document
+                    .querySelector('* /deep/ #addCompanyDomainDialog')
+                    .removeAttribute('no-cancel-on-esc-key');
+
+                if (this.step !== 5) {
+                    return;
+                }
+
+                setTimeout(function() {
+                    this.nextStep();
+                }.bind(this), 800);
+            }
+
+        });
+    </script>
+</dom-module>
