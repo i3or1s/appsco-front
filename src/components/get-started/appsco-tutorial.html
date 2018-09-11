@@ -9,6 +9,7 @@
 <link rel="import" href="appsco-tutorial-resources.html">
 <link rel="import" href="appsco-tutorial-company-domain.html">
 <link rel="import" href="appsco-tutorial-share-resources.html">
+<link rel="import" href="appsco-tutorial-identity-provider.html">
 
 <dom-module id="appsco-tutorial">
     <template>
@@ -56,10 +57,17 @@
         <appsco-tutorial-company-domain
                 id="companyDomain"
                 page="[[ currentPage ]]"
-                on-tutorial-done="_onTutorialDone",
+                on-tutorial-done="_onTutorialDone"
                 company-domains-loaded="[[ companyDomainsLoaded ]]"
                 on-tutorial-step-changed="_onStepChanged"
         ></appsco-tutorial-company-domain>
+        <appsco-tutorial-identity-provider
+                id="identityProvider"
+                page="[[ currentPage ]]"
+                on-tutorial-done="_onTutorialDone"
+                on-tutorial-step-changed="_onStepChanged"
+                company-domains-loaded="[[ companyDomainsLoaded ]]"
+        ></appsco-tutorial-identity-provider>
     </template>
     <script>
         Polymer({
@@ -106,7 +114,8 @@
                         'addCompanyUser',
                         'addResource',
                         'shareResource',
-                        'companyDomain'
+                        'companyDomain',
+                        'identityProvider'
                     ]; }
                 },
 

@@ -149,7 +149,7 @@
                 </div>
             </paper-card>
 
-            <paper-card heading="IdP Settings">
+            <paper-card heading="IdP Settings" id="companySettingsManageIdpCard">
                 <div class="card-content">
                     <p class="message">
                         Configure Identity Provider for your verified domains.
@@ -161,7 +161,10 @@
                 </div>
 
                 <div class="card-actions">
-                    <paper-button on-tap="_onManageCompanyIdPSettings">Manage</paper-button>
+                    <paper-button id="companySettingsManageIdpCardBtn"
+                                  on-tap="_onManageCompanyIdPSettings">
+                        Manage
+                    </paper-button>
                 </div>
             </paper-card>
         </div>

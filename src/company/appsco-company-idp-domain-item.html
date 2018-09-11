@@ -149,7 +149,7 @@ Custom property | Description | Default
                 </div>
 
                 <div class="actions">
-                    <paper-button on-tap="_onManageAction">Manage</paper-button>
+                    <paper-button class="manage-domain-action" on-tap="_onManageAction">Manage</paper-button>
 
                     <template is="dom-if" if="[[ _domainHasIdpConfigured ]]">
                         <paper-button on-tap="_onDeactivateAction">Deactivate</paper-button>
