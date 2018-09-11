@@ -1,0 +1,280 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="appsco-tutorial-behaviour.html">
+<link rel="import" href="../components/appsco-cover-behaviour.html">
+
+<script src="../../../bower_components/popper.js/dist/umd/popper.js"></script>
+<script src="../../../bower_components/popper.js/dist/umd/popper-utils.js"></script>
+
+<dom-module id="appsco-tutorial-identity-provider">
+    <template>
+        <style>
+            :host {
+            }
+            :host .fail-step,
+            :host .step{
+                z-index: 9000;
+                background-color: var(--header-background-color);
+                color: var(--header-text-color);
+                border: 1px solid rgba(0,0,0,0.3);
+
+                padding: 10px;
+                @apply(--shadow-elevation-8dp);
+                margin-left:10px;
+            }
+            .flex-horizontal {
+                @apply(--layout-horizontal);
+            }
+            .empty {
+                @apply(--layout-flex);
+            }
+            :host #step-6 a {
+                text-decoration: none;
+                color: inherit;
+            }
+        </style>
+
+        <div id="popper-fail-identity-provider-tutorial" class="fail-step" hidden>
+            <p>No verified domains exist in the company.
+                <br /> Please verify at least one and restart this tutorial.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button>Close</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-1" class="step" hidden>
+            <p>Setting up an Identity provider is an advanced feature. <br />
+                You might need help to complete this process. <br />
+                To get started - open the company menu.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-2" class="step" hidden>
+            <p>You can set up an external Identity provider in Company Settings. </p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-3" class="step" hidden>
+            <p>Go to IdP Settings to configure an identity provider.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-4" class="step" hidden style="position: absolute">
+            <p>Click Manage on the domain you registered. <br />
+                The setup must be done on both AppsCo and <br />
+                the Identity provider side.</p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-5" class="step" hidden style="position: absolute">
+            <p>When you have completed the setup, hit save. </p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button on-tap="_nextStep">Next</paper-button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-6" class="step" hidden>
+            <p>
+                You have now learned how to set up an external identity provider. <br />
+                We recommend you read our knowledgebase articles in order <br />
+                to set up this option properly and fully understand the <br />
+                benefits of this feature. To continue with Getting started <br />
+                tutorial, open the company menu.
+            </p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button><a target="_blank" href="[[ readme ]]">Read more</a></paper-button>
+                    <paper-button on-tap="_nextStep">Done</paper-button>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-tutorial-identity-provider',
+
+            property: {
+                page: {
+                    type: String
+                },
+
+                companyDomainsLoaded: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            behaviors: [
+                Polymer.AppscoTutorialBehaviour,
+                Polymer.AppscoCoverBehaviour
+            ],
+
+            pageChanged: function() {
+                if(this.page !== 'company' && this.step === 2) {
+                    this.reset();
+                }
+            },
+
+            attached: function() {
+                this.tutorialId = 'identity_provider';
+                this.tutorialTitle = 'Identity provider';
+                this.description = 'Set up an external identity provider';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
+
+                this.init();
+            },
+
+            getPopperConfig: function() {
+                return {
+                    step1: {
+                        reference: '* /deep/ #menuBurger',
+                        coverTarget: '* /deep/ #menuBurger',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    },
+                    step2: {
+                        reference: '* /deep/ #menuCompanySettingsText',
+                        coverTarget: '* /deep/ #menuContainer',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    },
+                    step3: {
+                        reference: '* /deep/ #companySettingsManageIdpCardBtn',
+                        coverTarget: '* /deep/ #companySettingsManageIdpCard',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    },
+                    step4: {
+                        reference: '* /deep/ * /deep/ paper-button.manage-domain-action',
+                        coverTarget: '* /deep/ * /deep/ paper-button.manage-domain-action',
+                        popperOptions: {
+                            placement: 'left'
+                        }
+                    },
+                    step5: {
+                        reference: '* /deep/ appsco-company-idp-settings /deep/ paper-button.submit-button',
+                        coverTarget: '* /deep/ appsco-company-idp-settings-page',
+                        popperOptions: {
+                            placement: 'left'
+                        }
+                    },
+                    step6: {
+                        reference: '* /deep/ #menuBurger',
+                        coverTarget: '* /deep/ #menuBurger',
+                        popperOptions: {
+                            placement: 'right-start'
+                        }
+                    }
+                };
+            },
+
+            step3: function(index, item, doneBuildingPopperHandler) {
+                var handleFunction = function() {
+                    var element = document.querySelector('* /deep/ #appscoCompanyComponentsPage');
+                    if (this.page !== 'company') {
+
+                        return;
+                    }
+                    if (!element || this.page !== 'company' || !this.companyDomainsLoaded) {
+                        setTimeout(handleFunction, 200);
+                        return;
+                    }
+                    element.scrollTop = 0;
+                    this.handleStep(index, item, doneBuildingPopperHandler);
+                }.bind(this);
+                setTimeout(handleFunction, 300);
+            },
+
+            step4: function(index, item, doneBuildingPopperHandler) {
+                var closeElement = document.querySelector('* /deep/ appsco-company-idp-settings-page /deep/ paper-icon-button.page-close-action');
+                if (closeElement) {
+                    closeElement.click();
+                }
+                var handleFunction = function() {
+                    var element = document.querySelector('* /deep/ * /deep/ paper-button.manage-domain-action');
+                    if (this.page !== 'company') {
+                        return;
+                    }
+
+                    if (this.companyDomainsLoaded && !element) {
+                        var cover = this.buildCover(document.querySelector('* /deep/ div[content] /deep/ appsco-company-idp-domains-page')),
+                            failElement = document.querySelector('* /deep/ #popper-fail-identity-provider-tutorial'),
+                            closeButton = document.querySelector('* /deep/ #popper-fail-identity-provider-tutorial paper-button'),
+                            popper = new Popper(document.querySelector('* /deep/ #popper-fail-identity-provider-tutorial'), failElement, {
+                                placement: 'top-start'
+                            }),
+                            closeListener = function() {
+                                cover.destroy();
+                                popper.destroy();
+                                failElement.hidden = true;
+                                closeButton.removeEventListener('click', closeListener);
+                                this.reset();
+                            }.bind(this);
+                        closeButton.addEventListener('click', closeListener);
+
+                        cover.show();
+                        failElement.hidden = false;
+
+                        return;
+                    }
+
+                    if (!element || this.page !== 'company' || !this.companyDomainsLoaded) {
+                        setTimeout(handleFunction, 200);
+                        return;
+                    }
+                    element.scrollTop = 0;
+                    this.handleStep(index, item, doneBuildingPopperHandler);
+                }.bind(this);
+                setTimeout(handleFunction, 300);
+            },
+
+            step5: function(index, item, doneBuildingPopperHandler) {
+                setTimeout(function() {
+                    this.handleStep(index, item, doneBuildingPopperHandler);
+                }.bind(this), 400);
+            },
+
+            start: function() {
+                this.step = 0;
+                this.nextStep();
+            },
+
+            _nextStep: function() {
+                this.currentStep.reference.click();
+            }
+        });
+    </script>
+</dom-module>
