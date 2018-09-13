@@ -48,6 +48,7 @@
                         size="10"
                         load-more
                         on-loaded="_onDomainsLoaded"
+                        on-empty-load="_onNoDomainsLoaded"
                         on-remove="_onRemoveDomain"></appsco-company-domains>
             </div>
         </paper-card>
@@ -152,6 +153,10 @@
 
             _onDomainsLoaded: function() {
                 this.fire('company-domains-loaded');
+            },
+
+            _onNoDomainsLoaded: function() {
+                this.fire('empty-company-domains-loaded');
             }
         });
     </script>

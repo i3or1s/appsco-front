@@ -58,6 +58,9 @@ Custom property | Description | Default
                 top: -25%;
                 left: -25%;
             }
+            :host paper-icon-button {
+                color: var(--appsco-account-action-color);
+            }
         </style>
 
         <div class="account-actions">
@@ -80,6 +83,12 @@ Custom property | Description | Default
                         on-tap="_onChatAction">
                 </paper-icon-button>
             </template>
+
+            <paper-icon-button
+                    icon="icons:help"
+                    on-tap="_onGetStartedIcon"
+                    class="appsco-get-started-icon"
+            ></paper-icon-button>
 
             <appsco-notification-icon
                 id="newNotificationsIcon"
@@ -190,6 +199,12 @@ Custom property | Description | Default
             _onNewNotificationsAction: function(event) {
                 this._newNotifications = false;
                 this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
+            },
+
+            _onGetStartedIcon: function(event) {
+                this.fire('get-started', {
+                    account: this.account
+                });
             }
 
         });

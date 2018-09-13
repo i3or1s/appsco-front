@@ -50,6 +50,11 @@
             addedListeners: {
                 type: Array,
                 value: function() { return []; }
+            },
+
+            startedInSession: {
+                type: Boolean,
+                value: false
             }
         },
 
@@ -139,7 +144,7 @@
             if(['PENDING', 'IN_PROGRESS', 'DONE'].indexOf(newValue) === -1) {
                 this.status = oldValue;
             }
-            if(this.status === 'DONE') {
+            if(this.status === 'DONE' && this.startedInSession) {
                 if (typeof(this.afterTutorialDone) === 'function') {
                     this.afterTutorialDone();
                 }
@@ -175,6 +180,7 @@
 
         showStep: function(){
             if(this.currentStep) {
+                this.startedInSession = true;
                 this.currentStep.elem.hidden = false;
                 this.currentStep.cover.show();
             }

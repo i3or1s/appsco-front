@@ -1,6 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 
+<link rel="import" href="../components/appsco-cover-behaviour.html">
 
 <link rel="import" href="appsco-tutorial-company-settings.html">
 <link rel="import" href="appsco-tutorial-company-branding.html">
@@ -10,9 +11,23 @@
 <link rel="import" href="appsco-tutorial-company-domain.html">
 <link rel="import" href="appsco-tutorial-share-resources.html">
 <link rel="import" href="appsco-tutorial-identity-provider.html">
+<link rel="import" href="appsco-tutorial-provisioning.html">
 
 <dom-module id="appsco-tutorial">
     <template>
+        <style>
+            :host .done-step {
+                z-index: 9000;
+                background-color: var(--header-background-color);
+                color: var(--header-text-color);
+                border: 1px solid rgba(0,0,0,0.3);
+
+                padding: 10px;
+                @apply(--shadow-elevation-8dp);
+                margin-left:10px;
+            }
+        </style>
+
         <appsco-tutorial-company-settings
                 id="companyProfile"
                 page="[[ currentPage ]]"
@@ -68,6 +83,24 @@
                 on-tutorial-step-changed="_onStepChanged"
                 company-domains-loaded="[[ companyDomainsLoaded ]]"
         ></appsco-tutorial-identity-provider>
+        <appsco-tutorial-provisioning
+                id="companyProvisioning"
+                page="[[ currentPage ]]"
+                on-tutorial-done="_onTutorialDone"
+                on-tutorial-step-changed="_onStepChanged"
+        ></appsco-tutorial-provisioning>
+
+        <div id="done-all-tutorials" class="done-step" hidden>
+            <p>You have completed all getting started steps. <br />
+                You can re-watch them and find the links to all support articles here. </p>
+            <div class="flex-horizontal">
+                <div class="empty"></div>
+                <div>
+                    <paper-button>Close</paper-button>
+                </div>
+            </div>
+        </div>
+
     </template>
     <script>
         Polymer({
@@ -115,7 +148,8 @@
                         'addResource',
                         'shareResource',
                         'companyDomain',
-                        'identityProvider'
+                        'identityProvider',
+                        'companyProvisioning'
                     ]; }
                 },
 
@@ -161,6 +195,10 @@
                     notify: true
                 }
             },
+
+            behaviors: [
+                Polymer.AppscoCoverBehaviour
+            ],
 
             _computeHeaders: function (authorizationToken) {
                 return {
@@ -209,6 +247,42 @@
                 }).then(function(request) {
                     this._applyTutorialStatus(request.response);
                 }.bind(this));
+
+                for (var idx in this.tutorials) {
+                    if (this.tutorials.hasOwnProperty(idx)) {
+                        if (!this.tutorials[idx].isDone()) {
+                            return;
+                        }
+                    }
+                }
+
+                this.showAllTutorialsDoneInfo();
+            },
+
+            showAllTutorialsDoneInfo: function() {
+                var
+                    targetElement = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon'),
+                    cover = this.buildCover(targetElement),
+                    doneElement = document.querySelector('* /deep/ #done-all-tutorials'),
+                    closeButton = document.querySelector('* /deep/ #done-all-tutorials paper-button'),
+                    closeListener = function() {
+                        cover.destroy();
+                        popper.destroy();
+                        doneElement.hidden = true;
+
+                        targetElement.removeEventListener('click', closeListener);
+                        closeButton.removeEventListener('click', closeListener);
+                    },
+                    popper = new Popper(
+                        document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon'),
+                        doneElement, { placement: 'right-start' }
+                    );
+
+                closeButton.addEventListener('click', closeListener);
+                targetElement.addEventListener('click', closeListener);
+
+                cover.show();
+                doneElement.hidden = false;
             },
 
             _applyTutorialStatus: function(tutorialsInfo) {
