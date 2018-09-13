@@ -50,7 +50,9 @@
                 on-account-chat="_onAccountChat"
                 on-account-settings="_onAccountSettingsAction"
                 on-all-notifications="_onAllNotifications"
-                on-account-logout="_onAccountLogout"></appsco-header>
+                on-account-logout="_onAccountLogout"
+                on-get-started="_onGetStarted"
+        ></appsco-header>
 
         <appsco-tutorial
                 id="appscoTutorial"
@@ -125,7 +127,7 @@
                                     <iron-icon icon="icons:supervisor-account"></iron-icon> <span class="menu-text">Groups</span>
                                 </a>
                                 <a name="provisioning" href="#">
-                                    <iron-icon icon="icons:compare-arrows"></iron-icon> <span class="menu-text">Provisioning</span>
+                                    <iron-icon icon="icons:compare-arrows"></iron-icon> <span class="menu-text" id="menuProvisioningText">Provisioning</span>
                                 </a>
 
                                 <div class="section">
@@ -909,7 +911,8 @@
                             on-deactivate-domain-idp-settings="_onDeactivateDomainIdPSettings"
                             on-idp-certificate-add="_onAddIdpCertificate"
                             on-transfer-token-sent="_onTransferTokenSent"
-                            on-company-domains-loaded="_onCompanyDomainsLoaded"
+                            on-company-domains-loaded="_onCompanyDomainsLoadFinished"
+                            on-empty-company-domains-loaded="_onCompanyDomainsLoadFinished"
                     ></appsco-company-page>
 
                     <appsco-manage-oauth-application-page name="manage-oauth-application" page company-page
@@ -2704,6 +2707,10 @@
                 this._showPage('logout');
             },
 
+            _showGetStartedPage: function() {
+                this._showPage('get-started');
+            },
+
             _showContactHomePage: function() {
                 this._showPage('contact-home');
             },
@@ -3193,6 +3200,11 @@
             _onAccountLogout: function() {
                 this._showLogoutPage();
             },
+
+            _onGetStarted: function() {
+                this._showGetStartedPage();
+            },
+
             /**
              * Appsco header actions END
              */
@@ -5648,7 +5660,7 @@
                 this._notify('Transfer token email has been successfully sent.');
             },
 
-            _onCompanyDomainsLoaded: function() {
+            _onCompanyDomainsLoadFinished: function() {
                 this._companyDomainsLoaded = true;
             },
             /**
