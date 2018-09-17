@@ -30,11 +30,14 @@
             :host .item-basic-info .info-value {
                 overflow: visible;
             }
+            :host .item[done] {
+                background-color: #e0e0e0;
+            }
         </style>
 
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
 
-        <div class="item" on-tap="_onItemAction">
+        <div class="item" done$="[[ _isDone ]]" on-tap="_onItemAction">
             <iron-icon icon="[[ tutorial.icon ]]" item-icon></iron-icon>
 
             <div class="item-info item-basic-info">
@@ -47,7 +50,6 @@
                     <paper-button><a target="_blank" href="[[ tutorial.readme ]]">Read more</a></paper-button>
                 </template>
                 <template is="dom-if" if="[[ _isDone ]]">
-                    <paper-button>Done</paper-button>
                     <paper-button on-tap="_onStartAction">Replay</paper-button>
                 </template>
                 <template is="dom-if" if="[[ !_isDone ]]">

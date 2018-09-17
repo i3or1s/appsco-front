@@ -72,6 +72,7 @@
                 tutorials="[[ _tutorials ]]"
                 show="true"
                 is-tutorial-active="[[ isTutorialActive ]]"
+                progress="{{ _progress }}"
         ></appsco-tutorial-progress>
 
         <app-drawer-layout fullbleed force-narrow>
@@ -104,7 +105,9 @@
                         <template is="dom-if" if="[[ _companyUser ]]">
                             <template is="dom-if" if="[[ _tutorialsPageVisible ]]">
                                 <a name="get-started" href="#">
-                                    <iron-icon icon="icons:help"></iron-icon> <span class="menu-text">Get started</span>
+                                    <iron-icon icon="icons:help"></iron-icon>
+                                    <span class="menu-text">Get started - [[ _progress ]]%
+                                    </span>
                                 </a>
                             </template>
                             <a name="company-home" href="#">
@@ -1658,6 +1661,11 @@
 
             properties: {
 
+                _progress: {
+                    type: String,
+                    value: "0"
+                },
+
                 _companyPage: {
                     type: Boolean,
                     computed: '_computeCompany(page)'
@@ -2492,7 +2500,7 @@
                         numFinished++;
                     }
                 }
-                return (numFinished < 5) && _companyAdmin;
+                return (numFinished < 9) && _companyAdmin;
             },
 
             _setProduct: function(company) {
@@ -5543,7 +5551,7 @@
                 this.currentCompany = this.account.companies[this.account.companies.length - 1];
                 this._setProduct(true);
 
-                this.set('routeData.page', 'company');
+                this.set('routeData.page', 'get-started');
                 this._notify('Upgrade to AppsCo business succeeded.');
 
                 setTimeout(function() {

@@ -6,7 +6,7 @@
     <template>
         <style>
             :host .progress-container{
-                display: inline-block;
+                /*display: inline-block;*/
                 background-color: var(--header-background-color);
                 color: var(--header-text-color);
                 position: absolute;
@@ -17,6 +17,7 @@
                 padding: 0;
                 margin: 0;
                 @apply(--shadow-elevation-4dp);
+                display:none;
             }
             :host .progress-container:hover{
                 opacity:1;
@@ -75,7 +76,9 @@
 
                 progress: {
                     type: Number,
-                    value: 0
+                    value: 0,
+                    reflectToAttribute: true,
+                    notify: true
                 },
 
                 tutorials: {
