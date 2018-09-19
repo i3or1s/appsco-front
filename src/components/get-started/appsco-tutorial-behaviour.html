@@ -85,8 +85,8 @@
             var options = popperConfig['step'+(index+1)];
             if(options) {
                 var interval = setInterval(function(){
-                    if(document.querySelector(options.coverTarget) &&
-                        document.querySelector(options.reference)
+                    if(this._querySelector(options.coverTarget) &&
+                        this._querySelector(options.reference)
                     ) {
                         this._createPopper(index+1, item, options);
                         clearInterval(interval);
@@ -101,14 +101,14 @@
         },
 
         _createPopper: function(index, elem, options) {
-            var cover = this.buildCover(document.querySelector(options.coverTarget));
+            var cover = this.buildCover(this._querySelector(options.coverTarget));
             Popper.Defaults.modifiers.computeStyle.gpuAcceleration = false;
             this.popperStep[index] = {
-                popper: new Popper(document.querySelector(options.reference), elem, options.popperOptions),
+                popper: new Popper(this._querySelector(options.reference), elem, options.popperOptions),
                 cover: cover,
                 elem: elem,
                 options: options,
-                reference: document.querySelector(options.reference)
+                reference: this._querySelector(options.reference)
             };
             if (options.popperListenerBuilder && typeof(options.popperListenerBuilder) === 'function') {
                 options.popperListenerBuilder(this);
@@ -117,10 +117,10 @@
             var me = this,
                 listener = function() {
                     me.nextStep();
-                    document.querySelector(options.reference).removeEventListener('click', listener);
+                    me._querySelector(options.reference).removeEventListener('click', listener);
                 };
-            document.querySelector(options.reference).addEventListener('click', listener);
-            this.registerAddedListener(document.querySelector(options.reference), 'click', listener);
+            this._querySelector(options.reference).addEventListener('click', listener);
+            this.registerAddedListener(this._querySelector(options.reference), 'click', listener);
         },
 
         _stepChanged: function(newValue, oldValue) {
@@ -229,6 +229,14 @@
                 listener: listener,
                 eventName: eventName
             });
+        },
+
+        _querySelector: function(selector) {
+            var elem = document.querySelector(selector.replace(/\/deep\//g, ''));
+            if(null === elem) {
+                elem = document.querySelector(selector);
+            }
+            return elem;
         }
     }
 </script>

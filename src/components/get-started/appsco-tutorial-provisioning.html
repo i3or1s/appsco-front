@@ -162,6 +162,14 @@
                 }
             },
 
+            ready: function() {
+                this.tutorialId = 'provisioning';
+                this.tutorialTitle = 'Provisioning';
+                this.description = 'Add integrations with other systems';
+                this.icon = 'icons:icons:compare-arrows';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
+            },
+
             attached: function() {
                 this.tutorialId = 'provisioning';
                 this.tutorialTitle = 'Provisioning';
@@ -217,9 +225,9 @@
                         },
                         popperListenerBuilder: function(tutorial) {
                             var
-                                dialog = document.querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog'),
-                                cancelButton = document.querySelector('* /deep/ appsco-add-integration /deep/ paper-button[dialog-dismiss]'),
-                                addButton = document.querySelector('* /deep/ appsco-add-integration /deep/ paper-button#addAction'),
+                                dialog = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog'),
+                                cancelButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button[dialog-dismiss]'),
+                                addButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button#addAction'),
                                 cancelListener,
                                 addListener;
 
@@ -268,11 +276,11 @@
 
             step5: function(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
-                    document
-                        .querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
+                    this
+                        ._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
                         .setAttribute('no-cancel-on-outside-click', true);
-                    document
-                        .querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
+                    this
+                        ._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
                         .setAttribute('no-cancel-on-esc-key', true);
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 700);

@@ -117,7 +117,10 @@
             },
 
             _onStartAction: function(evt) {
-                var scrollElement = document.querySelector('* /deep/ app-header-layout /deep/ #contentContainer');
+                var scrollElement = document.querySelector('* app-header-layout #contentContainer');
+                if(null === scrollElement) {
+                    scrollElement = document.querySelector('* /deep/ app-header-layout /deep/ #contentContainer');
+                }
                 if (scrollElement) {
                     scrollElement.scrollTop = 0;
                 }

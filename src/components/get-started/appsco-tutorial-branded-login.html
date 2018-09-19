@@ -114,6 +114,14 @@
                 }
             },
 
+            ready: function() {
+                this.tutorialId = 'branded_login';
+                this.tutorialTitle = 'Branded login';
+                this.description = 'Set customized login for your company';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360014981992-Branded-login';
+            },
+
             attached: function() {
                 this.tutorialId = 'branded_login';
                 this.tutorialTitle = 'Branded login';
@@ -166,7 +174,7 @@
 
             step3: function(index, item, doneBuildingPopperHandler) {
                 var handleFunction = function() {
-                    var element = document.querySelector('* /deep/ #appscoCompanyComponentsPage');
+                    var element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
                     if (!element || this.page !== 'company') {
                         setTimeout(handleFunction, 200);
                         return;

@@ -166,6 +166,14 @@
                 }
             },
 
+            ready: function() {
+                this.tutorialId = 'company_domain';
+                this.tutorialTitle = 'Company domain';
+                this.description = 'Verify your company\'s domain';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109091-How-to-add-a-company-domain-';
+            },
+
             attached: function() {
                 this.tutorialId = 'company_domain';
                 this.tutorialTitle = 'Company domain';
@@ -213,16 +221,16 @@
                             placement: 'bottom'
                         },
                         popperListenerBuilder: function(tutorial) {
-                            var cancelButton =  document.querySelector('* /deep/ #companyDomainDialogCancelButton'),
-                                addButton = document.querySelector('* /deep/ #companyDomainDialogAddButton'),
+                            var cancelButton =  tutorial._querySelector('* /deep/ #companyDomainDialogCancelButton'),
+                                addButton = tutorial._querySelector('* /deep/ #companyDomainDialogAddButton'),
                                 cancelListener = function() {
                                     cancelButton.removeEventListener('click', cancelListener);
 
-                                    document
-                                        .querySelector('* /deep/ #addCompanyDomainDialog')
+                                    tutorial
+                                        ._querySelector('* /deep/ #addCompanyDomainDialog')
                                         .removeAttribute('no-cancel-on-outside-click');
-                                    document
-                                        .querySelector('* /deep/ #addCompanyDomainDialog')
+                                    tutorial
+                                        ._querySelector('* /deep/ #addCompanyDomainDialog')
                                         .removeAttribute('no-cancel-on-esc-key');
 
                                     tutorial.reset();
@@ -250,11 +258,11 @@
                             placement: 'right-start'
                         },
                         popperListenerBuilder: function(tutorial) {
-                            var copyButton =  document.querySelector('* /deep/ #companyTokenCopyButton'),
-                                closeButton = document.querySelector('* /deep/ #companyTokenCloseButton'),
+                            var copyButton =  tutorial._querySelector('* /deep/ #companyTokenCopyButton'),
+                                closeButton = tutorial._querySelector('* /deep/ #companyTokenCloseButton'),
                                 closeListener = function() {
-                                    document
-                                        .querySelector('* /deep/ #companyTokenCloseButton')
+                                    tutorial
+                                        ._querySelector('* /deep/ #companyTokenCloseButton')
                                         .removeEventListener('click', closeListener);
                                     tutorial.reset();
                                 },
@@ -290,7 +298,7 @@
 
             step3: function(index, item, doneBuildingPopperHandler) {
                 var handleFunction = function() {
-                    var element = document.querySelector('* /deep/ #appscoCompanyComponentsPage');
+                    var element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
                     if (this.page !== 'company') {
                         return;
                     }
@@ -306,7 +314,7 @@
 
             step4: function(index, item, doneBuildingPopperHandler) {
                 var handleFunction = function() {
-                    var element = document.querySelector('* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain');
+                    var element = this._querySelector('* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain');
                     if (this.page !== 'company') {
                         return;
                     }
@@ -321,10 +329,10 @@
 
             step5: function(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
-                    var dialog = document.querySelector('* /deep/ #addCompanyDomainDialog'),
+                    var dialog = this._querySelector('* /deep/ #addCompanyDomainDialog'),
                         initialHeight = dialog.clientHeight,
                         sizer = function() {
-                            var dialog = document.querySelector('* /deep/ #addCompanyDomainDialog');
+                            var dialog = this._querySelector('* /deep/ #addCompanyDomainDialog');
                             if (!dialog || this.page !== 'company' || this.step !== 5 || dialog.style.display === 'none') {
                                 return;
                             }

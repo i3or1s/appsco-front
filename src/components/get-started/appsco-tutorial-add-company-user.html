@@ -115,6 +115,14 @@
                 }
             },
 
+            ready: function() {
+                this.tutorialId = 'directory';
+                this.tutorialTitle = 'Directory';
+                this.description = 'Add company users to directory';
+                this.icon = 'icons:social:person';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084191-Users-and-licences-';
+            },
+
             attached: function() {
                 this.tutorialId = 'directory';
                 this.tutorialTitle = 'Directory';
@@ -172,7 +180,7 @@
                     if (attempts > 100) {
                         return;
                     }
-                    var element = document.querySelector('* /deep/ #addAccountAction');
+                    var element = this._querySelector('* /deep/ #addAccountAction');
                     if (!element || this.page !== 'directory' || !this.directoryPageLoaded) {
                         setTimeout(handleFunction, 200);
                         return;
