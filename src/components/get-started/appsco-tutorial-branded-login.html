@@ -30,7 +30,7 @@
             }
         </style>
         <div id="step-1" class="step" hidden>
-            <p>To get started - open the company menu.</p>
+            <p>Open the company menu to get started.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -40,7 +40,7 @@
         </div>
 
         <div id="step-2" class="step" hidden>
-            <p>You can find the branded login options in company settings.</p>
+            <p>You can find the branded login options here.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -50,8 +50,8 @@
         </div>
 
         <div id="step-3" class="step" hidden>
-            <p>To customize login form for your company<br />
-                and add your own branding go here.</p>
+            <p>Customize the login form for your company and add your own branding here.<br />
+                </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -61,7 +61,7 @@
         </div>
 
         <div id="step-4" class="step" hidden style="position: absolute">
-            <p>If you are done with the changes, hit save.</p>
+            <p>Click SAVE once you are done.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -71,13 +71,13 @@
         </div>
 
         <div id="step-5" class="step" hidden>
-            <p>Branded login for your company is now set up, <br />
-                to continue with Getting started tutorial, <br />
-                open the company menu.
+            <p>Your company branded login is now set up.<br />
+               Open the company menu to continue with the Get started tutorial.
             </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
+                    <paper-button on-tap="_readMore">Read more</paper-button>
                     <paper-button on-tap="_nextStep">Done</paper-button>
                 </div>
             </div>
@@ -87,6 +87,10 @@
         Polymer({
 
             is: 'appsco-tutorial-branded-login',
+
+            _readMore: function () {
+                window.open(this.readme, '_blank');
+            },
 
             property: {
                 page: {

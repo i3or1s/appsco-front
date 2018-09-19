@@ -36,8 +36,9 @@
         </style>
 
         <div id="popper-fail-identity-provider-tutorial" class="fail-step" hidden>
-            <p>No verified domains exist in the company.
-                <br /> Please verify at least one and restart this tutorial.</p>
+            <p>There are no verified domains in the company. <br >
+                Please verify at least one and restart this tutorial.
+            </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -47,19 +48,21 @@
         </div>
 
         <div id="step-1" class="step" hidden>
-            <p>Setting up an Identity provider is an advanced feature. <br />
-                You might need help to complete this process. <br />
-                To get started - open the company menu.</p>
+            <p>Setting up an Identity provider is an advanced feature. <br>
+                You might need help to complete this process. <br>
+                Open the company menu to get started.
+            </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
+                    <paper-button on-tap="_readMore">Read more</paper-button>
                     <paper-button on-tap="_nextStep">Next</paper-button>
                 </div>
             </div>
         </div>
 
         <div id="step-2" class="step" hidden>
-            <p>You can set up an external Identity provider in Company Settings. </p>
+            <p>You can set up an external Identity provider here.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -69,7 +72,7 @@
         </div>
 
         <div id="step-3" class="step" hidden>
-            <p>Go to IdP Settings to configure an identity provider.</p>
+            <p>Go to IdP Settings to configure an Identity provider.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -79,9 +82,9 @@
         </div>
 
         <div id="step-4" class="step" hidden style="position: absolute">
-            <p>Click Manage on the domain you registered. <br />
-                The setup must be done on both AppsCo and <br />
-                the Identity provider side.</p>
+            <p>Click on Manage of the domain you registered. <br />
+                The setup must be done on both AppsCo and the Identity provider side.
+            </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -91,7 +94,7 @@
         </div>
 
         <div id="step-5" class="step" hidden style="position: absolute">
-            <p>When you have completed the setup, hit save. </p>
+            <p>Click SAVE once you are done.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -102,16 +105,14 @@
 
         <div id="step-6" class="step" hidden>
             <p>
-                You have now learned how to set up an external identity provider. <br />
-                We recommend you read our knowledgebase articles in order <br />
-                to set up this option properly and fully understand the <br />
-                benefits of this feature. To continue with Getting started <br />
-                tutorial, open the company menu.
+                You have seen how to set up an Identity provider. <br />
+                Refer to the linked articles to learn more. <br />
+                Open the company menu to continue with the Get started tutorial.
             </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
-                    <paper-button><a target="_blank" href="[[ readme ]]">Read more</a></paper-button>
+                    <paper-button on-tap="_readMore">Read more</paper-button>
                     <paper-button on-tap="_nextStep">Done</paper-button>
                 </div>
             </div>
@@ -121,6 +122,10 @@
         Polymer({
 
             is: 'appsco-tutorial-identity-provider',
+
+            _readMore: function () {
+                window.open(this.readme, '_blank');
+            },
 
             property: {
                 page: {
@@ -181,7 +186,7 @@
                         reference: '* /deep/ * /deep/ paper-button.manage-domain-action',
                         coverTarget: '* /deep/ * /deep/ paper-button.manage-domain-action',
                         popperOptions: {
-                            placement: 'left'
+                            placement: 'left-start'
                         }
                     },
                     step5: {
@@ -252,13 +257,13 @@
                     }
 
                     if (!element || this.page !== 'company' || !this.companyDomainsLoaded) {
-                        setTimeout(handleFunction, 200);
+                        setTimeout(handleFunction, 500);
                         return;
                     }
                     element.scrollTop = 0;
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this);
-                setTimeout(handleFunction, 300);
+                setTimeout(handleFunction, 500);
             },
 
             step5: function(index, item, doneBuildingPopperHandler) {
