@@ -102,6 +102,7 @@
 
         _createPopper: function(index, elem, options) {
             var cover = this.buildCover(document.querySelector(options.coverTarget));
+            Popper.Defaults.modifiers.computeStyle.gpuAcceleration = false;
             this.popperStep[index] = {
                 popper: new Popper(document.querySelector(options.reference), elem, options.popperOptions),
                 cover: cover,

@@ -30,7 +30,7 @@
             }
         </style>
         <div id="step-1" class="step" hidden>
-            <p>To get started - open the company menu.</p>
+            <p>Open the company menu to get started.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -50,7 +50,7 @@
         </div>
 
         <div id="step-3" class="step" hidden>
-            <p>Adjust your main company information here.</p>
+            <p>Adjust your company information here.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -60,7 +60,7 @@
         </div>
 
         <div id="step-4" class="step" hidden>
-            <p>If everything looks neat to you, hit save.</p>
+            <p>Click SAVE once you are done.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -70,13 +70,13 @@
         </div>
 
         <div id="step-5" class="step" hidden>
-            <p>Your company profile is now set up, <br>
-                to continue with Getting started tutorial, <br>
-                open the company menu.
+            <p>Your company profile is now set up.<br>
+                Open the company menu to continue with the Get started tutorial.
             </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
+                    <paper-button on-tap="_readMore">Read more</paper-button>
                     <paper-button on-tap="_nextStep">Done</paper-button>
                 </div>
             </div>
@@ -86,6 +86,10 @@
         Polymer({
 
             is: 'appsco-tutorial-company-settings',
+
+            _readMore: function () {
+                window.open(this.readme, '_blank');
+            },
 
             property: {
                 page: {

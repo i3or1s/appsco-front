@@ -30,7 +30,7 @@
             }
         </style>
         <div id="step-1" class="step" hidden>
-            <p>To get started - open the company menu.</p>
+            <p>Open the company menu to get started.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -40,7 +40,7 @@
         </div>
 
         <div id="step-2" class="step" hidden>
-            <p>Go to your company's directory.</p>
+            <p>You can find the company directory here.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -50,7 +50,7 @@
         </div>
 
         <div id="step-3" class="step" hidden>
-            <p>To add new users to the directory, click here. </p>
+            <p>Add new users to the directory here.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -60,8 +60,8 @@
         </div>
 
         <div id="step-4" class="step" hidden style="position: absolute">
-            <p>Fill out the information about the user <br />
-                and click Add to add the user to directory.</p>
+            <p>Fill in the user information and  <br />
+                click ADD to add the user to the directory.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -71,13 +71,13 @@
         </div>
 
         <div id="step-5" class="step" hidden>
-            <p>You have now learned how to add a user to <br />
-                company directory. To continue with Getting <br />
-                started tutorial, open the company menu.
+            <p>You have seen how to add users to the company directory. <br />
+                Open the company menu to continue with the Get started tutorial.
             </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
+                    <paper-button on-tap="_readMore">Read more</paper-button>
                     <paper-button on-tap="_nextStep">Done</paper-button>
                 </div>
             </div>
@@ -87,6 +87,10 @@
         Polymer({
 
             is: 'appsco-tutorial-add-company-user',
+
+            _readMore: function () {
+                window.open(this.readme, '_blank');
+            },
 
             property: {
                 page: {

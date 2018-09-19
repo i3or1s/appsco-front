@@ -30,7 +30,7 @@
             }
         </style>
         <div id="step-1" class="step" hidden>
-            <p>To get started - open the company menu.</p>
+            <p>Open the company menu to get started.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -40,7 +40,7 @@
         </div>
 
         <div id="step-2" class="step" hidden>
-            <p>You can find the company applications in Resources.</p>
+            <p>You can find and add the company applications here.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -50,7 +50,7 @@
         </div>
 
         <div id="step-3" class="step" hidden>
-            <p>To add an application click Add.</p>
+            <p>Add an application here.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -60,10 +60,9 @@
         </div>
 
         <div id="step-4" class="step" hidden style="position: absolute">
-            <p>There are several types of resources you can add. <br />
-                You can also read more about it in the linked article <br />
-                on Getting started page. For the purpose of this <br />
-                tutorial  click select Application.</p>
+            <p>There are several types of resources you can add.  <br />
+                Refer to the linked articles on the welcome page to learn more. <br />
+                For the purpose of this tutorial, select an Application.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -73,7 +72,7 @@
         </div>
 
         <div id="step-5" class="step" hidden>
-            <p>Search for Facebook, for example, <br />
+            <p>As an example, search for Facebook  <br />
                 and click on the box once it appears.
             </p>
             <div class="flex-horizontal">
@@ -82,8 +81,7 @@
         </div>
 
         <div id="step-6" class="step" hidden>
-            <p>Write in your username and your password <br />
-                to configure the application and click Add.</p>
+            <p>Fill in username and password to configure the application and click ADD.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -92,11 +90,12 @@
             </div>
         </div>
         <div id="step-7" class="step" hidden>
-            <p>You have now learned how to add an application to your company's resources. <br />
-                To continue with Getting started tutorial, open the company menu. </p>
+            <p>You have seen how to add an application to the company resources. <br />
+                Open the company menu to continue with the Get started tutorial. </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
+                    <paper-button on-tap="_readMore">Read more</paper-button>
                     <paper-button on-tap="_nextStep">Done</paper-button>
                 </div>
             </div>
@@ -106,6 +105,10 @@
         Polymer({
 
             is: 'appsco-tutorial-resources',
+
+            _readMore: function () {
+                window.open(this.readme, '_blank');
+            },
 
             property: {
                 page: {

@@ -43,7 +43,7 @@
         </div>
 
         <div id="step-1" class="step" hidden>
-            <p>To get started - open the company menu.</p>
+            <p>Open the company menu to get started.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -53,7 +53,7 @@
         </div>
 
         <div id="step-2" class="step" hidden>
-            <p>To share company applications go to Resources.</p>
+            <p>You can share company applications here.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -63,7 +63,7 @@
         </div>
 
         <div id="step-3" class="step" hidden>
-            <p>Select a resource you wish to share. </p>
+            <p>Select the resource you wish to share.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -73,7 +73,7 @@
         </div>
 
         <div id="step-4" class="step" hidden style="position: absolute">
-            <p>After selecting the resource, click here to share it.</p>
+            <p>To share the selected resource, click here.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -93,7 +93,7 @@
         </div>
 
         <div id="step-6" class="step" hidden>
-            <p>Share the application to the selected user.</p>
+            <p>To share the resources to the selected user click SHARE.</p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
@@ -102,11 +102,12 @@
             </div>
         </div>
         <div id="step-7" class="step" hidden>
-            <p> You have now learned how to share your company's resources. <br/>
-                To continue with Getting started tutorial, open the company menu. </p>
+            <p> You have seen how to share the company resource to the user. <br/>
+                Open the company menu to continue with the Get started tutorial. </p>
             <div class="flex-horizontal">
                 <div class="empty"></div>
                 <div>
+                    <paper-button on-tap="_readMore">Read more</paper-button>
                     <paper-button on-tap="_nextStep">Done</paper-button>
                 </div>
             </div>
@@ -116,6 +117,10 @@
         Polymer({
 
             is: 'appsco-tutorial-share-resources',
+
+            _readMore: function () {
+                window.open(this.readme, '_blank');
+            },
 
             property: {
                 page: {
