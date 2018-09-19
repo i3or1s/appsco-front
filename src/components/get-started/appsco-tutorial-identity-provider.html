@@ -149,6 +149,14 @@
                 }
             },
 
+            ready: function() {
+                this.tutorialId = 'identity_provider';
+                this.tutorialTitle = 'Identity provider';
+                this.description = 'Set up an external identity provider';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
+            },
+
             attached: function() {
                 this.tutorialId = 'identity_provider';
                 this.tutorialTitle = 'Identity provider';
@@ -208,7 +216,7 @@
 
             step3: function(index, item, doneBuildingPopperHandler) {
                 var handleFunction = function() {
-                    var element = document.querySelector('* /deep/ #appscoCompanyComponentsPage');
+                    var element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
                     if (this.page !== 'company') {
 
                         return;
@@ -224,21 +232,21 @@
             },
 
             step4: function(index, item, doneBuildingPopperHandler) {
-                var closeElement = document.querySelector('* /deep/ appsco-company-idp-settings-page /deep/ paper-icon-button.page-close-action');
+                var closeElement = this._querySelector('* /deep/ appsco-company-idp-settings-page /deep/ paper-icon-button.page-close-action');
                 if (closeElement) {
                     closeElement.click();
                 }
                 var handleFunction = function() {
-                    var element = document.querySelector('* /deep/ * /deep/ paper-button.manage-domain-action');
+                    var element = this._querySelector('* /deep/ * /deep/ paper-button.manage-domain-action');
                     if (this.page !== 'company') {
                         return;
                     }
 
                     if (this.companyDomainsLoaded && !element) {
-                        var cover = this.buildCover(document.querySelector('* /deep/ div[content] /deep/ appsco-company-idp-domains-page')),
-                            failElement = document.querySelector('* /deep/ #popper-fail-identity-provider-tutorial'),
-                            closeButton = document.querySelector('* /deep/ #popper-fail-identity-provider-tutorial paper-button'),
-                            popper = new Popper(document.querySelector('* /deep/ #popper-fail-identity-provider-tutorial'), failElement, {
+                        var cover = this.buildCover(this._querySelector('* /deep/ div[content] /deep/ appsco-company-idp-domains-page')),
+                            failElement = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'),
+                            closeButton = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial paper-button'),
+                            popper = new Popper(this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'), failElement, {
                                 placement: 'top-start'
                             }),
                             closeListener = function() {

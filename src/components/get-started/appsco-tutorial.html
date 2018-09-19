@@ -126,7 +126,8 @@
                 tutorialsApi: {
                     type: String,
                     value: '',
-                    notify: true
+                    notify: true,
+                    reflectToAttribute: true
                 },
 
                 _computedHeaders: {
@@ -157,6 +158,7 @@
                 tutorials: {
                     type: Object,
                     notify: true,
+                    reflectToAttribute: true,
                     value: function () {
                         return {}
                     }
@@ -261,21 +263,35 @@
             },
 
             showAllTutorialsDoneInfo: function() {
-                var
-                    targetElement = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon'),
-                    cover = this.buildCover(targetElement),
-                    doneElement = document.querySelector('* /deep/ #done-all-tutorials'),
-                    closeButton = document.querySelector('* /deep/ #done-all-tutorials paper-button'),
-                    closeListener = function() {
+                var targetElement = document.querySelector('* paper-icon-button.appsco-get-started-icon');
+                if(null === targetElement) {
+                    targetElement = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
+                }
+
+                var cover = this.buildCover(targetElement);
+                var doneElement = document.querySelector('* #done-all-tutorials');
+                if(null === doneElement) {
+                    doneElement = document.querySelector('* /deep/ #done-all-tutorials');
+                }
+                var closeButton = document.querySelector('* #done-all-tutorials paper-button');
+                if(null === closeButton) {
+                    closeButton = document.querySelector('* /deep/ #done-all-tutorials paper-button');
+                }
+
+                var closeListener = function() {
                         cover.destroy();
                         popper.destroy();
                         doneElement.hidden = true;
 
                         targetElement.removeEventListener('click', closeListener);
                         closeButton.removeEventListener('click', closeListener);
-                    },
-                    popper = new Popper(
-                        document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon'),
+                    };
+                var popperGetStartedIcon = document.querySelector('* paper-icon-button.appsco-get-started-icon');
+                if(null === popperGetStartedIcon) {
+                    popperGetStartedIcon = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
+                }
+                var popper = new Popper(
+                        popperGetStartedIcon,
                         doneElement, { placement: 'right-start' }
                     );
 

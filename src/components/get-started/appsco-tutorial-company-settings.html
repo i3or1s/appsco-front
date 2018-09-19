@@ -118,6 +118,14 @@
                 }
             },
 
+            ready: function() {
+                this.tutorialId = 'company_profile';
+                this.tutorialTitle = 'Company settings';
+                this.description = 'Populate your company profile';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/208043465-Company-Settings';
+            },
+
             attached: function() {
                 this.tutorialId = 'company_profile';
                 this.tutorialTitle = 'Company settings';
@@ -169,8 +177,9 @@
             },
 
             step3: function(index, item, doneBuildingPopperHandler) {
+                var me = this;
                 var handleFunction = function() {
-                    var element = document.querySelector('* /deep/ #appscoCompanyComponentsPage');
+                    var element = me._querySelector('* /deep/ #appscoCompanyComponentsPage');
                     if (!element || this.page !== 'company') {
                         setTimeout(handleFunction, 200);
                         return;

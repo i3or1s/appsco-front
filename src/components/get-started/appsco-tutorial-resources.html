@@ -140,6 +140,14 @@
                 }
             },
 
+            ready: function() {
+                this.tutorialId = 'resources';
+                this.tutorialTitle = 'Resources';
+                this.description = 'Add company applications';
+                this.icon = 'icons:list';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000230491-How-to-add-resources-to-company-';
+            },
+
             attached: function() {
                 this.tutorialId = 'resources';
                 this.tutorialTitle = 'Resources';
@@ -189,18 +197,18 @@
                         popperListenerBuilder: function(tutorial) {
                             // attach listener that will stop tutorial if user clicks 'cancel' in add resource dialog
                             var cancelListener = function() {
-                                document.querySelector(
+                                tutorial._querySelector(
                                     '* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog /deep/ .buttons paper-button[dialog-dismiss]'
                                 ).removeEventListener('click', cancelListener);
-                                document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
+                                tutorial._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
                                     'no-cancel-on-outside-click'
                                 );
-                                document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
+                                tutorial._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
                                     'no-cancel-on-esc-key'
                                 );
                                 tutorial.reset();
                             };
-                            document.querySelector(
+                            tutorial._querySelector(
                                 '* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog /deep/ .buttons paper-button[dialog-dismiss]'
                             ).addEventListener('click', cancelListener);
                         }
@@ -214,7 +222,7 @@
                         popperListenerBuilder: function(tutorial) {
                             var confirmListener = function() {
 
-                                document.querySelector(
+                                tutorial._querySelector(
                                     '* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog /deep/ #addApplicationAction'
                                 ).addEventListener('click', confirmListener);
 
@@ -223,7 +231,7 @@
                                 }
 
                                 confirmHandler = function() {
-                                    var dialog = document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog');
+                                    var dialog = tutorial._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog');
 
                                     if (!dialog || dialog.style.display === 'none' || dialog.getAttribute('aria-hidden')) {
                                         if (tutorial.step === 6) {
@@ -231,10 +239,10 @@
                                             return;
                                         }
 
-                                        document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
+                                        tutorial._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
                                             'no-cancel-on-outside-click'
                                         );
-                                        document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
+                                        tutorial._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
                                             'no-cancel-on-esc-key'
                                         );
                                         tutorial.reset();
@@ -247,7 +255,7 @@
                             },
                             confirmHandler = null;
 
-                            document.querySelector(
+                            tutorial._querySelector(
                                 '* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog /deep/ #addApplicationAction'
                             ).addEventListener('click', confirmListener);
                         }
@@ -269,7 +277,7 @@
                         if (attempts > 100) {
                             return;
                         }
-                        var element = document.querySelector('* /deep/ #appscoResourcesPageActions /deep/ #addItemAction');
+                        var element = this._querySelector('* /deep/ #appscoResourcesPageActions /deep/ #addItemAction');
                         if (!element || this.page !== 'resources' || !this.resourcesPageLoaded) {
                             setTimeout(handleFunction, 200);
                             return;
@@ -290,19 +298,19 @@
 
             step5: function(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
-                    var initialHeight = document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').clientHeight;
-                    document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').setAttribute(
+                    var initialHeight = this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').clientHeight;
+                    this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').setAttribute(
                         'no-cancel-on-outside-click', true
                     );
-                    document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').setAttribute(
+                    this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').setAttribute(
                         'no-cancel-on-esc-key', true
                     );
 
                     this.handleStep(index, item, function() {
                         doneBuildingPopperHandler();
                         var checkerFunction = function() {
-                            var dialog = document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog'),
-                                addButton = document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog #addApplicationAction');
+                            var dialog = this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog'),
+                                addButton = this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog #addApplicationAction');
                             if (!dialog || dialog.style.display === 'none') {
                                 return;
                             }
@@ -314,7 +322,7 @@
                                 this.popperStep[index + 1].cover.destroy();
                                 this.popperStep[index + 1].cover = this.buildCover(dialog);
                                 this.popperStep[index + 1].cover.show();
-                                initialHeight = document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').clientHeight;
+                                initialHeight = this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').clientHeight;
                             }
                             setTimeout(checkerFunction, 50);
                         }.bind(this);
@@ -325,11 +333,11 @@
 
             step6: function(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
-                    var initialHeight = document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').clientHeight;
+                    var initialHeight = this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').clientHeight;
                     this.handleStep(index, item, function() {
                         doneBuildingPopperHandler();
                         var checkerFunction = function() {
-                            var dialog = document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog');
+                            var dialog = this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog');
                             if (!dialog || dialog.style.display === 'none' || index !== 5) {
                                 return;
                             }
@@ -337,7 +345,7 @@
                                 this.popperStep[index + 1].cover.destroy();
                                 this.popperStep[index + 1].cover = this.buildCover(dialog);
                                 this.popperStep[index + 1].cover.show();
-                                initialHeight = document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').clientHeight;
+                                initialHeight = this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').clientHeight;
                             }
                             setTimeout(checkerFunction, 50);
                         }.bind(this);
@@ -371,10 +379,10 @@
             },
 
             afterTutorialDone: function() {
-                document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
+                this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
                     'no-cancel-on-outside-click'
                 );
-                document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
+                this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
                     'no-cancel-on-esc-key'
                 );
             }
