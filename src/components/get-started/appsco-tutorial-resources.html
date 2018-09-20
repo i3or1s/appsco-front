@@ -130,10 +130,10 @@
 
             pageChanged: function() {
                 if(this.page !== 'resources' && this.step === 2) {
-                    document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
+                    this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
                         'no-cancel-on-outside-click'
                     );
-                    document.querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
+                    this._querySelector('* /deep/ #appscoCompanyApplicationsAdd /deep/ #addApplicationDialog').removeAttribute(
                         'no-cancel-on-esc-key'
                     );
                     this.reset();

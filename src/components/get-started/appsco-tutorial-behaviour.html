@@ -88,8 +88,8 @@
                     if(this._querySelector(options.coverTarget) &&
                         this._querySelector(options.reference)
                     ) {
-                        this._createPopper(index+1, item, options);
                         clearInterval(interval);
+                        this._createPopper(index+1, item, options);
                         doneBuildingPopperHandler();
                         // Post step fire
                         if(typeof this['postStep'+(index+1)] === "function") {
@@ -100,8 +100,21 @@
             }
         },
 
+        step2: function(index, item, doneBuildingPopperHandler) {
+            this.handleStep(index, item, doneBuildingPopperHandler);
+            setTimeout(function(){
+                // Is firefox
+                if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+                    this.popperStep[index + 1].popper.popper.style.left = "200px";
+                }
+            }.bind(this), 300);
+        },
+
+
         _createPopper: function(index, elem, options) {
-            var cover = this.buildCover(this._querySelector(options.coverTarget));
+            var cover = this.buildCover(this._querySelector(options.coverTarget), function(){
+                this.reset();
+            }.bind(this));
             Popper.Defaults.modifiers.computeStyle.gpuAcceleration = false;
             this.popperStep[index] = {
                 popper: new Popper(this._querySelector(options.reference), elem, options.popperOptions),
@@ -234,7 +247,11 @@
         _querySelector: function(selector) {
             var elem = document.querySelector(selector.replace(/\/deep\//g, ''));
             if(null === elem) {
-                elem = document.querySelector(selector);
+                try {
+                    elem = document.querySelector(selector);
+                } catch(e) {
+                    elem = null;
+                }
             }
             return elem;
         }
