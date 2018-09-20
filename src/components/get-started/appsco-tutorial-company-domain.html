@@ -369,12 +369,12 @@
             },
 
             domainAdded: function(domain) {
-                document
-                    .querySelector('* /deep/ #addCompanyDomainDialog')
+                this
+                    ._querySelector('* /deep/ #addCompanyDomainDialog')
                     .removeAttribute('no-cancel-on-outside-click');
 
-                document
-                    .querySelector('* /deep/ #addCompanyDomainDialog')
+                this
+                    ._querySelector('* /deep/ #addCompanyDomainDialog')
                     .removeAttribute('no-cancel-on-esc-key');
 
                 if (this.step !== 5) {
