@@ -2386,7 +2386,16 @@
             _onCurrentCompanyChanged: function(company, oldCompany) {
 
                 if (company && company.company) {
-                    this._setResourceAdmin(company);
+                    this._setResourceAdmin(company, function() {
+                        if (
+                            this.account && this.account.profile_options
+                            && (this.account.profile_options.default_company_page === 'resources')
+                            && (this._companyAdmin || this._resourceAdmin)
+                            && (this.page === 'company-home')
+                        ) {
+                            this.page = 'resources';
+                        }
+                    }.bind(this));
                     this._personalFolderPage = false;
 
                     for (key in company.company) {
@@ -2459,7 +2468,7 @@
                 return company.company_admin;
             },
 
-            _setResourceAdmin: function(currentCompany) {
+            _setResourceAdmin: function(currentCompany, resourceAdminCallback) {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this.api.getUserPrivilegesApi,
@@ -2477,6 +2486,7 @@
                     this._resourceAdmin = ((200 == request.status) ?
                         (request.response.scopes['COMPANY_APPLICATION_LIST'] && !this._companyAdmin) :
                         false);
+                    resourceAdminCallback();
                 }.bind(this));
             },
 
