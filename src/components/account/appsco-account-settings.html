@@ -228,6 +228,24 @@ Custom property | Description | Default
                 </p>
             </div>
 
+            <div class="input-container">
+                <paper-dropdown-menu id="dropdownDefaultPage"
+                                     name="profile[default_page]"
+                                     label="Default company page"
+                                     horizontal-align="left">
+                    <paper-listbox id="paperListboxPages"
+                                   class="dropdown-content filter"
+                                   attr-for-selected="value">
+                        <template is="dom-repeat" items="[[ _pagesList ]]">
+                            <paper-item value="[[ item.value ]]">[[ item.title ]]</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+                <p class="info">
+                    The page you choose will be set as the default page upon login.
+                </p>
+            </div>
+
 
             <div class="input-container input-container-profile-public">
                 <paper-toggle-button id="publicAccountSwitch"
@@ -322,6 +340,16 @@ Custom property | Description | Default
                 _companiesList: {
                     type: Array,
                     computed: '_computeCompaniesList(account)'
+                },
+
+                _pagesList: {
+                    type: Array,
+                    value: function() {
+                        return [
+                            { title: 'Dashboard', value: 'dashboard' },
+                            { title: 'Resources', value: 'resources' }
+                        ]
+                    }
                 },
 
                 /**
@@ -463,6 +491,11 @@ Custom property | Description | Default
                     this.$.paperListboxCountry.select(account.country);
                     this.$.paperListboxGender.select(account.gender);
                     this.$.paperListboxCompanies.select(account.default_company ? account.default_company.alias : '');
+                    this.$.paperListboxPages.select(
+                        (account.profile_options && account.profile_options.default_company_page)
+                            ? account.profile_options.default_company_page
+                            : ''
+                    );
                 }
             },
 
@@ -556,6 +589,7 @@ Custom property | Description | Default
                 this.$.accountSettingsForm.request.body['profile[country]'] = this.$.dropdownCountry.selectedItem ? this.$.dropdownCountry.selectedItem.value : '';
                 this.$.accountSettingsForm.request.body['profile[gender]'] = this.$.dropdownGender.selectedItem ? this.$.dropdownGender.selectedItem.value : '';
                 this.$.accountSettingsForm.request.body['profile[default_company]'] = this.$.dropdownCompanies.selectedItem ? this.$.dropdownCompanies.selectedItem.value : '';
+                this.$.accountSettingsForm.request.body['profile[default_page]'] = this.$.dropdownDefaultPage.selectedItem ? this.$.dropdownDefaultPage.selectedItem.value : '';
 
                 if (this.$.publicAccountSwitch.checked) {
                     this.$.accountSettingsForm.request.body['profile[public]'] = true;
