@@ -603,6 +603,7 @@
                             on-observable-list-empty="_onObservableListEmpty"
                             on-observable-list-filled="_onObservableListFilled"
                             on-page-loaded="_onResourcesPageLoaded"
+                            on-resource-settings="_onEditSharedApplication"
                     ></appsco-resources-page>
 
                     <appsco-manage-resource-page name="manage-resource" page company-page
@@ -3714,6 +3715,9 @@
                 }
                 if (this.$.appscoDashboardFolderPage.$) {
                     this.$.appscoDashboardFolderPage.reloadApplications();
+                }
+                if (this.$.appscoResourcesPage.$) {
+                    this.$.appscoResourcesPage.modifyResources([application]);
                 }
 
                 this._notifyAboutApplicationLogChange(applicationLogApi);

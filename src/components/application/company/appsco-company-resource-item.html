@@ -100,6 +100,7 @@ Custom property | Description | Default
             </template>
 
             <div class="actions">
+                <paper-button on-tap="_onItemSettingsAction">Settings</paper-button>
                 <paper-button on-tap="_onEditItemAction">Edit</paper-button>
             </div>
         </div>
@@ -178,6 +179,15 @@ Custom property | Description | Default
                     default:
                         return 'Application';
                 }
+            },
+
+            _onItemSettingsAction: function(evt) {
+                evt.preventDefault();
+                evt.bubbles = false;
+                evt.cancelBubble = true;
+                this.fire('resource-settings', {
+                    application: this.item
+                });
             }
         });
     </script>
