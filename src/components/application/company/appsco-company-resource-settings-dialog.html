@@ -185,7 +185,9 @@
                 var _self = this;
                 this.$.appscoCompanyResourceSettings.save(function() {
                     _self.toggle();
-                    _self.fire('company-resource-edited');
+                    _self.fire('company-resource-edited', {
+                        resource: this.companyApplication
+                    });
                 });
             },
 
@@ -207,9 +209,13 @@
             },
 
             _loadCompanyApplication: function(application) {
+                var applicationSelf = application && application.application
+                    ? application.application.meta.company_self
+                    : application.self;
+
                 var request = document.createElement('iron-request'),
                         options = {
-                            url: application.application.meta.company_self,
+                            url: applicationSelf,
                             method: 'GET',
                             handleAs: 'json',
                             headers: this._headers
