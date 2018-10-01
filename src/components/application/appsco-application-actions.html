@@ -15,6 +15,7 @@
 <link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
 
 <link rel="import" href="../components/appsco-search.html">
+<link rel="import" href="../../components/page/appsco-page-config-dropdown.html">
 
 <!--
 `appsco-application-actions`
@@ -270,6 +271,20 @@ Custom property | Description | Default
                               on-tap="_onImportAction"></paper-icon-button>
                 <paper-tooltip for="importItemActionIconButton"
                                position="bottom">Import resource</paper-tooltip>
+            </div>
+
+            <div class="action bulk-select-all flex-none">
+                <paper-icon-button id="configAction"
+                                   class="config-icon"
+                                   icon="icons:settings"
+                                   alt="Page Settings"
+                                   on-tap="_onShowPageSettings"></paper-icon-button>
+
+                <appsco-page-config-dropdown
+                        id="resourcePageConfigDropdown"
+                        page="resources"
+                        page-config="[[ pageConfig ]]"
+                ></appsco-page-config-dropdown>
             </div>
         </template>
 
@@ -681,6 +696,10 @@ Custom property | Description | Default
                 if (this.company) {
                     this.hideBulkActions();
                 }
+            },
+
+            _onShowPageSettings: function(event) {
+                this.$$('#resourcePageConfigDropdown').toggle(event.target);
             }
         });
     </script>

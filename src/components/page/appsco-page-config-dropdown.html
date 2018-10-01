@@ -1,0 +1,191 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
+
+<link rel="import" href="../header/appsco-dropdown.html">
+
+<dom-module id="appsco-page-config-dropdown">
+    <template>
+        <style include="iron-flex iron-flex-alignment">
+            :host {
+                display: inline-block;
+                position: relative;
+
+                --paper-card-content: {
+                    @apply(--layout-flex-vertical);
+                    padding: 10px;
+                    font-size: 14px;
+                };
+                --paper-card-actions: {
+                    padding: 6px 0;
+                    border-color: #ffffff;
+                    font-size: 12px;
+                };
+            }
+
+            :host h1 {
+                font-size: 16px;
+            }
+
+            appsco-dropdown {
+                top: 12px;
+                right: -20px;
+
+            }
+            :host paper-card {
+                @apply(--layout-flex-vertical);
+                width: 100%;
+                background-color: white;
+            }
+            :host .dropdown-action {
+                width: 100%;
+                padding: 0;
+                margin: 0;
+                border-radius: 0;
+                background-color: transparent;
+                font-size: 12px;
+                border: none;
+            }
+            .input-container-show-resource-section paper-dropdown-menu {
+                width: 100%;
+            }
+            .input-container-show-resource-section {
+                margin-top: 30px;
+                margin-bottom: 10px;
+            }
+        </style>
+
+        <appsco-dropdown
+                id="pageSettingsDropdown"
+                trigger="[[ _triggerDropdown ]]">
+
+            <paper-card class="layout vertical">
+
+                <div class="card-content">
+                    <h1>Page settings</h1>
+
+
+                        <div class="input-container input-container-show-resource-section">
+                            <paper-toggle-button id="hideResourceSectionToggle"
+                                                 on-tap="saveChanges"
+                                                 checked$="[[ _hideResourceSection ]]">Hide resource section
+                            </paper-toggle-button>
+                            <p class="info">
+                                Resource section will not be displayed by default when this option is turned on.
+                            </p>
+                        </div>
+
+                        <div class="input-container">
+                            <paper-dropdown-menu id="dropDownPageDisplay"
+                                                 label="Resources view"
+                                                 horizontal-align="left"
+                                                 value="[[ _displayKind ]]"
+                            >
+                                <paper-listbox id="paperListboxPageDisplay"
+                                               class="dropdown-content filter"
+                                               attr-for-selected="value"
+                                               selected="[[ _displayKind ]]"
+                                >
+                                    <template is="dom-repeat" items="[[ _displayKindList ]]">
+                                        <paper-item value="[[ item.value ]]" on-tap="saveChanges">[[ item.name ]]</paper-item>
+                                    </template>
+                                </paper-listbox>
+                            </paper-dropdown-menu>
+                            <p class="info">
+                                Choose how the resources card will be displayed on the page.
+                            </p>
+                        </div>
+
+
+                </div>
+            </paper-card>
+        </appsco-dropdown>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-page-config-dropdown',
+
+            properties: {
+
+                page: {
+                    type: String,
+                    value: ''
+                },
+
+                _displayKindList: {
+                    type: Array,
+                    value: function() {
+                        return [
+                            {value: 'list', name: 'List'},
+                            {value: 'grid', name: 'Grid'}
+                        ];
+                    }
+                },
+
+                /**
+                 * DOM element which triggers the dropdown.
+                 */
+                _triggerDropdown: {
+                    type: Object,
+                    notify: true
+                },
+
+                _hideResourceSection: {
+                    type: Boolean,
+                    computed: '_computeHideResourceSection(pageConfig, page)'
+                },
+
+                _displayKind: {
+                    type: Boolean,
+                    computed: '_computeDisplayKind(pageConfig, page)'
+                },
+
+                pageConfig: {
+                    type: Object,
+                    value: function() { return {} }
+                }
+            },
+
+            attached: function() {
+                this._triggerDropdown = this.$$('#dropdownActions');
+            },
+
+            toggle: function(target) {
+                this._triggerDropdown = target;
+                this.$.pageSettingsDropdown.toggle();
+            },
+
+            saveChanges: function(evt) {
+                setTimeout(function() {
+                    var displayKind = this.$.dropDownPageDisplay.selectedItem.value,
+                        hideResourceSection = this.$.hideResourceSectionToggle.checked;
+
+                    this.fire('page-settings-changed', {
+                        page: this.page,
+                        settings: {
+                            display_style: displayKind,
+                            hide_resource_section: hideResourceSection
+                        }
+                    });
+                }.bind(this), 200);
+            },
+
+            _computeHideResourceSection: function(pageConfig, page) {
+                return pageConfig[page] ? !!pageConfig[page].hide_resource_section : false;
+            },
+
+            _computeDisplayKind: function(pageConfig, page) {
+                return pageConfig[page] ? pageConfig[page].display_style : 'list';
+            }
+
+        });
+    </script>
+</dom-module>

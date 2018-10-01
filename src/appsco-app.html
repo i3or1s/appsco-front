@@ -272,6 +272,7 @@
                                         name="resources"
                                         authorization-token="[[ authorizationToken ]]"
                                         filter-api="[[ api.dashboards ]]?extended=1"
+                                        page-config="[[ pageConfig ]]"
                                         on-add-item-action="_onAddCompanyItemAction"
                                         on-import-resources="_onImportResourcesAction"
                                         on-search="_onSearchCompanyApplications"
@@ -279,7 +280,9 @@
                                         on-select-all-resources="_onSelectAllResourcesAction"
                                         on-share="_onShareResources"
                                         on-remove="_onRemoveApplications"
-                                        on-share-to-group="_onShareResourcesToGroup"></appsco-resources-page-actions>
+                                        on-share-to-group="_onShareResourcesToGroup"
+                                        on-page-settings-changed="_pageSettingsChanged"
+                                ></appsco-resources-page-actions>
                             </template>
 
                             <appsco-manage-resource-page-actions
@@ -591,6 +594,7 @@
                             groups-api="[[ _companyGroupsApi ]]"
                             api-errors="[[ _apiErrors ]]"
                             resource-admin="[[ _resourceAdmin ]]"
+                            page-config="[[ pageConfig.resources ]]"
                             on-list-loaded="_onLoadedPage"
                             on-edit-resource="_onEditCompanyResource"
                             on-info-edit-resource="_onInfoEditCompanyResource"
@@ -1617,6 +1621,12 @@
                        headers="[[ _computedHeaders ]]"></iron-ajax>
 
             <iron-ajax auto
+                       id = "getPageConfigRequest"
+                       url="[[ api.pageConfigApi ]]"
+                       on-response="_onGetPageConfig"
+                       headers="[[ _computedHeaders ]]"></iron-ajax>
+
+            <iron-ajax auto
                        id="getCompaniesAccountIsContactIn"
                        url="[[ api.companiesAccountIsContactInApi ]]"
                        on-response="_onGetCompaniesAccountIsContactInApiResponse"
@@ -2272,6 +2282,13 @@
                     notify: true
                 },
 
+                pageConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
                 isTutorialActive: {
                     type: Boolean,
                     notify: true,
@@ -2891,8 +2908,12 @@
                 setTimeout(function() {
                     this._getCurrentCompanyFromAccount();
                 }.bind(this), 400);
+            },
 
-
+            _onGetPageConfig: function(event) {
+                var pageConfig = event.detail.response;
+                this.set('pageConfig', {});
+                this.set('pageConfig', pageConfig);
             },
 
             _getCurrentCompanyFromAccount: function() {
@@ -4573,6 +4594,31 @@
                 this.$.appscoFoldersRemove.setFolderItem(folderItem);
                 this.$.appscoFoldersRemove.setCompany(company);
                 this.$.appscoFoldersRemove.toggle();
+            },
+
+            _pageSettingsChanged: function(event) {
+                var page = event.detail.page,
+                    settings = event.detail.settings,
+                    pageConfigRequest = document.createElement('iron-request');
+
+                this.pageConfig[page] = settings;
+                this.set('pageConfig', JSON.parse(JSON.stringify(this.pageConfig)));
+
+                pageConfigRequest.send({
+                    url: this.api.pageConfigApi,
+                    method: "PUT",
+                    handleAs: 'json',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        "Authorization": "token " + this.authorizationToken
+                    },
+                    body: 'page_config[page]=' + page
+                    + '&page_config[hide_resource_section]=' + (settings['hide_resource_section'] ? 1 : 0)
+                    + '&page_config[display_style]=' + settings['display_style']
+                }).then(function(request) {
+                    this.pageConfig = request.response;
+                    this.set('pageConfig', JSON.parse(JSON.stringify(this.pageConfig)));
+                }.bind(this));
             },
 
             /**

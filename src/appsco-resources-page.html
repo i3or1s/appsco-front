@@ -349,6 +349,12 @@
                     type: Number,
                     value: 0,
                     observer: '_onSelectedFilterChanged'
+                },
+
+                pageConfig: {
+                    type: Object,
+                    value: function() { return {}; },
+                    observer: '_pageConfigChanged'
                 }
             },
 
@@ -459,6 +465,17 @@
 
             hideResource: function() {
                 this.$.appscoContent.hideSection('resource');
+            },
+
+            _pageConfigChanged: function(newValue) {
+                if (!newValue) {
+                    return;
+                }
+                if (newValue.hide_resource_section) {
+                    this.$.appscoContent.hideSection('resource')
+                } else {
+                    this.$.appscoContent.showSection('resource')
+                }
             },
 
             _showBulkActions: function() {
