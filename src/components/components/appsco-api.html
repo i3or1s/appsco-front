@@ -208,6 +208,11 @@ Example:
                 computed: '_computeTutorialsApi(me)'
             },
 
+            pageConfigApi: {
+                type: String,
+                computed: '_computePageConfigApi(me)'
+            },
+
             name: {
                 type: Object,
                 value: function () {
@@ -246,7 +251,8 @@ Example:
                         partners: this.partners,
                         foldersApi: this.foldersApi,
                         getUserPrivilegesApi: this.getUserPrivilegesApi,
-                        tutorialsApi: this.tutorialsApi
+                        tutorialsApi: this.tutorialsApi,
+                        pageConfigApi: this.pageConfigApi
                     }
                 },
                 notify: true
@@ -288,7 +294,8 @@ Example:
                 partners: this.partners,
                 foldersApi: this.foldersApi,
                 getUserPrivilegesApi: this.getUserPrivilegesApi,
-                tutorialsApi: this.tutorialsApi
+                tutorialsApi: this.tutorialsApi,
+                pageConfigApi: this.pageConfigApi
             };
         },
 
@@ -434,6 +441,10 @@ Example:
 
         _computeTutorialsApi: function (me) {
             return me ? (me + '/tutorial') : '';
+        },
+
+        _computePageConfigApi: function(me) {
+            return me ? (me + '/page-config') : '';
         }
     });
 </script>
