@@ -609,6 +609,7 @@
                             on-observable-list-filled="_onObservableListFilled"
                             on-page-loaded="_onResourcesPageLoaded"
                             on-resource-settings="_onEditSharedApplication"
+                            on-load-forbidden="_onResourcesLoadForbidden"
                     ></appsco-resources-page>
 
                     <appsco-manage-resource-page name="manage-resource" page company-page
@@ -2405,11 +2406,7 @@
             _onCurrentCompanyChanged: function(company, oldCompany) {
 
                 if (company && company.company) {
-                    this._setResourceAdmin(company, function() {
-                        if (!this._resourceAdmin && !this._companyAdmin) {
-                            this.page = 'company-home';
-                        }
-                    }.bind(this));
+                    this._setResourceAdmin(company);
                     this._personalFolderPage = false;
 
                     setTimeout(function() {
@@ -3573,6 +3570,12 @@
             _onEditApplicationCredentials: function(event) {
                 this.$.appscoApplicationSettingsDialog.setApplication(event.detail.application);
                 this.$.appscoApplicationSettingsDialog.toggle();
+            },
+
+            _onResourcesLoadForbidden: function(event) {
+                if (this.currentCompany) {
+                    this.page = 'company-home';
+                }
             },
 
             _reloadHomePageApplications: function() {

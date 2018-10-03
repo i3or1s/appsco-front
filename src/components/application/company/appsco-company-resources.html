@@ -57,7 +57,7 @@ Custom property | Description | Default
 
         <iron-ajax id="getListApiRequest"
                    url="[[ _listApi ]]"
-                   on-error="_onGetListError"
+                   on-error="_onError"
                    on-response="_onGetListResponse"
                    headers="[[ _headers ]]"
                    debounce-duration="300"></iron-ajax>
@@ -146,6 +146,13 @@ Custom property | Description | Default
 
             setDisplayStyle: function(displayStyle) {
                 this.displayStyle = displayStyle;
+            },
+
+            _onError: function(response) {
+                if (response.detail.request.status === 403) {
+                    this.fire('load-forbidden');
+                }
+                this._onGetListError(response);
             }
 
         });
