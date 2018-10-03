@@ -49,6 +49,45 @@ Custom property | Description | Default
             :host([tablet-screen]) .item-additional-info {
                 display: none;
             }
+
+            :host([display-grid]) {
+                width: auto;
+                float: left;
+                margin: 5px;
+            }
+
+            :host([display-grid]) div.item {
+                text-align: center;
+                width: 141px;
+                height: 156px;
+                overflow: hidden;
+                @apply(--shadow-elevation-2dp);
+                position: relative;
+                background-color: var(--item-background-color, #fff);
+                color: var(--color, #333);
+                padding: 0 4px;
+                cursor: pointer;
+                display: block;
+            }
+
+            :host([display-grid]) div.item .select-action {
+                display: inline-block;
+                margin-top: 15px;
+            }
+
+            :host([display-grid]) div.item .resource-title {
+                display: block;
+                text-align: center;
+                margin-top: 10px;
+                height: 45px;
+                overflow: hidden;
+            }
+
+            :host([display-grid]) div.actions {
+                @apply(--layout-horizontal);
+                align-items: center;
+                right: -5px;
+            }
         </style>
 
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
@@ -82,22 +121,31 @@ Custom property | Description | Default
                             src="[[ _resourceIcon ]]"></iron-image>
             </template>
 
-            <div class="item-info item-basic-info">
-                <span class="info-label item-title">[[ item.title ]]</span>
-                <span class="info-value">[[ _resourceType ]]</span>
-            </div>
+            <template is="dom-if" if="[[ !displayGrid ]]">
+                <div class="item-info item-basic-info">
+                    <span class="info-label item-title">[[ item.title ]]</span>
+                    <span class="info-value">[[ _resourceType ]]</span>
+                </div>
 
-            <template is="dom-if" if="!resourceAdmin">
-                <div class="item-info item-additional-info">
+                <template is="dom-if" if="[[ !resourceAdmin ]]">
+                    <div class="item-info item-additional-info">
 
-                    <template is="dom-if" if="[[ _groups ]]">
-                        <div class="info">
-                            <span class="info-label">Groups:&nbsp;</span>
-                            <span class="info-value">[[ _groups ]]</span>
-                        </div>
-                    </template>
+                        <template is="dom-if" if="[[ _groups ]]">
+                            <div class="info">
+                                <span class="info-label">Groups:&nbsp;</span>
+                                <span class="info-value">[[ _groups ]]</span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </template>
+
+            <template is="dom-if" if="[[ displayGrid ]]">
+                <div class="resource-title">
+                    [[ item.title ]]
                 </div>
             </template>
+
 
             <div class="actions">
                 <paper-button on-tap="_onItemSettingsAction">Settings</paper-button>
@@ -139,6 +187,13 @@ Custom property | Description | Default
                    type: Boolean,
                    value: false,
                    reflectToAttribute: true
+                },
+
+                displayGrid: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true,
+                    observer: '_displayGridChanged'
                 }
             },
 
