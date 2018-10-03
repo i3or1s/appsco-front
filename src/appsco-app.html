@@ -2405,11 +2405,7 @@
             _onCurrentCompanyChanged: function(company, oldCompany) {
 
                 if (company && company.company) {
-                    this._setResourceAdmin(company, function() {
-                        if (!this._resourceAdmin && !this._companyAdmin) {
-                            this.page = 'company-home';
-                        }
-                    }.bind(this));
+                    this._setResourceAdmin(company);
                     this._personalFolderPage = false;
 
                     setTimeout(function() {
@@ -4727,7 +4723,6 @@
 
             _onCompanyRoleCreated: function(event) {
                 this.$.appscoDirectoryPage.addAccounts([event.detail.role]);
-                this._reloadProvisioningIntegrationAccounts();
                 this._notify('Account ' + event.detail.role.account.email + ' was successfully added.');
             },
 
@@ -4749,7 +4744,6 @@
 
                 if (0 < response.numberOfRoles) {
                     this._reloadCompanyAccounts();
-                    this._reloadProvisioningIntegrationAccounts();
                 }
 
                 if (0 < response.numberOfInvitations) {
@@ -4823,7 +4817,6 @@
                 this.$.appscoDirectoryPage.removeAccounts(event.detail.accounts);
                 this._onHideDirectoryBulkActions();
                 this.set('_selectedAccounts', []);
-                this._reloadProvisioningIntegrationAccounts();
                 this._notify('Selected accounts were successfully removed from company.');
 
                 this._notifyAccountLog();
@@ -5414,7 +5407,6 @@
             _onSubscriptionChanged: function(event) {
                 this._setSubscription(event.detail.subscription);
                 this._reloadSubscription(event.detail.subscription);
-                this._reloadProvisioningIntegrationAccounts();
                 this._evaluateSubscriptionLicences();
                 this._notify('Subscription has been successfully changed.');
             },
