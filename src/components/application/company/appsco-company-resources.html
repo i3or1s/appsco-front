@@ -46,6 +46,13 @@ Custom property | Description | Default
                 margin: 0 0 10px 0;
                 @apply(--appsco-company-resource-item);
             }
+
+            :host([display-grid]) div.list {
+                @apply(--layout-horizontal);
+                @apply(--layout-wrap);
+                @apply(--layout-start);
+            }
+
         </style>
 
         <iron-ajax id="getListApiRequest"
@@ -76,6 +83,7 @@ Custom property | Description | Default
                                                       type="[[ type ]]"
                                                       selectable="[[ selectable ]]"
                                                       resource-admin="[[ resourceAdmin ]]"
+                                                      display-grid$="[[ displayGrid ]]"
                                                       on-item="_onListItemAction"
                                                       on-select-item="_onSelectListItemAction"></appsco-company-resource-item>
 
@@ -103,6 +111,18 @@ Custom property | Description | Default
                 resourceAdmin: {
                     type: Boolean,
                     value: false
+                },
+
+                displayStyle: {
+                    type: String,
+                    value: 'list',
+                    observer: '_displayStyleChanged'
+                },
+
+                displayGrid: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
                 }
             },
 
@@ -118,6 +138,14 @@ Custom property | Description | Default
             _observeItems: function(items) {
                 this.setObservableType('resources');
                 this.populateItems(items);
+            },
+
+            _displayStyleChanged: function(newValue) {
+                this.displayGrid = (newValue === 'grid');
+            },
+
+            setDisplayStyle: function(displayStyle) {
+                this.displayStyle = displayStyle;
             }
 
         });
