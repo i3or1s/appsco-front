@@ -267,27 +267,28 @@
                                                               on-search="_onSearchApplications"
                                                               on-search-clear="_onSearchApplicationsClear"></appsco-contact-home-page-actions>
 
-                            <template is="dom-if" if="[[ !_resourceAdmin ]]">
-                                <appsco-resources-page-actions id="appscoResourcesPageActions"
-                                        name="resources"
-                                        authorization-token="[[ authorizationToken ]]"
-                                        filter-api="[[ api.dashboards ]]?extended=1"
-                                        page-config="[[ pageConfig ]]"
-                                        on-add-item-action="_onAddCompanyItemAction"
-                                        on-import-resources="_onImportResourcesAction"
-                                        on-search="_onSearchCompanyApplications"
-                                        on-search-clear="_onSearchCompanyApplicationsClear"
-                                        on-select-all-resources="_onSelectAllResourcesAction"
-                                        on-share="_onShareResources"
-                                        on-remove="_onRemoveApplications"
-                                        on-share-to-group="_onShareResourcesToGroup"
-                                        on-page-settings-changed="_pageSettingsChanged"
-                                ></appsco-resources-page-actions>
-                            </template>
+                            <appsco-resources-page-actions id="appscoResourcesPageActions"
+                                    name="resources"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    filter-api="[[ api.dashboards ]]?extended=1"
+                                    page-config="[[ pageConfig ]]"
+                                    resource-admin="[[ _resourceAdmin ]]"
+                                    on-add-item-action="_onAddCompanyItemAction"
+                                    on-import-resources="_onImportResourcesAction"
+                                    on-search="_onSearchCompanyApplications"
+                                    on-search-clear="_onSearchCompanyApplicationsClear"
+                                    on-select-all-resources="_onSelectAllResourcesAction"
+                                    on-share="_onShareResources"
+                                    on-remove="_onRemoveApplications"
+                                    on-share-to-group="_onShareResourcesToGroup"
+                                    on-page-settings-changed="_pageSettingsChanged"
+                            ></appsco-resources-page-actions>
+
 
                             <appsco-manage-resource-page-actions
                                     id="appscoManageApplicationPageActions"
                                     name="manage-resource"
+                                    resource-admin="[[ _resourceAdmin ]]"
                                     on-back="_showCompanyResourcesPage"
                                     on-resource-section="_onResourceActionManageApplicationPage"
                                     on-search-assignees="_onSearchAssignees"

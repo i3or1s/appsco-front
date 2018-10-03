@@ -78,12 +78,13 @@
 
         <div class="global-page-actions">
 
-            <paper-button
-                    id="advancedSettingsAction"
-                    class="advanced-settings-button"
-                    toggles
-                    on-tap="_onAdvancedSettingsAction">Advanced settings</paper-button>
-
+            <template is="dom-if" if="[[ !resourceAdmin ]]">
+                <paper-button
+                        id="advancedSettingsAction"
+                        class="advanced-settings-button"
+                        toggles
+                        on-tap="_onAdvancedSettingsAction">Advanced settings</paper-button>
+            </template>
 
             <paper-icon-button
                     class="back-action"
