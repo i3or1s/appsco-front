@@ -26,22 +26,48 @@
                     border-color: #ffffff;
                     font-size: 12px;
                 };
+                --paper-input-container-label-focus: {
+                    left: 0px;
+                };
+                --paper-dropdown-menu-button: {
+                    background-color: white;
+                };
             }
 
             :host h1 {
+                font-weight: normal;
                 font-size: 16px;
             }
 
-            appsco-dropdown {
+            :host paper-dropdown-menu {
+                --paper-input-container-underline: {
+                    display: none;
+                };
+                --paper-input-container-underline-focus: {
+                    display: none;
+                };
+                --paper-dropdown-menu-ripple: {
+                    display: none;
+                };
+                --paper-input-container-input: {
+                    vertical-align: middle;
+                    cursor: pointer;
+                    @apply(--application-actions-paper-dropdown-menu-input);
+                };
+            }
+
+            :host appsco-dropdown {
                 top: 12px;
                 right: -20px;
 
             }
+
             :host paper-card {
                 @apply(--layout-flex-vertical);
                 width: 100%;
                 background-color: white;
             }
+
             :host .dropdown-action {
                 width: 100%;
                 padding: 0;
@@ -51,12 +77,18 @@
                 font-size: 12px;
                 border: none;
             }
+
             .input-container-show-resource-section paper-dropdown-menu {
                 width: 100%;
             }
+
             .input-container-show-resource-section {
                 margin-top: 30px;
                 margin-bottom: 10px;
+            }
+
+            :host #dropDownPageDisplay {
+                width: 100%;
             }
         </style>
 
