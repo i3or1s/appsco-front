@@ -75,6 +75,11 @@ Custom property | Description | Default
                 margin-top: 15px;
             }
 
+            :host([display-grid]) div.item iron-image.not-selectable {
+                display: inline-block;
+                margin-top: 15px;
+            }
+
             :host([display-grid]) div.item .resource-title {
                 display: block;
                 text-align: center;
@@ -113,7 +118,7 @@ Custom property | Description | Default
             </template>
 
             <template is="dom-if" if="[[ !_selectable ]]">
-                <iron-image class="item-icon"
+                <iron-image class="item-icon not-selectable"
                             placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII="
                             sizing="cover"
                             preload
@@ -192,8 +197,7 @@ Custom property | Description | Default
                 displayGrid: {
                     type: Boolean,
                     value: false,
-                    reflectToAttribute: true,
-                    observer: '_displayGridChanged'
+                    reflectToAttribute: true
                 }
             },
 

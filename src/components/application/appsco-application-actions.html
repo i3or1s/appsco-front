@@ -173,107 +173,120 @@ Custom property | Description | Default
             }
         </style>
 
-        <div class="action action-search flex-none">
-            <appsco-search id="appscoSearch"
-                           label="Search resources"></appsco-search>
-        </div>
+        <template is="dom-if" if="[[ !resourceAdmin ]]">
+            <div class="action action-search flex-none">
+                <appsco-search id="appscoSearch"
+                               label="Search resources"></appsco-search>
+            </div>
+        </template>
 
-        <template is="dom-if" if="[[ !company ]]">
-            <div class="action flex-none">
-                <paper-dropdown-menu on-iron-activate="_onFilterItemsAction"
-                                     horizontal-align="right"
-                                     no-label-float>
-                    <paper-listbox id="filterItemsList"
-                                   class="dropdown-content filter"
-                                   selected="0">
-                        <template is="dom-repeat" items="[[ _filterItems ]]">
-                            <paper-item value$="[[ item.value ]]"
-                                        name$="[[ item.name ]]">[[ item.name ]]</paper-item>
+        <template is="dom-if" if="[[ !resourceAdmin ]]">
+            <template is="dom-if" if="[[ !company ]]">
+                <div class="action flex-none">
+                    <paper-dropdown-menu on-iron-activate="_onFilterItemsAction"
+                                         horizontal-align="right"
+                                         no-label-float>
+                        <paper-listbox id="filterItemsList"
+                                       class="dropdown-content filter"
+                                       selected="0">
+                            <template is="dom-repeat" items="[[ _filterItems ]]">
+                                <paper-item value$="[[ item.value ]]"
+                                            name$="[[ item.name ]]">[[ item.name ]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </div>
+            </template>
+        </template>
+
+        <template is="dom-if" if="[[ !resourceAdmin ]]">
+
+            <template is="dom-if" if="[[ company ]]">
+                <div class="action bulk-action flex-none">
+                    <paper-icon-button id="shareToGroupAction"
+                                       icon="social:group-add"
+                                       alt="Share to group"
+                                       on-tap="_onShareToGroupAction"></paper-icon-button>
+                    <paper-tooltip for="shareToGroupAction"
+                                   position="bottom">Share to group</paper-tooltip>
+                </div>
+
+                <div class="action bulk-action flex-none">
+                    <paper-icon-button id="shareAction"
+                                       icon="social:share"
+                                       alt="Share applications"
+                                       on-tap="_onShareAction"></paper-icon-button>
+                    <paper-tooltip for="shareAction"
+                                   position="bottom">Share</paper-tooltip>
+                </div>
+
+                <div class="action bulk-action flex-none">
+                    <paper-icon-button id="removeAction"
+                                       icon="icons:delete"
+                                       alt="Delete applications"
+                                       on-tap="_onRemoveAction"></paper-icon-button>
+                    <paper-tooltip for="removeAction"
+                                   position="bottom">Remove</paper-tooltip>
+                </div>
+
+                <div class="action bulk-select-all flex-none">
+                    <paper-icon-button id="selectAllAction"
+                                       icon="icons:done-all"
+                                       alt="Select all"
+                                       on-tap="_onSelectAllAction"></paper-icon-button>
+                    <paper-tooltip for="selectAllAction"
+                                   position="bottom">Select all</paper-tooltip>
+                </div>
+            </template>
+        </template>
+
+        <template is="dom-if" if="[[ !resourceAdmin ]]">
+            <template is="dom-if" if="[[ addingResourceAllowed ]]">
+                <div class="action flex-none" id="addItemActionWrapper">
+                    <paper-button id="addItemAction"
+                                  class="add-item-action"
+                                  on-tap="_onAddItemAction">Add</paper-button>
+                    <paper-icon-button id="addItemActionIconButton"
+                                       icon="icons:add-circle"
+                                       class="add-item-icon-button"
+                                       alt="Add item"
+                                       on-tap="_onAddItemAction"></paper-icon-button>
+                    <paper-tooltip for="addItemActionIconButton"
+                                   position="bottom">Add resource</paper-tooltip>
+
+                    <paper-listbox id="resourcesActionList"
+                                   class="item-action-list"
+                                   on-iron-select="_onAddItemActionSelect">
+
+                        <template is="dom-repeat" items="[[ _actionList ]]">
+                            <paper-item value="[[ item.value ]]" tpl="[[ item.tpl ]]">
+                                <iron-icon icon="[[ item.icon ]]" class="item-icon"></iron-icon>
+                                [[ item.name ]]</paper-item>
                         </template>
                     </paper-listbox>
-                </paper-dropdown-menu>
-            </div>
+                </div>
+            </template>
         </template>
 
-        <template is="dom-if" if="[[ company ]]">
-            <div class="action bulk-action flex-none">
-                <paper-icon-button id="shareToGroupAction"
-                                   icon="social:group-add"
-                                   alt="Share to group"
-                                   on-tap="_onShareToGroupAction"></paper-icon-button>
-                <paper-tooltip for="shareToGroupAction"
-                               position="bottom">Share to group</paper-tooltip>
-            </div>
-
-            <div class="action bulk-action flex-none">
-                <paper-icon-button id="shareAction"
-                                   icon="social:share"
-                                   alt="Share applications"
-                                   on-tap="_onShareAction"></paper-icon-button>
-                <paper-tooltip for="shareAction"
-                               position="bottom">Share</paper-tooltip>
-            </div>
-
-            <div class="action bulk-action flex-none">
-                <paper-icon-button id="removeAction"
-                                   icon="icons:delete"
-                                   alt="Delete applications"
-                                   on-tap="_onRemoveAction"></paper-icon-button>
-                <paper-tooltip for="removeAction"
-                               position="bottom">Remove</paper-tooltip>
-            </div>
-
-            <div class="action bulk-select-all flex-none">
-                <paper-icon-button id="selectAllAction"
-                                   icon="icons:done-all"
-                                   alt="Select all"
-                                   on-tap="_onSelectAllAction"></paper-icon-button>
-                <paper-tooltip for="selectAllAction"
-                               position="bottom">Select all</paper-tooltip>
-            </div>
-        </template>
-
-        <template is="dom-if" if="[[ addingResourceAllowed ]]">
-            <div class="action flex-none" id="addItemActionWrapper">
-                <paper-button id="addItemAction"
-                              class="add-item-action"
-                              on-tap="_onAddItemAction">Add</paper-button>
-                <paper-icon-button id="addItemActionIconButton"
-                                   icon="icons:add-circle"
-                                   class="add-item-icon-button"
-                                   alt="Add item"
-                                   on-tap="_onAddItemAction"></paper-icon-button>
-                <paper-tooltip for="addItemActionIconButton"
-                               position="bottom">Add resource</paper-tooltip>
-
-                <paper-listbox id="resourcesActionList"
-                               class="item-action-list"
-                               on-iron-select="_onAddItemActionSelect">
-
-                    <template is="dom-repeat" items="[[ _actionList ]]">
-                        <paper-item value="[[ item.value ]]" tpl="[[ item.tpl ]]">
-                            <iron-icon icon="[[ item.icon ]]" class="item-icon"></iron-icon>
-                            [[ item.name ]]</paper-item>
-                    </template>
-                </paper-listbox>
-            </div>
+        <template is="dom-if" if="[[ !resourceAdmin ]]">
+            <template is="dom-if" if="[[ company ]]">
+                <div class="action flex-none">
+                    <paper-button class="import-action"
+                                  icon="editor:publish"
+                                  on-tap="_onImportAction">Import</paper-button>
+                    <paper-icon-button id="importItemActionIconButton"
+                                  icon="editor:publish"
+                                  class="import-item-icon-button"
+                                  alt="Import item"
+                                  on-tap="_onImportAction"></paper-icon-button>
+                    <paper-tooltip for="importItemActionIconButton"
+                                   position="bottom">Import resource</paper-tooltip>
+                </div>
+            </template>
         </template>
 
         <template is="dom-if" if="[[ company ]]">
             <div class="action flex-none">
-                <paper-button class="import-action"
-                              icon="editor:publish"
-                              on-tap="_onImportAction">Import</paper-button>
-                <paper-icon-button id="importItemActionIconButton"
-                              icon="editor:publish"
-                              class="import-item-icon-button"
-                              alt="Import item"
-                              on-tap="_onImportAction"></paper-icon-button>
-                <paper-tooltip for="importItemActionIconButton"
-                               position="bottom">Import resource</paper-tooltip>
-            </div>
-
-            <div class="action bulk-select-all flex-none">
                 <paper-icon-button id="configAction"
                                    class="config-icon"
                                    icon="icons:settings"
@@ -615,7 +628,7 @@ Custom property | Description | Default
              * Sets focus on search input field.
              */
             focusSearch: function() {
-                this.$.appscoSearch.setup();
+                this.$$('#appscoSearch').setup();
             },
 
             _onBulkActionsChanged: function() {
@@ -642,7 +655,7 @@ Custom property | Description | Default
             },
 
             showBulkSelectAll: function() {
-                this._bulkSelectAll = true;
+                this._bulkSelectAll = !this.resourceAdmin;
             },
 
             hideBulkSelectAll: function() {
@@ -688,7 +701,9 @@ Custom property | Description | Default
             },
 
             reset: function() {
-                this.$.appscoSearch.reset();
+                if (this.$$('#appscoSearch')) {
+                    this.$$('#appscoSearch').reset();
+                }
                 if (this.$$('#filterItemsList')) {
                     this.$$('#filterItemsList').selected = 0;
                 }
