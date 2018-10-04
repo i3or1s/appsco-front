@@ -96,7 +96,7 @@
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
-        <appsco-content id="appscoContent" resource-active$="[[ !resourceAdmin ]]">
+        <appsco-content id="appscoContent" resource-active$="[[ _resourceSectionActive ]]">
 
             <template is="dom-if" if="[[ !resourceAdmin ]]">
                 <div class="flex-vertical" resource>
@@ -355,6 +355,11 @@
                     type: Object,
                     value: function() { return {}; },
                     observer: '_pageConfigChanged'
+                },
+
+                _resourceSectionActive: {
+                    type: Boolean,
+                    computed: '_computeResourceSectionActive(pageConfig, resourceAdmin)'
                 }
             },
 
@@ -368,6 +373,11 @@
                 '_updateScreen(mobileScreen, tabletScreen)',
                 '_hideFilters(mobileScreen)'
             ],
+
+            _computeResourceSectionActive: function(pageConfig, resourceAdmin) {
+                return (pageConfig && pageConfig.hasOwnProperty('hide_resource_section') && !pageConfig.hide_resource_section)
+                    || (!pageConfig || !pageConfig.hasOwnProperty('hide_resource_section') && !resourceAdmin);
+            },
 
             attached: function() {
                 this.pageLoaded = false;

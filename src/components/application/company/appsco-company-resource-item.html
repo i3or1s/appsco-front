@@ -50,12 +50,6 @@ Custom property | Description | Default
                 display: none;
             }
 
-            :host([display-grid]) {
-                width: auto;
-                float: left;
-                margin: 5px;
-            }
-
             :host([display-grid]) div.item {
                 text-align: center;
                 width: 141px;
@@ -93,6 +87,18 @@ Custom property | Description | Default
                 align-items: center;
                 right: -5px;
             }
+
+            :host {
+                width: 100%;
+                margin: 0 0 10px 0;
+            }
+
+            :host([display-grid]) {
+                width: auto;
+                float: left;
+                margin: 5px;
+            }
+
         </style>
 
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
