@@ -173,14 +173,14 @@ Custom property | Description | Default
             }
         </style>
 
-        <template is="dom-if" if="[[ !resourceAdmin ]]">
+        <template is="dom-if" if="[[ _showOptions ]]">
             <div class="action action-search flex-none">
                 <appsco-search id="appscoSearch"
                                label="Search resources"></appsco-search>
             </div>
         </template>
 
-        <template is="dom-if" if="[[ !resourceAdmin ]]">
+        <template is="dom-if" if="[[ _showOptions ]]">
             <template is="dom-if" if="[[ !company ]]">
                 <div class="action flex-none">
                     <paper-dropdown-menu on-iron-activate="_onFilterItemsAction"
@@ -199,7 +199,7 @@ Custom property | Description | Default
             </template>
         </template>
 
-        <template is="dom-if" if="[[ !resourceAdmin ]]">
+        <template is="dom-if" if="[[ _showOptions ]]">
 
             <template is="dom-if" if="[[ company ]]">
                 <div class="action bulk-action flex-none">
@@ -240,7 +240,7 @@ Custom property | Description | Default
             </template>
         </template>
 
-        <template is="dom-if" if="[[ !resourceAdmin ]]">
+        <template is="dom-if" if="[[ _showOptions ]]">
             <template is="dom-if" if="[[ addingResourceAllowed ]]">
                 <div class="action flex-none" id="addItemActionWrapper">
                     <paper-button id="addItemAction"
@@ -268,7 +268,7 @@ Custom property | Description | Default
             </template>
         </template>
 
-        <template is="dom-if" if="[[ !resourceAdmin ]]">
+        <template is="dom-if" if="[[ _showOptions ]]">
             <template is="dom-if" if="[[ company ]]">
                 <div class="action flex-none">
                     <paper-button class="import-action"
@@ -357,6 +357,16 @@ Custom property | Description | Default
                     type: Boolean,
                     value: true,
                     observer: '_onBulkSelectAllChanged'
+                },
+
+                _showOptions: {
+                    type: Boolean,
+                    computed: '_computeShowOptions(resourceAdmin, company)'
+                },
+
+                resourceAdmin: {
+                    type: Boolean,
+                    value: false
                 },
 
                 _actionList: {
@@ -494,6 +504,10 @@ Custom property | Description | Default
                 }
 
                 return false;
+            },
+
+            _computeShowOptions: function(resourceAdmin, company) {
+                return !resourceAdmin || !company;
             },
 
             /**
