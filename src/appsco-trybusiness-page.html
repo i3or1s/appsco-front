@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../bower_components/paper-styles/shadow.html">
 
 <link rel="import" href="components/page/appsco-content.html">
 <link rel="import" href="components/components/appsco-loader.html">
@@ -21,6 +22,44 @@
             }
             .text-center {
                 text-align: center;
+            }
+            :host .box {
+                @apply(--shadow-elevation-2dp);
+                background-color: #ffffff;
+                padding: 30px 10px;
+                margin-right: 40px;
+            }
+            :host .box:last-child {
+                margin-right: 0 !important;
+            }
+            :host .box-icon {
+                height: 96px;
+            }
+            :host .box hr {
+                width: 100%;
+                height: 1px;
+                margin: 4px 0;
+                border: none;
+                background-color: var(--divider-color);
+            }
+            :host .box-title {
+                text-align: center;
+            }
+            :host .box-list {
+                width: 100%;
+                padding-left: 40px;
+                margin-top: 20px;
+                margin-bottom: 10px;
+                font-size: 16px;
+                box-sizing: border-box;
+            }
+            :host .box-list .box-list {
+                list-style-type: disc;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+            :host .box-list li {
+                margin-bottom: 4px;
             }
             :host .upgrade-pricing {
                 width: 100%;
@@ -43,97 +82,15 @@
                 width: 50%;
                 font-size: 24px;
                 margin-top: 50px;
+                margin-bottom: 50px;
             }
             :host .upgrade-header .content {
                 font-size: 16px;
-                margin-top: 40px;
+                margin-top: 0;
+                margin-bottom: 0;
             }
             :host .upgrade-content {
-                padding: 0 50px 50px;
-            }
-            :host .section-with-icon .info {
-                flex: 1;
-            }
-            :host .section-with-icon .info .title {
-                margin-top: 20px;
-                text-align: center;
-                padding-top: 30px;
-            }
-            :host .section-audit-statistics  .audit-statistics-info {
-                padding-left: 30px;
-                flex: 1;
-            }
-            :host .section-audit-statistics  .audit-statistics-info .audit-statistics-title {
-                margin-top: 0;
-            }
-            :host .section-icon {
-                width: 76px;
-                height: 76px;
-            }
-            :host .section-applications .info {
-                padding-top: 20px;
-            }
-            :host .section-applications img {
-                padding-top: 50px;
-                padding-bottom: 70px;
-                width: auto;
-                height: auto;
-                margin: 0 auto;
-                display: block;
-            }
-
-            :host .section-directory {
-                color: #ffffff;
-                background: url('../images/features-section-background.png') no-repeat;
-                background-size: cover;
-                padding-bottom: 30px;
-            }
-
-            :host .section-directory-items {
-                display: -webkit-flex;
-                display: flex;
-                -webkit-justify-content: center;
-                justify-content: center;
-                -webkit-align-items: center;
-                align-items: center;
-                flex-wrap: wrap;
-            }
-            :host .section-directory-items .item{
-                flex: 1 calc(33% - 10px);
-                box-sizing: border-box;
-                padding: 10px;
-                margin-left: 10px;
-            }
-            :host .directory-title {
-                text-align: center;
-            }
-            :host .section-directory-items .item img {
-                display: block;
-                margin: 0 auto;
-            }
-            :host .section-directory ul {
-                padding-left: 24px;
-            }
-            :host .section-provisioning .info {
-                padding-right: 50px;
-            }
-            :host .section-provisioning .info p:first-of-type {
-                margin-top: 0;
-            }
-            :host .section-provisioning .title {
-                margin-top: 0;
-            }
-            :host .section-provisioning img {
-                padding-top: 50px;
-                padding-bottom: 50px;
-                margin: 0 auto;
-                display: block;
-            }
-            :host .section-provisioning, :host .section-audit-statistics {
-                margin-top: 50px;
-            }
-            :host .section-audit {
-                padding-right: 40px;
+                padding: 50px 80px;
             }
             :host .pricing-plans {
                 color: #ffffff;
@@ -237,16 +194,13 @@
             :host .upgrade-button {
                 @apply(--primary-button);
                 border-radius: 0;
-                font-size: 14px;
+                font-size: 20px;
                 font-weight: 500;
-                padding: 26px;
+                padding: 14px 10px;
+                background-color: var(--app-secondary-color-1);
             }
             :host .flex-horizontal {
                 @apply(--layout-horizontal);
-            }
-            :host .flex-horizontal-center {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
             }
             :host .flex-vertical {
                 @apply(--layout-vertical);
@@ -259,8 +213,12 @@
                 padding-top: 60px;
                 padding-bottom: 60px;
             }
-            :host([laptop-s1440-screen]) .section-applications .info {
-                padding-top: 20px;
+            :host([tablet-s1280-screen]) .upgrade-content {
+                padding-left: 50px;
+                padding-right: 50px;
+            }
+            :host([tablet-s1280-screen]) .box {
+                margin-right: 25px;
             }
             :host([tablet-s1280-screen]) .upgrade-header {
                 padding: 20px;
@@ -269,64 +227,30 @@
                 width: 100%;
                 margin-top: 20px;
             }
-            :host([tablet-s1280-screen]) .upgrade-header .content {
-                margin-top: 20px;
-            }
             :host([tablet-s1024-screen]) .upgrade-content {
                 padding-left: 20px;
                 padding-right: 20px;
             }
-            :host([tablet-s1024-screen]) .section-applications {
-                @apply(--layout-vertical-reverse);
+            :host([tablet-s1024-screen]) .box {
+                margin-right: 20px;
             }
-            :host([tablet-s1024-screen]) .section-applications .info {
-                padding: 0;
-            }
-            :host([tablet-s1024-screen]) .section-applications .info .title {
-                margin-top: 0;
-            }
-            :host([tablet-s1024-screen]) .section-applications img {
-                padding-top: 40px;
-                padding-bottom: 40px;
-                width: 100%;
-                height: 100%;
-                margin: 0 auto;
-                display: block;
-            }
-            :host([tablet-s1024-screen]) .section-directory {
-                margin-top: 50px;
-            }
-            :host([tablet-s1024-screen]) .section-provisioning .section-content {
+            :host([tablet-s920-screen]) .upgrade-content {
                 @apply(--layout-vertical);
+                @apply(--layout-center);
             }
-            :host([tablet-s1024-screen]) .section-provisioning .info {
-                padding: 0;
-            }
-            :host([tablet-s1024-screen]) .section-provisioning img {
-                padding-top: 50px;
-                padding-bottom: 50px;
-                width: 100%;
-                height: 100%;
-                margin: 0 auto;
-                display: block;
-            }
-            :host([tablet-s1024-screen]) .section-audit-statistics {
-                @apply(--layout-vertical);
-            }
-            :host([tablet-s1024-screen]) .section-audit-statistics > div {
-                @apply(--layout-flex-none);
-            }
-            :host([tablet-s1024-screen]) .section-statistics {
-                margin-top: 20px;
-            }
-            :host([tablet-s768-screen]) .section-with-icon {
-                @apply(--layout-vertical);
-            }
-            :host([tablet-s768-screen]) .section-with-icon .info {
-                padding: 0;
-            }
-            :host([tablet-s768-screen]) .section-icon {
+            :host([tablet-s920-screen]) .box {
+                margin-right: 0;
                 margin-bottom: 20px;
+            }
+            :host([tablet-s920-screen]) .box {
+                @apply(--layout-flex-none);
+                width: 64%;
+                margin-right: 0;
+                margin-bottom: 20px;
+                box-sizing: border-box;
+            }
+            :host([tablet-s768-screen]) .box {
+                width: 100%;
             }
             :host([mobile-screen]) {
                 --info-width: 100%;
@@ -341,6 +265,7 @@
         <iron-media-query query="(max-width: 1440px)" query-matches="{{ laptopS1440Screen }}"></iron-media-query>
         <iron-media-query query="(max-width: 1280px)" query-matches="{{ tabletS1280Screen }}"></iron-media-query>
         <iron-media-query query="(max-width: 1024px)" query-matches="{{ tabletS1024Screen }}"></iron-media-query>
+        <iron-media-query query="(max-width: 920px)" query-matches="{{ tabletS920Screen }}"></iron-media-query>
         <iron-media-query query="(max-width: 768px)" query-matches="{{ tabletS768Screen }}"></iron-media-query>
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
         <iron-media-query query="(max-height: 600px)" query-matches="{{ mobileScreenHeight }}"></iron-media-query>
@@ -353,110 +278,64 @@
                     <img src="../images/appsco-logo-business.png" alt="Appsco Business">
 
                     <h1 class="title text-center">
-                        Connect people and things simply and securely.
+                        Connect and manage users, apps and directories <br> simply and securely
                     </h1>
 
                     <p class="content text-center">
-                        Centralized control and management over user access to published company applications <br />
-                        and meaningful insights over applications usage and sensitive data flow.
+                        Centralized control and management of user access to company resources <br>
+                        with meaningful insights and reports and compliance with company policies
                     </p>
                 </div>
 
-                <div class="upgrade-content">
-                    <div class="section-applications flex-horizontal">
-                        <div class="info">
-                            <p class="content">
-                                By using your AppsCo Business account, you get the complete overview of all your company apps usage,
-                                ability to grant and revoke your employees’ access rights and easily manage applications access of single users and groups.
-                                AppsCo application catalog provides pre-integrated connectors that enables quick SSO setup and provisioning of user accounts
-                                and groups into multiple systems at once.
-                                Join AppsCo Business and improve your everyday work routines and decrease your operational burden.
-                            </p>
-                            <img src="../images/appsco-graph.png" alt="Appsco Graph">
-                        </div>
+                <div class="upgrade-content flex-horizontal">
+                    <div class="box flex-vertical flex">
+                        <img src="../images/try-business/increase-productivity-icon.png" alt="Increase Productivity" class="box-icon">
+                        <h2 class="box-title">Increase Productivity</h2>
+                        <hr>
+                        <ul class="box-list">
+                            <li>SSO to apps</li>
+                            <li>Universal Cloud Directory</li>
+                            <li>Provisioning of users/groups</li>
+                            <li>Easy sharing of apps/resources both internally and externally</li>
+                            <li>User/group access management to apps/resources</li>
+                            <li>Insights</li>
+                        </ul>
                     </div>
-
-                    <div class="section-directory section-with-icon flex-horizontal">
-                        <div class="info">
-                            <h2 class="title">Features</h2>
-                            <div class="section-directory-items">
-                                <div class="item">
-                                    <img src="../images/provisioning-icon.png" alt="Manage">
-                                    <p class="directory-title">Provisioning<br /> & Licence control</p>
-                                </div>
-                                <div class="item">
-                                    <img src="../images/sso-icon.png" alt="SSO">
-                                    <p class="directory-title">Single Sign-On</p>
-                                </div>
-                                <div class="item">
-                                    <img src="../images/branding-icon.png" alt="Custom Branding">
-                                    <p class="directory-title">Custom Branding</p>
-                                </div>
-                                <div class="item">
-                                    <img src="../images/2fa-icon.png" alt="2Fa">
-                                    <p class="directory-title">Two-Factor <br />Authentication(2FA)</p>
-                                </div>
-                                <div class="item">
-                                    <img src="../images/sharing-icon.png" alt="Sharing">
-                                    <p class="directory-title">Sharing <br />Internally & Externally</p>
-                                </div>
-                                <div class="item">
-                                    <img src="../images/multiple-domains-icon.png" alt="Multiple Domains">
-                                    <p class="directory-title">Multiple Domains <br />Support</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="box flex-vertical flex">
+                        <img src="../images/try-business/improve-security-icon.png" alt="Improve Security" class="box-icon">
+                        <h2 class="box-title">Improve Security</h2>
+                        <hr>
+                        <ul class="box-list">
+                            <li>Secure Announcements</li>
+                            <li>Device Management</li>
+                            <li>
+                                Security Policies
+                                <ul class="box-list">
+                                    <li>Enforce 2FA</li>
+                                    <li>IP whitelist</li>
+                                    <li>Block TOR</li>
+                                    <li>Mobile logins</li>
+                                </ul>
+                            </li>
+                        </ul>
                     </div>
-
-                    <div class="section-provisioning">
-                        <h2 class="title">Provisioning</h2>
-                        <div class="section-content flex-horizontal">
-                            <div class="info">
-                                <p class="content">
-                                    AppsCo helps you create and manage user accounts and their access to company published applications and resources.
-                                    Provisioning ensures smooth and automatic management of accounts and access to resources in a secure and simple way.
-                                    You can grant immediate access to apps and services your employees need, manage the level of access for each individual
-                                    or group and revoke and deactivate users from your centralized dashboard,
-                                    all that while keeping your data safe and your workflow simple and continuous.
-                                </p>
-                                <p class="content">
-                                    AppsCo supports seamless directory integrations with GSuite, Office 365, on-premise AD, HubSpot, and Egnyte.
-                                    Your employees can access all of their company apps and resources through AppsCo dashboard with the same set of credentials
-                                    they now use to access GSuite, Office 365, on-premise AD, HubSpot or Egnyte.
-                                    AppsCo integrations enable you to automate onboarding and offboarding of new employees,
-                                    syncing of users and groups from other systems and directories and granting them access to all company apps and resources,
-                                    according to their roles.
-                                </p>
-                            </div>
-                        </div>
-                        <img src="../images/provisioning/provisioning-info.png" alt="Provisioning">
-                    </div>
-
-                    <div class="section-audit-statistics flex-horizontal">
-                        <div class="section-audit section-with-icon flex-horizontal flex">
-                            <img src="../images/audit-trial-icon.png" alt="Audit" class="section-icon">
-                            <div class="audit-statistics-info">
-                                <h2 class="audit-statistics-title">Audit</h2>
-                                <p class="content">
-                                    AppsCo Business audit log provides a real-time overview of all important system events in chronological record.
-                                    Auditing improves the visibility over company data flow and everyday security procedures.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="section-statistics section-with-icon flex-horizontal flex">
-                            <img src="../images/statistics-icon.png" alt="Statistics" class="section-icon">
-                            <div class="audit-statistics-info">
-                                <h2 class="audit-statistics-title">Statistics</h2>
-                                <p class="content">
-                                    AppsCo Business Dashboard gives you a direct insight into statistics on applications usage and an up-to-date
-                                    overview of the most/the least used apps and services.
-                                </p>
-                                <p class="content">
-                                    Statistics and real-time reporting help you monitor all digital activities within your company and give you control over the data flow.
-                                </p>
-                            </div>
-                        </div>
+                    <div class="box flex-vertical flex">
+                        <img src="../images/try-business/ensure-compliance-icon.png" alt="Ensure Compliance" class="box-icon">
+                        <h2 class="box-title">Ensure Compliance</h2>
+                        <hr>
+                        <ul class="box-list">
+                            <li>Cloud governance</li>
+                            <li>Audit logs</li>
+                            <li>
+                                Reports
+                                <ul class="box-list">
+                                    <li>Access</li>
+                                    <li>Data discovery</li>
+                                    <li>Policy enforcement</li>
+                                </ul>
+                            </li>
+                            <li>Statistics</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -550,6 +429,12 @@
                     reflectToAttribute: true
                 },
 
+                tabletS920Screen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
                 tabletS1024Screen: {
                     type: Boolean,
                     value: false,
@@ -609,20 +494,21 @@
             ],
 
             observers: [
-                '_updateScreen(mobileScreen, mobileScreenHeight, tabletS768Screen, tabletS1024Screen, tabletS1280Screen, laptopS1440Screen, s1600Screen)'
+                '_updateScreen(mobileScreen, mobileScreenHeight, tabletS768Screen, tabletS920Screen, tabletS1024Screen, tabletS1280Screen, laptopS1440Screen, s1600Screen)'
             ],
 
             attached: function() {
-
                 this.$.appscoContent.showSection('info');
 
-                if (this.mobileScreen || this.mobileScreenHeight || this.tabletS768Screen || this.tabletS1024Screen
-                        || this.tabletS1280Screen || this.laptopS1440Screen || this.s1600Screen) {
+                if (this.mobileScreen || this.mobileScreenHeight || this.tabletS768Screen || this.tabletS920Screen
+                    || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopS1440Screen || this.s1600Screen) {
                     this.updateStyles();
                 }
+
+                this._onPageLoaded();
             },
 
-            _updateScreen: function(mobile, mobileScreenHeight, tabletS768Screen, tabletS1024Screen, tabletS1280Screen, laptopS1440Screen, s1600Screen) {
+            _updateScreen: function(mobile, mobileScreenHeight, tabletS768Screen) {
                 this.updateStyles();
 
                 if (!mobile && !tabletS768Screen && !this.$.appscoContent.infoActive) {
@@ -675,6 +561,11 @@
 
                     this._hideLoader();
                 }.bind(this));
+            },
+
+            _onPageLoaded: function() {
+                this.pageLoaded = true;
+                this.fire('page-loaded');
             }
         });
     </script>
