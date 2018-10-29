@@ -596,7 +596,7 @@
             _onAutologinChanged: function() {
                 this._autologinItem = !this._autologinItem;
 
-                this.$.appscoApplicationLog.load();
+                this.$$('#appscoApplicationLog').load();
             },
 
             showAdvanced: function() {
