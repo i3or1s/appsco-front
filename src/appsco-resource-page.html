@@ -261,6 +261,11 @@
                     notify: true
                 },
 
+                iconsApi: {
+                    type: String,
+                    value: ''
+                },
+
                 company: {
                     type: Boolean,
                     value: false
@@ -443,7 +448,7 @@
             _getApplication: function() {
 
                 if (!this.application.self && this.applicationsApi && this._computedHeaders) {
-                    this.$.ironAjaxGetApplication.url = this.applicationsApi + this.route.path;
+                    this.$.ironAjaxGetApplication.url = this.iconsApi + this.route.path;
                     this.$.ironAjaxGetApplication.generateRequest();
                 }
 
