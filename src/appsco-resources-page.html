@@ -623,12 +623,12 @@
 
             _resetFilters: function() {
 
-                if (this.$$('appscoCompanyGroups')) {
-                    this.$$('appscoCompanyGroups').reset();
+                if (this.$$('#appscoCompanyGroups')) {
+                    this.$$('#appscoCompanyGroups').reset();
                 }
             },
             _searchGroups: function(term) {
-                this.$$('appscoCompanyGroups').filterByTerm(term);
+                this.$$('#appscoCompanyGroups').filterByTerm(term);
             },
 
             _onSearchGroups: function(event) {
@@ -636,7 +636,7 @@
             },
 
             _onSearchGroupsClear: function() {
-                this.$$('appscoSearch').reset();
+                this.$$('#appscoSearch').reset();
                 this._searchGroups('');
             },
 

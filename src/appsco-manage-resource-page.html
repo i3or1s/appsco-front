@@ -608,7 +608,7 @@
             },
 
             removeGroup: function(group) {
-                this.$$('appscoApplicationGroupsPage').removeGroup(group);
+                this.$$('#appscoApplicationGroupsPage').removeGroup(group);
             },
 
             _showApplicationComponentsPage: function() {
@@ -622,7 +622,7 @@
             },
 
             reloadAssignees: function() {
-                this.$$('appscoApplicationAssignees').reload();
+                this.$$('#appscoApplicationAssignees').reload();
                 this.$.appscoManageApplicationComponentsPage.reloadAssignees();
                 this.$$('#appscoApplicationAssigneesPage').reloadAssignees();
             },
