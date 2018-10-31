@@ -115,7 +115,9 @@
                     type: Object,
                     value: function () {
                         return {};
-                    }
+                    },
+                    observer: '_computeValues',
+                    notify: true
                 },
 
                 apiErrors: {
@@ -155,12 +157,12 @@
 
                 _descriptionValue: {
                     type: String,
-                    compute: '_computeDescriptionValue(application)'
+                    value: ''
                 },
 
                 _fieldsValue: {
                     type: String,
-                    compute: '_computeFieldsValue(application)'
+                    value: ''
                 },
 
                 /**
@@ -260,12 +262,9 @@
                 this.fire('compliance-info-updated');
             },
 
-            _computeDescriptionValue: function(application) {
-                return application.compliance.description ? application.compliance.description : '';
-            },
-
-            _computeFieldsValue: function(application) {
-                return application.compliance.fields ? application.compliance.fields : '';
+            _computeValues: function(newValue) {
+                this._descriptionValue = (newValue && newValue.compliance && newValue.compliance.description) ? newValue.compliance.description : '';
+                this._fieldsValue = (newValue && newValue.compliance && newValue.compliance.description) ? newValue.compliance.description : '';
             }
 
         });
