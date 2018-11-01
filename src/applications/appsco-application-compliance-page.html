@@ -264,7 +264,7 @@
 
             _computeValues: function(newValue) {
                 this._descriptionValue = (newValue && newValue.compliance && newValue.compliance.description) ? newValue.compliance.description : '';
-                this._fieldsValue = (newValue && newValue.compliance && newValue.compliance.description) ? newValue.compliance.description : '';
+                this._fieldsValue = (newValue && newValue.compliance && newValue.compliance.fields) ? newValue.compliance.fields: '';
             }
 
         });
