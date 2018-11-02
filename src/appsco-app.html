@@ -474,10 +474,7 @@
                             applications-api="[[ _applicationsApi ]]"
                             folders-api="[[ api.foldersApi ]]"
                             on-loaded="_onLoadedPage"
-                            on-edit-application="_onEditApplication"
                             on-edit-shared-application="_onEditSharedApplication"
-                            on-info-edit-application="_onInfoEditApplication"
-                            on-share-application="_onShareApplication"
                             on-revoke-application="_onRevokeApplication"
                             on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
                             on-open-rename-folder-dialog="_onOpenRenameFolderDialog"
@@ -496,7 +493,6 @@
                             authorization-token="[[ authorizationToken ]]"
                             accounts-api="[[ api.accounts ]]"
                             account="{{ account }}"
-                            on-share-application="_onShareApplication"
                             on-remove-application="_onRemoveApplication"
                             on-subscription-revoke="_onSubscriptionRevoke"
                             on-application-settings-saved="_onApplicationSettingsSaved"
@@ -598,8 +594,6 @@
                             resource-admin="[[ _resourceAdmin ]]"
                             page-config="[[ pageConfig.resources ]]"
                             on-list-loaded="_onLoadedPage"
-                            on-edit-resource="_onEditCompanyResource"
-                            on-info-edit-resource="_onInfoEditCompanyResource"
                             on-share-company-resource="_onShareCompanyResource"
                             on-show-bulk-actions="_onShowBulkActions"
                             on-hide-bulk-actions="_onHideResourcesBulkActions"
@@ -962,6 +956,7 @@
                     <appsco-dashboard-folder-page name="dashboard-folder" page company-page
                             id="appscoDashboardFolderPage"
                             route="[[ subroute ]]"
+                            folder="{{ _activeFolder }}"
                             is-on-personal="[[ _personalFolderPage ]]"
                             authorization-token="[[ authorizationToken ]]"
                             folders-api="[[ api.foldersApi ]]"
@@ -2316,6 +2311,11 @@
                 'upgrade-active': '_fireUpgrade',
                 'cancel-subscription': '_onCancelSubscription',
                 'reload-account-log': '_onReloadAccountLog',
+                'edit-application': '_onEditApplication',
+                'info-edit-application': '_onInfoEditApplication',
+                'share-application': '_onShareApplication',
+                'edit-resource': '_onEditCompanyResource',
+                'info-edit-resource': '_onInfoEditCompanyResource',
                 'info-edit-application-credentials': '_onEditApplicationCredentials',
                 'reload-applications': '_onReloadApplications',
                 'reload-accounts': '_onReloadAccounts',
@@ -2675,10 +2675,6 @@
 
             _onMenuItemSelected: function(event) {
                 this._showPage(event.detail.item.name);
-            },
-
-            _onShowPage: function(event) {
-                this._showPage(event.detail.page);
             },
 
             _showPage: function(name) {
@@ -3555,17 +3551,22 @@
                 this._notify(message);
             },
 
-            _onEditApplication: function() {
-                this._showManagePage('resource/' + this.application.alias);
+            _editApplication: function(application) {
+                this.set('application', application);
+                this._showManagePage('resource/' + application.alias);
+            },
+
+            _onEditApplication: function(event) {
+                this._editApplication(event.detail.application);
+            },
+
+            _onInfoEditApplication: function(event) {
+                this._editApplication(event.detail.application);
             },
 
             _onEditSharedApplication: function(event) {
                 this.$.appscoCompanyResourceSettingsDialog.setApplication(event.detail.application);
                 this.$.appscoCompanyResourceSettingsDialog.toggle();
-            },
-
-            _onInfoEditApplication: function() {
-                this._onEditApplication();
             },
 
             _onEditApplicationCredentials: function(event) {
@@ -3650,6 +3651,16 @@
                 }
             },
 
+            _onBackFromResourcePageAction: function() {
+
+                if (this._activeFolder.alias) {
+                    this._openFolder(this._activeFolder);
+                } else {
+                    this._showHomePage();
+                    this.set('_activeFolder', {});
+                }
+            },
+
             _onResourceActionApplicationPage: function() {
                 this.$.appscoApplicationPage.toggleResource();
             },
@@ -3675,7 +3686,8 @@
                 this._searchSubscribers('');
             },
 
-            _onShareApplication: function() {
+            _onShareApplication: function(event) {
+                this.set('application', event.detail.application);
                 this.$.appscoApplicationShare.toggle();
             },
 
@@ -3699,6 +3711,10 @@
                 // In order to notify.
                 this.set('application', {});
                 this.set('application', application);
+
+                if ('dashboard-folder' === this.page) {
+                    this.getCurrentAppscoPageElement().setApplicationTemplate(application);
+                }
 
                 this._notifyAboutApplicationLogChange(applicationLogApi);
                 this._notify(message, true);
@@ -4061,12 +4077,17 @@
                 this._searchAssignees('');
             },
 
-            _onEditCompanyResource: function() {
-                this._showManagePage('manage-resource/' + this._companyApplication.alias);
+            _editCompanyResource: function(resource) {
+                this.set('_companyApplication', resource);
+                this._showManagePage('manage-resource/' + resource.alias);
             },
 
-            _onInfoEditCompanyResource: function() {
-                this._onEditCompanyResource();
+            _onEditCompanyResource: function(event) {
+                this._editCompanyResource(event.detail.resource);
+            },
+
+            _onInfoEditCompanyResource: function(event) {
+                this._editCompanyResource(event.detail.resource);
             },
 
             _refreshOrgunits: function(data) {
@@ -4342,7 +4363,7 @@
 
                 for (var i = 0; i < length; i++) {
 
-                    if (this.__companyApplication && this._companyApplication.self === resources[i].self) {
+                    if (this._companyApplication && this._companyApplication.self === resources[i].self) {
                         resource = resources[i];
                         break;
                     }

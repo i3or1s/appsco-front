@@ -524,11 +524,15 @@
 
             _onResourceEditAction: function(event) {
                 this.set('resource', event.detail.item);
-                this.fire('edit-resource');
+                this.fire('edit-resource', {
+                    resource: event.detail.item
+                });
             },
 
             _onResourceInfoEdit: function() {
-                this.fire('info-edit-resource');
+                this.fire('info-edit-resource', {
+                    resource: this.resource
+                });
             },
 
             _onResourceAction: function(event) {

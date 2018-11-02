@@ -610,12 +610,26 @@
             },
 
             _onApplicationEdit: function(event) {
-                this.set('application', event.detail.application);
-                this.fire('edit-application');
+                var application = event.detail.application;
+
+                this.set('application', application);
+                this.isOnPersonal ?
+                    this.fire('edit-application', {
+                        application: application
+                    }) :
+                    this.fire('edit-resource', {
+                        resource: application
+                    });
             },
 
             _onApplicationInfoEdit: function() {
-                this.fire('info-edit-application');
+                this.isOnPersonal ?
+                    this.fire('info-edit-application', {
+                        application: this.application
+                    }) :
+                    this.fire('info-edit-resource', {
+                        resource: this.application
+                    });
             },
 
             _onApplicationEditCredentials: function() {
@@ -642,7 +656,12 @@
             },
 
             _onShareApplication: function() {
-                this.fire('share-application');
+
+                if (this.isOnPersonal) {
+                    this.fire('share-application', {
+                        application: this.application
+                    });
+                }
             },
 
             _onRevokeApplication: function() {
@@ -652,7 +671,8 @@
             },
 
             setApplication: function(application) {
-                this.application = application;
+                this.set('application', {});
+                this.set('application', application);
                 this.$.appscoApplications.modifyApplications([application]);
                 this._initializeResourcesDragBehavior();
             },

@@ -487,11 +487,15 @@
 
             _onApplicationEdit: function(event) {
                 this.set('application', event.detail.application);
-                this.fire('edit-application');
+                this.fire('edit-application', {
+                    application: event.detail.application
+                });
             },
 
             _onApplicationInfoEdit: function() {
-                this.fire('info-edit-application');
+                this.fire('info-edit-application', {
+                    application: this.application
+                });
             },
 
             _onApplicationEditCredentials: function() {
