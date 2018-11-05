@@ -7,6 +7,7 @@
         "disapprove_adding_resources_info": "Users are allowed to add resources on personal dashboard by default. Once this policy is turned off, users will no longer be able to add resources on personal dashboard. This applies to all managed users including admins in your company. Click Enable to enforce this policy.",
         "disapprove_create_company_info": "Managed users can create companies. If you disapprove this option, managed users will be prevented from creating a company. This option does not apply to admins even if they are managed users. Click Enable to enforce this policy.",
         "disapprove_mobile_login_info": "This policy is used to prevent managed users to log in from mobile devices. Click Enable to enforce this policy.",
-        "block_tor_info": "This policy is used to prevent the users coming from TOR browsers and anonymous networks from logging in. Click Enable to enforce this policy."
+        "block_tor_info": "This policy is used to prevent the users coming from TOR browsers and anonymous networks from logging in. Click Enable to enforce this policy.",
+        "ignore_signature_verification_info": "This policy is used to allow users to log in using SAML assertion without valid signature. It is strongly advised not to enable this policy on production instances."
     }
 }
