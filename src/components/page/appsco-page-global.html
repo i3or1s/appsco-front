@@ -40,6 +40,9 @@ Custom property | Description | Default
 
                 @apply(--appsco-page-global);
             }
+            :host *[hidden] {
+                display: none;
+            }
             :host .action {
                 margin-right: 10px;
                 position: relative;
@@ -52,6 +55,15 @@ Custom property | Description | Default
             }
             :host paper-icon-button[active] {
                 @apply(--appsco-icon-active);
+            }
+            :host .expand-icon {
+                width: 32px;
+                height: 32px;
+                transition: transform 0.2s linear;
+            }
+            :host .expand-icon[active] {
+                transform: rotate(180deg);
+                transition: transform 0.3s linear;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;
@@ -70,6 +82,15 @@ Custom property | Description | Default
         <!--<template is="dom-if" if="[[ settings ]]">-->
         <!--<paper-icon-button icon="icons:settings" on-tap="_settings" toggles></paper-icon-button>-->
         <!--</template>-->
+
+        <template is="dom-if" if="[[ additionalOptions ]]">
+            <div class="action flex-none">
+                <paper-icon-button icon="icons:expand-more"
+                                   class="expand-icon"
+                                   on-tap="_onAdditionalOptionsAction"
+                                   toggles></paper-icon-button>
+            </div>
+        </template>
 
         <template is="dom-if" if="[[ filters ]]">
             <div class="action flex-none">
@@ -143,6 +164,11 @@ Custom property | Description | Default
                 filters: {
                     type: Boolean,
                     value: false
+                },
+
+                additionalOptions: {
+                    type: Boolean,
+                    value: false
                 }
             },
 
@@ -202,6 +228,16 @@ Custom property | Description | Default
                  * @event page-global-filters
                  */
                 this.fire('page-global-filters');
+            },
+
+            _onAdditionalOptionsAction: function() {
+
+                /**
+                 * Fired when additional options action is tapped.
+                 *
+                 * @event page-global-toggle-additional-options
+                 */
+                this.fire('page-global-toggle-additional-options');
             }
         });
     </script>

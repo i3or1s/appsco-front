@@ -597,6 +597,7 @@
                             api-errors="[[ _apiErrors ]]"
                             resource-admin="[[ _resourceAdmin ]]"
                             page-config="[[ pageConfig.resources ]]"
+                            get-company-idp-config-list-api="[[ _getCompanyIdpConfigListApi ]]"
                             on-list-loaded="_onLoadedPage"
                             on-edit-resource="_onEditCompanyResource"
                             on-info-edit-resource="_onInfoEditCompanyResource"
@@ -611,6 +612,7 @@
                             on-page-loaded="_onResourcesPageLoaded"
                             on-resource-settings="_onEditSharedApplication"
                             on-load-forbidden="_onResourcesLoadForbidden"
+                            on-edit-additional-options="_onEditAdditionalOptionsAction"
                     ></appsco-resources-page>
 
                     <appsco-manage-resource-page name="manage-resource" page company-page
@@ -2171,6 +2173,11 @@
                     computed: '_computeExportAccessAccessOnBoardingApi(_accessOnBoardingUsersApi)'
                 },
 
+                _getCompanyIdpConfigListApi: {
+                    type: String,
+                    value: ''
+                },
+
                 _subscription: {
                     type: Object,
                     value: function() {
@@ -2311,6 +2318,7 @@
             listeners: {
                 'page-global-info': '_onInfoAction',
                 'page-global-filters': '_onFiltersAction',
+                'page-global-toggle-additional-options': '_onToggleAdditionalOptionsAction',
                 'page-loaded': '_onPageLoaded',
                 'filter-done': '_onPageLoaded',
                 'upgrade-active': '_fireUpgrade',
@@ -2838,6 +2846,7 @@
                     this._companyOAuthApplicationsApi = companyApi + '/oauth/applications';
                     this._billingReportApi = companyApi + '/reports/billing-report';
                     this._accessOnBoardingUsersApi = companyApi + '/reports/access-on-boarding';
+                    this._getCompanyIdpConfigListApi = companyApi + '/settings/idps';
                 }
 
                 this._companyFoldersApi = companyApi + '/dashboard-groups';
@@ -3444,6 +3453,10 @@
                 this.getCurrentAppscoPageElement().toggleResource();
             },
 
+            _onToggleAdditionalOptionsAction: function() {
+                this.getCurrentAppscoPageElement().toggleAdditionalOptions();
+            },
+
             _onShowBulkActions: function() {
                 this.getCurrentAppscoPageActionsElement().showBulkActions();
             },
@@ -3578,6 +3591,9 @@
                     this.page = 'company-home';
                 }
             },
+
+            // TODO - implement action to open "Additional options" page
+            _onEditAdditionalOptionsAction: function() {},
 
             _reloadHomePageApplications: function() {
 
@@ -5479,6 +5495,10 @@
                 }
 
                 this._showManagePage('manage-integration/' + integration.alias);
+            },
+
+            _onIntegrationSettingsChanged: function() {
+                this._notify('Settings for integration ' + event.detail.integration.name + ' has been successfully saved.');
             },
 
             _onRemoveIntegrationAction: function(event) {

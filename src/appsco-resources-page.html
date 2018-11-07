@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-request.html">
 
 <link rel="import" href="components/page/appsco-content.html">
 <link rel="import" href="components/page/appsco-page-styles.html">
@@ -88,6 +89,12 @@
             appsco-application-details {
                 --appsco-application-icons-color: var(--primary-text-color);
             }
+            :host *[content-top] {
+                border-bottom: 1px solid var(--divider-color);
+            }
+            :host .content-top-content p:last-child {
+                margin-bottom: 0;
+            }
             :host([mobile-screen]) {
                 --resource-width: 100%;
             }
@@ -120,6 +127,42 @@
                     </div>
                 </div>
             </template>
+
+            <div content-top>
+                <div class="content-top-header">
+                    Additional options
+                </div>
+
+                <template is="dom-if" if="[[ _hasSamlIdp ]]">
+                    <div class="content-top-content">
+                        <p>
+                            Your company has set an Identity Provider.
+                            You can add different related applications to your company's resources
+                            and share them with your employees.
+                            When they log in to AppsCo using their identities,
+                            they will be automatically logged in to all related apps as well.
+                        </p>
+                        <p>
+                            This page enables you to select and add the applications
+                            based on the integrations your company has.
+                        </p>
+                    </div>
+                    <div class="content-top-actions flex-horizontal flex-end">
+                        <paper-button class="action"
+                                      on-tap="_onEditAdditionalOptionsAction">
+                            Edit
+                        </paper-button>
+                    </div>
+                </template>
+
+                <template is="dom-if" if="[[ !_hasSamlIdp ]]">
+                    <div class="content-top-content">
+                        <p>
+                            There are no additional options available at this time.
+                        </p>
+                    </div>
+                </template>
+            </div>
 
             <div content>
                 <div class="content-container">
@@ -294,6 +337,16 @@
                     value: ''
                 },
 
+                getCompanyIdpConfigListApi: {
+                    type: String,
+                    value: ''
+                },
+
+                _hasSamlIdp: {
+                    type: Boolean,
+                    value: false
+                },
+
                 _resourceSelectAction: {
                     type: Number,
                     value: 0
@@ -370,6 +423,7 @@
             ],
 
             observers: [
+                '_getHasSamlIdpRequest(getCompanyIdpConfigListApi, authorizationToken)',
                 '_updateScreen(mobileScreen, tabletScreen)',
                 '_hideFilters(mobileScreen)'
             ],
@@ -406,6 +460,7 @@
 
             initializePage: function() {
                 this.setDefaultResource();
+                this._getHasSamlIdpRequest(this.getCompanyIdpConfigListApi, this.authorizationToken);
             },
 
             pageSelected: function () {
@@ -475,6 +530,10 @@
 
             hideResource: function() {
                 this.$.appscoContent.hideSection('resource');
+            },
+
+            toggleAdditionalOptions: function() {
+                this.$.appscoContent.toggleSection('content-top');
             },
 
             _pageConfigChanged: function(newValue) {
@@ -646,6 +705,34 @@
 
             _onGroupSelected: function(event) {
                 this._loadResourcesForGroup(event.detail.item);
+            },
+
+            _onEditAdditionalOptionsAction: function() {
+                this.fire('edit-additional-options');
+            },
+
+            _getHasSamlIdpRequest: function(api, token) {
+
+                if (!api || !token) {
+                    this._hasSamlIdp = false;
+                    return false;
+                }
+
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: api,
+                        method: 'GET',
+                        handleAs: 'json',
+                        headers: {
+                            'Authorization': 'token ' + token
+                        }
+                    };
+
+                request.send(options).then(function() {
+                    this._hasSamlIdp = (200 == request.status && (0 < request.response.meta.total));
+                }.bind(this), function() {
+                    this._hasSamlIdp = false;
+                }.bind(this));
             }
         });
     </script>
