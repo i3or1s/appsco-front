@@ -20,6 +20,9 @@
             :host div[resource] {
                 height: calc(100% - 32px - 20px);
             }
+            :host div[resource] > .resource-content {
+                padding-top: 30px;
+            }
             .integration-image {
                 width: 96px;
                 height: 96px;
@@ -83,10 +86,6 @@
                     border: 4px solid var(--body-background-color);
                 };
             }
-            .integration-info {
-                padding-top: 10px;
-            }
-
         </style>
 
         <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
@@ -120,7 +119,7 @@
                     </template>
                 </div>
 
-                <div class="resource-content integration-info">
+                <div class="resource-content">
                     <p>[[ integration.name ]]</p>
 
                     <template is="dom-if" if="[[ _isIntegrationRA ]]">
