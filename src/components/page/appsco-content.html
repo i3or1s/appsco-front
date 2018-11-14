@@ -1,8 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../../bower_components/iron-collapse/iron-collapse.html">
 
 <!--
 `appsco-content`
@@ -91,9 +91,15 @@ Custom property | Description | Default
         </style>
 
         <div class="container flex-horizontal">
-            <div id="resource" class="resource" ><content select="[resource]"></content></div>
-            <div id="content"  class="content"  ><content select="[content]"></content></div>
-            <div id="info"     class="info"     ><content select="[info]"></content></div>
+            <div id="resource" class="resource"><content select="[resource]"></content></div>
+            <div id="content"  class="content">
+                <iron-collapse id="contentTop" content-top>
+                    <content select="[content-top]"></content>
+                </iron-collapse>
+
+                <content select="[content]"></content>
+            </div>
+            <div id="info" class="info"><content select="[info]"></content></div>
         </div>
     </template>
 
@@ -145,6 +151,15 @@ Custom property | Description | Default
                     type: Boolean,
                     value: false,
                     observer: '_onInfoActiveChanged'
+                },
+
+                /**
+                 * Indicates if content-top section is shown or not.
+                 */
+                contentTopActive: {
+                    type: Boolean,
+                    value: false,
+                    observer: '_onContentTopActiveChanged'
                 }
             },
 
@@ -170,12 +185,21 @@ Custom property | Description | Default
                 active ? this.showSection('info') : this.hideSection('info');
             },
 
+            _onContentTopActiveChanged: function(active) {
+                active ? this.showSection('content-top') : this.hideSection('content-top');
+            },
+
             /**
              * Shows section - info or resource.
              *
              * @param section
              */
             showSection: function(section) {
+
+                if (section === 'content-top' && this.contentTopActive) {
+                    this.$.contentTop.show();
+                    return false;
+                }
 
                 if (section === 'info' && !this.infoActive) {
                     this.infoActive = true;
@@ -194,6 +218,11 @@ Custom property | Description | Default
              * @param section
              */
             hideSection: function(section) {
+
+                if (section === 'content-top' && !this.contentTopActive) {
+                    this.$.contentTop.hide();
+                    return false;
+                }
 
                 if (section === 'info' && this.infoActive) {
                     this.infoActive = false;
@@ -218,6 +247,9 @@ Custom property | Description | Default
                 else if (section === 'resource') {
                     this.resourceActive = !this.resourceActive;
                 }
+                else if (section === 'content-top') {
+                    this.contentTopActive = !this.contentTopActive;
+                }
 
             },
 
@@ -230,9 +262,7 @@ Custom property | Description | Default
                 if (!this.resourceActive) {
                     this.$.resource.style.display = 'none';
                 }
-
             }
-
         });
     </script>
 </dom-module>
