@@ -41,7 +41,8 @@
     "src/appsco-policies-page.html",
     "src/appsco-policies-report-page.html",
     "src/appsco-access-on-boarding-page.html",
-    "src/appsco-get-started-page.html"
+    "src/appsco-get-started-page.html",
+    "src/appsco-additional-options-page.html"
   ],
   "sources": [
     "src/**/*",
