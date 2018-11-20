@@ -37,18 +37,13 @@
                 top: 0;
                 right: 0;
             }
-            :host .application-icon {
-                width: 64px;
-                height: 64px;
-                margin: 0 auto;
-                display: block;
-            }
             appsco-account-image {
                 position: absolute;
                 bottom: -22px;
                 left: 10px;
                 box-sizing: border-box;
 
+                --account-initials-background-color: var(--body-background-color-darker);
                 --account-image: {
                     width: 42px;
                     height: 42px;
@@ -101,7 +96,6 @@
 
                     <appsco-resource-image-settings
                             id="appscoAccountImageSettings"
-                            class="application-icon"
                             resource="{{ application }}"
                             authorization-token="[[ authorizationToken ]]"
                             image-settings-api="[[ _resourceImageSettingApi ]]"

@@ -5,121 +5,52 @@
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 
 <link rel="import" href="../components/appsco-loader.html">
-
-<!--
-`appsco-account-image-settings`
-Account image settings is used to upload account image.
-
-    <appsco-account-image-settings account={}
-                                   authorization-token=""
-                                   image-settings-api=""></appsco-account-image-settings>
-
-### Styling
-
-`<appsco-account-image-settings>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--account-image-upload-radius` | Radius of upload image container and image itself. | `50%`
-`--appsco-account-image-settings` | Mixin applied to the root element | `{}`
-`--account-image-upload-container` | Mixin applied to the image upload container | `{}`
-`--account-image` | Mixin applied to the image preview | `{}`
-`--account-image-upload-field` | Mixin applied to the upload label field | `{}`
-`--account-image-upload-icon` | Mixin applied to the upload icon inside upload field | `{}`
-
-@demo demo/appsco-account-image-settings.html
--->
+<link rel="import" href="../components/appsco-upload-image-behavior.html">
+<link rel="import" href="../components/appsco-upload-image-styles.html">
 
 <dom-module id="appsco-account-image-settings">
     <template>
-        <style>
-            :host {
-                display: inline-block;
-                position: relative;
-            @apply(--appsco-account-image-settings);
-            }
-            .upload-container {
-                width: 96px;
-                height: 96px;
-                margin-left: auto;
-                margin-right: auto;
-                overflow: hidden;
-                position: relative;
-            @apply(--account-image-upload-container);
-            }
-            :host appsco-loader, .upload-container, .account-image, .account-image-upload, .account-image::shadow #sizedImgDiv, .account-image::shadow #placeholder {
+        <style include="appsco-upload-image-styles">
+            :host appsco-loader,
+            :host .upload-container,
+            :host .item-image,
+            :host .item-image-upload,
+            :host .item-image::shadow #sizedImgDiv,
+            :host .item-image::shadow #placeholder {
                 border-radius: var(--account-image-upload-radius, 50%);
-            }
-            .account-image, .account-image-upload, .icon-upload {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
-            }
-            .account-image {
-                width: 96px;
-                height: 96px;
-            --iron-image-placeholder: {
-                 background: #eeeeee;
-             };
-
-            @apply(--account-image);
-            }
-            .account-image-upload {
-                background-color: rgba(250, 250, 250, 0.8);
-                display: block;
-                opacity: 0;
-                z-index: 5;
-                cursor: pointer;
-            @apply(--account-image-upload-field);
-            }
-            .account-image-upload.no-image {
-                opacity: 1;
-            }
-            .account-image-upload:hover {
-                opacity: 1;
-                transition: opacity .2s ease-in;
-            }
-            .icon-upload {
-                width: 32px;
-                height: 32px;
-            @apply(--account-image-upload-icon);
-            }
-            .upload-file {
-                width: 0;
-                height: 0;
-                opacity: 0;
             }
         </style>
 
         <div class="upload-container">
+            <appsco-loader active="[[ _loader ]]" loader-alt="AppsCo is processing request" multi-color></appsco-loader>
 
-            <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is saving application" multi-color></appsco-loader>
-
-            <iron-image class="account-image"
+            <iron-image class="item-image"
                         src="[[ account.picture_url ]]"
                         alt="Account image"
                         class="sized"
-                        sizing="cover"
-                        preload fade
-                        placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII="></iron-image>
+                        sizing="cover"></iron-image>
 
             <template is="dom-if" if="[[ !previewOnly ]]">
-                <label for="accountImage"
-                       class$="account-image-upload [[ _imagePreview ]]">
+                <label for="imageInput"
+                       class$="item-image-upload [[ _imagePreview ]]">
                     <iron-icon icon="file-upload" class="icon-upload"></iron-icon>
                 </label>
 
                 <input type="file"
                        accept="image/*"
-                       id="accountImage"
+                       id="imageInput"
                        name="account-image"
                        class="upload-file"
                        on-change="_onUploadImage">
             </template>
         </div>
+
+        <template is="dom-if" if="[[ !previewOnly ]]">
+            <template is="dom-if" if="[[ account.picture_url ]]">
+                <paper-button class="remove-action"
+                              on-tap="_onRemoveImageAction">Remove photo</paper-button>
+            </template>
+        </template>
 
         <content select="[info]"></content>
 
@@ -141,150 +72,42 @@ Custom property | Description | Default
                     notify: true
                 },
 
-                /**
-                 * Authorization token for the account.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Account image settings api link.
-                 */
-                imageSettingsApi: {
-                    type: String
-                },
-
-                /**
-                 * Preview only. Without upload.
-                 */
-                previewOnly: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                },
-
                 _imagePreview: {
                     type: String,
                     computed: '_computeImagePreviewClass(account)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            _validateImageFile: function(file) {
-                var validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'],
-                        fileType = file.type,
-                        valid = true;
-
-                if (file.size > 1048576) {
-                    this.fire('image-upload-error', 'Image size must be less than 1MB.');
-                    valid = false;
-                }
-                else {
-
-                    for (var i = 0; i < validFileTypes.length; i++) {
-
-                        if (validFileTypes[i] === fileType) {
-                            valid = true;
-                            break;
-                        }
-                        else {
-                            valid = false;
-                        }
-
-                        if (i === (validFileTypes.length - 1) && !valid) {
-                            this.fire('image-upload-error', 'Allowed file types are: jpg, jpeg and png.');
-                        }
-                    }
-
-                }
-
-                return valid;
-
-            },
-
-            _setNewImage: function(file) {
-                var reader = new FileReader();
-
-                reader.onload = function(e) {
-                    this.account.picture_url = e.target.result;
-
-                    var account = JSON.parse(JSON.stringify(this.account));
-                    this.account = {};
-                    this.account = account;
-
-                }.bind(this);
-
-                reader.readAsDataURL(file);
-            },
-
-            _onUploadImage: function(event) {
-                var input = event.target;
-
-                if (input.files && input.files[0]) {
-                    var file = input.files[0],
-                            formData = new FormData(),
-                            request = new XMLHttpRequest();
-
-                    /** To ensure that on-change event will be triggered even if user tries to upload same image again */
-                    this.$$('#accountImage').value = null;
-                    if (!this._validateImageFile(file)) {
-                        return false;
-                    }
-
-                    formData.append('file', file, file.name);
-
-                    request.onreadystatechange = function()
-                    {
-                        if (request.readyState == 4 && request.status == 200) {
-                            this._setNewImage(file);
-                        }
-                    }.bind(this);
-
-                    request.open('POST', this.imageSettingsApi, true);
-                    request.setRequestHeader('Authorization', this._computedHeaders);
-                    request.send(formData);
                 }
             },
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return 'token ' + authorizationToken;
+            behaviors: [
+                Polymer.AppscoUploadImageBehavior
+            ],
+
+            reset: function() {
+                var account = JSON.parse(JSON.stringify(this.account));
+
+                this.set('account', {});
+                this.set('account', account);
             },
 
             _computeImagePreviewClass: function(account) {
                 return (account && account.picture_url) ? 'has-image' : 'no-image';
             },
 
-            /**
-             * Resets component.
-             */
-            reset: function() {
-                var account = JSON.parse(JSON.stringify(this.account));
+            _setNewImage: function(file) {
+                var reader = new FileReader();
 
-                this.account = {};
-                this.account = account;
+                reader.onload = function(e) {
+                    this._setObjectAttribute('account', 'picture_url', e.target.result);
+                }.bind(this);
 
+                reader.readAsDataURL(file);
+            },
+
+            _fireChangeEvent: function() {},
+
+            _setStateAfterImageIsRemoved: function() {
+                this._setObjectAttribute('account', 'picture_url', '');
+                this._hideLoader();
             }
         });
     </script>
