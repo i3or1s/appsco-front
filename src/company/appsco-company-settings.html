@@ -129,8 +129,14 @@ Custom property | Description | Default
                                      on-change="_mailAdminOnNewDeviceChanged">
                     Send email notification to system admin when managed users log in from a new device
                 </paper-toggle-button>
+                <paper-toggle-button name="company_settings[sendEmailToAdminOnNewUser]"
+                                     id="newUserInfoAdminEmail"
+                                     checked$="[[ company.mail_admin_on_new_user ]]"
+                                     on-change="_mailAdminOnNewUserChanged">
+                    Send email notification to admins when user/contact invite is accepted.
+                </paper-toggle-button>
 
-                <template is="dom-if" if="[[ _emailAdminOnNewDevice ]]">
+                <template is="dom-if" if="[[ _showAdminEmailField ]]">
                     <paper-input id="sendEmailToAdminOnNewDevice"
                                  label="Admin email"
                                  name="company_settings[newDeviceInfoAdminEmail]"
@@ -230,9 +236,17 @@ Custom property | Description | Default
 
                 _emailAdminOnNewDevice: {
                     type: Boolean,
-                    value: function() {
-                        return this.$.newDeviceInfoAdminEmail;
-                    }
+                    value: false
+                },
+
+                _emailAdminOnNewUser: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _showAdminEmailField: {
+                    type: Boolean,
+                    computed: '_computeShowAdminEmailField(_emailAdminOnNewDevice, _emailAdminOnNewUser)'
                 }
             },
 
@@ -257,6 +271,8 @@ Custom property | Description | Default
             _onCompanyChanged: function() {
                 this.$.contactEmail.invalid = false;
                 this.$.billingEmail.invalid = false;
+                this._emailAdminOnNewDevice = this.company ? this.company.mail_admin_on_new_device : false;
+                this._emailAdminOnNewUser = this.company ? this.company.mail_admin_on_new_user : false;
             },
 
             _showLoader: function() {
@@ -326,8 +342,16 @@ Custom property | Description | Default
                 window.location.reload(true);
             },
 
+            _mailAdminOnNewUserChanged: function() {
+                this._emailAdminOnNewUser = this.$.newUserInfoAdminEmail.checked;
+            },
+
             _mailAdminOnNewDeviceChanged: function() {
                 this._emailAdminOnNewDevice = this.$.newDeviceInfoAdminEmail.checked;
+            },
+
+            _computeShowAdminEmailField: function(_emailAdminOnNewDevice, _emailAdminOnNewUser) {
+                return _emailAdminOnNewDevice || _emailAdminOnNewUser;
             },
 
             /**
