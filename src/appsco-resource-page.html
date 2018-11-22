@@ -60,18 +60,13 @@
                 top: 0;
                 right: 0;
             }
-            :host .application-icon {
-                width: 64px;
-                height: 64px;
-                margin: 0 auto;
-                display: block;
-            }
             appsco-account-image {
                 position: absolute;
                 bottom: -22px;
                 left: 10px;
                 box-sizing: border-box;
 
+                --account-initials-background-color: var(--body-background-color-darker);
                 --account-image: {
                     width: 42px;
                     height: 42px;
@@ -141,7 +136,6 @@
                             on-tap="_onShareApplication"></paper-icon-button>
 
                     <appsco-resource-image-settings
-                        class="application-icon"
                         resource="{{ application.application }}"
                         authorization-token="[[ authorizationToken ]]"
                         image-settings-api="[[ _resourceImageSettingsApi ]]"

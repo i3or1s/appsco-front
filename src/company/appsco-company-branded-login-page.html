@@ -28,10 +28,8 @@
                     border-bottom: 1px solid var(--divider-color);
                 };
 
-                --company-image-upload-container: {
-                    background-color: var(--body-background-color);
-                    padding: 10px;
-                    margin: 0;
+                --appsco-upload-image-settings: {
+                    display: inline-block;
                 };
             }
             paper-card {
@@ -97,6 +95,7 @@
                             image-settings-api="[[ _companyLogoApi ]]"
                             image-alt="Company logo"
                             loader-alt="AppsCo is saving company logo"
+                            remove-action-text="Remove logo"
                     ></appsco-image-upload>
                 </div>
 
@@ -191,6 +190,7 @@
                                     image-settings-api="[[ _companyBackgroundApi ]]"
                                     image-alt="Company background image"
                                     loader-alt="AppsCo is saving background image"
+                                    remove-action-text="Remove image"
                             ></appsco-image-upload>
                         </div>
                     </div>
