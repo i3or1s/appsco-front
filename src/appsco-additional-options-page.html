@@ -1,0 +1,232 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+
+<link rel="import" href="components/page/appsco-content.html">
+<link rel="import" href="components/page/appsco-manage-page-styles.html">
+<link rel="import" href="components/additional-options/appsco-additional-options-components-page.html">
+<link rel="import" href="components/additional-options/appsco-manage-idp-page.html">
+
+<dom-module id="appsco-additional-options-page">
+    <template>
+        <style include="appsco-manage-page-styles">
+            :host div[resource] .resource-header {
+                padding: 10px;
+            }
+            :host div[resource] > .resource-content p {
+                margin-bottom: 10px;
+            }
+        </style>
+
+        <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
+        <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
+        <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
+
+        <appsco-content id="appscoContent" resource-active>
+
+            <div class="flex-vertical" resource>
+                <div class="resource-header">
+                    Resources additional options
+                </div>
+                <div class="resource-content">
+                    <p class="info">
+                        Additional options may vary depending
+                        on the Identity provider and integrations you have set up for your company.
+                    </p>
+                    <p class="info">
+                        This page simplifies the process of finding and adding the related resources to your company.
+                    </p>
+                </div>
+            </div>
+
+            <div content>
+                <div class="content-container">
+                    <neon-animated-pages class="flex"
+                                         selected="{{ _selected }}"
+                                         attr-for-selected="name">
+
+                        <appsco-additional-options-components-page
+                                id="appscoAdditionalOptionsComponentsPage"
+                                name="appsco-additional-options-components-page"
+                                get-company-idp-config-list-api="[[ getCompanyIdpConfigListApi ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                api-errors="[[ apiErrors ]]"
+                                on-idp-config-list-loaded="_onPageLoaded"
+                                on-manage-idp="_onManageIdP">
+                        </appsco-additional-options-components-page>
+
+                        <appsco-manage-idp-page
+                                id="appscoManageIdpPage"
+                                name="appsco-manage-idp-page"
+                                idp="[[ _idp ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                company="[[ company ]]"
+                                api-errors="[[ apiErrors ]]"
+                                on-back="_onBack">
+                        </appsco-manage-idp-page>
+                    </neon-animated-pages>
+                </div>
+
+            </div>
+        </appsco-content>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'appsco-additional-options-page',
+
+            properties: {
+
+                getCompanyIdpConfigListApi: {
+                    type: String,
+                    value: ''
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                company: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                mediumScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                tabletScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                mobileScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': {
+                                name: 'fade-in-animation',
+                                node: this,
+                                timing: {
+                                    duration: 300
+                                }
+                            },
+                            'exit': {
+                                name: 'fade-out-animation',
+                                node: this,
+                                timing: {
+                                    duration: 200
+                                }
+                            }
+                        }
+                    }
+                },
+
+                pageLoaded: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _idp: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _selected: {
+                    type: String,
+                    value: 'appsco-additional-options-components-page',
+                    notify: true
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimatableBehavior
+            ],
+
+            observers: [
+                '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+            ],
+
+            attached: function() {
+                this.pageLoaded = false;
+
+                if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                    this.updateStyles();
+                }
+            },
+
+            initializePage: function() {
+                this.$.appscoAdditionalOptionsComponentsPage.initializePage();
+            },
+
+            resetPage: function() {
+                this._showComponentsPage();
+                this.$.appscoAdditionalOptionsComponentsPage.resetPage();
+            },
+
+            toggleResource: function() {
+                this.$.appscoContent.toggleSection('resource');
+            },
+
+            modifyAddedResource: function(resource) {
+                this.$.appscoManageIdpPage.modifyAddedResource(resource);
+            },
+
+            _updateScreen: function(medium, tablet, mobile) {
+                this.updateStyles();
+
+                if (mobile) {
+                    this.$.appscoContent.hideSection('resource');
+                }
+                else if (!this.$.appscoContent.resourceActive) {
+                    this.$.appscoContent.showSection('resource');
+                }
+            },
+
+            _onPageLoaded: function() {
+                this.pageLoaded = true;
+                this.fire('page-loaded');
+            },
+
+            _showComponentsPage: function() {
+                this._selected = 'appsco-additional-options-components-page';
+            },
+
+            _showManagePage: function() {
+                this._selected = 'appsco-manage-idp-page';
+            },
+
+            _onBack: function() {
+                this._showComponentsPage();
+            },
+
+            _onManageIdP: function(event) {
+                this.set('_idp', event.detail.idp);
+                this._showManagePage();
+            }
+        });
+    </script>
+</dom-module>

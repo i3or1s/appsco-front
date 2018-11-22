@@ -1,0 +1,185 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/slide-from-left-animation.html">
+<link rel="import" href="../../../bower_components/paper-styles/typography.html">
+
+<link rel="import" href="appsco-integration-resource-item.html">
+<link rel="import" href="../components/appsco-list-behavior.html">
+<link rel="import" href="../components/appsco-list-styles.html">
+<link rel="import" href="../components/appsco-list-observer-behavior.html">
+
+<dom-module id="appsco-integration-resources">
+    <template>
+        <style include="appsco-list-styles"></style>
+
+        <style>
+            appsco-integration-resource-item {
+                @apply(--appsco-integration-resource-item);
+            }
+            :host .info-total {
+                margin-bottom: 10px;
+            }
+            :host .total {
+                @apply(--paper-font-caption);
+                color: var(--secondary-text-color);
+            }
+        </style>
+
+        <iron-ajax id="getListApiRequest"
+                   url="[[ _listApi ]]"
+                   on-error="_onError"
+                   on-response="_onGetListResponse"
+                   headers="[[ _headers ]]"
+                   debounce-duration="300"></iron-ajax>
+
+        <div class="list-container">
+
+            <paper-progress id="paperProgress"
+                            class="list-progress-bar"
+                            indeterminate></paper-progress>
+
+            <template is="dom-if" if="[[ _message ]]">
+                <p class="message">[[ _message ]]</p>
+            </template>
+
+            <template is="dom-if" if="[[ !_listEmpty ]]">
+                <div class="info-total">
+                    <div class="total">
+                        Total resources: [[ _totalListItems ]]
+                    </div>
+                </div>
+
+                <div class="list">
+                    <template is="dom-repeat"
+                              items="[[ _listItems ]]"
+                              on-dom-change="_onItemsDomChange">
+
+                        <appsco-integration-resource-item id="appscoListItem_[[ index ]]"
+                                                      item="[[ item ]]"
+                                                      type="[[ type ]]"></appsco-integration-resource-item>
+
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <template is="dom-if" if="[[ !_listEmpty ]]">
+            <div class="load-more-box" hidden$="[[ !_loadMore ]]">
+                <paper-progress id="loadMoreProgress"
+                                indeterminate></paper-progress>
+                <paper-button class="load-more-action" on-tap="_onLoadMoreAction">Load More</paper-button>
+            </div>
+        </template>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-integration-resources',
+
+            properties: {
+            },
+
+            behaviors: [
+                Polymer.AppscoListBehavior,
+                Polymer.AppscoListObserverBehavior
+            ],
+
+            observers: [
+                '_observeItems(_listItems)'
+            ],
+
+            attached: function() {
+                this._showProgressBar()
+            },
+
+            _observeItems: function(items) {
+                this.setObservableType('resources');
+                this.populateItems(items);
+            },
+
+            _setFinalItemList: function(availableItemList, existingItemList) {
+                var availableIndex = availableItemList.length,
+                    existingIndex = existingItemList.length;
+
+                for (var i = 0; i < availableIndex; i++) {
+                    var availableItem = availableItemList[i];
+
+                    for (var j = 0; j < existingIndex; j++) {
+
+                        if (availableItem.id === existingItemList[j].id) {
+                            availableItem.exists = true;
+                            existingItemList.splice(j, 1);
+                            existingIndex--;
+                        }
+                    }
+                }
+
+                return availableItemList;
+            },
+
+            _onGetListResponse: function(event) {
+                var response = event.detail.response,
+                    availableItemList = response.available ? response.available : [],
+                    existingItemList = response.existing ? response.existing : [],
+                    itemList = (0 < availableItemList.length) ? this._setFinalItemList(availableItemList, existingItemList) : [],
+                    itemListCount = itemList.length;
+
+                this._hideMessage();
+                this._totalListItems = itemListCount;
+
+                if (0 === itemListCount) {
+                    this._showMessage('There are no resources to display.');
+                    this._handleEmptyLoad();
+                    return false;
+                }
+
+                if (0 < itemListCount) {
+                    this._listEmpty = false;
+
+                    itemList.forEach(function(el, index) {
+
+                        this._listLoaders.push(setTimeout(function() {
+                            var items = JSON.parse(JSON.stringify(this._listItems));
+
+                            el.activated = false;
+                            el.selected = false;
+
+                            this._listItems = [];
+                            items.push(el);
+                            this._listItems = items;
+                            this.push('_allListItems', el);
+
+                            if (index == itemListCount - 1) {
+                                this._hideProgressBar();
+
+                                /**
+                                 * Fired when items are loaded
+                                 *
+                                 * @event loaded
+                                 * @param {Object} items[]
+                                 */
+                                this.fire('list-loaded', {
+                                    items: itemList
+                                });
+                            }
+
+                        }.bind(this), (index + 1) * 30 ));
+
+                    }.bind(this));
+
+                }
+                else {
+                    (itemList && !itemListCount) ?
+                        this._showMessage('There are no resources to display.') :
+                        this._showMessage('We couldn\'t load resources at the moment. Please contact AppsCo support.');
+
+                    this._handleEmptyLoad();
+                }
+            }
+        });
+    </script>
+</dom-module>

@@ -450,6 +450,11 @@
                                                                name="policies-report"
                                                                on-back="_showReportsPage"
                                                                on-resource-section="_onResourceActionPage"></appsco-policy-report-page-actions>
+
+                            <appsco-additional-options-page-actions id="appscoPolicyReportPageActions"
+                                                                    name="additional-options"
+                                                                    on-back="_showCompanyResourcesPage"
+                                                                    on-resource-section="_onResourceActionPage"></appsco-additional-options-page-actions>
                         </neon-animated-pages>
 
                     </app-toolbar>
@@ -995,6 +1000,14 @@
                             export-compliance-report-api="[[ _exportComplianceReportApi ]]"
                             api-errors="[[ _apiErrors ]]"
                             on-filter-policies-report="_showProgressBar"></appsco-policies-report-page>
+
+                    <appsco-additional-options-page name="additional-options" page company-page
+                            id="appscoAdditionalOptionsPage"
+                            authorization-token="[[ authorizationToken ]]"
+                            get-company-idp-config-list-api="[[ _getCompanyIdpConfigListApi ]]"
+                            company="[[ currentCompany.company ]]"
+                            api-errors="[[ _apiErrors ]]"
+                            on-add-item="_onAddIdPItemAction"></appsco-additional-options-page>
 
                     <appsco-logout-page name="logout" page
                                         logout-api="[[ api.logout ]]"></appsco-logout-page>
@@ -1611,6 +1624,15 @@
                                      authorization-token="[[ authorizationToken ]]"
                                      api-errors="[[ _apiErrors ]]"
                                      on-policy-status-changed="_onPolicyStatusChanged"></appsco-change-policy-status>
+
+        <appsco-idp-resource-add
+                id="appscoIdpResourceAdd"
+                authorization-token="[[ authorizationToken ]]"
+                add-resource-api="[[ _companyApplicationsApi ]]"
+                link-api="[[ api.link ]]"
+                api-errors="[[ _apiErrors ]]"
+                on-resource-added="_onIdpResourceAdded">
+        </appsco-idp-resource-add>
 
         <template is="dom-if" if="[[ api.me ]]">
             <iron-ajax auto
@@ -2311,6 +2333,7 @@
             ],
 
             listeners: {
+                'show-page-progress-bar': '_showProgressBar',
                 'page-global-info': '_onInfoAction',
                 'page-global-filters': '_onFiltersAction',
                 'page-global-toggle-additional-options': '_onToggleAdditionalOptionsAction',
@@ -2675,6 +2698,9 @@
                     case 'get-started':
                         return 'Get started';
 
+                    case 'additional-options':
+                        return 'Additional Options';
+
                     default:
                         return page;
                 }
@@ -2779,6 +2805,10 @@
 
             _showOAuthApplicationsPage: function() {
                 this._showPage('oauth-applications');
+            },
+
+            _showAdditionalOptionsPage: function() {
+                this._showPage('additional-options');
             },
 
             _showPage404: function() {
@@ -3376,6 +3406,10 @@
                     case 'get-started':
                         return this.$.appscoGetStartedPage;
                         break;
+
+                    case 'additional-options':
+                        return this.$.appscoAdditionalOptionsPage;
+                        break;
                 }
             },
 
@@ -3593,8 +3627,9 @@
                 }
             },
 
-            // TODO - implement action to open "Additional options" page
-            _onEditAdditionalOptionsAction: function() {},
+            _onEditAdditionalOptionsAction: function() {
+                this._showAdditionalOptionsPage();
+            },
 
             _reloadHomePageApplications: function() {
 
@@ -6641,6 +6676,31 @@
             },
             /**
              * Policies page END
+             */
+
+            /**
+             * Additional Options page START
+             */
+            _onAddIdPItemAction: function(event) {
+                var component = this.$.appscoIdpResourceAdd;
+
+                if (component && component.$) {
+                    component.setResource(event.detail.item);
+                    component.open();
+                }
+            },
+
+            _onIdpResourceAdded: function(event) {
+                var resource = event.detail.resource;
+
+                this._notify(resource.title + ' was successfully added.');
+
+                if (this.$.appscoAdditionalOptionsPage.$) {
+                    this.$.appscoAdditionalOptionsPage.modifyAddedResource(event.detail.template);
+                }
+            },
+            /**
+             * Additional Options page END
              */
 
             /**

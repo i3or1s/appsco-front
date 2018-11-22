@@ -1,0 +1,340 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+
+<link rel="import" href="../components/appsco-loader.html">
+<link rel="import" href="../components/appsco-form-error.html">
+
+<dom-module id="appsco-idp-resource-add">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            :host paper-dialog {
+                width: 670px;
+                top: 20vh;
+                @apply(--appsco-paper-dialog);
+            }
+            :host paper-dialog-scrollable > * {
+                @apply(--paper-dialog-scrollable-child);
+            }
+            appsco-loader {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            :host .buttons {
+                padding-right: 24px;
+            }
+            :host .buttons paper-button {
+                @apply(--paper-dialog-button);
+            }
+            :host .buttons paper-button.add-action {
+                margin: 0 0 0 10px;
+                @apply(--paper-dialog-confirm-button);
+            }
+            :host .buttons paper-button[dialog-dismiss] {
+                @apply(--paper-dialog-dismiss-button);
+            }
+        </style>
+
+        <iron-ajax auto
+                   url="[[ linkApi ]]"
+                   headers="[[ _headers ]]"
+                   on-response="_onLinkResponse">
+        </iron-ajax>
+
+        <paper-dialog
+                with-backdrop
+                id="addResourceDialog"
+                entry-animation="scale-up-animation"
+                exit-animation="fade-out-animation"
+                on-iron-overlay-opened="_onDialogOpened"
+                on-iron-overlay-closed="_onDialogClosed">
+
+            <h2>Add resource</h2>
+
+            <appsco-loader active="[[ _loader ]]" loader-alt="AppsCo is processing request" multi-color></appsco-loader>
+
+            <paper-dialog-scrollable>
+                <div class="dialog-container">
+                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+
+                    <form is="iron-form"
+                          hidden
+                          id="addResourceForm"
+                          method="POST"
+                          action="[[ addResourceApi ]]"
+                          headers="[[ _headers ]]"
+                          on-iron-form-error="_onFormError"
+                          on-iron-form-response="_onFormResponse">
+                        <paper-input type="text" name="application_templates[]" value="[[ _link.self ]]"></paper-input>
+                    </form>
+
+                    <form is="iron-form"
+                          id="saveResourceForm">
+                        <paper-input
+                                id="title"
+                                label="title"
+                                value="[[ resource.title ]]"
+                                name="configure_application[title]"
+                                required
+                                auto-validate
+                                error-message="Please enter resource title."
+                        ></paper-input>
+                        <paper-input
+                                id="url"
+                                label="url"
+                                value="[[ resource.url ]]"
+                                pattern="[[ _urlValidationPattern ]]"
+                                error-message="Url is invalid."
+                                required
+                                auto-validate
+                                name="configure_application[url]"
+                                hidden$="[[ !_shouldShowUrl ]]"
+                        ></paper-input>
+                    </form>
+                </div>
+            </paper-dialog-scrollable>
+
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button
+                        id="addResourceAction"
+                        class="add-action"
+                        on-tap="_onAddResourceAction">
+                    Add
+                </paper-button>
+            </div>
+        </paper-dialog>
+
+        <iron-a11y-keys target="[[ _target ]]"
+                        keys="enter"
+                        on-keys-pressed="_onEnter"></iron-a11y-keys>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-idp-resource-add',
+
+            properties: {
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                addResourceApi: {
+                    type: String,
+                    value: ''
+                },
+
+                linkApi: {
+                    type: String,
+                    value: ''
+                },
+
+                resource: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _link: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _headers: {
+                    type: Object,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                _loader: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _error: {
+                    type: String
+                },
+
+                _target: {
+                    type: Object,
+                    value: function() {
+                        return this.$.addResourceForm
+                    }
+                }
+            },
+
+            open: function() {
+                this._openDialog();
+            },
+
+            setResource: function(resource) {
+                this.set('resource', resource);
+            },
+
+            _computeHeaders: function (authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            },
+
+            _showLoader: function() {
+                this._loader = true;
+            },
+
+            _hideLoader: function() {
+                this._loader = false;
+            },
+
+            _showError: function(message) {
+                this._error = message;
+            },
+
+            _hideError: function() {
+                this._error = '';
+            },
+
+            _openDialog: function() {
+                this.$.addResourceDialog.open();
+            },
+
+            _closeDialog: function() {
+                this.$.addResourceDialog.close();
+            },
+
+            _onDialogOpened: function() {
+                this.$.title.focus();
+            },
+
+            _onDialogClosed: function() {
+                this._hideLoader();
+                this._hideError();
+                this.set('resource', {});
+            },
+
+            _onLinkResponse: function(event) {
+                this.set('_link', event.detail.response);
+            },
+
+            _onEnter: function() {
+                this._onAddResourceAction();
+            },
+
+            _onAddResourceAction: function() {
+                this._hideError();
+
+                if (this.$.saveResourceForm.validate()) {
+                    this._showLoader();
+                    this._target.submit();
+                }
+            },
+
+            _onFormError: function(event) {
+                this._showError(this.apiErrors.getError(event.detail.request.response.code));
+                this._hideLoader();
+            },
+
+            /**
+             * Called after resource is added as icon.
+             * It calls resource configure method.
+             *
+             * @param {Object} event
+             * @private
+             */
+            _onFormResponse: function(event) {
+                var resources = event.detail.response.applications;
+
+                if (resources && 0 < resources.length) {
+                    this._updateResourceSettings(resources[0]);
+                }
+                else {
+                    this._showError(this.apiErrors.getError(404));
+                    this._hideLoader();
+                }
+            },
+
+            _updateResourceSettings: function(resource) {
+                var title = this.$.title.value,
+                    url = this.$.url.value;
+
+                if (resource.title !== title || resource.url != url) {
+                    this._submitResourceConfigure(resource).then(function(resource) {
+                        this._onResourceAdded(resource);
+                    }.bind(this), function(message) {
+                        this._showError(message);
+                        this._hideLoader();
+                    }.bind(this));
+                }
+                else {
+                    this._onResourceAdded(resource);
+                }
+            },
+
+            _submitResourceConfigure: function(resource) {
+                var titleInput = this.$.title,
+                    urlInput = this.$.url;
+
+                return new Promise(function(resolve, reject) {
+                    var request = document.createElement('iron-request'),
+                        options = {
+                            url: resource.self,
+                            method: 'PATCH',
+                            handleAs: 'json',
+                            headers: this._headers
+                        },
+                        body;
+
+                    body = encodeURIComponent(titleInput.name) + '=' + encodeURIComponent(titleInput.value);
+                    body += body == '' ? '' : '&';
+                    body += encodeURIComponent(urlInput.name) + '=' + encodeURIComponent(urlInput.value);
+
+                    options.body = body;
+
+                    request.send(options).then(function() {
+
+                        if (request.succeeded) {
+                            resolve(request.response);
+                        }
+                    }, function() {
+                        reject(this.apiErrors.getError(request.response.code));
+                    });
+                }.bind(this));
+            },
+
+            _onResourceAdded: function(resource) {
+                /**
+                 * Fired after resource has been added.
+                 *
+                 * @event resource-added
+                 */
+                this.fire('resource-added', {
+                    template: this.resource,
+                    resource: resource
+                });
+
+                this._closeDialog();
+            }
+        });
+    </script>
+</dom-module>

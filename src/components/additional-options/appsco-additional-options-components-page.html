@@ -1,0 +1,329 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/cascaded-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/hero-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="appsco-additional-options-components-page">
+    <template>
+        <style>
+            :host {
+                display: block;
+                overflow-y: auto;
+                @apply(--layout-horizontal);
+                @apply(--layout-wrap);
+                @apply(--layout-justified);
+                @apply(--appsco-components-page);
+
+                --paper-card: {
+                    min-height: 150px;
+                    box-sizing: border-box;
+                };
+                --paper-card-content: {
+                    min-height: 70px;
+                    box-sizing: border-box;
+                };
+                --paper-card-actions: {
+                    padding: 0;
+                    border-color: var(--divider-color);
+                };
+                --paper-card-header-text: {
+                    padding: 8px 16px;
+                    font-size: 18px;
+                    color: var(--primary-text-color);
+                    border-bottom: 1px solid var(--divider-color);
+                };
+
+                --paper-button: {
+                    padding: 6px 0;
+                    margin: 0;
+                    border-radius: 0;
+                    width: 100%;
+                    color: var(--primary-text-color);
+                };
+            }
+            :host paper-card {
+                 --paper-button: {
+                    padding: 6px 0;
+                    margin: 0;
+                    border-radius: 0;
+                    width: 100%;
+                    color: var(--primary-text-color);
+                };
+            }
+            :host > * {
+                width: calc(100% / 2 - 10px);
+                margin-bottom: 10px;
+                @apply(--layout-self-start);
+            }
+            :host .info {
+                @apply(--info-message);
+            }
+            :host([mobile-screen]) > * {
+                width: 100%;
+                margin-right: 0;
+            }
+        </style>
+
+        <iron-ajax id="getCompanyIdpConfigListApiRequest"
+                   url="[[ _getCompanyIdpConfigListApi ]]"
+                   headers="[[ _headers ]]"
+                   debounce-duration="300"
+                   auto
+                   on-error="_onGetCompanyIdpConfigListError"
+                   on-response="_onGetCompanyIdpConfigListResponse"></iron-ajax>
+
+        <iron-media-query query="(max-width: 800px)" query-matches="{{ mobileScreen }}"></iron-media-query>
+
+        <template is="dom-if" if="[[ _message ]]">
+            <p class="info">[[ _message ]]</p>
+        </template>
+
+        <template is="dom-repeat" items="[[ _idpConfigList ]]">
+            <div class="integration-card-container">
+                <paper-card heading="[[ item.name ]]" class="card">
+                    <div class="card-content">
+                        <p class="info">
+                            [[ item.name ]] is set as an Identity Provider for your company.
+                            Choose the [[ item.name ]] applications you wish to add to your company.
+                        </p>
+                    </div>
+                    <div class="card-actions">
+                        <paper-button on-tap="_onManageIntegrationAction">Manage</paper-button>
+                    </div>
+                </paper-card>
+            </div>
+        </template>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-additional-options-components-page',
+
+            properties: {
+
+                getCompanyIdpConfigListApi: {
+                    type: String,
+                    value: ''
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                mobileScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': {
+                                name: 'cascaded-animation',
+                                animation: 'fade-in-animation',
+                                nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
+                                nodeDelay: 50,
+                                timing: {
+                                    delay: 200,
+                                    duration: 100
+                                }
+                            },
+                            'exit': [{
+                                name: 'hero-animation',
+                                id: 'hero',
+                                fromPage: this
+                            }, {
+                                name: 'fade-out-animation',
+                                node: this,
+                                timing: {
+                                    duration: 500
+                                }
+                            }]
+                        }
+                    }
+                },
+
+                _getCompanyIdpConfigListApi: {
+                    type: String,
+                    computed: '_computeGetCompanyIdpConfigListApi(getCompanyIdpConfigListApi)'
+                },
+
+                _headers: {
+                    type: Object,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                _idpConfigList: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+
+                _loaders: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+
+                _message: {
+                    type: String,
+                    value: ''
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonSharedElementAnimatableBehavior
+            ],
+
+            observers: [
+                '_updateScreen(mobileScreen)'
+            ],
+
+            attached: function() {
+                this.pageLoaded = false;
+
+                if (this.mobileScreen) {
+                    this.updateStyles();
+                }
+            },
+
+            initializePage: function() {
+                this.fire('show-page-progress-bar');
+                this._getCompanyIdpConfigList();
+            },
+
+            resetPage: function() {
+                this._clearIdpConfigList();
+            },
+
+            _computeHeaders: function(authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken
+                }
+            },
+
+            _computeGetCompanyIdpConfigListApi: function(api) {
+                return api ? (api + '?extended=1&page=1&limit=100') : '';
+            },
+
+            _updateScreen: function() {
+                this.updateStyles();
+            },
+
+            _setSharedElement: function(target) {
+
+                if (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+                    target = target.parentNode;
+                }
+
+                /**
+                 * Set hero animation element that is to be shared between pages.
+                 *
+                 * @type {{hero: *}}
+                 */
+                this.sharedElements = {
+                    'hero': target
+                };
+            },
+
+            _clearLoaders: function() {
+
+                for (var idx in this._loaders) {
+                    clearTimeout(this._loaders[idx]);
+                }
+
+                this.set('_loaders', []);
+            },
+
+            _clearIdpConfigList: function() {
+                this._clearLoaders();
+                this.set('_idpConfigList', []);
+                this.set('_message', '');
+            },
+
+            _fireIdpConfigListLoadedEvent: function(idpConfigList) {
+                this.fire('idp-config-list-loaded', {
+                    idpConfigList: idpConfigList
+                });
+            },
+
+            _getCompanyIdpConfigList: function() {
+                this._clearIdpConfigList();
+
+                if (this._getCompanyIdpConfigListApi && this._headers['Authorization']) {
+                    var requestComponent = this.$.getCompanyIdpConfigListApiRequest;
+
+                    requestComponent.lastRequest.abort();
+                    requestComponent.generateRequest();
+                }
+                else {
+                    this.set('_message', this.apiErrors.getError(404));
+                    this._fireIdpConfigListLoadedEvent([]);
+                }
+            },
+
+            _onGetCompanyIdpConfigListError: function(event) {
+                this.set('_message', this.apiErrors.getError(event.detail.request.response.code));
+                this._fireIdpConfigListLoadedEvent([]);
+            },
+
+            _onGetCompanyIdpConfigListResponse: function(event) {
+                var response = event.detail.response;
+
+                this._clearIdpConfigList();
+                this.set('_message', '');
+
+                if (response && response.configs) {
+                    var idpConfigList = response.configs,
+                        meta = response.meta,
+                        idpConfigListCount = idpConfigList.length - 1;
+
+                    if (0 === meta.total) {
+                        this.set('_message', 'There are no Identity Providers set.');
+                        this._fireIdpConfigListLoadedEvent(idpConfigList);
+                        return false;
+                    }
+
+                    idpConfigList.forEach(function(el, index) {
+
+                        this._loaders.push(setTimeout(function() {
+
+                            this.push('_idpConfigList', el);
+
+                            if (index === idpConfigListCount) {
+                                this._fireIdpConfigListLoadedEvent(idpConfigList);
+                            }
+
+                        }.bind(this), (index + 1) * 30));
+
+                    }.bind(this));
+                }
+            },
+
+            _onManageIntegrationAction: function(event) {
+                this._setSharedElement(event.target);
+                this.fire('manage-idp', {
+                    idp: event.model.item
+                });
+            }
+        });
+    </script>
+</dom-module>
+

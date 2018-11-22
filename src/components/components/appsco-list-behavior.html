@@ -240,7 +240,7 @@
         },
 
         getTotalCount: function() {
-            return this._totalItems;
+            return this._totalListItems;
         },
 
         getCurrentCount: function() {
@@ -265,7 +265,7 @@
                     item.selected = false;
                     currentItems.push(item);
                     allListItems.push(item);
-                    this._totalItems++;
+                    this._totalListItems++;
                 }
                 else {
 
@@ -279,7 +279,7 @@
                             item.selected = false;
                             currentItems.unshift(item);
                             allListItems.unshift(item);
-                            this._totalItems++;
+                            this._totalListItems++;
                         }
 
                     }
@@ -354,7 +354,7 @@
                     }
                 }
 
-                this._totalItems--;
+                this._totalListItems--;
 
             }
 
@@ -559,7 +559,7 @@
         },
 
         _setLoadMoreAction: function() {
-            this._loadMore = (this.loadMore && this._allListItems.length < this._totalItems);
+            this._loadMore = (this.loadMore && this._allListItems.length < this._totalListItems);
         },
 
         _hideLoadMoreAction: function() {
@@ -669,7 +669,7 @@
                 this._showMessage(this.apiErrors.getError(404));
             }
 
-            this._totalItems = 0;
+            this._totalListItems = 0;
             this._handleEmptyLoad();
         },
 
@@ -739,7 +739,7 @@
 
             if (itemList) {
                 this._hideMessage();
-                this._totalItems = meta.total;
+                this._totalListItems = meta.total;
                 this._nextListPageApi = meta.next + '&limit=' + this.size;
 
                 if (0 === meta.total) {
