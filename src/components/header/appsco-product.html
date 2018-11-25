@@ -496,8 +496,10 @@ Custom property | Description | Default
             },
 
             _compareCompaniesByName: function(companyA, companyB) {
-                if (!companyA.company || !companyB.company) {
-                    return -1;
+                if (!companyA.company) {
+                    return -1
+                } else if (!companyB.company) {
+                    return 1;
                 } else {
                     companyA = companyA.company.company.name.toLowerCase();
                     companyB = companyB.company.company.name.toLowerCase();
