@@ -280,7 +280,6 @@
                                     on-select-all-resources="_onSelectAllResourcesAction"
                                     on-share="_onShareResources"
                                     on-remove="_onRemoveApplications"
-                                    on-share-to-group="_onShareResourcesToGroup"
                                     on-page-settings-changed="_pageSettingsChanged"
                             ></appsco-resources-page-actions>
 
@@ -1154,6 +1153,7 @@
                 authorization-token="[[ authorizationToken ]]"
                 get-roles-api="[[ _companyRolesApi ]]"
                 get-contacts-api="[[ _companyContactsApi ]]"
+                get-groups-api="[[ _companyGroupsApi ]]"
                 api-errors="[[ _apiErrors ]]"
                 on-resources-shared="_onResourcesShared"
                 items-loaded="{{ shareResourceDialogAccountsLoaded }}"
@@ -1453,8 +1453,7 @@
         <appsco-resource-add-groups
                 id="appscoShareToGroupDialog"
                 authorization-token="[[ authorizationToken ]]"
-                groups-api="[[ _companyGroupsApi ]]"
-                on-groups-added-to-resources="_onGroupsAddedToResources"></appsco-resource-add-groups>
+                groups-api="[[ _companyGroupsApi ]]"></appsco-resource-add-groups>
 
         <appsco-group-add-resource
                 id="appscoGroupAddResource"
@@ -2393,7 +2392,8 @@
                 'notifications-seen': '_onNotificationsSeen',
                 'resource-moved-to-folder': '_onResourceMovedToFolder',
                 'resource-removed-from-folder': '_onResourceRemovedFromFolder',
-                'reload-access-of-boarding': '_onReloadAccessOnBoarding'
+                'reload-access-of-boarding': '_onReloadAccessOnBoarding',
+                'groups-added-to-resources': '_onGroupsAddedToResources'
             },
 
             attached: function() {
@@ -6083,12 +6083,6 @@
                     this.$.appscoShareToGroupDialog.setType(type);
                     this.$.appscoShareToGroupDialog.open();
                 }
-            },
-
-            _onShareResourcesToGroup: function() {
-                var selectedResources = this.$.appscoResourcesPage.getSelectedResources();
-
-                this._shareToGroup(selectedResources, 'resource');
             },
 
             _onAddGroupsToCompanyRoles: function() {

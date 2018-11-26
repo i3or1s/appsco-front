@@ -203,15 +203,6 @@ Custom property | Description | Default
 
             <template is="dom-if" if="[[ company ]]">
                 <div class="action bulk-action flex-none">
-                    <paper-icon-button id="shareToGroupAction"
-                                       icon="social:group-add"
-                                       alt="Share to group"
-                                       on-tap="_onShareToGroupAction"></paper-icon-button>
-                    <paper-tooltip for="shareToGroupAction"
-                                   position="bottom">Share to group</paper-tooltip>
-                </div>
-
-                <div class="action bulk-action flex-none">
                     <paper-icon-button id="shareAction"
                                        icon="social:share"
                                        alt="Share applications"
@@ -605,22 +596,6 @@ Custom property | Description | Default
                  * @event select-all-resources
                  */
                 this.fire('select-all-resources');
-            },
-
-            /**
-             * Called on share to group action tap.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onShareToGroupAction: function() {
-
-                /**
-                 * Fired when share to group action is triggered.
-                 *
-                 * @event share-to-group
-                 */
-                this.fire('share-to-group');
             },
 
             _onFilterItemsAction: function(event) {
