@@ -18,6 +18,7 @@
 
 <link rel="import" href="../../components/components/appsco-loader.html">
 <link rel="import" href="../../components/components/appsco-form-error.html">
+<link rel="import" href="../../components/combo-box/suggestion-combo-box.html">
 
 <link rel="import" href="appsco-integration-rules-operators.html">
 
@@ -236,7 +237,12 @@
                                                     </paper-dropdown-menu>
                                                 </td>
                                                 <td>
-                                                    <paper-input label="[[ item.key ]]" value="{{ item.value }}"></paper-input>
+                                                    <template is="dom-if" if="[[ item.options ]]">
+                                                        <suggestion-combo-box label="[[ item.key ]]" value="{{ item.value }}" options="[[ item.options ]]" ></suggestion-combo-box>
+                                                    </template>
+                                                    <template is="dom-if" if="[[ !item.options ]]">
+                                                        <paper-input label="[[ item.key ]]" value="{{ item.value }}"></paper-input>
+                                                    </template>
                                                 </td>
                                             </tr>
                                         </template>
@@ -714,7 +720,8 @@
                                 key: idx,
                                 value: '',
                                 supportedOperators: element.conditions[idx],
-                                operator: element.conditions[idx][0]
+                                operator: element.conditions[idx][0],
+                                options: this._getOptions(element, idx)
                             });
                         }
                         this.set('_fromConditionList', _fromConditionList);
@@ -739,6 +746,18 @@
                 if (transformable.indexOf(this.$.toPSOList.selected) === -1) {
                     this.$.toPSOList.selected = null;
                 }
+            },
+
+            _getOptions: function(element, idx) {
+                var result = [null];
+                if (!element.conditions[idx] || !element.condition_options[idx]) {
+                    return null;
+                }
+                for (var i in element.condition_options[idx]) {
+                    result.push(element.condition_options[idx][i]);
+                }
+
+                return result;
             },
 
             _onToPSOSelected: function(event) {
