@@ -1,0 +1,243 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+
+<dom-module id="suggestion-combo-box">
+
+    <template>
+        <style>
+            :host {
+                @apply(--layout-vertical);
+                @apply(--layout-start);
+                font-size: 12px;
+                width: 100%;
+                position: relative;
+            }
+
+            #activeItem {
+                position: absolute;
+                right: 0;
+                top: 30px;
+                color: #9b9b9b;
+            }
+
+            .filter {
+                width: 100%;
+                position: relative;
+                z-index: 5;
+                display: none;
+            }
+
+            .dropdown-content {
+                @apply(--shadow-elevation-2dp);
+                padding: 0;
+                position: absolute;
+                top: 4px;
+                left: 0;
+                width: 100%;
+                z-index: 5;
+                overflow-y: auto;
+            }
+
+            .paper-item {
+                padding: 0 8px;
+                height: 36px;
+                line-height: 18px;
+                font-size: 14px;
+                cursor: pointer;
+            }
+
+            :host #searchPanel {
+                width: 100%;
+            }
+
+            :host #searchPanelInput {
+                margin-top: 20px;
+            }
+
+        </style>
+
+        <div id="searchPanel">
+            <paper-input id="searchPanelInput"
+                         placeholder="[[ label ]]"
+                         no-label-float
+                         value="{{ value }}"
+                         on-focus="_onFilterPanelFocus"
+                         on-blur="_onFilterPanelBlur"
+                         on-keyup="_onFilterPanelKeyup">
+            </paper-input>
+        </div>
+
+        <div id="activeItem"
+             class="item-active item-list-action"
+             on-tap="_showPanelList">
+            [[ _selectedItem ]]
+            <iron-icon icon="arrow-drop-down"></iron-icon>
+        </div>
+
+        <div id="filterPanel" class="filter" hidden$="[[ !_active ]]">
+
+            <paper-listbox id="itemList"
+                           class="dropdown-content"
+                           selected="[[ _selectedItem ]]"
+                           attr-for-selected="value"
+                           on-iron-activate="_onItemActivate">
+
+                <template is="dom-repeat" items="[[ _filteredOptions ]]">
+                    <paper-item class="paper-item"
+                                value="[[ item ]]"
+                                name="[[ item ]]"
+                                label="[[ item ]]">
+                        [[ item ]]
+                        <paper-ripple></paper-ripple>
+                    </paper-item>
+                </template>
+
+            </paper-listbox>
+
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'suggestion-combo-box',
+
+            properties: {
+
+                label: {
+                    type: String,
+                    value: ''
+                },
+
+                value: {
+                    type: String,
+                    value: '',
+                    notify: true
+                },
+
+                options: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    observer: '_onOptionsChanged'
+                },
+
+                _filteredOptions: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+
+                _active: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _selectedItem: {
+                    type: String,
+                    value: ''
+                },
+
+                _clearPanelSearch: {
+                    type: Boolean,
+                    value: ''
+                },
+
+                animationConfig: {
+                    value: function() {
+                        return {
+                            'entry': {
+                                name: 'scale-up-animation',
+                                axis: 'y',
+                                transformOrigin: '0 0',
+                                node: this.$$('#filterPanel'),
+                                timing: {
+                                    delay: 50,
+                                    duration: 200
+                                }
+                            },
+                            'exit': {
+                                name: 'fade-out-animation',
+                                node: this.$$('#filterPanel'),
+                                timing: {
+                                    duration: 100
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimationRunnerBehavior
+            ],
+
+            _stopPropagation: function(e) {
+                e.stopPropagation();
+            },
+
+            _focusFirstPanel: function() {
+                this.$$('#itemList').items[0].focus();
+            },
+
+            _filterItems: function(term) {
+                var items = this.options,
+                    length = items.length;
+
+                if (length === 0) {
+                    this.set('_filteredOptions', JSON.parse(JSON.stringify(this.options)));
+                    return;
+                }
+
+                this.set('_filteredOptions', []);
+
+                for (var i = 0; i < length; i++) {
+                    var item = items[i];
+
+                    if ((null === item) || (item && item.toLowerCase().indexOf(term.toLowerCase()) >= 0))    {
+                        this.push('_filteredOptions', item);
+                    }
+                }
+            },
+
+            _onFilterPanelKeyup: function(event) {
+                term = event.target.value ? event.target.value : '';
+                this._filterItems(term);
+            },
+
+            _showPanelList: function() {
+                this.$$('#searchPanelInput').focus();
+            },
+
+            _onItemActivate: function(event) {
+                var input = this.$$('#searchPanelInput');
+                input.value = event.detail.selected;
+            },
+
+            _onFilterPanelBlur: function() {
+                setTimeout(function() {
+                    this.animationConfig.entry.node.style.display = 'none';
+                    this.playAnimation('exit');
+                }.bind(this), 300);
+            },
+
+            _onFilterPanelFocus: function() {
+                this.animationConfig.entry.node.style.display = 'block';
+                this.playAnimation('entry');
+            },
+
+            _onOptionsChanged: function(newValue) {
+                if (newValue) {
+                    this.set('_filteredOptions', JSON.parse(JSON.stringify(newValue)));
+                }
+
+            }
+        });
+    </script>
+
+</dom-module>
