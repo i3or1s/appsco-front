@@ -270,7 +270,10 @@
                 if (this._getCompanyIdpConfigListApi && this._headers['Authorization']) {
                     var requestComponent = this.$.getCompanyIdpConfigListApiRequest;
 
-                    requestComponent.lastRequest.abort();
+                    if (requestComponent.lastRequest) {
+                        requestComponent.lastRequest.abort();
+                    }
+                    
                     requestComponent.generateRequest();
                 }
                 else {
