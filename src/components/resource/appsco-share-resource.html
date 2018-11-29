@@ -1193,9 +1193,6 @@
                 this.fire('resources-shared', {
                     resources: this._resourcesSharedToAccounts
                 });
-
-                this.set('_selectedAccounts', []);
-                this.set('_resourcesSharedToAccounts', []);
             },
 
             _resourcesShareToGroupsFinished: function() {
@@ -1211,10 +1208,7 @@
                     resourceType: 'resource'
                 });
 
-                this.set('_selectedGroups', []);
-                this.set('_resourcesSharedToGroups', []);
                 this.close();
-                this._hideLoader();
             },
 
             _shareToAccounts: function(application) {
@@ -1330,6 +1324,9 @@
 
                             if (0 < this._selectedGroups.length) {
                                 this._shareResourcesToGroupsAction();
+                            }
+                            else {
+                                this.close();
                             }
                         }
                     }.bind(this), function(message) {
