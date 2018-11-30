@@ -2711,6 +2711,10 @@
                 this._showPage(event.detail.item.name);
             },
 
+            _onShowPage: function(event) {
+                this._showPage(event.detail.page);
+            },
+
             _showPage: function(name) {
                 this.set('routeData.page', name);
             },
