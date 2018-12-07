@@ -91,6 +91,7 @@ Custom property | Description | Default
                         class="mr-10"
                         account="[[ account ]]"
                         chat="[[ accountChat ]]"
+                        tutorial-action-available="[[ tutorialActionAvailable ]]"
                         authorization-token="[[ authorizationToken ]]"
                         notifications-api="[[ notificationsApi ]]"
                         notifications-size="[[ notificationsSize ]]">
@@ -149,6 +150,11 @@ Custom property | Description | Default
 
                 /** Indicates if chat is present or not. */
                 accountChat: {
+                    type: Boolean,
+                    value: false
+                },
+
+                tutorialActionAvailable: {
                     type: Boolean,
                     value: false
                 },
