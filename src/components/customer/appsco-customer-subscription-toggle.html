@@ -29,6 +29,14 @@
 
             <template is="dom-if" if="[[ !_isSubscriptionPaidExternally  ]]">
                 <p>Subscription is paid by customer.</p>
+
+                <p>In order to set the customer subscription payment type as partner pays for customer,
+                    you need to have at least [[ customer.used_licences ]] licences available.</p>
+
+                <p>Once you change the payment type to partner pays for customer, the number of licences the customer
+                    is currently using ([[ customer.used_licences ]]) will automatically be withdrawn from your
+                    available customer licences ([[ partner.remainingLicences ]]).
+                </p>
             </template>
 
             <template is="dom-if" if="[[ _isSubscriptionPaidExternally  ]]">
@@ -161,6 +169,8 @@
 
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
+                    this.customer.subscription_paid_externally = !status;
+                    this.resetCustomer();
                 }.bind(this));
             },
 
