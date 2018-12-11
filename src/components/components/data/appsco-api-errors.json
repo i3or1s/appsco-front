@@ -31,6 +31,8 @@
         "1516956597": "Error reading CA certificate",
         "1516956621": "Error reading CA key",
         "1519976197": "In order to remove this dashboard folder, you must move all the resources to dashboard or other folders first.",
-        "1527861903": "Cannot share SSO resource to unmanaged account"
+        "1527861903": "Cannot share SSO resource to unmanaged account",
+        "1544184895": "Can not assign fewer licences than active users",
+        "1519737987": "Not enough licences are available to complete the operation"
     }
 }
