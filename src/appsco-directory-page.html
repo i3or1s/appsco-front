@@ -771,6 +771,7 @@
                 if (200 === status && response) {
                     this._verifiedDomains = response.verified;
                     this._domainsLoaded = true;
+                    this._evaluateDomainVerification();
                 }
             },
 
