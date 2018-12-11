@@ -509,7 +509,7 @@ Custom property | Description | Default
                 return {
                     icon: 'icons:apps',
                     date: item.created_at.date,
-                    message: this.localize('account_log_application_authorized', 'application', item.data.oauth_authorization.oauth_application.title),
+                    message: this.localize('account_log_application_authorized', 'application', item.data.application.title),
                     address: item.ip
                 }
             },
@@ -518,7 +518,7 @@ Custom property | Description | Default
                 return {
                     icon: 'icons:undo',
                     date: item.created_at.date,
-                    message: this.localize('account_log_application_revoked', 'application', item.data.oauth_authorization.oauth_application.title),
+                    message: this.localize('account_log_application_revoked', 'application', item.data.application.title),
                     address: item.ip
                 }
             },
@@ -592,10 +592,10 @@ Custom property | Description | Default
             _formatLogRoleAddedToOrgunit: function(item) {
                 var logItem = {
                         date: item.created_at.date,
-                        message: this.localize('account_log_role_added_to_orgunit', 'account', item.data.account.name, 'orgunit', item.data.orgunit.name, 'company', item.data.company.name),
+                        message: this.localize('account_log_role_added_to_orgunit', 'account', item.data.role.account.display_name, 'orgunit', item.data.orgunit.name, 'company', item.data.company.name),
                         address: item.ip
                     },
-                    picture = item.data.account.picture_url;
+                    picture = item.data.role.account.picture_url;
 
 
 
