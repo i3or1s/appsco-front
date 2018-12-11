@@ -750,7 +750,7 @@
 
             _getOptions: function(element, idx) {
                 var result = [null];
-                if (!element.conditions[idx] || !element.condition_options[idx]) {
+                if (!element.conditions || !element.condition_options || !element.conditions[idx] || !element.condition_options[idx]) {
                     return null;
                 }
                 for (var i in element.condition_options[idx]) {
