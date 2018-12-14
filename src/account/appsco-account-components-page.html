@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/hero-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/cascaded-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
@@ -14,26 +13,12 @@
 <link rel="import" href="../components/account/appsco-account-notifications.html">
 <link rel="import" href="../components/account/appsco-account-authorized-apps.html">
 <link rel="import" href="../components/account/appsco-account-log.html">
+<link rel="import" href="../components/page/appsco-layout-with-cards-styles.html">
 
 <dom-module id="appsco-account-components-page">
     <template>
-        <style>
+        <style include="appsco-layout-with-cards-styles">
             :host {
-                display: block;
-                overflow-y: auto;
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
-                @apply(--layout-justified);
-                @apply(--appsco-components-page);
-
-                --paper-button: {
-                     padding: 6px 0;
-                     margin: 0;
-                     border-radius: 0;
-                     width: 100%;
-                     color: var(--primary-text-color);
-                 };
-
                 --account-details-value: {
                      font-size: 14px;
                  };
@@ -42,30 +27,6 @@
                 --iron-icon-width: 20px;
                 --iron-icon: {
                      margin-top: -3px;
-                 };
-            }
-            :host > * {
-                width: calc(100% / 3 - 10px);
-                margin-bottom: 10px;
-                @apply(--layout-self-start);
-            }
-            paper-card {
-                 min-height: 150px;
-                 box-sizing: border-box;
-
-                --paper-card-content: {
-                     min-height: 70px;
-                     box-sizing: border-box;
-                 };
-                --paper-card-actions: {
-                     padding: 0;
-                     border-color: var(--divider-color);
-                 };
-                --paper-card-header-text: {
-                     padding: 8px 16px;
-                     font-size: 18px;
-                     color: var(--primary-text-color);
-                     border-bottom: 1px solid var(--divider-color);
                  };
             }
             appsco-account-details {
@@ -91,14 +52,6 @@
             .info-2fa {
                   margin-top: 10px;
             }
-            .appsco-account-notifications, .appsco-account-authorized-apps, .appsco-account-log {
-                --paper-card-content: {
-                     min-height: 70px;
-                     padding-top: 0;
-                     padding-bottom: 0;
-                     box-sizing: border-box;
-                 };
-            }
             appsco-account-notifications {
                 --appsco-account-notifications-container: {
                      padding-top: 4px;
@@ -120,8 +73,7 @@
                 --account-authorized-apps-container: {
                      padding-top: 4px;
                  };
-
-                --account-authorized-apps-paper-progress: {
+                --appsco-list-progress-bar: {
                      top: 4px;
                  };
                 --paper-progress-container-color: var(--app-primary-color);
@@ -135,7 +87,7 @@
                 --appsco-account-log-container: {
                      padding-top: 4px;
                  };
-                --account-log-paper-progress: {
+                --appsco-list-progress-bar: {
                      top: 4px;
                  };
                 --appsco-account-log-item: {
@@ -148,49 +100,7 @@
                      top: 2px;
                  };
             }
-            .details-2fa, .notifications-authorized-apps, .log-container {
-                @apply(--layout-vertical);
-            }
-            .details-2fa, .notifications-authorized-apps {
-                margin-right: 10px;
-            }
-            .appsco-account-details, .appsco-account-notifications, .appsco-account-log {
-                margin-bottom: 10px;
-            }
-            :host([medium-screen]) > * {
-                width: calc(100% / 2 - 10px);
-            }
-            :host([medium-screen]) .notifications-authorized-apps {
-                margin-right: 0;
-            }
-            :host([medium-screen]) > .log-container {
-                @apply(--layout-horizontal);
-                @apply(--layout-start);
-                width: 100%;
-            }
-            :host([medium-screen]) > .log-container paper-card {
-                @apply(--layout-flex);
-            }
-            :host([medium-screen]) > .log-container .appsco-account-log {
-                margin-right: 20px;
-            }
-            :host([tablet-screen]) > .log-container {
-                @apply(--layout-vertical);
-            }
-            :host([tablet-screen]) > .log-container paper-card {
-                @apply(--layout-flex-none);
-                width: 100%;
-            }
-            :host([tablet-screen]) > .log-container .appsco-account-log {
-                margin-right: 0;
-            }
-            :host([tablet-screen]) > * {
-                width: 100%;
-            }
-            :host([tablet-screen]) .details-2fa {
-                margin-right: 0;
-            }
-            .appsco-account-authorized-apps {
+            .advanced-feature {
                 opacity: 0;
                 visibility: hidden;
                 min-height: inherit;
@@ -205,44 +115,14 @@
                      border-bottom: 1px solid var(--success-color);
                  };
             }
-            .appsco-account-authorized-apps paper-button {
+            :host .advanced-feature paper-button {
                 color: var(--success-color);
             }
-            :host([_advanced-settings]) .appsco-account-authorized-apps {
+            :host([_advanced-settings]) .advanced-feature {
                 opacity: 1;
                 visibility: visible;
                 height: auto;
                 transition: opacity 0.3s ease-in;
-            }
-            .message {
-                @apply(--info-message);
-            }
-            .card-content-no-padding .message {
-                margin: 0;
-            }
-            :host([_advanced-settings]) .appsco-account-import-last-pass {
-                opacity: 1;
-                visibility: visible;
-                height: auto;
-                transition: opacity 0.3s ease-in;
-            }
-            .appsco-account-import-last-pass paper-button {
-                color: var(--success-color);
-            }
-            .appsco-account-import-last-pass {
-                opacity: 0;
-                visibility: hidden;
-                min-height: inherit;
-                height: 0;
-                overflow: hidden;
-                transition: opacity 0.2s ease-out;
-
-                --paper-card-header-text: {
-                    padding: 8px 16px;
-                    font-size: 18px;
-                    color: var(--success-color);
-                    border-bottom: 1px solid var(--success-color);
-                };
             }
         </style>
 
@@ -257,75 +137,76 @@
                 headers="{{ _computedHeaders }}">
         </iron-ajax>
 
-        <div class="details-2fa">
-            <paper-card heading="Settings"
-                        class="appsco-account-details">
-                <div class="card-content">
-                    <appsco-account-details
-                            account="{{ account }}">
-                    </appsco-account-details>
-                </div>
-
-                <div class="card-actions">
-                    <paper-button on-tap="_onAccountManageSettings">Manage</paper-button>
-                </div>
-            </paper-card>
-
-            <template is="dom-if" if="[[ !twoFaEnforced ]]">
-                <paper-card heading="Two Factor Authentication"
-                            class="appsco-account-2fa">
+        <div class="cols-layout three-cols-layout">
+            <div class="col">
+                <paper-card heading="Settings"
+                            class="appsco-account-details">
                     <div class="card-content">
-                        <div class="status-2fa">
-
-                            <template is="dom-if" if="[[ _twoFAEnabled ]]">
-                                <iron-icon icon="check" class="icon-enabled"></iron-icon> Enabled
-                            </template>
-
-                            <template is="dom-if" if="[[ !_twoFAEnabled ]]">
-                                <iron-icon icon="clear" class="icon-disabled"></iron-icon> Disabled
-                            </template>
-                        </div>
-
-                        <div class="info-2fa">
-                            Recovery codes can be used to access your account in the event you lose access to your device and cannot receive two-factor authentication codes.
-                            Appsco Support cannot restore access to your accounts with two-factor authentication enabled for security reasons.
-                            Saving your recovery codes in a safe place can keep you from being locked out of your account.
-                        </div>
+                        <appsco-account-details
+                                account="{{ account }}">
+                        </appsco-account-details>
                     </div>
 
                     <div class="card-actions">
-                        <template is="dom-if" if="[[ _twoFAEnabled ]]">
-                            <paper-button on-tap="_on2FAManage">Manage</paper-button>
-                        </template>
-
-                        <template is="dom-if" if="[[ !_twoFAEnabled ]]">
-                            <paper-button on-tap="_on2FAEnable">Enable</paper-button>
-                        </template>
+                        <paper-button on-tap="_onAccountManageSettings">Manage</paper-button>
                     </div>
                 </paper-card>
-            </template>
-        </div>
 
-        <div class="notifications-authorized-apps">
-            <paper-card heading="Notifications"
-                        class="appsco-account-notifications">
-                <div class="card-content">
-                        <appsco-account-notifications
-                                id="appscoAccountNotifications"
-                                authorization-token="[[ authorizationToken ]]"
-                                notifications-api="[[ notificationsApi ]]"
-                                size="5">
-                        </appsco-account-notifications>
-                </div>
+                <template is="dom-if" if="[[ !twoFaEnforced ]]">
+                    <paper-card heading="Two Factor Authentication"
+                                class="appsco-account-2fa">
+                        <div class="card-content">
+                            <div class="status-2fa">
 
-                <div class="card-actions">
-                    <paper-button on-tap="_onAccountNotifications">ALL</paper-button>
-                </div>
-            </paper-card>
+                                <template is="dom-if" if="[[ _twoFAEnabled ]]">
+                                    <iron-icon icon="check" class="icon-enabled"></iron-icon> Enabled
+                                </template>
+
+                                <template is="dom-if" if="[[ !_twoFAEnabled ]]">
+                                    <iron-icon icon="clear" class="icon-disabled"></iron-icon> Disabled
+                                </template>
+                            </div>
+
+                            <div class="info-2fa">
+                                Recovery codes can be used to access your account in the event you lose access to your device and cannot receive two-factor authentication codes.
+                                Appsco Support cannot restore access to your accounts with two-factor authentication enabled for security reasons.
+                                Saving your recovery codes in a safe place can keep you from being locked out of your account.
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            <template is="dom-if" if="[[ _twoFAEnabled ]]">
+                                <paper-button on-tap="_on2FAManage">Manage</paper-button>
+                            </template>
+
+                            <template is="dom-if" if="[[ !_twoFAEnabled ]]">
+                                <paper-button on-tap="_on2FAEnable">Enable</paper-button>
+                            </template>
+                        </div>
+                    </paper-card>
+                </template>
+            </div>
+
+            <div class="col">
+                <paper-card heading="Notifications"
+                            class="appsco-account-notifications">
+                    <div class="card-content">
+                            <appsco-account-notifications
+                                    id="appscoAccountNotifications"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    notifications-api="[[ notificationsApi ]]"
+                                    size="5">
+                            </appsco-account-notifications>
+                    </div>
+
+                    <div class="card-actions">
+                        <paper-button on-tap="_onAccountNotifications">ALL</paper-button>
+                    </div>
+                </paper-card>
 
             <paper-card heading="Authorized applications"
                         id="appscoAccountAuthorizedAppsCard"
-                        class="appsco-account-authorized-apps">
+                        class="advanced-feature">
                 <div class="card-content">
                     <appsco-account-authorized-apps
                             id="appscoAccountAuthorizedApps"
@@ -337,43 +218,43 @@
                     </appsco-account-authorized-apps>
                 </div>
 
-                <div class="card-actions">
-                    <paper-button on-tap="_onManageAuthorizedApps">Manage</paper-button>
-                </div>
-            </paper-card>
-        </div>
+                    <div class="card-actions">
+                        <paper-button on-tap="_onManageAuthorizedApps">Manage</paper-button>
+                    </div>
+                </paper-card>
+            </div>
 
-        <div class="log-container">
-            <paper-card heading="Activity log"
-                        class="appsco-account-log">
-                <div class="card-content">
-                    <appsco-account-log
-                            id="appscoAccountLog"
-                            account="[[ account ]]"
-                            authorization-token="[[ authorizationToken ]]"
-                            log-api="[[ logApi ]]"
-                            size="5"
-                            short-view>
-                    </appsco-account-log>
-                </div>
+            <div class="col">
+                <paper-card heading="Activity log"
+                            class="appsco-account-log">
+                    <div class="card-content">
+                        <appsco-account-log
+                                id="appscoAccountLog"
+                                account="[[ account ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                log-api="[[ logApi ]]"
+                                size="5"
+                                short-view>
+                        </appsco-account-log>
+                    </div>
 
-                <div class="card-actions">
-                    <paper-button on-tap="_onAccountLog">ALL</paper-button>
-                </div>
-            </paper-card>
+                    <div class="card-actions">
+                        <paper-button on-tap="_onAccountLog">ALL</paper-button>
+                    </div>
+                </paper-card>
 
-            <paper-card heading="Import from LastPass"
-                        id="appscoImportFromLastPassCard"
-                        class="appsco-account-import-last-pass">
-                <div class="card-content">
-                        Import records from LastPass to your Personal Dashboard
-                </div>
+                <paper-card heading="Import from LastPass"
+                            id="appscoImportFromLastPassCard"
+                            class="advanced-feature">
+                    <div class="card-content">
+                            Import records from LastPass to your Personal Dashboard
+                    </div>
 
-                <div class="card-actions">
-                    <paper-button on-tap="_onImportFromLastPassAction">Import</paper-button>
-                </div>
-            </paper-card>
-
+                    <div class="card-actions">
+                        <paper-button on-tap="_onImportFromLastPassAction">Import</paper-button>
+                    </div>
+                </paper-card>
+            </div>
         </div>
 
     </template>

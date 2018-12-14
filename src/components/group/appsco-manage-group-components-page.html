@@ -1,5 +1,4 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/hero-animation.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/cascaded-animation.html">
@@ -12,145 +11,70 @@
 <link rel="import" href="appsco-company-group-roles.html">
 <link rel="import" href="appsco-company-group-contacts.html">
 <link rel="import" href="appsco-company-group-resources.html">
+<link rel="import" href="../page/appsco-layout-with-cards-styles.html">
 
 <dom-module id="appsco-manage-group-components-page">
     <template>
-        <style>
-            :host {
-                display: block;
-                overflow-y: auto;
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
-                @apply(--layout-justified);
-                @apply(--appsco-components-page);
-
-                --paper-button: {
-                     padding: 6px 0;
-                     margin: 0;
-                     border-radius: 0;
-                     width: 100%;
-                     color: var(--primary-text-color);
-                 };
-
-                --group-resources-progress-bar: {
-                    top: -6px;
-                };
-
-                --group-roles-progress-bar: {
-                    top: -6px;
-                };
-
-                --group-contacts-progress-bar: {
-                    top: -6px;
-                };
-            }
-            :host > * {
-                width: calc(100% / 3 - 7px);
-                margin-bottom: 10px;
-                float: left;
-            }
-            paper-card {
-                 min-height: 170px;
-                 box-sizing: border-box;
-
-                --paper-card-content: {
-                     min-height: 90px;
-                     box-sizing: border-box;
-                 };
-                --paper-card-actions: {
-                     padding: 0;
-                     border-color: var(--divider-color);
-                 };
-                --paper-card-header-text: {
-                     padding: 8px 16px;
-                     font-size: 18px;
-                     color: var(--primary-text-color);
-                     border-bottom: 1px solid var(--divider-color);
-                 };
-            }
-            .card {
-                @apply(--layout-vertical);
-            }
-            .resources-roles-container .card {
-                margin-right: 10px;
-                margin-bottom: 10px;
-            }
-            .resources-container, .roles-container {
-                margin-right: 10px;
-                margin-bottom: 10px;
-            }
-            :host([medium-screen]) {
-                @apply(--layout-flex-none);
-            }
-            :host([medium-screen]) > * {
-                width: calc(100% / 2 - 5px);
-            }
-            :host([medium-screen]) > .roles-container {
-                margin-right: 0;
-            }
-            :host([tablet-screen]) > * {
-                width: 100%;
-                margin-right: 0;
-            }
-        </style>
+        <style include="appsco-layout-with-cards-styles"></style>
 
         <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
 
-        <div class="resources-container">
-            <paper-card heading="Resources" class="card group-resources">
-                <div class="card-content">
-                    <appsco-company-group-resources
-                            id="appscoCompanyGroupResources"
-                            group="[[ group ]]"
-                            list-api="[[ groupResourcesApi ]]"
-                            authorization-token="[[ authorizationToken ]]"
-                            size="5"
-                            preview></appsco-company-group-resources>
-                </div>
+        <div class="cols-layout three-cols-layout">
+            <div class="col">
+                <paper-card heading="Resources">
+                    <div class="card-content">
+                        <appsco-company-group-resources
+                                id="appscoCompanyGroupResources"
+                                group="[[ group ]]"
+                                list-api="[[ groupResourcesApi ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                size="5"
+                                preview></appsco-company-group-resources>
+                    </div>
 
-                <div class="card-actions">
-                    <paper-button on-tap="_onManageGroupResources">Manage</paper-button>
-                </div>
-            </paper-card>
+                    <div class="card-actions">
+                        <paper-button on-tap="_onManageGroupResources">Manage</paper-button>
+                    </div>
+                </paper-card>
+            </div>
+
+            <div class="col">
+                <paper-card heading="Users">
+                    <div class="card-content">
+                        <appsco-company-group-roles
+                                id="appscoCompanyGroupRoles"
+                                group="[[ group ]]"
+                                list-api="[[ groupRolesApi ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                size="5"
+                                preview></appsco-company-group-roles>
+                    </div>
+
+                    <div class="card-actions">
+                        <paper-button on-tap="_onManageGroupRoles">Manage</paper-button>
+                    </div>
+                </paper-card>
+            </div>
+
+            <div class="col">
+                <paper-card heading="Contacts">
+                    <div class="card-content">
+                        <appsco-company-group-contacts
+                                id="appscoCompanyGroupContacts"
+                                group="[[ group ]]"
+                                list-api="[[ groupContactsApi ]]"
+                                authorization-token="[[ authorizationToken ]]"
+                                size="5"
+                                preview></appsco-company-group-contacts>
+                    </div>
+
+                    <div class="card-actions">
+                        <paper-button on-tap="_onManageGroupContacts">Manage</paper-button>
+                    </div>
+                </paper-card>
+            </div>
         </div>
-
-        <div class="roles-container">
-            <paper-card heading="Users" class="card group-roles">
-                <div class="card-content">
-                    <appsco-company-group-roles
-                            id="appscoCompanyGroupRoles"
-                            group="[[ group ]]"
-                            list-api="[[ groupRolesApi ]]"
-                            authorization-token="[[ authorizationToken ]]"
-                            size="5"
-                            preview></appsco-company-group-roles>
-                </div>
-
-                <div class="card-actions">
-                    <paper-button on-tap="_onManageGroupRoles">Manage</paper-button>
-                </div>
-            </paper-card>
-        </div>
-
-        <div class="contacts-container">
-            <paper-card heading="Contacts" class="card group-contacts">
-                <div class="card-content">
-                    <appsco-company-group-contacts
-                            id="appscoCompanyGroupContacts"
-                            group="[[ group ]]"
-                            list-api="[[ groupContactsApi ]]"
-                            authorization-token="[[ authorizationToken ]]"
-                            size="5"
-                            preview></appsco-company-group-contacts>
-                </div>
-
-                <div class="card-actions">
-                    <paper-button on-tap="_onManageGroupContacts">Manage</paper-button>
-                </div>
-            </paper-card>
-        </div>
-
 
     </template>
 
