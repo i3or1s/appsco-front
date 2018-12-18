@@ -226,17 +226,25 @@
         },
 
         getSelectedItems: function() {
-            var allListItems = JSON.parse(JSON.stringify(this._allListItems)),
+            var listItems = JSON.parse(JSON.stringify(this._listItems)),
+                length = listItems.length,
+                allListItems = JSON.parse(JSON.stringify(this._allListItems)),
                 allLength = allListItems.length,
                 selectedItems = [];
 
-            for (var i = 0; i < allLength; i++) {
-                if (allListItems[i].selected) {
-                    selectedItems.push(allListItems[i]);
+            for (var i = 0; i < length; i++) {
+                if (listItems[i].selected) {
+                    selectedItems.push(listItems[i]);
                 }
             }
 
-            return selectedItems;
+            for (var j = 0; j < allLength; j++) {
+                if (allListItems[j].selected) {
+                    selectedItems.push(allListItems[j]);
+                }
+            }
+
+            return this._removeDuplicatesFromArray(selectedItems, 'self');
         },
 
         getTotalCount: function() {
@@ -648,6 +656,24 @@
             this._showProgressBar();
             this._hideLoadMoreAction();
             this._generateNewRequest();
+        },
+
+        _removeDuplicatesFromArray: function(arr, prop) {
+            var length = arr.length,
+                obj = {},
+                resultArray = [];
+
+            for (var i = 0; i < length; i++) {
+                if (!obj[arr[i][prop]]) {
+                    obj[arr[i][prop]] = arr[i];
+                }
+            }
+
+            for (var key in obj) {
+                resultArray.push(obj[key]);
+            }
+
+            return resultArray;
         },
 
         _onListApiChanged: function(listApi) {
