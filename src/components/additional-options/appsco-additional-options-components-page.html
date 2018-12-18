@@ -1,5 +1,4 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/cascaded-animation.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/hero-animation.html">
@@ -8,64 +7,13 @@
 <link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 
+<link rel="import" href="../page/appsco-layout-with-cards-styles.html">
+
 <dom-module id="appsco-additional-options-components-page">
     <template>
-        <style>
-            :host {
-                display: block;
-                overflow-y: auto;
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
-                @apply(--layout-justified);
-                @apply(--appsco-components-page);
-
-                --paper-card: {
-                    min-height: 150px;
-                    box-sizing: border-box;
-                };
-                --paper-card-content: {
-                    min-height: 70px;
-                    box-sizing: border-box;
-                };
-                --paper-card-actions: {
-                    padding: 0;
-                    border-color: var(--divider-color);
-                };
-                --paper-card-header-text: {
-                    padding: 8px 16px;
-                    font-size: 18px;
-                    color: var(--primary-text-color);
-                    border-bottom: 1px solid var(--divider-color);
-                };
-
-                --paper-button: {
-                    padding: 6px 0;
-                    margin: 0;
-                    border-radius: 0;
-                    width: 100%;
-                    color: var(--primary-text-color);
-                };
-            }
-            :host paper-card {
-                 --paper-button: {
-                    padding: 6px 0;
-                    margin: 0;
-                    border-radius: 0;
-                    width: 100%;
-                    color: var(--primary-text-color);
-                };
-            }
-            :host > * {
-                width: calc(100% / 2 - 10px);
-                margin-bottom: 10px;
-                @apply(--layout-self-start);
-            }
+        <style include="appsco-layout-with-cards-styles">
             :host .info {
                 @apply(--info-message);
-            }
-            :host([mobile-screen]) > * {
-                width: 100%;
-                margin-right: 0;
             }
         </style>
 
@@ -77,27 +25,30 @@
                    on-error="_onGetCompanyIdpConfigListError"
                    on-response="_onGetCompanyIdpConfigListResponse"></iron-ajax>
 
-        <iron-media-query query="(max-width: 800px)" query-matches="{{ mobileScreen }}"></iron-media-query>
+        <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
+        <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
 
         <template is="dom-if" if="[[ _message ]]">
             <p class="info">[[ _message ]]</p>
         </template>
 
-        <template is="dom-repeat" items="[[ _idpConfigList ]]">
-            <div class="integration-card-container">
-                <paper-card heading="[[ item.name ]]" class="card">
-                    <div class="card-content">
-                        <p class="info">
-                            [[ item.name ]] is set as an Identity Provider for your company.
-                            Choose the [[ item.name ]] applications you wish to add to your company.
-                        </p>
-                    </div>
-                    <div class="card-actions">
-                        <paper-button on-tap="_onManageIntegrationAction">Manage</paper-button>
-                    </div>
-                </paper-card>
-            </div>
-        </template>
+        <div class="cols-layout two-cols-layout">
+            <template is="dom-repeat" items="[[ _idpConfigList ]]">
+                <div class="col">
+                    <paper-card heading="[[ item.name ]]" class="card">
+                        <div class="card-content">
+                            <p class="info">
+                                [[ item.name ]] is set as an Identity Provider for your company.
+                                Choose the [[ item.name ]] applications you wish to add to your company.
+                            </p>
+                        </div>
+                        <div class="card-actions">
+                            <paper-button on-tap="_onManageIntegrationAction">Manage</paper-button>
+                        </div>
+                    </paper-card>
+                </div>
+            </template>
+        </div>
     </template>
 
     <script>
@@ -124,7 +75,13 @@
                     }
                 },
 
-                mobileScreen: {
+                tabletScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                mediumScreen: {
                     type: Boolean,
                     value: false,
                     reflectToAttribute: true
@@ -193,13 +150,13 @@
             ],
 
             observers: [
-                '_updateScreen(mobileScreen)'
+                '_updateScreen(tabletScreen, mediumScreen)'
             ],
 
             attached: function() {
                 this.pageLoaded = false;
 
-                if (this.mobileScreen) {
+                if (this.tabletScreen || this.mediumScreen) {
                     this.updateStyles();
                 }
             },
