@@ -252,6 +252,22 @@
                     value: false
                 },
 
+                _isPublicList: {
+                    type: Array,
+                    value: function () {
+                        return [
+                            {
+                                name: 'on',
+                                value: true
+                            },
+                            {
+                                name: 'off',
+                                value: false
+                            }
+                        ]
+                    }
+                },
+
                 _loadMore: {
                     type: Boolean,
                     value: false
@@ -481,12 +497,13 @@
                         logItem = {},
                         message = '';
 
-                for (property in data) {
+                for (var property in data) {
                     var propertyValue = data[property],
+                        propertyName = property.replace('_updated', ''),
                         from = propertyValue.from,
                         to = propertyValue.to;
 
-                    switch (property) {
+                    switch (propertyName) {
                         case 'timezone':
                             this._timezoneList.forEach(function(zone, index) {
 
@@ -532,11 +549,22 @@
 
                             break;
 
+                        case 'is_public':
+                            this._isPublicList.forEach(function(is_public, index) {
+                                if (is_public.value === to) {
+                                    to = is_public.name;
+                                }
+                            });
+                        break;
+
                         default:
                     }
 
-                    var propertyName = property.replace('_updated', '');
-                    message += ' ' + this.localize(propertyName) + ' ' + this.localize('account_log_profile_changed', 'fromValue', from, 'toValue', to);
+                    if ('is_public' === propertyName) {
+                        message += this.localize('public_profile_changed', 'newValue', to);
+                    } else {
+                        message += ' ' + this.localize(propertyName) + ' ' + this.localize('account_log_profile_changed', 'fromValue', from, 'toValue', to);
+                    }
                 }
 
                 return message;

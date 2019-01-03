@@ -88,6 +88,7 @@
         "company_policy_breached": "Company policy \"{ policy }\" has been breached.",
         "resource_admin_added": "Resource admin added for {application}.",
         "resource_admin_removed": "Resource admin removed for {application}.",
-        "company_access_on_boarding_resolved": "Access on boarding event for user \"{user}\" and application \"{application}\" has been resolved by {resolvedBy}. "
+        "company_access_on_boarding_resolved": "Access on boarding event for user \"{user}\" and application \"{application}\" has been resolved by {resolvedBy}. ",
+        "public_profile_changed": "Public profile turned {newValue}."
     }
 }
