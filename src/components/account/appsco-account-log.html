@@ -509,7 +509,11 @@ Custom property | Description | Default
                 return {
                     icon: 'icons:apps',
                     date: item.created_at.date,
-                    message: this.localize('account_log_application_authorized', 'application', item.data.application.title),
+                    message: this.localize(
+                        'account_log_application_authorized',
+                        'application',
+                        item.data.oauth_authorization.oauth_application.title
+                    ),
                     address: item.ip
                 }
             },
