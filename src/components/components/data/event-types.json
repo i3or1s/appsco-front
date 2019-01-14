@@ -67,6 +67,8 @@
         "oauth_application_removed": "OAuth application removed",
         "company_policy_breached": "Company policy breached.",
         "resource_admin_added": "Resource admin added",
-        "resource_admin_removed": "Resource admin removed"
+        "resource_admin_removed": "Resource admin removed",
+        "company_policy_enabled": "Company policy enabled",
+        "company_policy_disabled": "Company policy disabled"
     }
 }
