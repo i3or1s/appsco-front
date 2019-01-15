@@ -1059,6 +1059,14 @@
                         );
                         break;
 
+                    case 'company_policy_enabled':
+                        event = this.localize('company_policy_enabled', 'policy', item.data.policy.name);
+                        break;
+
+                    case 'company_policy_disabled':
+                        event = this.localize('company_policy_disabled', 'policy', item.data.policy.name);
+                        break;
+
                     default:
                 }
 
