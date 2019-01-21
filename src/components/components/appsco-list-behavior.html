@@ -555,6 +555,9 @@
                 case 'integration-webhook':
                     return 'integration web hook';
 
+                case 'integration-template':
+                    return 'integration template';
+
                 case 'policy':
                     return 'policie';
 
@@ -575,27 +578,35 @@
         },
 
         _showProgressBar: function() {
-            this.$$('#paperProgress').hidden = false;
+
+            if (this.$$('#paperProgress')) {
+                this.$$('#paperProgress').hidden = false;
+            }
         },
 
         _hideProgressBar: function() {
 
-            setTimeout(function() {
-                this.$$('#paperProgress').hidden = true;
-            }.bind(this), 300);
-
+            if (this.$$('#paperProgress')) {
+                setTimeout(function() {
+                    this.$$('#paperProgress').hidden = true;
+                }.bind(this), 300);
+            }
         },
 
         _showLoadMoreProgressBar: function() {
-            this.$$('#loadMoreProgress').hidden = false;
+
+            if (this.$$('#loadMoreProgress')) {
+                this.$$('#loadMoreProgress').hidden = false;
+            }
         },
 
         _hideLoadMoreProgressBar: function() {
 
-            setTimeout(function() {
-                this.$$('#loadMoreProgress').hidden = true;
-            }.bind(this), 300);
-
+            if (this.$$('#loadMoreProgress')) {
+                setTimeout(function() {
+                    this.$$('#loadMoreProgress').hidden = true;
+                }.bind(this), 300);
+            }
         },
 
         _showMessage: function(message) {
@@ -739,6 +750,10 @@
 
                 case 'integration-webhook':
                     itemList = response.web_hooks ? response.web_hooks : [];
+                    break;
+
+                case 'integration-template':
+                    itemList = response.templates ? response.templates : [];
                     break;
 
                 case 'certificate':
@@ -942,6 +957,10 @@
 
                             case 'integration-webhook':
                                 resolve(request.response.web_hooks);
+                                break;
+
+                            case 'integration-template':
+                                resolve(request.response.templates);
                                 break;
 
                             case 'certificate':

@@ -20,7 +20,7 @@
         <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
 
-        <div class="cols-layout three-cols-layout">
+        <div class="cols-layout two-cols-layout">
             <div class="col">
                 <paper-card heading="Settings" class="card appsco-integration-settings-card">
                     <div class="card-content">
@@ -32,6 +32,24 @@
                         <paper-button on-tap="_onManageIntegrationSettings">Manage</paper-button>
                     </div>
                 </paper-card>
+
+                <template is="dom-if" if="[[ _isRA ]]">
+                    <paper-card heading="Webhooks" class="card appsco-integration-webhooks-card">
+                        <div class="card-content">
+                            <appsco-integration-webhooks-card
+                                    id="appscoIntegrationWebhooksCard"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    webhook-api="[[ webhookApi ]]"
+                                    on-web-hooks-loaded="_onWebHooksLoaded">
+                            </appsco-integration-webhooks-card>
+                        </div>
+                        <template is="dom-if" if="[[ _showManageWebHooks ]]">
+                            <div class="card-actions">
+                                <paper-button on-tap="_onManageWebhooks">Manage</paper-button>
+                            </div>
+                        </template>
+                    </paper-card>
+                </template>
             </div>
 
             <div class="col">
@@ -46,26 +64,6 @@
                     </div>
                 </paper-card>
             </div>
-
-            <template is="dom-if" if="[[ _isRA ]]">
-                <div class="col">
-                    <paper-card heading="Webhooks" class="card appsco-integration-webhooks-card">
-                        <div class="card-content">
-                            <appsco-integration-webhooks-card
-                                id="appscoIntegrationWebhooksCard"
-                                authorization-token="[[ authorizationToken ]]"
-                                webhook-api="[[ webhookApi ]]"
-                                on-web-hooks-loaded="_onWebHooksLoaded">
-                            </appsco-integration-webhooks-card>
-                        </div>
-                        <template is="dom-if" if="[[ _showManageWebHooks ]]">
-                            <div class="card-actions">
-                                <paper-button on-tap="_onManageWebhooks">Manage</paper-button>
-                            </div>
-                        </template>
-                    </paper-card>
-                </div>
-            </template>
         </div>
 
     </template>
