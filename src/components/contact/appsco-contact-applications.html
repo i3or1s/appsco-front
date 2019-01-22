@@ -190,7 +190,8 @@
                 },
 
                 _totalApplications: {
-                    type: Number
+                    type: Number,
+                    value: 0
                 },
 
                 _loadMore: {
@@ -236,21 +237,24 @@
                 }
             },
 
+            _clearList: function() {
+                this.set('_applications', []);
+                this._message = '';
+                this._nextPage = 1;
+                this._totalApplications = 0;
+            },
+
             /**
              * Triggers ajax request in order to get notifications.
              */
             load: function() {
                 this.$.progress.hidden = false;
-                this._applications = [];
-                this._message = '';
-                this._nextPage = 1;
-
+                this._clearList();
                 this.$.getApplicationsCall.generateRequest();
             },
 
             _loadMore: function() {
                 this.$.progress.hidden = false;
-
                 this.$.getApplicationsCall.generateRequest();
             },
 
@@ -341,10 +345,9 @@
             },
 
             reload: function() {
-                this.set('_applications', []);
-                this._nextPage = 1;
+                this._clearList();
                 this.$.getApplicationsCall.generateRequest();
             }
         });
     </script>
-</dom-module>
+</dom-module>0
