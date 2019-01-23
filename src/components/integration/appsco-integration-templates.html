@@ -1,0 +1,43 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-progress/paper-progress.html">
+
+<link rel="import" href="../components/appsco-list-behavior.html">
+<link rel="import" href="../components/appsco-list-styles.html">
+
+<dom-module id="appsco-integration-templates">
+    <template>
+        <style include="appsco-list-styles"></style>
+        <style></style>
+
+        <iron-ajax id="getListApiRequest"
+                   url="[[ _listApi ]]"
+                   on-error="_onGetListError"
+                   on-response="_onGetListResponse"
+                   headers="[[ _headers ]]"
+                   debounce-duration="300"></iron-ajax>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-integration-templates',
+
+            properties: {
+
+                integration: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.AppscoListBehavior
+            ]
+        });
+    </script>
+</dom-module>
