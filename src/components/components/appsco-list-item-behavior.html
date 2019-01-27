@@ -86,6 +86,10 @@
             }
         },
 
+        listeners: {
+            'neon-animation-finish': '_onNeonAnimationFinished'
+        },
+
         attached: function() {
 
             if (!this.noAutoDisplay) {
@@ -96,6 +100,12 @@
         _showItem: function() {
             this.style.display = 'inline-block';
             this.playAnimation('entry');
+        },
+
+        _hideItem: function() {
+            this.playAnimation('exit', {
+                animation: 'exit'
+            });
         },
 
         _onItemChanged: function(item) {
@@ -164,6 +174,13 @@
 
         _onSelectedChanged: function() {
             this.updateStyles();
+        },
+
+        _onNeonAnimationFinished: function(event) {
+
+            if ('exit' === event.detail.animation) {
+                this.animationConfig.exit.node.style.display = 'none';
+            }
         },
 
         _onItemAction: function() {

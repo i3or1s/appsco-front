@@ -5,11 +5,17 @@
 
 <link rel="import" href="../components/appsco-list-behavior.html">
 <link rel="import" href="../components/appsco-list-styles.html">
+<link rel="import" href="appsco-integration-template-item.html">
 
 <dom-module id="appsco-integration-templates">
     <template>
         <style include="appsco-list-styles"></style>
-        <style></style>
+        <style>
+            :host appsco-integration-template-item {
+                width: 100%;
+                @apply(--appsco-integration-template-item);
+            }
+        </style>
 
         <iron-ajax id="getListApiRequest"
                    url="[[ _listApi ]]"
@@ -17,6 +23,45 @@
                    on-response="_onGetListResponse"
                    headers="[[ _headers ]]"
                    debounce-duration="300"></iron-ajax>
+
+        <div class="list-container">
+
+            <paper-progress id="paperProgress"
+                            class="list-progress-bar"
+                            indeterminate></paper-progress>
+
+            <template is="dom-if" if="[[ _message ]]">
+                <p class="message">[[ _message ]]</p>
+            </template>
+
+            <template is="dom-if" if="[[ !_listEmpty ]]">
+                <div class="list">
+                    <template is="dom-repeat"
+                              items="[[ _listItems ]]"
+                              filter="_isValidTemplate"
+                              on-dom-change="_onItemsDomChange">
+
+                        <appsco-integration-template-item id="appscoListItem_[[ index ]]"
+                                                          item="[[ item ]]"
+                                                          integration="[[ integration ]]"
+                                                          authorization-token="[[ authorizationToken ]]"
+                                                          type="[[ type ]]"
+                                                          selectable="[[ selectable ]]"
+                                                          on-item="_onListItemAction"
+                                                          on-select-item="_onSelectListItemAction"></appsco-integration-template-item>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <template is="dom-if" if="[[ !_listEmpty ]]">
+            <div class="load-more-box" hidden$="[[ !_loadMore ]]">
+                <paper-progress id="loadMoreProgress"
+                                indeterminate></paper-progress>
+                <paper-button class="load-more-action"
+                              on-tap="_onLoadMoreAction">Load More</paper-button>
+            </div>
+        </template>
 
     </template>
 
@@ -37,7 +82,24 @@
 
             behaviors: [
                 Polymer.AppscoListBehavior
-            ]
+            ],
+
+            getAvailableTemplatesExist: function() {
+                var items = this._allListItems,
+                    length = items.length;
+
+                for (var i = 0; i < length; i++) {
+                    if (!items[i].is_existing || (items[i].is_webhook_required && !items[i].is_webhook_enabled)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+
+            _isValidTemplate: function(item) {
+                return (!item.is_existing || (item.is_webhook_required && !item.is_webhook_enabled));
+            }
         });
     </script>
 </dom-module>
