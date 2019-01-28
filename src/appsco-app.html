@@ -784,6 +784,7 @@
                             id="appscoProvisioningPage"
                             active-integrations-api="[[ _getActiveIntegrationsApi ]]"
                             authorization-token="[[ authorizationToken ]]"
+                            api-errors="[[ _apiErrors ]]"
                             on-edit-integration="_onEditIntegrationAction"
                             on-active-integration="_onIntegrationSetup"
                     ></appsco-provisioning-page>
@@ -1355,8 +1356,7 @@
         <appsco-add-integration-rule
                 id="appscoAddIntegrationRule"
                 authorization-token="[[ authorizationToken ]]"
-                api-errors="[[ _apiErrors ]]"
-                on-integration-rule-added="_onIntegrationRuleAdded">
+                api-errors="[[ _apiErrors ]]">
         </appsco-add-integration-rule>
 
         <appsco-edit-integration-rule
@@ -1383,8 +1383,7 @@
         <appsco-register-integration-webhook
                 id="appscoRegisterIntegrationWebhook"
                 authorization-token="[[ authorizationToken ]]"
-                api-errors="[[ _apiErrors ]]"
-                on-integration-webhook-registered="_onIntegrationWebhookRegistered">
+                api-errors="[[ _apiErrors ]]">
         </appsco-register-integration-webhook>
 
         <appsco-unregister-integration-webhook
@@ -2394,7 +2393,9 @@
                 'resource-moved-to-folder': '_onResourceMovedToFolder',
                 'resource-removed-from-folder': '_onResourceRemovedFromFolder',
                 'reload-access-of-boarding': '_onReloadAccessOnBoarding',
-                'groups-added-to-resources': '_onGroupsAddedToResources'
+                'groups-added-to-resources': '_onGroupsAddedToResources',
+                'integration-rule-added': '_onIntegrationRuleAdded',
+                'integration-webhook-registered': '_onIntegrationWebhookRegistered'
             },
 
             attached: function() {

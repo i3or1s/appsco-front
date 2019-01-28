@@ -24,6 +24,7 @@
                             load-more
                             authorization-token="[[ authorizationToken ]]"
                             list-api="[[ activeIntegrationsApi ]]"
+                            api-errors="[[ apiErrors ]]"
                             on-edit-item="_onIntegrationEditAction"
                             on-list-loaded="_onIntegrationsLoadFinished"
                             on-list-empty="_onIntegrationsLoadFinished"></appsco-active-integrations>
@@ -40,12 +41,20 @@
             properties: {
 
                 authorizationToken: {
-                    type: String
+                    type: String,
+                    value: ''
                 },
 
                 activeIntegrationsApi: {
                     type: String,
                     value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
                 },
 
                 animationConfig: {

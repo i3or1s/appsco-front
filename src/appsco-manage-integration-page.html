@@ -87,7 +87,30 @@
                 };
             }
             :host .info-content {
+                height: calc(100% - 50px - 10px);
                 margin-top: 0;
+            }
+            appsco-integration-templates {
+                margin-top: 20px;
+
+                --appsco-list-item: {
+                    @apply(--shadow-none);
+                    height: auto;
+                    padding-top: 10px;
+                    padding-bottom: 26px;
+                    background-color: transparent;
+                    border-top: 1px solid var(--divider-color);
+                };
+                --appsco-list-item-activated: {
+                    @apply(--shadow-none);
+                };
+                --item-actions: {
+                    right: 0;
+                    bottom: 3px;
+                };
+                --item-info-value: {
+                    white-space: unset !important;
+                };
             }
         </style>
 
@@ -249,8 +272,8 @@
                             api-errors="[[ apiErrors ]]"
                             type="integration-template"
                             size="1000"
-                            on-list-loaded="_onIntegrationTemplatesLoaded"
-                            on-list-empty="_onIntegrationTemplatesLoaded">
+                            on-list-loaded="_evaluateInfoSectionActive"
+                            on-list-empty="_evaluateInfoSectionActive">
                     </appsco-integration-templates>
                 </div>
             </div>
@@ -475,20 +498,36 @@
                 this._showComponentsPage();
             },
 
+            _hideInfoSection: function() {
+                this._infoSectionActive = false;
+            },
+
+            _evaluateInfoSectionActive: function() {
+                var appscoIntegrationTemplatesComponent = this.$$('#appscoIntegrationTemplates');
+
+                this._infoSectionActive = (appscoIntegrationTemplatesComponent &&
+                (0 < appscoIntegrationTemplatesComponent.getCurrentCount()) &&
+                appscoIntegrationTemplatesComponent.getAvailableTemplatesExist());
+            }, 
+
             _showIntegrationSettingsPage: function() {
+                this._hideInfoSection();
                 this._selected = 'appsco-integration-settings-page';
             },
 
             _showIntegrationRulesPage: function() {
+                this._hideInfoSection();
                 this._selected = 'appsco-integration-rules-page';
             },
 
             _showIntegrationWebhooksPage: function() {
+                this._hideInfoSection();
                 this._selected = 'appsco-integration-webhooks-page';
             },
 
             _showComponentsPage: function() {
                 this._selected = 'appsco-manage-integration-components-page';
+                this._evaluateInfoSectionActive();
             },
 
             _updateScreen: function(medium, tablet, mobile) {
@@ -631,10 +670,6 @@
                 request.send(options).then(function() {
                     window.location = 'data:application/octet-stream;charset=utf-16le;base64,' + request.response;
                 }.bind(this));
-            },
-
-            _onIntegrationTemplatesLoaded: function(event) {
-                this._infoSectionActive = (event.detail.items && (0 < event.detail.items.length));
             }
         });
     </script>

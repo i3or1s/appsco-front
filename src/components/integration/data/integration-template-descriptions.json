@@ -1,0 +1,20 @@
+{
+    "en": {
+        "gsuite_ra_from_lookup_PSOAppsCoUser": "Sync all users from { integration } to AppsCo directory",
+        "gsuite_ra_from_added_PSOAppsCoUser": "User added in { integration } should be added to AppsCo",
+        "gsuite_ra_from_modified_PSOAppsCoUser": "User modified in { integration } should be modified in AppsCo",
+        "gsuite_ra_from_deleted_PSOAppsCoUser": "User removed in { integration } should be removed in AppsCo",
+        "gsuite_ra_from_lookup_PSOAppsCoGroup": "Sync all groups from { integration } to AppsCo",
+        "gsuite_ra_from_added_PSOAppsCoGroup": "Group added in { integration } should be added to AppsCo",
+        "gsuite_ra_from_modified_PSOAppsCoGroup": "Group modified in { integration } should be modified in AppsCo",
+        "gsuite_ra_from_deleted_PSOAppsCoGroup": "Group removed in { integration } should be removed in AppsCo",
+        "gsuite_pst_from_lookup_PSOAppsCoUser": "Sync all users from AppsCo directory to { integration }",
+        "gsuite_pst_from_added_PSOAppsCoUser": "User added in AppsCo should be added to { integration }",
+        "gsuite_pst_from_modified_PSOAppsCoUser": "User modified in AppsCo should be modified in { integration }",
+        "gsuite_pst_from_deleted_PSOAppsCoUser": "User removed in AppsCo should be removed in { integration }",
+        "gsuite_pst_from_lookup_PSOAppsCoGroup": "Sync all groups from AppsCo to { integration }",
+        "gsuite_pst_from_added_PSOAppsCoGroup": "Group added in AppsCo should be added to { integration }",
+        "gsuite_pst_from_modified_PSOAppsCoGroup": "Group modified in AppsCo should be modified in { integration }",
+        "gsuite_pst_from_deleted_PSOAppsCoGroup": "Group removed in AppsCo should be removed in { integration }"
+    }
+}
