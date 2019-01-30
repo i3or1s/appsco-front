@@ -10,6 +10,7 @@
 
 <link rel="import" href="../components/appsco-list-item-behavior.html">
 <link rel="import" href="../components/appsco-list-item-styles.html">
+<link rel="import" href="../components/appsco-copy.html">
 
 <dom-module id="appsco-integration-webhook-item">
     <template>
@@ -39,6 +40,9 @@
                 margin: auto;
 
                 --iron-icon-fill-color: var(--primary-text-color, #ffffff);
+            }
+            :host appsco-copy {
+                margin-right: 5px;
             }
         </style>
 
@@ -73,6 +77,10 @@
             </div>
 
             <div class="actions">
+                <template is="dom-if" if="[[ _url ]]">
+                    Copy web hook url to clipboard <appsco-copy value="[[ _url ]]"></appsco-copy>
+                </template>
+
                 <template is="dom-if" if="[[ !_registered ]]">
                     <paper-button on-tap="_onRegisterItemAction">Register</paper-button>
                 </template>
@@ -102,6 +110,11 @@
                 _registered: {
                     type: Boolean,
                     value: false
+                },
+
+                _url: {
+                    type: String,
+                    value: null
                 }
             },
 
@@ -110,12 +123,14 @@
                 Polymer.AppscoListItemBehavior
             ],
 
-            register: function() {
+            register: function(url) {
                 this._registered = true;
+                this._url = url;
             },
 
             unregister: function() {
                 this._registered = false;
+                this._url = null;
             },
 
             _onRegisterItemAction: function(event) {
