@@ -15,6 +15,18 @@
         "gsuite_pst_from_lookup_PSOAppsCoGroup": "Sync all groups from AppsCo to { integration }",
         "gsuite_pst_from_added_PSOAppsCoGroup": "Group added in AppsCo should be added to { integration }",
         "gsuite_pst_from_modified_PSOAppsCoGroup": "Group modified in AppsCo should be modified in { integration }",
-        "gsuite_pst_from_deleted_PSOAppsCoGroup": "Group removed in AppsCo should be removed in { integration }"
+        "gsuite_pst_from_deleted_PSOAppsCoGroup": "Group removed in AppsCo should be removed in { integration }",
+        "microsoft_azure_ra_from_lookup_PSOAppsCoUser": "Sync all users from { integration } to AppsCo directory",
+        "microsoft_azure_ra_from_lookup_PSOAppsCoGroup": "Sync all groups from { integration } to AppsCo",
+        "microsoft_azure_ra_from_lookup_PSOSharePointResource": "Sync all Share Point resources to AppsCo resources",
+        "microsoft_azure_ra_from_added_PSOSharePointResource": "Resource added in Share Point should be added to AppsCo",
+        "microsoft_azure_pst_from_lookup_PSOAppsCoUser": "Sync all users from AppsCo to { integration }",
+        "microsoft_azure_pst_from_added_PSOAppsCoUser": "User added in AppsCo should be added to { integration }",
+        "microsoft_azure_pst_from_modified_PSOAppsCoUser": "User modified in AppsCo should be modified in { integration }",
+        "microsoft_azure_pst_from_deleted_PSOAppsCoUser": "User removed in AppsCo should be removed in { integration }",
+        "microsoft_azure_pst_from_lookup_PSOAppsCoGroup": "Sync all groups from AppsCo to { integration }",
+        "microsoft_azure_pst_from_added_PSOAppsCoGroup": "Group added in AppsCo should be added to { integration }",
+        "microsoft_azure_pst_from_modified_PSOAppsCoGroup": "Group modified in AppsCo should be modified in { integration }",
+        "microsoft_azure_pst_from_deleted_PSOAppsCoGroup": "Group removed in AppsCo should be removed in { integration }"
     }
 }
