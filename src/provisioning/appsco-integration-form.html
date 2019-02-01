@@ -315,11 +315,11 @@
 
             _computeRequiresInstanceId: function(integration) {
                 if (integration && integration.integration) {
-                    return integration.integration.alias == 6;
+                    return [6, 10].indexOf(integration.integration.alias) > -1;
                 }
 
                 if (integration) {
-                    return integration.alias == 6;
+                    return [6, 10].indexOf(integration.alias) > -1;
                 }
 
                 return false;

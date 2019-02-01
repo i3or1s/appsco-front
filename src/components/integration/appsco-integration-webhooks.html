@@ -177,7 +177,7 @@
                         for (var i = 0; i < watchersLength; i++) {
                             if (webhook.self === watchers[i].meta.webhook) {
                                 webhook.removeWatcherApi = watchers[i].self;
-                                this.$$('#appscoListItem_' + j).register();
+                                this.$$('#appscoListItem_' + j).register(watchers[i].url);
                                 modifyWebhooks.push(webhook);
                                 break;
                             }
