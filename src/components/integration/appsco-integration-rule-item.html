@@ -99,7 +99,11 @@
 
             <div class="actions">
                 <paper-button on-tap="_onEditItemAction">Edit</paper-button>
+
+                <template is="dom-if" if="[[ _isFromMethodLookup ]]">
                     <paper-button on-tap="_onRunItemAction">Run</paper-button>
+                </template>
+                
                 <paper-button on-tap="_onRemoveItemAction">Remove</paper-button>
             </div>
         </div>
