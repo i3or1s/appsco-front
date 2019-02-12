@@ -506,23 +506,39 @@ Custom property | Description | Default
             },
 
             _formatLogOauthAppAuthorized: function(item) {
+                var msg = this.localize(
+                    'account_log_application_authorized',
+                    'application',
+                    (item.data.application && item.data.application.title)
+                        ? item.data.application.title
+                        : (item.data.oauth_authorization.oauth_application.title
+                            ? item.data.oauth_authorization.oauth_application.title
+                            : ''
+                        )
+                );
                 return {
                     icon: 'icons:apps',
                     date: item.created_at.date,
-                    message: this.localize(
-                        'account_log_application_authorized',
-                        'application',
-                        item.data.oauth_authorization.oauth_application.title
-                    ),
+                    message: msg,
                     address: item.ip
                 }
             },
 
             _formatLogAuthorizedAppRevoked: function(item) {
+                var msg = this.localize(
+                    'account_log_application_revoked',
+                    'application',
+                    (item.data.application && item.data.application.title)
+                        ? item.data.application.title
+                        : (item.data.oauth_authorization.oauth_application.title
+                            ? item.data.oauth_authorization.oauth_application.title
+                            : ''
+                        )
+                );
                 return {
                     icon: 'icons:undo',
                     date: item.created_at.date,
-                    message: this.localize('account_log_application_revoked', 'application', item.data.application.title),
+                    message: msg,
                     address: item.ip
                 }
             },
