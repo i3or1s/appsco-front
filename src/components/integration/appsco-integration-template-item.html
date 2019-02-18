@@ -252,8 +252,8 @@
                             method: 'POST',
                             handleAs: 'json',
                             headers: this._headers,
-                            body: 'integration_recipe[name]=' +
-                            encodeURIComponent(this.localize(this._templateTitle) ?
+                            body: 'integration_recipe[name]=' + encodeURIComponent(
+                                this.localize(this._templateTitle) ?
                                 this.localize(this._templateTitle) :
                                 (this.integration.name +  ' rule')) +
                             '&integration_recipe[fromMethod]=' + encodeURIComponent(template.source_event) +
