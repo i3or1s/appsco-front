@@ -509,12 +509,11 @@ Custom property | Description | Default
                 var msg = this.localize(
                     'account_log_application_authorized',
                     'application',
-                    (item.data.application && item.data.application.title)
-                        ? item.data.application.title
+                    (item.data && item.data.title)
+                        ? item.data.title
                         : (item.data.oauth_authorization.oauth_application.title
                             ? item.data.oauth_authorization.oauth_application.title
-                            : ''
-                        )
+                            : '')
                 );
                 return {
                     icon: 'icons:apps',
@@ -528,12 +527,11 @@ Custom property | Description | Default
                 var msg = this.localize(
                     'account_log_application_revoked',
                     'application',
-                    (item.data.application && item.data.application.title)
-                        ? item.data.application.title
+                    (item.data && item.data.title)
+                        ? item.data.title
                         : (item.data.oauth_authorization.oauth_application.title
                             ? item.data.oauth_authorization.oauth_application.title
-                            : ''
-                        )
+                            : '')
                 );
                 return {
                     icon: 'icons:undo',
