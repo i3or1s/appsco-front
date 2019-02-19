@@ -1,5 +1,6 @@
 {
     "en": {
+        "gsuite_ra_from_lookup_PSOAppsCoUser_title": "Lookup and sync users",
         "gsuite_ra_from_lookup_PSOAppsCoUser_description": "Sync all users from { integration } to AppsCo directory",
         "gsuite_ra_from_added_PSOAppsCoUser_title": "User added",
         "gsuite_ra_from_added_PSOAppsCoUser_description": "User added in { integration } should be added to AppsCo",
