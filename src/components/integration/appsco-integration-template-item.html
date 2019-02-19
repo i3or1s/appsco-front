@@ -85,6 +85,9 @@
             </template>
 
             <div class="item-info item-basic-info">
+                <span class="info-label item-title">
+                    {{ localize(_templateTitle) }}
+                </span>
                 <span class="info-value">
                     {{ localize(_templateDescription, 'integration', integration.integration.title) }}
                 </span>
@@ -121,11 +124,6 @@
                     value: 'en'
                 },
 
-                useKeyIfMissing: {
-                    type: Boolean,
-                    value: true
-                },
-
                 _headers: {
                     type: String,
                     computed: '_computeHeaders(authorizationToken)'
@@ -134,6 +132,11 @@
                 _itemIcon: {
                     type: String,
                     computed: '_computeItemIcon(item)'
+                },
+
+                _templateTitle: {
+                    type: String,
+                    computed: '_computeTemplateTitle(item, integration)'
                 },
 
                 _templateDescription: {
@@ -206,13 +209,22 @@
                 return icon;
             },
 
+            _computeTemplateTitle: function(item, integration) {
+                return (integration.integration.title.toLowerCase().replace(' ', '_') + '_' +
+                        integration.kind + '_' +
+                        item.source_event + '_' +
+                        (('ra' === integration.kind) ?
+                            item.target_pso.split('\\').pop() :
+                            item.source_pso.split('\\').pop()) + '_title');
+            },
+
             _computeTemplateDescription: function(item, integration) {
                 return (integration.integration.title.toLowerCase().replace(' ', '_') + '_' +
                         integration.kind + '_' +
                         item.source_event + '_' +
                         (('ra' === integration.kind) ?
                             item.target_pso.split('\\').pop() :
-                            item.source_pso.split('\\').pop()));
+                            item.source_pso.split('\\').pop()) + '_description');
             },
 
             _showLoader: function() {
@@ -240,7 +252,10 @@
                             method: 'POST',
                             handleAs: 'json',
                             headers: this._headers,
-                            body: 'integration_recipe[name]=' + encodeURIComponent(this.integration.name + ' ' + template.source_event) +
+                            body: 'integration_recipe[name]=' + encodeURIComponent(
+                                this.localize(this._templateTitle) ?
+                                this.localize(this._templateTitle) :
+                                (this.integration.name +  ' rule')) +
                             '&integration_recipe[fromMethod]=' + encodeURIComponent(template.source_event) +
                             '&integration_recipe[fromPSO]=' + encodeURIComponent(template.source_pso) +
                             '&integration_recipe[toMethod]=' + encodeURIComponent(template.target_action) +
@@ -287,7 +302,6 @@
                 var item = this.item;
 
                 event.stopPropagation();
-                this._hideError();
 
                 if (!item.is_existing && item.meta && item.meta.create_recipe) {
 
@@ -309,6 +323,7 @@
                                 });
 
                                 this._hideItem();
+                                this._hideError();
                                 this._hideLoader();
                             }.bind(this), function() {
                                 this._showError();
@@ -317,6 +332,7 @@
                         }
                         else {
                             this._hideItem();
+                            this._hideError();
                             this._hideLoader();
                         }
                     }.bind(this), function() {
@@ -335,6 +351,7 @@
                         });
 
                         this._hideItem();
+                        this._hideError();
                         this._hideLoader();
                     }.bind(this), function() {
                         this._showError();
