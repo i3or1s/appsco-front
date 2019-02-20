@@ -210,21 +210,25 @@
             },
 
             _computeTemplateTitle: function(item, integration) {
-                return (integration.integration.title.toLowerCase().replace(' ', '_') + '_' +
-                        integration.kind + '_' +
-                        item.source_event + '_' +
-                        (('ra' === integration.kind) ?
-                            item.target_pso.split('\\').pop() :
-                            item.source_pso.split('\\').pop()) + '_title');
+                return (((-1 !== integration.integration.title.toLowerCase().indexOf('azure')) ?
+                    'azure' :
+                    integration.integration.title.toLowerCase().replace(' ', '_')) + '_' +
+                integration.kind + '_' +
+                item.source_event + '_' +
+                (('ra' === integration.kind) ?
+                    item.target_pso.split('\\').pop() :
+                    item.source_pso.split('\\').pop()) + '_title');
             },
 
             _computeTemplateDescription: function(item, integration) {
-                return (integration.integration.title.toLowerCase().replace(' ', '_') + '_' +
-                        integration.kind + '_' +
-                        item.source_event + '_' +
-                        (('ra' === integration.kind) ?
-                            item.target_pso.split('\\').pop() :
-                            item.source_pso.split('\\').pop()) + '_description');
+                return (((-1 !== integration.integration.title.toLowerCase().indexOf('azure')) ?
+                    'azure' :
+                    integration.integration.title.toLowerCase().replace(' ', '_')) + '_' +
+                integration.kind + '_' +
+                item.source_event + '_' +
+                (('ra' === integration.kind) ?
+                    item.target_pso.split('\\').pop() :
+                    item.source_pso.split('\\').pop()) + '_description');
             },
 
             _showLoader: function() {
