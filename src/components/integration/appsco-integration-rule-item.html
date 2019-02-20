@@ -126,7 +126,7 @@
 
                 _isFromMethodLookup: {
                     type: Boolean,
-                    computed: '_computeIsFromMethodLookup(item, integration)'
+                    computed: '_computeIsFromMethodLookup(item)'
                 },
 
                 mobileScreen: {
@@ -158,8 +158,8 @@
                 }
             },
 
-            _computeIsFromMethodLookup: function(rule, integration) {
-                return ('ra' === integration.kind && 'from_lookup' === rule.fromMethod);
+            _computeIsFromMethodLookup: function(rule) {
+                return ('from_lookup' === rule.fromMethod);
             },
 
             _updateScreen: function() {
