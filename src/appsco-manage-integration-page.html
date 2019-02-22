@@ -190,11 +190,13 @@
                         <div class="info config-file" on-tap="_downloadConfig">
                             Download preconfigured configuration file.
                         </div>
-                        <div class="info service-application">
-                            <a href="/appscoAdfsReader.zip" target="_blank">
-                                Download AppsCo AD Reader service application.
-                            </a>
-                        </div>
+                        <template is="dom-if" if="[[ integration.meta.download_tool ]]">
+                            <div class="info service-application">
+                                <a href="[[ integration.meta.download_tool ]]" target="_blank">
+                                    Download service application.
+                                </a>
+                            </div>
+                        </template>
                     </template>
                 </div>
 
@@ -659,7 +661,9 @@
             },
 
             _computeHasDownloadableConfig: function(integration) {
-                return integration && integration.integration && integration.integration.alias == 3;
+                return integration
+                    && integration.integration
+                    && (integration.integration.alias == 3 || integration.integration.alias == 11) ;
             },
 
             _downloadConfig: function() {
