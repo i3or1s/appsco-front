@@ -186,7 +186,7 @@
                     </template>
 
                     <template is="dom-if" if="[[ _hasDownloadableConfig ]]">
-                        <div class="help-title">AppsCo AD Reader service</div>
+                        <div class="help-title">AppsCo reader service</div>
                         <div class="info config-file" on-tap="_downloadConfig">
                             Download preconfigured configuration file.
                         </div>
@@ -198,7 +198,16 @@
                             </div>
                         </template>
                     </template>
+
+                    <template is="dom-if" if="[[ integration.secret ]]">
+                        <div class="info secret">
+                            Copy integration secret key to clipboard <appsco-copy value="[[ integration.secret ]]"></appsco-copy>
+                        </div>
+                    </template>
+
                 </div>
+
+
 
                 <div class="resource-actions flex-horizontal">
                     <paper-button class="button secondary-button flex"
