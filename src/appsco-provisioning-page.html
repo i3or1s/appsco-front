@@ -10,6 +10,16 @@
 <dom-module id="appsco-provisioning-page">
     <template>
         <style include="appsco-page-styles"></style>
+        <style>
+            :host {
+                --appsco-active-integration-item: {
+                    cursor: default;
+                };
+                --appsco-active-integration-item-activated: {
+                    @apply(--shadow-elevation-2dp);
+                };
+            }
+        </style>
 
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
@@ -94,6 +104,10 @@
 
             reloadIntegrations: function() {
                 this.$.appscoActiveIntegrations.reloadIntegrations();
+            },
+
+            setIntegration: function(integration) {
+                this.$.appscoActiveIntegrations.modifyItems([integration]);
             },
 
             _pageLoaded: function() {

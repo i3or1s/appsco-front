@@ -5559,8 +5559,14 @@
                 this._showManagePage('manage-integration/' + integration.alias);
             },
 
-            _onIntegrationSettingsChanged: function() {
-                this._notify('Settings for integration ' + event.detail.integration.name + ' has been successfully saved.');
+            _onIntegrationSettingsChanged: function(event) {
+                var integration = event.detail.integration;
+
+                if (this.$.appscoProvisioningPage.$) {
+                    this.$.appscoProvisioningPage.setIntegration(integration);
+                }
+
+                this._notify('Settings for integration ' + integration.name + ' has been successfully saved.');
             },
 
             _onRemoveIntegrationAction: function(event) {
