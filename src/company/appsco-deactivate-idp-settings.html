@@ -151,7 +151,7 @@ Shows dialog screen with confirmation to deactivate IdP settings.
             },
 
             _computeDeactivateApi: function(domain) {
-                return domain.samlIdpConfig ? domain.samlIdpConfig : '';
+                return (domain.meta && domain.meta.idpConfig) ? domain.meta.idpConfig : '';
             },
 
             _showLoader: function() {
@@ -191,7 +191,7 @@ Shows dialog screen with confirmation to deactivate IdP settings.
 
                     if (200 === request.status) {
                         this.domain.hasIdp = false;
-                        this.domain.samlIdpConfig = null;
+                        this.domain.meta.idpConfig = null;
 
                         /**
                          * Fired when IdP settings is deactivated.
