@@ -2556,18 +2556,17 @@
                 return (0 < companiesAccountIsContactIn.length) ? companies.concat(companiesAccountIsContactIn) : companies;
             },
 
-            _computeAccessBilling: function (currentCompany) {
+            _computeAccessBilling: function(currentCompany) {
                 return currentCompany.company && !currentCompany.company.subscription_paid_externally;
             },
 
-            _computeTutorialsPageVisible: function (tutorials, _companyAdmin) {
-                var numFinished = 0;
+            _computeTutorialsPageVisible: function(tutorials, _companyAdmin) {
+
                 for (var idx in tutorials) {
-                    if (tutorials.hasOwnProperty(idx) && (tutorials[idx].isDone())) {
-                        numFinished++;
-                    }
+                    return (tutorials.hasOwnProperty(idx) && _companyAdmin);
                 }
-                return (numFinished < 9) && _companyAdmin;
+
+                return false;
             },
 
             _setProduct: function(company) {
