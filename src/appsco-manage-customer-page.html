@@ -285,9 +285,13 @@
                 }
             },
 
-            addPartnerAdmins: function(customer, partnerAdmins) {
-                if (customer.alias == this.customer.alias) {
-                    this._addPartnerAdmins(partnerAdmins);
+            reloadPartnerAdmins: function(customers) {
+
+                for (var idx in customers) {
+                    if (this.customer.alias === customers[idx].alias) {
+                        this._reloadPartnerAdmins();
+                        break;
+                    }
                 }
             },
 
@@ -296,9 +300,9 @@
                 this.$.appscoCustomerPartnerAdminsPage.removePartnerAdmins(partnerAdmins);
             },
 
-            _addPartnerAdmins: function(partnerAdmins) {
-                this.$.appscoManageCustomerComponentsPage.addPartnerAdmins(partnerAdmins);
-                this.$.appscoCustomerPartnerAdminsPage.addPartnerAdmins(partnerAdmins);
+            _reloadPartnerAdmins: function() {
+                this.$.appscoManageCustomerComponentsPage.reloadPartnerAdmins();
+                this.$.appscoCustomerPartnerAdminsPage.reloadPartnerAdmins();
             },
 
             _pageLoaded: function() {
