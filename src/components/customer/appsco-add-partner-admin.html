@@ -156,7 +156,7 @@
             <h2>Add partner admin to customer</h2>
 
             <appsco-loader active="[[ _createLoader ]]"
-                           loader-alt="Appsco is processing request"
+                           loader-alt="AppsCo is processing request"
                            multi-color></appsco-loader>
 
             <appsco-form-error message="[[ _error ]]"></appsco-form-error>
@@ -245,10 +245,16 @@
             properties: {
 
                 authorizationToken: {
-                    type: String
+                    type: String,
+                    value: ''
                 },
 
                 getRolesApi: {
+                    type: String,
+                    value: ''
+                },
+
+                addPartnerAdminApi: {
                     type: String,
                     value: ''
                 },
@@ -260,10 +266,10 @@
                     }
                 },
 
-                customer: {
-                    type: Object,
+                customers: {
+                    type: Array,
                     value: function() {
-                        return {};
+                        return [];
                     }
                 },
 
@@ -340,8 +346,12 @@
                 }
             },
 
-            toggle: function() {
-                this.$.dialog.toggle();
+            open: function() {
+                this.$.dialog.open();
+            },
+
+            close: function() {
+                this.$.dialog.close();
             },
 
             _showLoader: function() {
@@ -663,7 +673,7 @@
             },
 
             _partnerAdminCreateFinished: function() {
-                this.$.dialog.close();
+                this.close();
 
                 /**
                  * Fired when partner admin has been added
@@ -680,52 +690,55 @@
                 this._hideLoader();
             },
 
-            _createPartnerAdmins: function(companyRoles) {
-                this._showLoader();
+            _createPartnerAdmins: function(companyRoles, customers) {
                 var me = this,
+                    length = customers.length - 1,
+                    customersParams = '',
                     addedAdmins = [],
                     requestCounter = 0;
+
+                this._showLoader();
+
+                for (var i = 0; i <= length; i++) {
+                    var next = ((i === length) ? '' : '&');
+                    customersParams += ('customers[]=' + encodeURIComponent(customers[i].self) + next);
+                }
 
                 for (var idx in companyRoles) {
                     var request = document.createElement('iron-request'),
                         options = {
                             method: 'POST',
                             handleAs: 'json',
-                            body: {
-                                "company_role": companyRoles[idx].self
-                            },
-                            url: this.customer.self + '/partner-admins',
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
+                            body: (('company_role=' + companyRoles[idx].self) + '&' + customersParams),
+                            url: this.addPartnerAdminApi,
+                            headers: this._headers
                         };
 
                     request.send(options).then(
                         function(companyRole, adminList, rq) {
                             return function() {
                                 if (rq.succeeded) {
-                                    adminList.push(rq.response);
+                                    Array.prototype.push.apply(adminList, rq.response.partner_admins);
                                 }
                                 requestCounter++;
                                 if (requestCounter === companyRoles.length) {
                                     me._hideLoader();
                                     me.fire('partner-admins-added', {
-                                        customer: me.customer,
+                                        customers: me.customers,
                                         partnerAdmins: adminList
                                     });
-                                    me.toggle();
+                                    me.close();
                                 }
                             }
                         }(companyRoles[idx], addedAdmins, request), function() {
                             requestCounter++;
                             if (requestCounter === companyRoles.length) {
                                 me.fire('partner-admins-added', {
-                                    customer: me.customer,
+                                    customers: me.customers,
                                     partnerAdmins: addedAdmins
                                 });
                                 me._hideLoader();
-                                me.toggle();
+                                me.close();
                             }
                         }
                     );
@@ -734,20 +747,26 @@
 
             _onCreatePartnerAdminsAction: function() {
                 var list = JSON.parse(JSON.stringify(this._accountListAll)),
-                    length = list.length;
+                    length = list.length,
+                    selectedAccounts = this._selectedAccounts,
+                    customers = this.customers;
 
                 for (var i = 0; i < length; i++) {
                     if (list[i].selected) {
-                        this._selectedAccounts.push(list[i]);
+                        selectedAccounts.push(list[i]);
                     }
                 }
 
-                if (0 === this._selectedAccounts.length) {
+                if (0 === selectedAccounts.length) {
                     this._showError('Please add at least one user to make partner admin.');
                     return false;
                 }
+                else if (0 === customers.length) {
+                    this._showError('There are no customers selected to make partner admin for.');
+                    return false;
+                }
 
-                this._createPartnerAdmins(this._selectedAccounts);
+                this._createPartnerAdmins(selectedAccounts, customers);
             },
 
             _onInnerIronOverlay: function(event) {

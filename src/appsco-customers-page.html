@@ -313,6 +313,13 @@
                 this.$.appscoCustomers.reloadItems();
             },
 
+            reloadCustomersInfo: function(customers) {
+
+                for (var idx in customers) {
+                    this.$.appscoCustomers.reloadInfo(customers[idx]);
+                }
+            },
+
             removeCustomers: function (customers) {
                 this.$.appscoCustomers.removeItems(customers);
                 this._setDefaultCustomer();

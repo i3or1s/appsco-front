@@ -1189,9 +1189,10 @@
 
         <appsco-add-partner-admin
                 id="appscoAddPartnerAdmin"
-                customer="[[ _customerToCreateAdminFor ]]"
+                customers="[[ _selectedCustomers ]]"
                 authorization-token="[[ authorizationToken ]]"
                 get-roles-api="[[ _companyRolesApi ]]"
+                add-partner-admin-api="[[ _addPartnerAdminToCustomerApi ]]"
                 api-errors="[[ _apiErrors ]]"
                 on-partner-admins-added="_onPartnerAdminsAdded"
         ></appsco-add-partner-admin>
@@ -1859,13 +1860,6 @@
                     }
                 },
 
-                _customerToCreateAdminFor: {
-                    type: Array,
-                    value: function() {
-
-                    }
-                },
-
                 /**
                  * Selected authorized application that is to be removed.
                  */
@@ -2074,9 +2068,9 @@
                     value: ''
                 },
 
-                _customerPartnerAdminsApi: {
+                _addPartnerAdminToCustomerApi: {
                     type: String,
-                    computed: '_computeCustomerPartnerAdminApi(_companyCustomersApi)'
+                    computed: '_computeAddPartnerAdminToCustomerApi(_companyCustomersApi)'
                 },
 
                 _importCustomerResourcesApi: {
@@ -2912,8 +2906,8 @@
                 return companyApi ? companyApi + '/integration' : '';
             },
 
-            _computeCustomerPartnerAdminApi: function(customersApi) {
-                return customersApi ? customersApi + '/partner-admins' : '';
+            _computeAddPartnerAdminToCustomerApi: function(customersApi) {
+                return customersApi ? (customersApi + '/partner-admins') : '';
             },
 
             _computeExportAccessReportApi: function(getAccessReportApi) {
@@ -6396,8 +6390,8 @@
             },
 
             _onAddPartnerAdminAction: function(event) {
-                this._customerToCreateAdminFor = event.detail.customer;
-                this.$.appscoAddPartnerAdmin.toggle();
+                this.set('_selectedCustomers', [event.detail.customer]);
+                this.$.appscoAddPartnerAdmin.open();
             },
 
             _addCustomer: function(customer) {
@@ -6407,14 +6401,24 @@
                 }
             },
 
-            _addPartnerAdmin: function(customer, partnerAdmin) {
-                this.$.appscoManageCustomerPage.addPartnerAdmins(customer, [partnerAdmin]);
+            _reloadPartnerAdmins: function(customers) {
+
+                if (this.$.appscoManageCustomerPage.$) {
+                    this.$.appscoManageCustomerPage.reloadPartnerAdmins(customers);
+                }
             },
 
             _reloadCustomers: function() {
 
                 if (this.$.appscoCustomersPage.$) {
                     this.$.appscoCustomersPage.reloadCustomers();
+                }
+            },
+
+            _reloadCustomersInfo: function(customers) {
+
+                if (this.$.appscoCustomersPage.$) {
+                    this.$.appscoCustomersPage.reloadCustomersInfo(customers);
                 }
             },
 
@@ -6482,13 +6486,10 @@
             },
 
             _onPartnerAdminsAdded: function(event) {
-                var partnerAdmins = event.detail.partnerAdmins,
-                    customer = event.detail.customer;
+                var customers = event.detail.customers;
 
-                for (var idx in partnerAdmins) {
-                    this._addPartnerAdmin(customer, partnerAdmins[idx]);
-                }
-
+                this._reloadCustomersInfo(customers);
+                this._reloadPartnerAdmins(customers);
                 this._notify('Partner admin added successfully.');
             },
 
