@@ -4,6 +4,8 @@
 <link rel="import" href="../../../../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="../../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../../../../bower_components/neon-animation/animations/slide-from-left-animation.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-styles/typography.html">
 
 <link rel="import" href="appsco-company-resource-item.html">
 <link rel="import" href="../../components/appsco-list-behavior.html">
@@ -50,7 +52,13 @@ Custom property | Description | Default
                 @apply(--layout-wrap);
                 @apply(--layout-start);
             }
-
+            :host .info-total {
+                margin-bottom: 10px;
+            }
+            :host .total {
+                @apply(--paper-font-caption);
+                color: var(--secondary-text-color);
+            }
         </style>
 
         <iron-ajax id="getListApiRequest"
@@ -71,6 +79,10 @@ Custom property | Description | Default
             </template>
 
             <template is="dom-if" if="[[ !_listEmpty ]]">
+                <div class="info-total" hidden$="[[ !_totalListItems ]]">
+                    <span class="total">Total resources: [[ _totalListItems ]]</span>
+                </div>
+
                 <div class="list">
                     <template is="dom-repeat"
                               items="[[ _listItems ]]"
