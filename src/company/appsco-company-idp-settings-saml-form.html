@@ -1,0 +1,227 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload-file.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animatable-behavior.html">
+
+<link rel="import" href="appsco-company-idp-settings-certificates.html">
+<link rel="import" href="appsco-company-idp-settings-form-behavior.html">
+
+<dom-module id="appsco-company-idp-settings-saml-form">
+    <template>
+        <style>
+            :host .info {
+                margin-bottom: 0;
+            }
+            :host .info-inner {
+                margin-top: 20px;
+                font-weight: 500;
+            }
+            vaadin-upload {
+                --primary-color: var(--app-primary-color-dark);
+
+                --vaadin-upload-button-add: {
+                    @apply(--primary-button);
+                };
+            }
+        </style>
+        
+        <paper-input id="appId"
+                     label="App ID"
+                     data-field
+                     name="[[ formPrefix ]][appId]"
+                     value="[[ idPConfig.idpAppId ]]"
+                     required
+                     error-message="Please type in app ID."
+                     on-keyup="_onKeyUp"></paper-input>
+
+        <p class="info info-inner">Upload IdP metadata XML file:</p>
+
+        <vaadin-upload id="uploadIdpMetadataField"
+                       no-auto
+                       max-files="1"
+                       max-file-size="1000000"
+                       accept=".xml, text/xml, application/xml"
+                       on-upload-before="_onUploadIdPMetadataBefore">
+            <div class="drop-label">
+                <iron-icon icon="icons:file-upload"></iron-icon>
+                Upload IdP metadata XML file
+            </div>
+        </vaadin-upload>
+
+        <p class="info info-inner">Or enter values manually:</p>
+
+        <paper-input label="Sign in URL"
+                     data-field
+                     name="[[ formPrefix ]][idpSSOUrl]"
+                     value="[[ idPConfig.idpSSOUrl ]]"
+                     pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
+                     required
+                     error-message="Please type in sign in URL in proper format."
+                     on-keyup="_onKeyUp"></paper-input>
+
+        <paper-input label="Entity ID"
+                     data-field
+                     name="[[ formPrefix ]][idpEntityId]"
+                     value="[[ idPConfig.idpEntityId ]]"
+                     pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
+                     required
+                     error-message="Please type in entity ID."
+                     on-keyup="_onKeyUp"></paper-input>
+
+        <appsco-company-idp-settings-certificates
+                id="appscoCompanyIdpSettingsCertificates"
+                name="default"
+                certificates="[[ idPConfig.certs ]]"
+                on-idp-certificate-added="_onCertAdded"
+        ></appsco-company-idp-settings-certificates>
+    
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-company-idp-settings-saml-form',
+
+            properties: {
+
+                uploadIdpMetadataField: {
+                    type: Object,
+                    value: function() {
+                        return this.$.uploadIdpMetadataField;
+                    }
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimatableBehavior,
+                Polymer.AppscoCompanyIdpSettingsFormBehavior
+            ],
+
+            ready: function() {
+                this.uploadIdpMetadataField.set('i18n.addFiles.many', 'Upload file');
+            },
+
+            getEncodedBodyValues: function () {
+                var certificates = this.getCertificates(),
+                    body = '';
+
+                Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
+
+                    if (item.value) {
+                        body += body === '' ? '' : '&';
+                        body += encodeURIComponent(item.name) + '=' + encodeURIComponent(item.value);
+                    }
+                }.bind(this));
+
+                for (var i = 0; i < certificates.length; i++) {
+                    body += ('&' + this.formPrefix + '[certs][' + i + ']=' + encodeURIComponent(certificates[i]));
+                }
+
+                return body;
+            },
+
+            getCertificates: function() {
+                return this.$.appscoCompanyIdpSettingsCertificates.getCertificates();
+            },
+
+            reset: function() {
+
+                Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
+                    var inputContainer = item.$$('#container');
+
+                    item.value = '';
+                    item.invalid = false;
+
+                    // Used because gold-cc-input doesn't send 'invalid' property down to children elements
+                    if (inputContainer) {
+                        inputContainer.invalid = false;
+                    }
+                }.bind(this));
+
+                this.uploadIdpMetadataField.files = [];
+            },
+
+            _onCertAdded: function() {
+                this.fire('hide-error');
+            },
+
+            _onUploadIdPMetadataBefore: function(event) {
+
+                // Prevent AJAX request
+                event.preventDefault();
+
+                var file = event.detail.file,
+                    uploadField = this.uploadIdpMetadataField,
+                    fileIndex = uploadField.files.indexOf(file);
+
+                // Update UI
+                uploadField.set(['files', fileIndex, 'progress'], 100);
+                uploadField.set(['files', fileIndex, 'complete'], true);
+
+                this._parseIdPMetadataXMLFile(file);
+            },
+
+            _parseIdPMetadataXMLFile: function(file) {
+                var reader = new FileReader();
+
+                (function(me) {
+
+                    reader.onload = function(a, b, c) {
+                        var xmlDocument = new DOMParser().parseFromString(this.result, 'text/xml');
+
+                        me._fillIdPMetadataFromXML(xmlDocument);
+                    };
+                })(this);
+
+                reader.readAsText(file);
+            },
+
+            _fillIdPMetadataFromXML: function(xmlDocument) {
+                var idpEntityDescriptor = xmlDocument.querySelector('[entityID]'),
+                    entityId = idpEntityDescriptor.getAttribute('entityID'),
+                    certificateDOM = xmlDocument.getElementsByTagName('X509Certificate'),
+                    singleSignOnServices = xmlDocument.querySelectorAll('SingleSignOnService'),
+                    length = singleSignOnServices.length,
+                    signInURL,
+                    certificates = [];
+
+                if (!certificateDOM || certificateDOM.length == 0) {
+                    certificateDOM = xmlDocument.getElementsByTagName('ds:X509Certificate');
+                }
+
+                for (var i = 0; i < length; i++) {
+                    var singleSignOnService = singleSignOnServices[i];
+
+                    if (-1 != singleSignOnService.getAttribute('Binding').indexOf('HTTP-Redirect')) {
+                        signInURL = singleSignOnService.getAttribute('Location');
+                        break;
+                    }
+                }
+
+                for (var i = 0; i < certificateDOM.length; i++) {
+                    certificates.push(certificateDOM[i].textContent);
+                }
+
+                this._setIdPConfig(signInURL, entityId, certificates);
+            },
+
+            _setIdPConfig: function(signInURL, entityId, certificates) {
+                var config = JSON.parse(JSON.stringify(this.idPConfig));
+
+                config.idpSSOUrl = signInURL;
+                config.idpEntityId = entityId;
+
+                config.certs = [];
+                for (var i = 0; i < certificates.length; i++) {
+                    config.certs.push(
+                        '-----BEGIN CERTIFICATE-----\n' +
+                        certificates[i] +
+                        '\n-----END CERTIFICATE-----'
+                    );
+                }
+
+                this.set('idPConfig', {});
+                this.set('idPConfig', config);
+            }
+        });
+    </script>
+</dom-module>

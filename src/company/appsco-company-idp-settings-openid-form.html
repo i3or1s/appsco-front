@@ -1,0 +1,82 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animatable-behavior.html">
+
+<link rel="import" href="appsco-company-idp-settings-form-behavior.html">
+
+<dom-module id="appsco-company-idp-settings-openid-form">
+    <template>
+        <style>
+        </style>
+
+        <paper-input label="Subdomain"
+                     data-field
+                     name="[[ formPrefix ]][company]"
+                     value="[[ idPConfig.company ]]"
+                     required
+                     error-message="Please type in subdomain."
+                     on-keyup="_onKeyUp">
+
+            <template is="dom-if" if="[[ _subdomain ]]">
+                <div suffix>[[ _subdomain ]]</div>
+            </template>
+        </paper-input>
+
+        <paper-input label="Client ID"
+                     data-field
+                     name="[[ formPrefix ]][client_id]"
+                     value="[[ idPConfig.client_id ]]"
+                     required
+                     error-message="Please type in client ID."
+                     on-keyup="_onKeyUp"></paper-input>
+
+        <paper-input label="Client Secret"
+                     data-field
+                     name="[[ formPrefix ]][client_secret]"
+                     value="[[ idPConfig.client_secret ]]"
+                     required
+                     error-message="Please type in client secret."
+                     on-keyup="_onKeyUp"></paper-input>
+    
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-company-idp-settings-openid-form',
+
+            properties: {
+
+                integration: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    observer: '_onIntegrationChanged'
+                },
+
+                _subdomain: {
+                    type: String,
+                    value: ''
+                }
+            },
+
+            behaviors: [
+                Polymer.NeonAnimatableBehavior,
+                Polymer.AppscoCompanyIdpSettingsFormBehavior
+            ],
+
+            _onIntegrationChanged: function(integration) {
+
+                switch (integration.id) {
+
+                    case 'bamboo_hr':
+                        this._subdomain = '.bamboohr.com';
+                        break;
+
+                    default:
+                        this._subdomain = '';
+                }
+            }
+        });
+    </script>
+</dom-module>

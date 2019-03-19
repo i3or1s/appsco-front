@@ -1,33 +1,20 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../bower_components/paper-styles/shadow.html">
-<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload-file.html">
-<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-down-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
 
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
-
-<link rel="import" href="appsco-company-idp-settings-certificates.html">
-
-<!--
-`appsco-company-idp-settings`
-Update company idP settings component.
-
-    <appsco-company-idp-settings company="{}"
-                             authorization-token=""
-                             settings-api=""></appsco-company-idp-settings>
-
--->
+<link rel="import" href="appsco-company-idp-settings-saml-form.html">
+<link rel="import" href="appsco-company-idp-settings-openid-form.html">
 
 <dom-module id="appsco-company-idp-settings">
     <template>
@@ -40,150 +27,98 @@ Update company idP settings component.
                     display: block;
                 };
             }
-            :host .info {
-                margin-bottom: 0;
-            }
-            :host .info-inner {
-                margin-top: 20px;
-                font-weight: 500;
-            }
-            vaadin-upload {
-                --primary-color: var(--app-primary-color-dark);
-
-                --vaadin-upload-button-add: {
-                    @apply(--primary-button);
-                };
-            }
-            paper-textarea {
-                height: 200px;
-                margin-top: 20px;
-                overflow-x: hidden;
-                overflow-y: auto;
-                outline: none;
-
-                --paper-input-container-input: {
-                    font-size: 14px;
-                    line-height: 24px;
-                };
-            }
             :host .submit-button {
                 margin: 20px 0 0 0;
                 @apply(--form-action);
             }
+            :host neon-animated-pages > .iron-selected {
+                position: relative;
+            }
         </style>
 
         <iron-ajax auto
-                   url="[[ _idPIntegrationsApi ]]"
+                   url="[[ idPIntegrationsApi ]]"
                    headers="[[ _headers ]]"
                    handle-as="json"
                    on-error="_onIdPIntegrationsError"
                    on-response="_onIdPIntegrationsResponse"></iron-ajax>
 
         <iron-ajax id="getDomainIdPConfig"
-                   url="[[ domain.samlIdpConfig ]]"
+                   url="[[ domain.meta.idpConfig ]]"
                    headers="[[ _headers ]]"
                    handle-as="json"
                    on-response="_onIdPConfigResponse"></iron-ajax>
 
-        <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color></appsco-loader>
+        <appsco-loader active="[[ _loader ]]" loader-alt="AppsCo is processing request" multi-color></appsco-loader>
 
         <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 
-        <form is="iron-form"
-              id="form"
-              method="POST"
-              action="[[ settingsApi ]]"
-              headers="[[ _headers ]]"
-              on-iron-form-presubmit="_onFormPresubmit"
-              on-iron-form-error="_onFormError"
-              on-iron-form-response="_onFormResponse">
+        <paper-input id="title"
+                     label="Title"
+                     data-field
+                     name="[[ _formPrefix ]][title]"
+                     value="[[ _idPConfig.name ]]"
+                     required
+                     error-message="Please type in title."
+                     on-keyup="_onKeyUp"></paper-input>
 
-            <paper-input id="title"
-                         label="Title"
-                         name="saml_idp_config[title]"
-                         value="{{ _idPConfig.name }}"></paper-input>
+        <paper-input id="domain"
+                     label="Domain"
+                     always-float-label
+                     value="[[ domain.domain ]]"
+                     disabled></paper-input>
 
-            <paper-input id="domain"
-                         label="Domain"
-                         always-float-label
-                         value="[[ domain.domain ]]"
-                         disabled></paper-input>
+        <paper-input label="Domain"
+                     data-field
+                     name="[[ _formPrefix ]][companyDomains][0]"
+                     value="[[ domain.self ]]"
+                     hidden></paper-input>
 
-            <paper-input label="Domain"
-                         name="saml_idp_config[companyDomains][0]"
-                         value="[[ domain.self ]]"
-                         hidden></paper-input>
+        <paper-dropdown-menu id="integrationType"
+                             label="Integration type"
+                             always-float-label$="[[ domain.hasIdp ]]"
+                             horizontal-align="left"
+                             required
+                             error-message="Please select integration type."
+                             disabled$="[[ domain.hasIdp ]]">
+            <paper-listbox id="integrationList"
+                           class="dropdown-content"
+                           attr-for-selected="value"
+                           selected="[[ _idPConfig.integrationId ]]"
+                           on-selected-changed="_onIntegrationTypeSelect">
+                <template is="dom-repeat" items="[[ _integrations ]]">
+                    <paper-item value="[[ item.id ]]"
+                                integration-id="[[ item.id ]]">[[ item.name ]]</paper-item>
+                </template>
+            </paper-listbox>
+        </paper-dropdown-menu>
 
-            <paper-dropdown-menu label="Integration type"
-                                 always-float-label$="[[ domain.hasIdp ]]"
-                                 horizontal-align="left"
-                                 required
-                                 auto-validate
-                                 error-message="Please select integration type."
-                                 disabled$="[[ domain.hasIdp ]]">
-                <paper-listbox id="integrationList"
-                               class="dropdown-content"
-                               attr-for-selected="value"
-                               selected="{{ _idPConfig.integrationId }}">
-                    <template is="dom-repeat" items="[[ _integrations ]]">
-                        <paper-item value="[[ item.id ]]" name="[[ item.name ]]">[[ item.name ]]</paper-item>
-                    </template>
-                </paper-listbox>
-            </paper-dropdown-menu>
+        <neon-animated-pages
+                selected="[[ _activeForm ]]"
+                attr-for-selected="name"
+                entry-animation="scale-up-animation"
+                exit-animation="scale-down-animation"
+                on-neon-animation-finish="_onPageAnimationFinish">
 
-            <paper-input id="appId" label="App ID"
-                         name="saml_idp_config[appId]"
-                         value="{{ _idPConfig.idpAppId }}"
-                         required
-                         auto-validate
-                         error-message="Please type in app ID."></paper-input>
+            <appsco-company-idp-settings-saml-form
+                    name="saml"
+                    data-form
+                    id-p-config="[[ _idPConfig ]]"
+                    form-prefix="[[ _formPrefix ]]"></appsco-company-idp-settings-saml-form>
 
-            <p class="info info-inner">Upload IdP metadata XML file:</p>
-
-            <vaadin-upload id="uploadIdpMetadataField"
-                           no-auto
-                           max-files="1"
-                           max-file-size="1000000"
-                           accept=".xml, text/xml, application/xml"
-                           on-upload-before="_onUploadIdPMetadataBefore">
-                <div class="drop-label">
-                    <iron-icon icon="icons:file-upload"></iron-icon>
-                    Upload IdP metadata XML file
-                </div>
-            </vaadin-upload>
-
-            <p class="info info-inner">Or enter values manually:</p>
-
-            <paper-input label="Sign in URL"
-                         name="saml_idp_config[idpSSOUrl]"
-                         value="{{ _idPConfig.idpSSOUrl }}"
-                         pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
-                         required
-                         auto-validate
-                         error-message="Please type in sign in URL in proper format."></paper-input>
-
-            <paper-input label="Entity ID"
-                         name="saml_idp_config[idpEntityId]"
-                         value="{{ _idPConfig.idpEntityId }}"
-                         pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
-                         required
-                         auto-validate
-                         error-message="Please type in entity ID."></paper-input>
-
-        </form>
-
-        <appsco-company-idp-settings-certificates
-                id="appscoCompnyIdpSettingsCertificates"
-                certificates="{{ _idPConfig.certs }}"
-                on-idp-certificate-added="_onCertAdded"
-        ></appsco-company-idp-settings-certificates>
+            <appsco-company-idp-settings-openid-form
+                    name="openid"
+                    data-form
+                    id-p-config="[[ _idPConfig ]]"
+                    integration="[[ _selectedIntegration ]]"
+                    form-prefix="[[ _formPrefix ]]"></appsco-company-idp-settings-openid-form>
+        </neon-animated-pages>
 
         <paper-button id="submit"
                       class="submit-button"
                       on-tap="_submitForm">Save</paper-button>
 
-        <iron-a11y-keys target="[[ _target ]]"
-                        keys="enter"
+        <iron-a11y-keys keys="enter"
                         on-keys-pressed="_onEnter"></iron-a11y-keys>
 
     </template>
@@ -217,10 +152,7 @@ Update company idP settings component.
                     value: ''
                 },
 
-                /**
-                 * Settings api link.
-                 */
-                settingsApi: {
+                idPIntegrationsApi: {
                     type: String,
                     value: ''
                 },
@@ -230,6 +162,11 @@ Update company idP settings component.
                     value: function() {
                         return {};
                     }
+                },
+
+                _settingsApi: {
+                    type: String,
+                    value: ''
                 },
 
                 _idPConfig: {
@@ -248,16 +185,19 @@ Update company idP settings component.
                     computed: '_computeHeaders(authorizationToken)'
                 },
 
-                _idPIntegrationsApi: {
-                    type: String,
-                    computed: '_computeIdPIntegrationsApi(settingsApi)'
-                },
-
                 _integrations: {
                     type: Array,
                     value: function() {
                         return [];
                     }
+                },
+
+                _selectedIntegration: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    observer: '_onSelectedIntegrationChanged'
                 },
 
                 _loader: {
@@ -272,24 +212,20 @@ Update company idP settings component.
                     type: String
                 },
 
-                /**
-                 * Target for iron-a11y-keys component.
-                 * Submit form on enter.
-                 */
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.form
-                    }
+                _activeForm: {
+                    type: String,
+                    value: ''
+                },
+
+                _formPrefix: {
+                    type: String,
+                    computed: '_computeFormPrefix(_activeForm)'
                 }
             },
 
-            observers: [
-                '_onIdPConfigIntegrationChanged(_idPConfig.integrationId)'
-            ],
-
-            ready: function() {
-                this.$.uploadIdpMetadataField.set('i18n.addFiles.many', 'Upload file');
+            listeners: {
+                'show-error': '_showError',
+                'hide-error': '_hideError'
             },
 
             attached: function() {
@@ -304,9 +240,11 @@ Update company idP settings component.
                 this._clearForm();
                 this._hideError();
                 this._hideLoader();
-                this.$.uploadIdpMetadataField.files = [];
+                Polymer.dom(this.root).querySelector('[data-form]').reset();
                 this.set('_idPConfig', {});
                 this.set('domain', {});
+                this.set('_selectedIntegration', {});
+                this._activeForm = '';
             },
 
             setDomain: function(domain) {
@@ -324,6 +262,18 @@ Update company idP settings component.
                 return settingsApi ? (settingsApi + '/integrations') : '';
             },
 
+            _computeFormPrefix: function(activeForm) {
+
+                switch (activeForm) {
+
+                    case 'openid':
+                        return 'open_id_config';
+
+                    default:
+                        return 'saml_idp_config';
+                }
+            },
+
             _showLoader: function() {
                 this._loader = true;
             },
@@ -333,7 +283,11 @@ Update company idP settings component.
             },
 
             _showError: function(message) {
-                this._error = message;
+                this._error = ('string' === typeof message) ?
+                    message :
+                    ((message.detail && message.detail.message) ?
+                        message.detail.message :
+                        this.apiErrors.getError(404));
             },
 
             _hideError: function() {
@@ -341,107 +295,65 @@ Update company idP settings component.
             },
 
             _clearForm: function() {
-                this.$.form.reset();
+
+                Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
+                    var inputContainer = item.$$('#container');
+
+                    item.value = '';
+                    item.invalid = false;
+
+                    // Used because gold-cc-input doesn't send 'invalid' property down to children elements
+                    if (inputContainer) {
+                        inputContainer.invalid = false;
+                    }
+                }.bind(this));
             },
 
             _onDomainChanged: function(domain) {
 
-                if (domain && domain.samlIdpConfig) {
+                if (domain && domain.meta && domain.meta.idpConfig) {
                     this.$.getDomainIdPConfig.generateRequest();
                 }
             },
 
-            _onIdPConfigIntegrationChanged: function(config) {
+            _onKeyUp: function(event) {
 
-                if (config) {
+                if (13 !== event.keyCode) {
                     this._hideError();
+                    event.target.invalid = false;
                 }
             },
 
-            _onUploadIdPMetadataBefore: function(event) {
-                var integration = this.$.integrationList.selectedItem;
+            _onSelectedIntegrationChanged: function(integration) {
 
-                // Prevent AJAX request
-                event.preventDefault();
-
-                if (!integration) {
-                    this._showError('Please select integration type before upload metadata XML file.');
-                    this.$.uploadIdpMetadataField.files = [];
+                for (var key in integration) {
+                    this._activeForm = integration.kind.toLowerCase();
+                    this._settingsApi = integration.meta.create;
                     return false;
                 }
 
-                var file = event.detail.file,
-                    uploadField = this.$.uploadIdpMetadataField,
-                    fileIndex = uploadField.files.indexOf(file);
-
-                // Update UI
-                uploadField.set(['files', fileIndex, 'progress'], 100);
-                uploadField.set(['files', fileIndex, 'complete'], true);
-
-                this._parseIdPMetadataXMLFile(file);
+                this._activeForm = '';
             },
 
-            _parseIdPMetadataXMLFile: function(file) {
-                var reader = new FileReader();
+            _onIntegrationTypeSelect: function(event) {
+                var currentTarget = event.currentTarget;
 
-                (function(me) {
+                this._hideError();
+                this.$.integrationType.invalid = false;
 
-                    reader.onload = function(a, b, c) {
-                        var xmlDocument = new DOMParser().parseFromString(this.result, 'text/xml');
+                setTimeout(function() {
+                    var integrationID = currentTarget.selectedItem ? currentTarget.selectedItem.integrationId : '',
+                        integrations = this._integrations;
 
-                        me._fillIdPMetadataFromXML(xmlDocument);
-                    };
-                })(this);
+                    integrations.forEach(function(item) {
 
-                reader.readAsText(file);
-            },
+                        if (integrationID === item.id) {
+                            this.set('_selectedIntegration', item);
+                            return false;
+                        }
+                    }.bind(this));
+                }.bind(this), 30);
 
-            _fillIdPMetadataFromXML: function(xmlDocument) {
-                var idpEntityDescriptor = xmlDocument.querySelector('[entityID]'),
-                    entityId = idpEntityDescriptor.getAttribute('entityID'),
-                    certificateDOM = xmlDocument.getElementsByTagName('X509Certificate'),
-                    singleSignOnServices = xmlDocument.querySelectorAll('SingleSignOnService'),
-                    length = singleSignOnServices.length,
-                    signInURL,
-                    certificates = [];
-
-                if (!certificateDOM || certificateDOM.length == 0) {
-                    certificateDOM = xmlDocument.getElementsByTagName('ds:X509Certificate');
-                }
-
-                for (var i = 0; i < length; i++) {
-                    var singleSignOnService = singleSignOnServices[i];
-
-                    if (-1 != singleSignOnService.getAttribute('Binding').indexOf('HTTP-Redirect')) {
-                        signInURL = singleSignOnService.getAttribute('Location');
-                        break;
-                    }
-                }
-
-                for (var i = 0; i < certificateDOM.length; i++) {
-                    certificates.push(certificateDOM[i].textContent);
-                }
-
-                this._setIdPConfig(signInURL, entityId, certificates);
-            },
-
-            _setIdPConfig: function(signInURL, entityId, certificates) {
-                var config = JSON.parse(JSON.stringify(this._idPConfig));
-
-                config.idpSSOUrl = signInURL;
-                config.idpEntityId = entityId;
-
-                config.certs = [];
-                for (var i = 0; i < certificates.length; i++) {
-                    config.certs.push(
-                        '-----BEGIN CERTIFICATE-----\n' +
-                        certificates[i] +
-                        '\n-----END CERTIFICATE-----'
-                    );
-                }
-
-                this.set('_idPConfig', {});
-                this.set('_idPConfig', config);
             },
 
             _onIdPIntegrationsError: function() {
@@ -467,63 +379,116 @@ Update company idP settings component.
 
             },
 
+            _onPageAnimationFinish: function(event) {
+                var fromPage = event.detail.fromPage;
+
+                if (!this.domain.hasIdp && fromPage.$ && ('undefined' !== typeof fromPage.reset)) {
+                    fromPage.reset();
+                }
+            },
+
             _onEnter: function() {
                 this._submitForm();
             },
 
+            _validateForm: function() {
+                var valid = true;
+
+                Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
+                    item.validate();
+                    valid = valid && !item.invalid;
+                }.bind());
+
+                return valid;
+            },
+
+            _getEncodedBodyValues: function(form) {
+                var body = '';
+
+                Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
+
+                    if (item.value) {
+                        body += ('' === body) ? '' : '&';
+                        body += encodeURIComponent(item.name) + '=' + encodeURIComponent(item.value);
+                    }
+                }.bind(this));
+
+                body += ('' === body) ? '' : '&';
+                body += form.getEncodedBodyValues();
+
+                return body;
+            },
+
             _submitForm: function() {
 
-                if (this.$.form.validate()) {
-                    var certificates = this.$.appscoCompnyIdpSettingsCertificates.getCertificates();
-                    if (!certificates || certificates.length == 0) {
-                        this._showError('Please enter atleast one certificate');
-                        return;
+                if (!this._activeForm) {
+                    this.$.integrationType.invalid = true;
+                    return false;
+                }
+
+                var form = Polymer.dom(this.root).querySelector('[name="' + this._activeForm +'"]');
+
+                if (this._validateForm() && form.validate()) {
+
+                    if (form.getCertificates) {
+                        var certificates = form.getCertificates();
+
+                        if (!certificates || 0 === certificates.length) {
+                            this._showError('Please add at least one certificate.');
+                            return;
+                        }
                     }
 
                     this._showLoader();
-                    this.$.form.submit();
+
+                    this._save(form).then(function(response) {
+                        var config = response[0];
+
+                        this.domain.hasIdp = true;
+                        this.domain.meta.idpConfig = config.self;
+
+                        this.fire('idp-settings-saved', {
+                            domain: this.domain,
+                            idPConfig: config
+                        });
+
+                        this._hideLoader();
+                    }.bind(this), function(code) {
+                        this._showError(this.apiErrors.getError(code));
+                        this._hideLoader();
+                    }.bind(this));
                 }
             },
 
-            _onFormPresubmit: function(event) {
-                var form = event.target,
-                    certificates = this.$.appscoCompnyIdpSettingsCertificates.getCertificates();
+            _save: function(form) {
+                return new Promise(function(resolve, reject) {
+                    var request = document.createElement('iron-request'),
+                        options = {
+                            url: this._settingsApi,
+                            method: 'POST',
+                            handleAs: 'json',
+                            headers: this._headers,
+                            body: this._getEncodedBodyValues(form)
+                        };
 
-                if (this.domain.hasIdp) {
-                    form.request.url = this.domain.samlIdpConfig;
-                    form.request.method = 'PUT';
-                }
-                else {
-                    form.request.body['saml_idp_config[integrationId]'] = encodeURIComponent(this.$.integrationList.selectedItem.value);
-                }
+                    if (this.domain.hasIdp) {
+                        options.url = this.domain.meta.idpConfig;
+                        options.method = 'PUT';
+                    }
+                    else {
+                        options.body += ('&' + this._formPrefix +'[integrationId]=' + encodeURIComponent(this.$.integrationList.selectedItem.value));
+                    }
 
-                for (var i = 0; i < certificates.length; i++) {
-                    form.request.body['saml_idp_config[certs][' + i + ']'] = certificates[i];
-                }
+                    request.send(options).then(function() {
 
-            },
+                        if (200 === request.status) {
+                            resolve(request.response);
+                        }
 
-            _onFormError: function(event) {
-                this._showError(this.apiErrors.getError(event.detail.request.response.code));
-                this._hideLoader();
-            },
-
-            _onFormResponse: function(event) {
-                var config = event.detail.response[0];
-
-                this.domain.hasIdp = true;
-                this.domain.samlIdpConfig = config.self;
-
-                this.fire('idp-settings-saved', {
-                    domain: this.domain,
-                    idPConfig: config
-                });
-
-                this._hideLoader();
-            },
-
-            _onCertAdded: function() {
-                this._error = '';
+                    }.bind(this), function() {
+                        reject(request.response.code);
+                    }.bind(this));
+                }.bind(this));
             }
         });
     </script>

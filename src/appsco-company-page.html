@@ -117,7 +117,7 @@
                                 name="appsco-company-manage-idp-settings-page"
                                 company="[[ company ]]"
                                 authorization-token="[[ authorizationToken ]]"
-                                settings-api="[[ _idPSettingsApi ]]"
+                                id-p-integrations-api="[[ _idPIntegrationsApi ]]"
                                 domains-api="[[ _domainsApi ]]"
                                 api-errors="[[ apiErrors ]]"
                                 on-company-settings-changed="_onSettingsChanged"
@@ -237,9 +237,9 @@
                     computed: '_computeGroupsApi(company)'
                 },
 
-                _idPSettingsApi: {
+                _idPIntegrationsApi: {
                     type: String,
-                    computed: '_computeIdPSettingsApi(company)'
+                    computed: '_computeIdPIntegrationsApi(company)'
                 },
 
                 /**
@@ -364,8 +364,8 @@
                 return company.self ? (company.self + '/groups') : '';
             },
 
-            _computeIdPSettingsApi: function(company) {
-                return company.self ? (company.self + '/settings/idps') : '';
+            _computeIdPIntegrationsApi: function(company) {
+                return company.self ? (company.self + '/settings/idps/integrations') : '';
             },
 
             _updateScreen: function(medium, tablet, mobile) {

@@ -34,7 +34,7 @@
             <appsco-company-idp-settings-page id="appscoCompanyIdPSettingsPage"
                                               name="appsco-company-idp-settings-page"
                                               company="[[ company ]]"
-                                              settings-api="[[ settingsApi ]]"
+                                              id-p-integrations-api="[[ idPIntegrationsApi ]]"
                                               authorization-token="[[ authorizationToken ]]"
                                               api-errors="[[ apiErrors ]]"
                                               on-idp-settings-saved="_onIdPSettingsSaved"
@@ -62,10 +62,7 @@
                     type: String
                 },
 
-                /**
-                 * Save settings link.
-                 */
-                settingsApi: {
+                idPIntegrationsApi: {
                     type: String,
                     value: ''
                 },
