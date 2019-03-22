@@ -530,13 +530,20 @@
                 if (!newValue) {
                     return;
                 }
+
+                var appscoResourcesComponent = this.$.appscoResources;
+
                 if (newValue.hide_resource_section) {
                     this.$.appscoContent.hideSection('resource')
                 } else {
                     this.$.appscoContent.showSection('resource')
                 }
 
-                this.$.appscoResources.setDisplayStyle(newValue.display_style);
+                appscoResourcesComponent.setDisplayStyle(newValue.display_style);
+                appscoResourcesComponent.setSort({
+                    orderBy: newValue.sort_field,
+                    ascending: newValue.sort_ascending
+                });
             },
 
             _showBulkActions: function() {
@@ -548,7 +555,7 @@
             },
 
             _resetPageActions: function() {
-                this.fire('reset-page-actions')
+                this.fire('reset-page-actions');
             },
 
             addGroup: function(group) {
@@ -667,7 +674,13 @@
                 this.$.appscoResources.filterByTerm(term);
             },
 
-            _onSelectedFilterChanged: function(filter) {
+            resetListFilters: function() {
+                this._resetFilters();
+                this.$$('#appscoSearch').reset();
+                this._resetPageActions();
+            },
+
+            _onSelectedFilterChanged: function() {
 
                 if (this.pageLoaded) {
                     this.resetPage();
@@ -680,6 +693,7 @@
                     this.$$('#appscoCompanyGroups').reset();
                 }
             },
+
             _searchGroups: function(term) {
                 this.$$('#appscoCompanyGroups').filterByTerm(term);
             },

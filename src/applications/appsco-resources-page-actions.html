@@ -153,6 +153,7 @@
         <appsco-application-actions id="appscoApplicationsActions"
                                     authorization-token="[[ authorizationToken ]]"
                                     filter-api="[[ filterApi ]]"
+                                    page-config-api="[[ pageConfigApi ]]"
                                     page-config="[[ pageConfig ]]"
                                     resource-admin="[[ resourceAdmin ]]"
                                     company
@@ -174,7 +175,13 @@
             properties: {
 
                 authorizationToken: {
-                    type: String
+                    type: String,
+                    value: ''
+                },
+
+                pageConfigApi: {
+                    type: String,
+                    value: ''
                 },
 
                 /**

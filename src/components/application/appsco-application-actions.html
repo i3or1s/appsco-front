@@ -287,6 +287,8 @@ Custom property | Description | Default
                 <appsco-page-config-dropdown
                         id="resourcePageConfigDropdown"
                         page="resources"
+                        authorization-token="[[ authorizationToken ]]"
+                        page-config-api="[[ pageConfigApi ]]"
                         page-config="[[ pageConfig ]]"
                 ></appsco-page-config-dropdown>
             </div>
@@ -300,6 +302,16 @@ Custom property | Description | Default
             is: 'appsco-application-actions',
 
             properties: {
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                pageConfigApi: {
+                    type: String,
+                    value: ''
+                },
 
                 _filterItems: {
                     type: Array,
