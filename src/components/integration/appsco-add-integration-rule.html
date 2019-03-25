@@ -172,8 +172,9 @@
                                                  auto-validate>
                                 <paper-listbox id="fromMethodList"
                                                class="dropdown-content"
+                                               on-iron-activate="_onFromMethodSelected"
                                                attr-for-selected="value">
-                                    <template is="dom-repeat" items="[[ _fromMethodList ]]">
+                                    <template is="dom-repeat" items="[[ _computedFromMethodList ]]">
                                         <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                                     </template>
                                 </paper-listbox>
@@ -193,7 +194,7 @@
                                                class="dropdown-content"
                                                attr-for-selected="value"
                                                on-iron-activate="_onFromPSOSelected">
-                                    <template is="dom-repeat" items="[[ _fromPSOList ]]">
+                                    <template is="dom-repeat" items="[[ _computedFromPSOList ]]">
                                         <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
                                     </template>
                                 </paper-listbox>
@@ -285,8 +286,9 @@
                                                  auto-validate>
                                 <paper-listbox id="toMethodList"
                                                class="dropdown-content"
+                                               on-iron-activate="_onToMethodSelected"
                                                attr-for-selected="value">
-                                    <template is="dom-repeat" items="[[ _toMethodList ]]">
+                                    <template is="dom-repeat" items="[[ _computedToMethodList ]]">
                                         <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                                     </template>
                                 </paper-listbox>
@@ -306,7 +308,7 @@
                                                class="dropdown-content"
                                                attr-for-selected="value"
                                                on-iron-activate="_onToPSOSelected">
-                                    <template is="dom-repeat" items="[[ _availableToPSOList ]]">
+                                    <template is="dom-repeat" items="[[ _computedToPSOList ]]">
                                         <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
                                     </template>
                                 </paper-listbox>
@@ -402,6 +404,16 @@
                     computed: '_computeIntegrationKindRA(integration)'
                 },
 
+                _selectedFromMethod: {
+                    type: String,
+                    value: ''
+                },
+
+                _selectedToMethod: {
+                    type: String,
+                    value: ''
+                },
+
                 _fromMethodList: {
                     type: Array,
                     value: function() {
@@ -426,11 +438,26 @@
                     }
                 },
 
+                _computedFromMethodList: {
+                    type: Array,
+                    computed: '_computeFromMethodList(_fromMethodList, integration)'
+                },
+
                 _fromPSOList: {
                     type: Array,
                     value: function() {
                         return [];
                     }
+                },
+
+                _computedFromPSOList: {
+                    type: Array,
+                    computed: '_computeFromPSOList(_fromPSOList, _selectedFromMethod, integration)'
+                },
+
+                _computedToPSOList: {
+                    type: Array,
+                    computed: '_computeToPSOList(_availableToPSOList, _selectedToMethod, integration)'
                 },
 
                 _fromConditionList: {
@@ -475,6 +502,11 @@
                             }
                         ];
                     }
+                },
+
+                _computedToMethodList: {
+                    type: Array,
+                    computed: '_computeToMethodList(_toMethodList, integration)'
                 },
 
                 _toPSOList: {
@@ -620,6 +652,102 @@
                 Polymer.dom(this.root).querySelectorAll('paper-button').forEach(function(element) {
                     element.active = false;
                 });
+            },
+
+            _computeFromMethodList: function(_fromMethodList, integration) {
+                var fromMethods = [];
+
+                if (integration
+                    && integration.supported_actions
+                    && integration.supported_actions.source
+                    && integration.supported_actions.source.existing
+                ) {
+                    for (var idx in integration.supported_actions.source.existing) {
+                        for (var idx2 in _fromMethodList) {
+                            if (_fromMethodList[idx2].value == integration.supported_actions.source.existing[idx]) {
+                                fromMethods.push(
+                                    _fromMethodList[idx2]
+                                );
+                            }
+                        }
+                    }
+                }
+
+                return fromMethods;
+            },
+
+            _computeToMethodList: function(_toMethodList, integration) {
+                var toMethods = [];
+
+                if (integration
+                    && integration.supported_actions
+                    && integration.supported_actions.target
+                    && integration.supported_actions.target.existing
+                ) {
+                    for (var idx in integration.supported_actions.target.existing) {
+                        for (var idx2 in _toMethodList) {
+                            if (_toMethodList[idx2].value == integration.supported_actions.target.existing[idx]) {
+                                toMethods.push(
+                                    _toMethodList[idx2]
+                                );
+                            }
+                        }
+                    }
+                }
+
+                return toMethods;
+            },
+
+            _computeFromPSOList: function(_fromPSOList, _selectedFromMethod, integration) {
+                var psos = [],
+                    targets = {};
+                for (var idx in _fromPSOList) {
+                    targets[_fromPSOList[idx].key] = _fromPSOList[idx];
+                }
+                if (integration
+                    && integration.supported_actions
+                    && integration.supported_actions.source
+                    && integration.supported_actions.source.pso
+                ) {
+                    for (var pso in integration.supported_actions.source.pso) {
+                        if (integration.supported_actions.source.pso[pso].indexOf(_selectedFromMethod) > -1) {
+                            psos.push(targets[pso]);
+                        }
+                    }
+                }
+
+                return psos;
+            },
+
+            _computeToPSOList: function(_availableToPSOList, _selectedToMethod, integration) {
+                var psos = [],
+                    available = {};
+                for (var idx in _availableToPSOList) {
+                    available[_availableToPSOList[idx].key] = _availableToPSOList[idx];
+                }
+                if (integration
+                    && integration.supported_actions
+                    && integration.supported_actions.target
+                    && integration.supported_actions.target.pso
+                ) {
+                    for (var pso in integration.supported_actions.target.pso) {
+                        if (integration.supported_actions.target.pso[pso].indexOf(_selectedToMethod) > -1
+                            && available[pso]
+                        ) {
+                            psos.push(available[pso]);
+                        }
+                    }
+                }
+
+                return psos;
+            },
+
+            _onFromMethodSelected: function(event) {
+                this._selectedFromMethod = event.detail.selected;
+            },
+
+            _onToMethodSelected: function(event) {
+                this._selectedToMethod = event.detail.selected;
             },
 
             _computeHeaders: function (authorizationToken) {
