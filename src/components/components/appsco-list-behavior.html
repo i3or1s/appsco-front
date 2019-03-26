@@ -224,7 +224,7 @@
 
         getFirstSelectedItem: function() {
             var items = JSON.parse(JSON.stringify(this._listItems)),
-                length = items.length;
+                length = items.length;_filterType = ''
 
             for (var i = 0; i < length; i++) {
                 if (items[i].selected) {
@@ -543,7 +543,14 @@
         },
 
         setSort: function(sort) {
-            this.set('_sort', sort);
+
+            for (var key in sort) {
+
+                if (sort[key] !== this._sort[key]) {
+                    this.set('_sort', sort);
+                    break;
+                }
+            }
         },
 
         _computeHeaders: function (authorizationToken) {

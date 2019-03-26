@@ -7,6 +7,8 @@
 <link rel="import" href="../../../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../../../bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../../../../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../../../../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../../../../bower_components/paper-styles/typography.html">
 
 <link rel="import" href="../../components/appsco-list-item-behavior.html">
 <link rel="import" href="../../components/appsco-list-item-styles.html">
@@ -36,6 +38,9 @@ Custom property | Description | Default
 
         <style>
             :host {
+                width: 100%;
+                margin: 0 0 10px 0;
+
                 --icon-action-border-radius: 16px;
             }
             :host([resource-admin]) .item {
@@ -46,59 +51,6 @@ Custom property | Description | Default
                 @apply(--shadow-elevation-2dp);
                 @apply(--appsco-list-item-activated);
             }
-            :host([tablet-screen]) .item-additional-info {
-                display: none;
-            }
-
-            :host([display-grid]) div.item {
-                text-align: center;
-                width: 141px;
-                height: 156px;
-                overflow: hidden;
-                @apply(--shadow-elevation-2dp);
-                position: relative;
-                background-color: var(--item-background-color, #fff);
-                color: var(--color, #333);
-                padding: 0 4px;
-                cursor: pointer;
-                display: block;
-            }
-
-            :host([display-grid]) div.item .select-action {
-                display: inline-block;
-                margin-top: 15px;
-            }
-
-            :host([display-grid]) div.item iron-image.not-selectable {
-                display: inline-block;
-                margin-top: 15px;
-            }
-
-            :host([display-grid]) div.item .resource-title {
-                display: block;
-                text-align: center;
-                margin-top: 10px;
-                height: 45px;
-                overflow: hidden;
-            }
-
-            :host([display-grid]) div.actions {
-                @apply(--layout-horizontal);
-                align-items: center;
-                right: -5px;
-            }
-
-            :host {
-                width: 100%;
-                margin: 0 0 10px 0;
-            }
-
-            :host([display-grid]) {
-                width: auto;
-                float: left;
-                margin: 5px;
-            }
-
         </style>
 
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>

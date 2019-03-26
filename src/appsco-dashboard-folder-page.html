@@ -367,6 +367,13 @@
                     observer: '_onFoldersApiChanged'
                 },
 
+                pageConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
                 _breadcrumbsDataPage: {
                     type: String,
                     computed: '_computeBreadcrumbsDataPage(isOnPersonal)'
@@ -485,7 +492,8 @@
             ],
 
             observers: [
-                '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)'
+                '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)',
+                '_onPageConfigChanged(pageConfig, _breadcrumbsDataPage)'
             ],
 
             listeners: {
@@ -528,6 +536,27 @@
                 this.fire('page-loaded');
                 this._initializeResourcesDragBehavior();
                 this.initializeDropBehavior();
+            },
+
+            _onPageConfigChanged: function(newValue, breadcrumbsDataPage) {
+                newValue = newValue[breadcrumbsDataPage];
+
+                if (!newValue) {
+                    return false;
+                }
+
+                var appscoApplicationsComponent = this.$.appscoApplications;
+
+                if (newValue.display_style) {
+                    appscoApplicationsComponent.setDisplayStyle(newValue.display_style);
+                }
+
+                if (newValue.sort_field && newValue.sort_ascending) {
+                    appscoApplicationsComponent.setSort({
+                        orderBy: newValue.sort_field,
+                        ascending: newValue.sort_ascending
+                    });
+                }
             },
 
             _onFoldersApiChanged: function() {

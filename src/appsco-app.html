@@ -224,6 +224,11 @@
                                     id="appscoHomePageActions"
                                     name="home"
                                     account="[[ account ]]"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    page-config-api="[[ api.pageConfigApi ]]"
+                                    page-config="[[ _pageConfig ]]"
+                                    page="[[ page ]]"
+                                    api-errors="[[ _apiErrors ]]"
                                     on-add-item-action="_onAddItemAction"
                                     on-search="_onSearchApplications"
                                     on-search-clear="_onSearchApplicationsClear"
@@ -259,6 +264,11 @@
 
                             <appsco-company-home-page-actions id="appscoCompanyHomePageActions"
                                                       name="company-home"
+                                                      authorization-token="[[ authorizationToken ]]"
+                                                      page-config-api="[[ api.pageConfigApi ]]"
+                                                      page-config="[[ _pageConfig ]]"
+                                                      page="[[ page ]]"
+                                                      api-errors="[[ _apiErrors ]]"
                                                       on-search="_onSearchApplications"
                                                       on-search-clear="_onSearchApplicationsClear"
                                                       on-add-new-folder="_onAddNewFolderAction"></appsco-company-home-page-actions>
@@ -274,6 +284,8 @@
                                     filter-api="[[ api.dashboards ]]?extended=1"
                                     page-config-api="[[ api.pageConfigApi ]]"
                                     page-config="[[ _pageConfig ]]"
+                                    page="[[ page ]]"
+                                    api-errors="[[ _apiErrors ]]"
                                     resource-admin="[[ _resourceAdmin ]]"
                                     on-add-item-action="_onAddCompanyItemAction"
                                     on-import-resources="_onImportResourcesAction"
@@ -478,6 +490,7 @@
                             authorization-token="[[ authorizationToken ]]"
                             applications-api="[[ _applicationsApi ]]"
                             folders-api="[[ api.foldersApi ]]"
+                            page-config="[[ _pageConfig ]]"
                             on-loaded="_onLoadedPage"
                             on-edit-shared-application="_onEditSharedApplication"
                             on-revoke-application="_onRevokeApplication"
@@ -566,6 +579,7 @@
                             folders-api="[[ _companyFoldersApi ]]"
                             netscaler-api="[[ _companyNetscalerFeatureApi ]]"
                             account="[[ account ]]"
+                            page-config="[[ _pageConfig ]]"
                             on-loaded="_onLoadedPage"
                             on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
                             on-open-rename-folder-dialog="_onOpenRenameFolderDialog"
@@ -597,7 +611,7 @@
                             groups-api="[[ _companyGroupsApi ]]"
                             api-errors="[[ _apiErrors ]]"
                             resource-admin="[[ _resourceAdmin ]]"
-                            page-config="[[ _pageConfig.resources ]]"
+                            page-config="[[ _pageConfig ]]"
                             get-company-idp-config-list-api="[[ _getCompanyIdpConfigListApi ]]"
                             on-list-loaded="_onLoadedPage"
                             on-share-company-resource="_onShareCompanyResource"
@@ -970,6 +984,7 @@
                             folders-api="[[ api.foldersApi ]]"
                             netscaler-api="[[ _companyNetscalerFeatureApi ]]"
                             account="[[ account ]]"
+                            page-config="[[ _pageConfig ]]"
                             on-loaded="_onLoadedPage"
                             on-revoke-application="_onRevokeApplication"
                             on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
@@ -2305,7 +2320,17 @@
                 _pageConfig: {
                     type: Object,
                     value: function() {
-                        return {};
+                        return {
+                            home: {
+                                display_style: 'grid'
+                            },
+                            'company-home': {
+                                display_style: 'grid'
+                            },
+                            resources: {
+                                display_style: 'list'
+                            }
+                        };
                     }
                 },
 
@@ -2327,6 +2352,7 @@
 
             listeners: {
                 'show-page-progress-bar': '_showProgressBar',
+                'notify-about-error': '_notifyAboutError',
                 'page-global-info': '_onInfoAction',
                 'page-global-filters': '_onFiltersAction',
                 'page-global-toggle-additional-options': '_onToggleAdditionalOptionsAction',
@@ -2952,10 +2978,16 @@
             },
 
             _onGetPageConfig: function(event) {
-                var pageConfig = event.detail.response;
+                var pageConfig = event.detail.response,
+                    _pageConfig = JSON.parse(JSON.stringify(this._pageConfig));
+
+                for (var key in pageConfig) {
+                    _pageConfig[key] = pageConfig[key];
+
+                }
 
                 this.set('_pageConfig', {});
-                this.set('_pageConfig', pageConfig);
+                this.set('_pageConfig', _pageConfig);
             },
 
             _getCurrentCompanyFromAccount: function() {
@@ -3471,6 +3503,10 @@
 
                     case 'policies-report':
                         return this.$.appscoPolicyReportPageActions;
+                        break;
+
+                    case 'company-home':
+                        return this.$.appscoCompanyHomePageActions;
                         break;
                 }
 
@@ -4682,13 +4718,18 @@
             },
 
             _onPageSettingsChanged: function(event) {
-                    var pageComponent = this.getCurrentAppscoPageElement();
+                var pageComponent = this.getCurrentAppscoPageElement(),
+                    pageConfig = event.detail.pageConfig,
+                    page = event.detail.page,
+                    _pageConfig = JSON.parse(JSON.stringify(this._pageConfig));
 
-                    if (pageComponent.resetListFilters) {
-                        pageComponent.resetListFilters();
-                    }
+                if (pageComponent.resetListFilters) {
+                    pageComponent.resetListFilters();
+                }
 
-                    this.set('_pageConfig', event.detail.pageConfig);
+                _pageConfig[page] = pageConfig[page];
+                this.set('_pageConfig', {});
+                this.set('_pageConfig', _pageConfig);
             },
 
             /**
@@ -6825,6 +6866,10 @@
 
             _notifyReloadAccounts: function() {
                 this.fire('reload-accounts');
+            },
+
+            _notifyAboutError: function(event) {
+                this._notify(event.detail.message);
             },
 
             _notify: function(message, persistant) {

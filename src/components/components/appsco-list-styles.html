@@ -1,5 +1,6 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/paper-styles/typography.html">
 
 <!-- shared styles for appsco-list components -->
 <dom-module id="appsco-list-styles">
@@ -58,6 +59,12 @@
                 font-style: italic;
                 @apply(--paper-font-body2);
                 @apply(--info-message);
+            }
+            :host([display-grid]) .list {
+                @apply(--layout-horizontal);
+                @apply(--layout-wrap);
+                @apply(--layout-start);
+                margin-right: -20px;
             }
         </style>
     </template>

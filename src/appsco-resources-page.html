@@ -407,7 +407,7 @@
                 pageConfig: {
                     type: Object,
                     value: function() { return {}; },
-                    observer: '_pageConfigChanged'
+                    observer: '_onPageConfigChanged'
                 }
             },
 
@@ -526,7 +526,9 @@
                 this.$.appscoContent.toggleSection('content-top');
             },
 
-            _pageConfigChanged: function(newValue) {
+            _onPageConfigChanged: function(newValue) {
+                newValue = newValue[this.getAttribute('name')];
+
                 if (!newValue) {
                     return;
                 }
@@ -539,11 +541,16 @@
                     this.$.appscoContent.showSection('resource')
                 }
 
-                appscoResourcesComponent.setDisplayStyle(newValue.display_style);
-                appscoResourcesComponent.setSort({
-                    orderBy: newValue.sort_field,
-                    ascending: newValue.sort_ascending
-                });
+                if (newValue.display_style) {
+                    appscoResourcesComponent.setDisplayStyle(newValue.display_style);
+                }
+
+                if (newValue.sort_field && newValue.sort_ascending) {
+                    appscoResourcesComponent.setSort({
+                        orderBy: newValue.sort_field,
+                        ascending: newValue.sort_ascending
+                    });
+                }
             },
 
             _showBulkActions: function() {

@@ -153,8 +153,13 @@
         <appsco-application-actions id="appscoApplicationsActions"
                                     authorization-token="[[ authorizationToken ]]"
                                     filter-api="[[ filterApi ]]"
+                                    api-errors="[[ apiErrors ]]"
                                     page-config-api="[[ pageConfigApi ]]"
                                     page-config="[[ pageConfig ]]"
+                                    page="[[ page ]]"
+                                    page-config-option-hide-resource-section
+                                    page-config-option-display-list
+                                    page-config-option-sort
                                     resource-admin="[[ resourceAdmin ]]"
                                     company
                                     on-search-icon="_onSearchIcon"
@@ -179,7 +184,26 @@
                     value: ''
                 },
 
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
                 pageConfigApi: {
+                    type: String,
+                    value: ''
+                },
+
+                pageConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                page: {
                     type: String,
                     value: ''
                 },

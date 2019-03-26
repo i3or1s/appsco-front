@@ -17,6 +17,7 @@
             :host {
                 display: inline-block;
                 position: relative;
+                color: var(--primary-text-color);
 
                 --paper-card-content: {
                     @apply(--layout-flex-vertical);
@@ -38,7 +39,7 @@
 
             :host h1 {
                 font-weight: normal;
-                font-size: 16px;
+                font-size: 18px;
             }
 
             :host paper-toggle-button {
@@ -99,54 +100,63 @@
                                    loader-alt="AppsCo is processing request"
                                    multi-color></appsco-loader>
 
-                    <div class="input-container input-container-show-resource-section">
-                        <paper-toggle-button id="hideResourceSectionToggle"
-                                             on-tap="_onSaveChanges"
-                                             checked$="[[ _hideResourceSection ]]">Hide groups section
-                        </paper-toggle-button>
-                        <p class="info">
-                            Resource section will not be displayed by default when this option is turned on.
-                        </p>
-                    </div>
+                    <template is="dom-if" if="[[ optionHideResourceSection ]]">
+                        <div class="input-container input-container-show-resource-section">
+                            <paper-toggle-button id="hideResourceSectionToggle"
+                                                 name="hide_resource_section"
+                                                 data-field
+                                                 on-tap="_onSaveChanges"
+                                                 checked$="[[ _hideResourceSection ]]">Hide groups section
+                            </paper-toggle-button>
+                            <p class="info">
+                                Resource section will not be displayed by default when this option is turned on.
+                            </p>
+                        </div>
+                    </template>
 
-                    <div class="input-container">
-                        <paper-dropdown-menu id="dropDownPageDisplay"
-                                             label="Resources view"
-                                             horizontal-align="left"
-                                             value="[[ _displayKind ]]"
-                        >
-                            <paper-listbox id="paperListboxPageDisplay"
-                                           class="dropdown-content filter"
-                                           attr-for-selected="value"
-                                           selected="[[ _displayKind ]]"
-                            >
-                                <template is="dom-repeat" items="[[ _displayKindList ]]">
-                                    <paper-item value="[[ item.value ]]" on-tap="_onSaveChanges">[[ item.name ]]</paper-item>
-                                </template>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
-                        <p class="info">
-                            Choose how the resources card will be displayed on the page.
-                        </p>
-                    </div>
+                    <template is="dom-if" if="[[ optionDisplayList ]]">
+                        <div class="input-container">
+                            <paper-dropdown-menu id="dropDownPageDisplay"
+                                                 name="display_style"
+                                                 label="Resources view"
+                                                 horizontal-align="left"
+                                                 data-field="choice">
+                                <paper-listbox id="paperListboxPageDisplay"
+                                               class="dropdown-content filter"
+                                               attr-for-selected="value"
+                                               selected="{{ _displayKind }}"
+                                >
+                                    <template is="dom-repeat" items="[[ _displayKindList ]]">
+                                        <paper-item value="[[ item.value ]]" on-tap="_onSaveChanges">[[ item.name ]]</paper-item>
+                                    </template>
+                                </paper-listbox>
+                            </paper-dropdown-menu>
+                            <p class="info">
+                                Choose how the resources card will be displayed on the page.
+                            </p>
+                        </div>
+                    </template>
 
-                    <div class="input-container">
-                        <paper-dropdown-menu id="dropDownSortOptions"
-                                             label="Sort resources by"
-                                             horizontal-align="left">
-                            <paper-listbox id="paperListboxSortOptions"
-                                           class="dropdown-content filter"
-                                           attr-for-selected="value"
-                                           selected="[[ _sortOption ]]">
-                                <template is="dom-repeat" items="[[ _sortOptionList ]]">
-                                    <paper-item value="[[ item.value ]]"
-                                                sort-field="[[ item.sortField ]]"
-                                                sort-ascending="[[ item.sortAscending ]]"
-                                                on-tap="_onSaveChanges">[[ item.name ]]</paper-item>
-                                </template>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
-                    </div>
+                    <template is="dom-if" if="[[ optionSort ]]">
+                        <div class="input-container">
+                            <paper-dropdown-menu id="dropDownSortOptions"
+                                                 label="Sort resources by"
+                                                 horizontal-align="left"
+                                                 data-field="sort">
+                                <paper-listbox id="paperListboxSortOptions"
+                                               class="dropdown-content filter"
+                                               attr-for-selected="value"
+                                               selected="{{ _sortOption }}">
+                                    <template is="dom-repeat" items="[[ _sortOptionList ]]">
+                                        <paper-item value="[[ item.value ]]"
+                                                    sort-field="[[ item.sortField ]]"
+                                                    sort-ascending="[[ item.sortAscending ]]"
+                                                    on-tap="_onSaveChanges">[[ item.name ]]</paper-item>
+                                    </template>
+                                </paper-listbox>
+                            </paper-dropdown-menu>
+                        </div>
+                    </template>
                 </div>
             </paper-card>
         </appsco-dropdown>
@@ -165,6 +175,13 @@
                     value: ''
                 },
 
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
                 pageConfigApi: {
                     type: String,
                     value: ''
@@ -180,6 +197,21 @@
                     value: function() {
                         return {};
                     }
+                },
+
+                optionHideResourceSection: {
+                    type: Boolean,
+                    value: false
+                },
+
+                optionDisplayList: {
+                    type: Boolean,
+                    value: false
+                },
+
+                optionSort: {
+                    type: Boolean,
+                    value: false
                 },
 
                 _displayKindList: {
@@ -285,7 +317,7 @@
             _computeSortOption: function(pageConfig, page) {
                 return pageConfig[page] ?
                     (pageConfig[page].sort_field + pageConfig[page].sort_ascending) :
-                    (this._sortOptionList ? this._sortOptionList[2].value : '');
+                    (this._sortOptionList ? this._sortOptionList[0].value : '');
             },
 
             _showLoader: function() {
@@ -304,13 +336,13 @@
                         handleAs: 'json',
                         headers: this._headers
                     },
-                    body = 'page_config[page]=' + this.page;
+                    body = 'page_config[page]=' + encodeURIComponent(this.page);
 
                 for (var key in settings) {
                     body += ('&page_config[' + key +']=' +
                     (('boolean' === typeof settings[key]) ?
                         (settings[key] ? 1 : 0) :
-                        settings[key]));
+                        encodeURIComponent(settings[key])));
                 }
 
                 options.body = body;
@@ -328,21 +360,41 @@
 
                         this._hideLoader();
                     }
+                }.bind(this), function() {
+
+                   this.fire('notify-about-error', {
+                       message: this.apiErrors.getError(request.response.code)
+                   });
+
+                   this._hideLoader();
                 }.bind(this));
             },
 
             _onSaveChanges: function() {
+                var settings = {};
 
                 this._showLoader();
 
                 setTimeout(function() {
 
-                    this._saveChanges({
-                        sort_field: this.$.dropDownSortOptions.selectedItem.sortField,
-                        sort_ascending: this.$.dropDownSortOptions.selectedItem.sortAscending,
-                        display_style: this.$.dropDownPageDisplay.selectedItem.value,
-                        hide_resource_section: this.$.hideResourceSectionToggle.checked
-                    });
+                    Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(field) {
+
+                        if ('choice' === field.getAttribute('data-field') && field.selectedItem) {
+                            settings[field.name] = field.selectedItem.value;
+                        }
+                        else if ('sort' === field.getAttribute('data-field') && field.selectedItem) {
+                            settings['sort_field'] = field.selectedItem.sortField;
+                            settings['sort_ascending'] = field.selectedItem.sortAscending;
+                        }
+                        else if ('undefined' !== typeof field.checked) {
+                            settings[field.name] = field.checked;
+                        }
+                        else if (field.value) {
+                            settings[field.name] = field.value;
+                        }
+                    }.bind(this));
+
+                    this._saveChanges(settings);
                 }.bind(this), 30);
             }
 
