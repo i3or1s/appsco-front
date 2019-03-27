@@ -232,25 +232,25 @@
                                 value: 'created1',
                                 name: 'Newest to oldest',
                                 sortField: 'created',
-                                sortAscending: '1'
+                                sortAscending: true
                             },
                             {
                                 value: 'created0',
                                 name: 'Oldest to newest',
                                 sortField: 'created',
-                                sortAscending: '0'
+                                sortAscending: false
                             },
                             {
                                 value: 'title1',
                                 name: 'A to Z',
                                 sortField: 'title',
-                                sortAscending: '1'
+                                sortAscending: true
                             },
                             {
                                 value: 'title0',
                                 name: 'Z to A',
                                 sortField: 'title',
-                                sortAscending: '0'
+                                sortAscending: false
                             }
                         ];
                     }
@@ -316,7 +316,7 @@
 
             _computeSortOption: function(pageConfig, page) {
                 return pageConfig[page] ?
-                    (pageConfig[page].sort_field + pageConfig[page].sort_ascending) :
+                    (pageConfig[page].sort_field + (pageConfig[page].sort_ascending ? 1 : 0)) :
                     (this._sortOptionList ? this._sortOptionList[0].value : '');
             },
 

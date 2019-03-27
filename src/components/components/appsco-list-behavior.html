@@ -52,10 +52,7 @@
             _sort: {
                 type: Object,
                 value: function() {
-                    return {
-                        orderBy: '',
-                        ascending: ''
-                    };
+                    return {};
                 }
             },
 
@@ -562,8 +559,8 @@
         _computeListApi: function(listApi, size, sort) {
             return (listApi && size) ?
                 ((listApi + '?page=1&extended=1&limit=' + size) +
-                ((sort && sort.orderBy && sort.ascending) ?
-                    ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
+                    ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                     '')) :
                 '';
         },
@@ -571,8 +568,8 @@
         _computeSearchListApi: function(listApi, term, sort) {
             return listApi ?
                 ((listApi + '?page=1&limit=100&extended=1&term=' + term) +
-                ((sort && sort.orderBy && sort.ascending) ?
-                    ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
+                    ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                     '')) :
                 '';
         },
@@ -580,8 +577,8 @@
         _computeNextPageListApi: function(nextPageApi, size, sort) {
             return (nextPageApi && size) ?
                 ((nextPageApi + '&limit=' + size) +
-                ((sort && sort.orderBy && sort.ascending) ?
-                    ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
+                    ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                     '')) :
                 '';
         },
