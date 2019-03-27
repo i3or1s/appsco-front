@@ -43,7 +43,7 @@ Custom property | Description | Default
         <style include="appsco-list-styles"></style>
 
         <style>
-            :host appsco-application-item {
+            :host([display-grid]) appsco-application-item {
                 width: auto;
                 margin: 0 10px 10px 0;
                 position: relative;
@@ -307,10 +307,7 @@ Custom property | Description | Default
                 _sort: {
                     type: Object,
                     value: function() {
-                        return {
-                            orderBy: '',
-                            ascending: ''
-                        };
+                        return {};
                     }
                 },
 
@@ -535,8 +532,8 @@ Custom property | Description | Default
             _computeListApi: function(listApi, size, sort) {
                 return (listApi && size) ?
                     ((listApi + '?page=1&extended=1&limit=' + size) +
-                    ((sort && sort.orderBy && sort.ascending) ?
-                        ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                    ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
+                        ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                         '')) :
                     '';
             },
@@ -544,8 +541,8 @@ Custom property | Description | Default
             _computeNextPageListApi: function(nextPageApi, size, sort) {
                 return (nextPageApi && size) ?
                     ((nextPageApi + '&limit=' + size) +
-                    ((sort && sort.orderBy && sort.ascending) ?
-                        ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                    ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
+                        ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                         '')) :
                     '';
             },
@@ -553,8 +550,8 @@ Custom property | Description | Default
             _computeSearchListApi: function(listApi, sort) {
                 return listApi ?
                     ((listApi + '?page=1&limit=100&extended=1') +
-                    ((sort && sort.orderBy && sort.ascending) ?
-                        ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                    ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
+                        ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                         '') +
                     '&term=') :
                     '';

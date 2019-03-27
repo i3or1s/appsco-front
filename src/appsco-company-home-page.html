@@ -592,7 +592,7 @@
                     appscoApplicationsComponent.setDisplayStyle(newValue.display_style);
                 }
 
-                if (newValue.sort_field && newValue.sort_ascending) {
+                if (newValue.sort_field && 'undefined' !== typeof newValue.sort_ascending) {
                     appscoApplicationsComponent.setSort({
                         orderBy: newValue.sort_field,
                         ascending: newValue.sort_ascending
