@@ -154,6 +154,13 @@
         </div>
 
         <appsco-application-actions id="appscoApplicationActions"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    api-errors="[[ apiErrors ]]"
+                                    page-config-api="[[ pageConfigApi ]]"
+                                    page-config="[[ pageConfig ]]"
+                                    page="[[ page ]]"
+                                    page-config-option-display-list
+                                    page-config-option-sort
                                     adding-resource-allowed="[[ _isAddingResourceAllowed ]]"
                                     on-search-icon="_onSearchIcon"
                                     on-close-search="_closeSearch"></appsco-application-actions>
@@ -175,6 +182,35 @@
                     value: function() {
                         return {};
                     }
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                pageConfigApi: {
+                    type: String,
+                    value: ''
+                },
+
+                pageConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                page: {
+                    type: String,
+                    value: ''
                 },
 
                 mobileScreen: {
@@ -277,6 +313,10 @@
             },
 
             resetPage: function() {
+                this.$.appscoApplicationActions.reset();
+            },
+
+            resetPageActions: function() {
                 this.$.appscoApplicationActions.reset();
             },
 

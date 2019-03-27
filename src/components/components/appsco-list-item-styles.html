@@ -168,6 +168,42 @@
             :host paper-button[disabled] {
                 background: transparent;
             }
+            :host([display-grid]) .item {
+                text-align: center;
+                width: 140px;
+                height: 156px;
+                overflow: hidden;
+                @apply(--shadow-elevation-2dp);
+                position: relative;
+                background-color: var(--item-background-color, #fff);
+                color: var(--color, #333);
+                padding: 0 4px;
+                cursor: pointer;
+                box-sizing: inherit;
+                display: block;
+            }
+            :host([display-grid]) .item .select-action,
+            :host([display-grid]) .item iron-image.not-selectable {
+                display: inline-block;
+                margin: 24px 0 10px 0;
+                overflow: hidden;
+            }
+            :host([display-grid]) .item .resource-title {
+                display: block;
+                height: 32px;
+                line-height: 16px;
+                @apply(--paper-font-common-base);
+                font-size: 14px;
+                font-weight: 400;
+                overflow: hidden;
+            }
+            :host([display-grid]) .actions {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+            }
+            :host([tablet-screen]) .item-additional-info {
+                display: none;
+            }
         </style>
     </template>
 </dom-module>

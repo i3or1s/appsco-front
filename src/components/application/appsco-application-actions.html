@@ -276,21 +276,25 @@ Custom property | Description | Default
             </template>
         </template>
 
-        <template is="dom-if" if="[[ company ]]">
-            <div class="action flex-none">
-                <paper-icon-button id="configAction"
-                                   class="config-icon"
-                                   icon="icons:settings"
-                                   alt="Page Settings"
-                                   on-tap="_onShowPageSettings"></paper-icon-button>
+        <div class="action flex-none">
+            <paper-icon-button id="configAction"
+                               class="config-icon"
+                               icon="icons:settings"
+                               alt="Page Settings"
+                               on-tap="_onShowPageSettings"></paper-icon-button>
 
-                <appsco-page-config-dropdown
-                        id="resourcePageConfigDropdown"
-                        page="resources"
-                        page-config="[[ pageConfig ]]"
-                ></appsco-page-config-dropdown>
-            </div>
-        </template>
+            <appsco-page-config-dropdown
+                    id="resourcePageConfigDropdown"
+                    authorization-token="[[ authorizationToken ]]"
+                    api-errors="[[ apiErrors ]]"
+                    page-config-api="[[ pageConfigApi ]]"
+                    page-config="[[ pageConfig ]]"
+                    page="[[ page ]]"
+                    option-hide-resource-section="[[ pageConfigOptionHideResourceSection ]]"
+                    option-display-list="[[ pageConfigOptionDisplayList ]]"
+                    option-sort="[[ pageConfigOptionSort ]]"
+            ></appsco-page-config-dropdown>
+        </div>
 
     </template>
 
@@ -300,6 +304,50 @@ Custom property | Description | Default
             is: 'appsco-application-actions',
 
             properties: {
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                pageConfigApi: {
+                    type: String,
+                    value: ''
+                },
+
+                pageConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                page: {
+                    type: String,
+                    value: ''
+                },
+
+                pageConfigOptionHideResourceSection: {
+                    type: Boolean,
+                    value: false
+                },
+
+                pageConfigOptionDisplayList: {
+                    type: Boolean,
+                    value: false
+                },
+
+                pageConfigOptionSort: {
+                    type: Boolean,
+                    value: false
+                },
 
                 _filterItems: {
                     type: Array,
@@ -690,6 +738,7 @@ Custom property | Description | Default
             },
 
             reset: function() {
+
                 if (this.$$('#appscoSearch')) {
                     this.$$('#appscoSearch').reset();
                 }

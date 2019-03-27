@@ -1,6 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
@@ -13,6 +12,7 @@
 <link rel="import" href="../vaadin-context-menu/vaadin-context-menu-override.html">
 <link rel="import" href="appsco-application-item.html">
 <link rel="import" href="../components/appsco-drag-html-element-behavior.html">
+<link rel="import" href="../components/appsco-list-styles.html">
 
 <!--
 `appsco-applications`
@@ -40,81 +40,14 @@ Custom property | Description | Default
 
 <dom-module id="appsco-applications">
     <template>
+        <style include="appsco-list-styles"></style>
+
         <style>
-            :host {
-                display: inline-block;
-                position: relative;
-                @apply(--appsco-applications);
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-
-                --paper-progress-container-color: var(--body-background-color);
-                --paper-progress-height: 2px;
-            }
-
-            :host div[applications] {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
-                @apply(--layout-start);
-                margin-right: -10px;
-                @apply(--applications-container);
-            }
-            :host([company]) div[applications] {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
-                margin-right: 0;
-            }
             :host appsco-application-item {
+                width: auto;
                 margin: 0 10px 10px 0;
                 position: relative;
                 @apply(--appsco-applications-item);
-            }
-            :host([company]) appsco-application-item {
-                width: 100%;
-                margin: 0 0 10px 0;
-                @apply(--appsco-applications-item);
-            }
-
-            :host .applications-container {
-                width: 100%;
-                min-height: 160px;
-                padding-top: 10px;
-                position: relative;
-            }
-            :host appsco-loader {
-                background-color: rgba(255, 255, 255, 0.4);
-            }
-            :host .load-more-box {
-                margin-top: 10px;
-                padding-top: 4px;
-                position: relative;
-            }
-            :host .load-more-box paper-progress {
-                width: 100%;
-                position: absolute;
-                top: 4px;
-                left: 0;
-            }
-            :host .applications-progress-bar {
-                min-width: 100px;
-                width: 100%;
-                position: absolute;
-                top: 0;
-                left: 0;
-                @apply(--applications-progress-bar);
-            }
-            :host paper-button {
-                display: block;
-                width: 120px;
-                margin: 10px auto 0;
-                text-align: center;
-                @apply(--load-more-button);
-            }
-            :host .message {
-                color: var(--secondary-text-color);
-                font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
             }
             *[draggable="true"] {
                 -moz-user-select: none;
@@ -128,7 +61,7 @@ Custom property | Description | Default
             }
         </style>
 
-        <div class="applications-container">
+        <div class="list-container">
             <iron-ajax
                     auto
                     id="applicationsApiRequest"
@@ -140,7 +73,7 @@ Custom property | Description | Default
             ></iron-ajax>
 
             <paper-progress id="paperProgress"
-                            class="applications-progress-bar"
+                            class="list-progress-bar"
                             indeterminate></paper-progress>
 
             <template is="dom-if" if="[[ _message ]]">
@@ -160,7 +93,7 @@ Custom property | Description | Default
                         </paper-listbox>
                     </template>
 
-                    <div applications company$="[[ company ]]">
+                    <div class="list" company$="[[ company ]]">
                         <template is="dom-repeat"
                                   items="{{ _applications }}"
                                   on-dom-change="_onItemsDomChange">
@@ -168,6 +101,7 @@ Custom property | Description | Default
                                                      class="application-item drag-item"
                                                      application="{{ item }}"
                                                      company="[[ company ]]"
+                                                     display-grid$="[[ displayGrid ]]"
                                                      on-application="_onApplicationAction"
                                                      draggable="true"
                                                      data-drag-item="[[ item ]]"></appsco-application-item>
@@ -231,6 +165,18 @@ Custom property | Description | Default
                     value: function() {
                         return {};
                     }
+                },
+
+                displayStyle: {
+                    type: String,
+                    value: '',
+                    observer: '_onDisplayStyleChanged'
+                },
+
+                displayGrid: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
                 },
 
                 _searchApplicationsApi: {
@@ -302,11 +248,13 @@ Custom property | Description | Default
 
                 _currentUrl: {
                     type: String,
+                    value: '',
                     notify: true
                 },
 
                 _next: {
-                    type: String
+                    type: String,
+                    value: ''
                 },
 
                 _totalApplications: {
@@ -356,6 +304,16 @@ Custom property | Description | Default
                     }
                 },
 
+                _sort: {
+                    type: Object,
+                    value: function() {
+                        return {
+                            orderBy: '',
+                            ascending: ''
+                        };
+                    }
+                },
+
                 /**
                  * Animation for loader appearance.
                  */
@@ -388,14 +346,14 @@ Custom property | Description | Default
             },
 
             observers: [
-                '_setSearchApplicationsApi(applicationsApi)'
+                '_setSearchApplicationsApi(applicationsApi, _sort)'
             ],
 
             ready: function () {
 
                 if (this.applicationsApi && this.applicationsApi != '' &&
                         (this._personalDashboardAllowed || this.isOnCompany == true)) {
-                    this._currentUrl = this.applicationsApi + '?page=1&extended=1&limit=' + this.size;
+                    this._currentUrl = this._computeListApi(this.applicationsApi, this.size, this._sort);
                 }
 
                 if (this.company) {
@@ -419,14 +377,34 @@ Custom property | Description | Default
                 }.bind(this), 500);
             },
 
+            setDisplayStyle: function(displayStyle) {
+                this.set('displayStyle', displayStyle);
+            },
+
+            setSort: function(sort) {
+
+                for (var key in sort) {
+
+                    if (sort[key] !== this._sort[key]) {
+                        this.set('_sort', sort);
+                        this._loadApplications();
+                        break;
+                    }
+                }
+            },
+
             _computePersonalDashboardAllowed: function(account) {
                 return account && account.native_company 
                     ? account.native_company.personal_dashboards_allowed
                     : true;
             },
 
-            _setSearchApplicationsApi: function(api) {
-                this._searchApplicationsApi = (api + '?extended=1&limit=100&term=');
+            _setSearchApplicationsApi: function(api, sort) {
+                this._searchApplicationsApi = this._computeSearchListApi(api, sort);
+            },
+
+            _onDisplayStyleChanged: function(newValue) {
+                this.displayGrid = ('grid' === newValue);
             },
 
             _onApplicationsApiChanged: function(api) {
@@ -440,8 +418,9 @@ Custom property | Description | Default
                     this.$$('#paperProgress').hidden = false;
                     this._loadMore = false;
 
-                    this._currentUrl = this.applicationsApi + '?page=1&extended=1&limit=' + this.size;
+                    this._currentUrl = this._computeListApi(this.applicationsApi, this.size, this._sort);
                     this._clearApplications();
+                    this.fire('show-page-progress-bar');
                 }
             },
 
@@ -494,7 +473,7 @@ Custom property | Description | Default
                     iconsCount = icons.length - 1;
 
                 this._totalApplications = meta.total;
-                this._next = meta.next + '&limit=' + this.size;
+                this._next = this._computeNextPageListApi(meta.next, this.size, this._sort);
 
                 if (meta.total === 0) {
                     this._message = 'There are no applications.';
@@ -538,7 +517,7 @@ Custom property | Description | Default
                             });
 
                             if (this._filterOrgunit.selected) {
-                                this._filterApplicationsByOrgunit();
+                                this._filterByOrgunit();
                             }
                         }
 
@@ -551,6 +530,34 @@ Custom property | Description | Default
                 return {
                     'Authorization': 'token ' + authorizationToken
                 }
+            },
+
+            _computeListApi: function(listApi, size, sort) {
+                return (listApi && size) ?
+                    ((listApi + '?page=1&extended=1&limit=' + size) +
+                    ((sort && sort.orderBy && sort.ascending) ?
+                        ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                        '')) :
+                    '';
+            },
+
+            _computeNextPageListApi: function(nextPageApi, size, sort) {
+                return (nextPageApi && size) ?
+                    ((nextPageApi + '&limit=' + size) +
+                    ((sort && sort.orderBy && sort.ascending) ?
+                        ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                        '')) :
+                    '';
+            },
+
+            _computeSearchListApi: function(listApi, sort) {
+                return listApi ?
+                    ((listApi + '?page=1&limit=100&extended=1') +
+                    ((sort && sort.orderBy && sort.ascending) ?
+                        ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                        '') +
+                    '&term=') :
+                    '';
             },
 
             _onApplicationAction: function(event) {
@@ -818,14 +825,14 @@ Custom property | Description | Default
 
             filterByStatus: function(api, status) {
 
-                this._getApplications(api + '?page=1&extended=1&limit=100').then(function(applications) {
+                this._getApplications(this._computeListApi(api, 100, this._sort)).then(function(applications) {
                     var applicationsLength = applications.length;
 
                     this._clearLoaders();
                     this._clearApplications();
                     this._hideLoadMoreAction();
                     this._totalApplications = applicationsLength;
-                    this._setSearchApplicationsApi(api);
+                    this._setSearchApplicationsApi(api, this._sort);
 
                     if (0 === applicationsLength) {
                         this._message = 'There are no applications.';
@@ -983,7 +990,9 @@ Custom property | Description | Default
 
                 if (!selected) {
                     this._setLoadMoreAction();
-                    !filterTerm.length ? this.set('_applications', JSON.parse(JSON.stringify(this._allApplications))) : this._setSearchApplicationsResult();
+                    !filterTerm.length ?
+                        this.set('_applications', JSON.parse(JSON.stringify(this._allApplications))) :
+                        this._setSearchApplicationsResult();
                     this.set('_filterOrgunit', {});
                 }
                 else {
@@ -1074,7 +1083,7 @@ Custom property | Description | Default
                 this._clearApplications();
                 this.set('_searchedApplications', []);
 
-                this._currentUrl = group.meta.applications + '?page=1&extended=1&limit=' + this.size;
+                this._currentUrl = this._computeListApi(group.meta.applications, this.size, this._sort);
             },
 
             _setLoadMoreAction: function() {

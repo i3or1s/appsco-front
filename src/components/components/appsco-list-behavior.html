@@ -49,6 +49,16 @@
                 value: false
             },
 
+            _sort: {
+                type: Object,
+                value: function() {
+                    return {
+                        orderBy: '',
+                        ascending: ''
+                    };
+                }
+            },
+
             _headers: {
                 type: Object,
                 computed: '_computeHeaders(authorizationToken)'
@@ -56,7 +66,7 @@
 
             _listApi: {
                 type: String,
-                computed: '_computeListApi(listApi, size)',
+                computed: '_computeListApi(listApi, size, _sort)',
                 observer: '_onListApiChanged'
             },
 
@@ -67,7 +77,7 @@
 
             _searchListApi: {
                 type: String,
-                computed: '_computeSearchListApi(listApi, _filterTerm)'
+                computed: '_computeSearchListApi(listApi, _filterTerm, _sort)'
             },
 
             _typeDisplay: {
@@ -214,7 +224,7 @@
 
         getFirstSelectedItem: function() {
             var items = JSON.parse(JSON.stringify(this._listItems)),
-                length = items.length;
+                length = items.length;_filterType = ''
 
             for (var i = 0; i < length; i++) {
                 if (items[i].selected) {
@@ -532,18 +542,48 @@
             this._filterByGroup();
         },
 
+        setSort: function(sort) {
+
+            for (var key in sort) {
+
+                if (sort[key] !== this._sort[key]) {
+                    this.set('_sort', sort);
+                    break;
+                }
+            }
+        },
+
         _computeHeaders: function (authorizationToken) {
             return {
                 'Authorization': 'token ' + authorizationToken
             }
         },
 
-        _computeListApi: function(listApi, size) {
-            return (listApi && size) ? (listApi + '?page=1&extended=1&limit=' + size) : '';
+        _computeListApi: function(listApi, size, sort) {
+            return (listApi && size) ?
+                ((listApi + '?page=1&extended=1&limit=' + size) +
+                ((sort && sort.orderBy && sort.ascending) ?
+                    ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                    '')) :
+                '';
         },
 
-        _computeSearchListApi: function(listApi, term) {
-            return listApi ? listApi + '?page=1&limit=100&extended=1&term=' + term : '';
+        _computeSearchListApi: function(listApi, term, sort) {
+            return listApi ?
+                ((listApi + '?page=1&limit=100&extended=1&term=' + term) +
+                ((sort && sort.orderBy && sort.ascending) ?
+                    ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                    '')) :
+                '';
+        },
+
+        _computeNextPageListApi: function(nextPageApi, size, sort) {
+            return (nextPageApi && size) ?
+                ((nextPageApi + '&limit=' + size) +
+                ((sort && sort.orderBy && sort.ascending) ?
+                    ('&order_by=' + sort.orderBy + '&ascending=' + sort.ascending) :
+                    '')) :
+                '';
         },
 
         _computeTypeDisplay: function(type) {
@@ -578,7 +618,8 @@
         },
 
         _showProgressBar: function() {
-
+            this.fire('show-page-progress-bar');
+            
             if (this.$$('#paperProgress')) {
                 this.$$('#paperProgress').hidden = false;
             }
@@ -781,7 +822,7 @@
             if (itemList) {
                 this._hideMessage();
                 this._totalListItems = meta.total;
-                this._nextListPageApi = meta.next + '&limit=' + this.size;
+                this._nextListPageApi = this._computeNextPageListApi(meta.next, this.size, this._sort);
 
                 if (0 === meta.total) {
                     this._showMessage('There are no ' + this._typeDisplay +
@@ -1018,7 +1059,7 @@
                     return '';
             }
 
-            return (url + '?page=1&extended=1&limit=' + this.size);
+            return this._computeListApi(url, this.size, this._sort);
         },
 
         _filterByGroup: function() {

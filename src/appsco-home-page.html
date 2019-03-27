@@ -167,7 +167,7 @@
                         load-more
                         authorization-token="[[ authorizationToken ]]"
                         applications-api="[[ applicationsApi ]]"
-                        account ="[[ account ]]"
+                        account="[[ account ]]"
                         on-info="_onViewApplicationInfo"
                         on-edit="_onApplicationEdit"
                         on-application="_onApplication"
@@ -303,6 +303,14 @@
                 foldersApi: {
                     type: String,
                     value: ''
+                },
+
+                pageConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    observer: '_onPageConfigChanged'
                 },
 
                 _foldersEmpty: {
@@ -520,6 +528,27 @@
                 this.fire('revoke-application', {
                     application: this.application
                 });
+            },
+
+            _onPageConfigChanged: function(newValue) {
+                newValue = newValue[this.getAttribute('name')];
+
+                if (!newValue) {
+                    return false;
+                }
+
+                var appscoApplicationsComponent = this.$.appscoApplications;
+
+                if (newValue.display_style) {
+                    appscoApplicationsComponent.setDisplayStyle(newValue.display_style);
+                }
+
+                if (newValue.sort_field && newValue.sort_ascending) {
+                    appscoApplicationsComponent.setSort({
+                        orderBy: newValue.sort_field,
+                        ascending: newValue.sort_ascending
+                    });
+                }
             },
 
             reloadApplications: function() {

@@ -46,11 +46,11 @@ Custom property | Description | Default
             :host appsco-company-resource-item {
                 @apply(--appsco-company-resource-item);
             }
-
-            :host([display-grid]) div.list {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
-                @apply(--layout-start);
+            :host([display-grid]) appsco-company-resource-item {
+                width: auto;
+                margin: 0 10px 10px 0;
+                position: relative;
+                @apply(--appsco-company-resource-item);
             }
             :host .info-total {
                 margin-bottom: 10px;

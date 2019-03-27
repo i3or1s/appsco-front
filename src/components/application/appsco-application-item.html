@@ -5,7 +5,11 @@
 <link rel="import" href="../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html">
+
+<link rel="import" href="../components/appsco-list-item-styles.html">
 
 <!--
 `appsco-application-item`
@@ -29,153 +33,58 @@ Custom property | Description | Default
 
 <dom-module id="appsco-application-item">
     <template>
+        <style include="appsco-list-item-styles"></style>
+
         <style>
             :host {
-                display: none;
-            }
-            :host .item {
-                text-align: center;
-                width: 141px;
-                height: 156px;
-                overflow: hidden;
-            @apply(--shadow-elevation-2dp);
-                position: relative;
-                background-color: var(--item-background-color, #fff);
-                color: var(--color, #333);
-                padding: 0 4px;
-                cursor: pointer;
-            @apply(--appsco-application-item);
-            }
-            :host .item:hover {
-            @apply(--shadow-elevation-4dp);
-            }
-            :host .application-icon {
-                width: 52px;
-                height: 52px;
-                margin: 24px 0 8px 0;
-            }
-            :host .application-title {
-                display: block;
-                height: 32px;
-                line-height: 16px;
-            @apply(--paper-font-common-base);
-                font-size: 14px;
-                font-weight: 400;
-                overflow: hidden;
-            }
-            :host .application-org-units {
-                display: none;
-            }
-            :host .actions {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-                position: absolute;
-                bottom: 2px;
-            }
-            :host paper-button {
-            @apply(--paper-font-common-base);
-            @apply(--paper-font-common-nowrap);
-
-                padding: 4px;
-                font-size: 12px;
-                font-weight: 400;
-                letter-spacing: 0.018em;
-                line-height: 18px;
-                text-transform: uppercase;
-            }
-            :host paper-button[disabled] {
-                background: transparent;
-            }
-            :host([company][active]) .item {
-                background: var(--brand-color);
-                color: var(--brand-text-color);
-                transition: all 0.2s ease-in;
-            }
-            :host([company]) .item {
                 width: 100%;
-                height: 70px;
-                padding: 0 10px;
-                box-sizing: border-box;
-                border-radius: 3px;
-                text-align: left;
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-                transition: all 0.1s ease-out;
+                margin: 0 0 10px 0;
+
+                --icon-action-border-radius: 16px;
             }
-            :host([company]) .application-icon {
-                margin: 0;
-            @apply(--layout-flex-none);
-            }
-            :host([company]) .application-info {
-            @apply(--layout-vertical);
-            @apply(--layout-start);
-                padding: 0 10px;
-            }
-            :host([company]) .application-basic-info {
-                width: 220px;
-            }
-            :host([company]) .application-basic-info .info-label, :host([company]) .application-basic-info .info-value {
-                width: 226px;
-            @apply(--paper-font-common-nowrap);
-            }
-            :host([company]) .application-additional-info {
-                border-left: 1px solid var(--divider-color);
-            }
-            :host([company]) .application-additional-info .info {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-            }
-            :host([company]) .application-additional-info .info-label {
-                color: var(--secondary-text-color);
-            }
-            :host([company]) .application-additional-info .info-label, :host([company]) .application-additional-info .info-value {
-                font-size: 13px;
-                line-height: 18px;
-                @apply(--paper-font-common-nowrap);
-            }
-            :host([company]) .info-label {
-                font-size: 16px;
-                height: auto;
-                line-height: normal;
-            }
-            :host([company]) .info-value {
-                display: block;
-                font-size: 12px;
-            }
-            :host([company]) .actions {
-                right: 4px;
-                bottom: 4px;
+            :host([display-grid]) .item-icon {
+                margin: 24px 0 8px 0;
             }
         </style>
 
+        <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
+
         <div class="item" on-tap="_onApplicationAction">
-            <iron-image class="application-icon"
+            <iron-image class="item-icon"
                         placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII="
                         sizing="cover"
                         preload fade src="[[ _applicationIcon ]]"></iron-image>
 
-            <div class="application-info application-basic-info">
-                <span class="info-label application-title">[[ application.title ]]</span>
-                <span class="info-value"
-                      hidden$="[[ !company ]]">[[ _applicationType ]]</span>
-            </div>
+            <template is="dom-if" if="[[ !displayGrid ]]">
+                <div class="item-info item-basic-info">
+                    <span class="info-label item-title">[[ application.title ]]</span>
+                    <span class="info-value"
+                          hidden$="[[ !company ]]">[[ _applicationType ]]</span>
+                </div>
 
-            <div class="application-info application-additional-info">
-                <template is="dom-if" if="[[ _orgUnits ]]">
-                    <div class="info">
-                        <span class="info-label">Organization units:&nbsp;</span>
-                        <span class="info-value"
-                              hidden$="[[ !company ]]">[[ _orgUnits ]]</span>
-                    </div>
-                </template>
+                <div class="item-info item-additional-info">
+                    <template is="dom-if" if="[[ _orgUnits ]]">
+                        <div class="info">
+                            <span class="info-label">Organization units:&nbsp;</span>
+                            <span class="info-value"
+                                  hidden$="[[ !company ]]">[[ _orgUnits ]]</span>
+                        </div>
+                    </template>
 
-                <template is="dom-if" if="[[ _groups ]]">
-                    <div class="info">
-                        <span class="info-label">Groups:&nbsp;</span>
-                        <span class="info-value">[[ _groups ]]</span>
-                    </div>
-                </template>
-            </div>
+                    <template is="dom-if" if="[[ _groups ]]">
+                        <div class="info">
+                            <span class="info-label">Groups:&nbsp;</span>
+                            <span class="info-value">[[ _groups ]]</span>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <template is="dom-if" if="[[ displayGrid ]]">
+                <div class="resource-title">
+                    [[ application.title ]]
+                </div>
+            </template>
 
             <div class="actions">
                 <template is="dom-if" if="[[ !company ]]">
@@ -211,6 +120,18 @@ Custom property | Description | Default
                     type: Object,
                     value: {},
                     observer: '_onApplicationChanged'
+                },
+
+                displayGrid: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+
+                tabletScreen: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
                 },
 
                 _applicationType: {
