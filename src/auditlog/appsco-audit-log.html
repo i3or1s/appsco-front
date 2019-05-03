@@ -1060,11 +1060,20 @@
                         break;
 
                     case 'company_policy_enabled':
-                        event = this.localize('company_policy_enabled', 'policy', item.data.policy.name);
+                        event = this.localize(
+                            'company_policy_enabled',
+                            'policy',
+                            (item.data.policy ? item.data.policy.name : item.data.enabled_policy.name)
+                        );
                         break;
 
                     case 'company_policy_disabled':
-                        event = this.localize('company_policy_disabled', 'policy', item.data.policy.name);
+                        console.log(item.data);
+                        event = this.localize(
+                            'company_policy_disabled',
+                            'policy',
+                            (item.data.policy ? item.data.policy.name : item.data.disabled_policy.name)
+                        );
                         break;
 
                     default:
