@@ -1,0 +1,312 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html">
+
+<link rel="import" href="../components/appsco-loader.html">
+<link rel="import" href="../components/appsco-form-error.html">
+
+<dom-module id="appsco-run-integration-force-sync">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+                @apply(--appsco-run-integration-force-sync);
+
+                --form-error-box: {
+                     margin-top: 0;
+                 };
+            }
+            :host paper-dialog {
+                width: 670px;
+                top: 20vh;
+                @apply(--appsco-paper-dialog);
+            }
+            :host paper-dialog-scrollable > * {
+                @apply(--paper-dialog-scrollable-child);
+            }
+            :host .buttons paper-button {
+                @apply(--paper-dialog-button);
+            }
+            :host .buttons paper-button[dialog-dismiss] {
+                @apply(--paper-dialog-dismiss-button);
+            }
+            :host appsco-loader {
+                @apply(--paper-dialog-appsco-loader);
+            }
+            :host .error-box {
+                max-height: 250px;
+            }
+        </style>
+        <paper-dialog
+                with-backdrop
+                id="dialog"
+                entry-animation="scale-up-animation"
+                exit-animation="fade-out-animation"
+                on-iron-overlay-closed="_onDialogClosed">
+
+            <h2>Run resync</h2>
+
+            <appsco-loader active="[[ _loader ]]"
+                           loader-alt="AppsCo is processing request"
+                           multi-color></appsco-loader>
+
+            <paper-dialog-scrollable>
+                <div>
+                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+
+                    <div class="error-box">
+                        <template is="dom-if" if="[[ _missingSource.accounts ]]">
+                            <h4>Accounts missing source:</h4>
+                            <template is="dom-repeat" items="[[ _accountsMissingSource ]]">
+                                <span>[[ item ]]</span> <br />
+                            </template>
+                        </template>
+
+                        <template is="dom-if" if="[[ _missingSource.contacts ]]">
+                            <h4>Contacts missing source:</h4>
+                            <template is="dom-repeat" items="[[ _contactsMissingSource ]]">
+                                <span>[[ item ]]</span><br />
+                            </template>
+                        </template>
+
+                        <template is="dom-if" if="[[ _missingSource.groups ]]">
+                            <h4>Groups missing source:</h4>
+                            <template is="dom-repeat" items="[[ _groupsMissingSource ]]">
+                                <span>[[ item ]]</span><br />
+                            </template>
+                        </template>
+
+                        <template is="dom-if" if="[[ _missingSource.resources ]]">
+                            <h4>Resources missing source:</h4>
+                            <template is="dom-repeat" items="[[ _resourcesMissingSource ]]">
+                                <span>[[ item ]]</span><br />
+                            </template>
+                        </template>
+                    </div>
+
+
+                </div>
+            </paper-dialog-scrollable>
+
+            <div>
+                <p>Please confirm that you want to run resync.</p>
+            </div>
+
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button autofocus on-tap="_onConfirmAction">Apply</paper-button>
+            </div>
+        </paper-dialog>
+
+    </template>
+    <script>
+        Polymer({
+
+            is: 'appsco-run-integration-force-sync',
+
+            properties: {
+
+                integration: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _headers: {
+                    type: String,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                _loader: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _error: {
+                    type: String
+                },
+
+                _errorDetails: {
+                    type: Object,
+                    value: null
+                },
+
+                _accountsMissingSource: {
+                    type: Array,
+                    computed: '_computeAccountsMissingSource(_errorDetails)'
+                },
+
+                _contactsMissingSource: {
+                    type: Array,
+                    computed: '_computeContactsMissingSource(_errorDetails)'
+                },
+
+                _groupsMissingSource: {
+                    type: Array,
+                    computed: '_computeGroupsMissingSource(_errorDetails)'
+                },
+
+                _resourcesMissingSource: {
+                    type: Array,
+                    computed: '_computeResourcesMissingSource(_errorDetails)'
+                },
+
+                _missingSource: {
+                    type: Object,
+                    computed: '_computeMissingSource(_accountsMissingSource, _contactsMissingSource, _groupsMissingSource, _resourcesMissingSource)'
+                }
+            },
+
+            setIntegration: function(integration) {
+                this.set('integration', integration);
+            },
+
+            open: function () {
+                this.$.dialog.open();
+            },
+
+            close: function () {
+                this.$.dialog.close();
+            },
+
+            toggle: function () {
+                this.$.dialog.toggle();
+            },
+
+            _computeHeaders: function(authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                };
+            },
+
+            _showLoader: function() {
+                this._loader = true;
+            },
+
+            _hideLoader: function() {
+                this._loader = false;
+            },
+
+            _showError: function(message) {
+                this._error = message;
+            },
+
+            _hideError: function() {
+                this._error = '';
+            },
+
+            _onDialogClosed: function() {
+                this._hideError();
+                this._hideLoader();
+            },
+
+            _computeAccountsMissingSource: function(errorDetails) {
+                if (!errorDetails || !errorDetails.accounts) {
+                    return [];
+                }
+
+                return errorDetails.accounts;
+            },
+
+            _computeContactsMissingSource: function(errorDetails) {
+                if (!errorDetails || !errorDetails.contacts) {
+                    return [];
+                }
+
+                return errorDetails.contacts;
+            },
+
+            _computeGroupsMissingSource: function(errorDetails) {
+                if (!errorDetails || !errorDetails.groups) {
+                    return [];
+                }
+
+                return errorDetails.groups;
+            },
+
+            _computeResourcesMissingSource: function(errorDetails) {
+                if (!errorDetails || !errorDetails.resources) {
+                    return [];
+                }
+
+                return errorDetails.resources;
+            },
+
+            _onConfirmAction: function() {
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: this.integration.meta.forceSync,
+                        method: 'POST',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
+
+                this._hideError();
+                this._errorDetails = null;
+                this._showLoader();
+
+                request.send(options).then(function() {
+
+                    if (200 === request.status) {
+
+                        /**
+                         * Fired when rule is applied.
+                         *
+                         * @event integration-rule-run
+                         * @param {Object} integration, {Object} rule
+                         */
+                        this.fire('integration-force-sync-done', {
+                            integration: this.integration,
+                            rule: request.response
+                        });
+
+                        this.close();
+                    }
+
+                }.bind(this), function() {
+                    this._showError(this.apiErrors.getError(request.response.code));
+                    this._hideLoader();
+
+                    if (request.response.code == '1555935569') {
+                        this.set('_errorDetails', request.response.details);
+                    }
+                }.bind(this));
+            },
+
+            _computeMissingSource: function (
+                accountsMissingSource,
+                contactsMissingSource,
+                groupsMissingSource,
+                resourcesMissingSource
+            ) {
+                var result = {};
+                result.accounts = (accountsMissingSource && accountsMissingSource.length > 0);
+                result.contacts = (contactsMissingSource && contactsMissingSource.length > 0);
+                result.groups = (groupsMissingSource && groupsMissingSource.length > 0);
+                result.resources = (resourcesMissingSource && resourcesMissingSource.length > 0);
+
+                return result;
+            }
+
+        });
+    </script>
+</dom-module>

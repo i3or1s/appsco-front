@@ -145,6 +145,31 @@
                 </paper-listbox>
             </paper-dropdown-menu>
         </div>
+
+        <template is="dom-if" if="[[ _canForceSync ]]">
+            <div class="input-container">
+                <p class="input-info">
+                    Force sync interval implies interval in which provisioned users from RA
+                    which are no longer found in RA will be removed from AppsCo.
+                </p>
+                <paper-dropdown-menu id="integrationForceSyncSelect"
+                                     label="Force sync interval"
+                                     name="activate_integration[forceSyncInterval]"
+                                     horizontal-align="left"
+                                     on-iron-overlay-closed="_onSelectClosed"
+                                     auto-validate>
+                    <paper-listbox id="integrationScheduleForceSyncList"
+                                   class="dropdown-content filter"
+                                   attr-for-selected="value"
+                                   selected="[[ integration.forceSyncInterval ]]">
+                        <template is="dom-repeat" items="[[ _integrationForceSyncList ]]">
+                            <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+            </div>
+        </template>
+
         <div class="input-container">
             <p>
                 When integration is active, integration rules will be applied according to sync interval.
@@ -235,6 +260,11 @@
                     computed: '_computePreselectedIntegrationType(integration, _integrationKindList)'
                 },
 
+                _canForceSync: {
+                    type: Boolean,
+                    computed: '_computeCanForceSync(_preselectedIntegrationKind)'
+                },
+
                 _integrationScheduleSyncList: {
                     type: Array,
                     value: function() {
@@ -254,6 +284,31 @@
                         ];
                     }
                 },
+
+                _integrationForceSyncList: {
+                    type: Array,
+                    value: function() {
+                        return [
+                            {
+                                value: null,
+                                name: 'Never'
+                            },
+                            {
+                                value: 'daily',
+                                name: 'Every day'
+                            },
+                            {
+                                value: 'weekly',
+                                name: 'Every Monday'
+                            },
+                            {
+                                value: 'monthly',
+                                name: 'Every 1st in the month'
+                            }
+                        ];
+                    }
+                },
+
                 _isIntegrationActive: {
                     type: String,
                     computed: '_computeIsIntegrationActive(integration)'
@@ -273,6 +328,15 @@
                 return this.$.integrationScheduleSyncSelect.selectedItem ?
                     this.$.integrationScheduleSyncSelect.selectedItem.value : null;
             },
+
+            getIntegrationForceSync: function() {
+                if (!this.$$('#integrationForceSyncSelect')) {
+                    return null;
+                }
+                return this.$$('#integrationForceSyncSelect').selectedItem ?
+                    this.$$('#integrationForceSyncSelect').selectedItem.value : null;
+            },
+
             setToggleChecked: function(checked) {
                 this.$.toggleIntegrationActive.checked = checked;
             },
@@ -335,6 +399,10 @@
 
             _computePreselectedIntegrationType: function(integration, integrationKindList) {
                 return (integration && integration.kind) ? integration.kind : integrationKindList[0].value;
+            },
+
+            _computeCanForceSync: function(computedKind) {
+                return computedKind === 'ra';
             },
 
             getIntegrationActive: function() {
