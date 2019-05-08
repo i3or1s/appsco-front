@@ -251,12 +251,15 @@
             _onFormPresubmit: function(event) {
                 var form = event.target,
                     integrationKind = this.$.appscoIntegrationForm.getIntegrationKind(),
-                    integrationScheduleSync = this.$.appscoIntegrationForm.getIntegrationScheduleSync();
+                    integrationScheduleSync = this.$.appscoIntegrationForm.getIntegrationScheduleSync(),
+                    integrationForceSync = this.$.appscoIntegrationForm.getIntegrationForceSync();
 
                 form.request.body['activate_integration[kind]'] =
                     integrationKind ? integrationKind : '';
                 form.request.body['activate_integration[scheduleSyncInterval]'] =
                     integrationScheduleSync ? integrationScheduleSync : '';
+                form.request.body['activate_integration[forceSyncInterval]'] =
+                    integrationForceSync ? integrationForceSync : '';
             },
 
             _onFormError: function(event) {

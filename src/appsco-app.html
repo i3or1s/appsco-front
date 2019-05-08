@@ -375,8 +375,14 @@
 
                             <appsco-manage-integration-page-actions
                                     name="manage-integration"
+                                    integration="[[ _selectedIntegration ]]"
+                                    integration-api="[[ _companyIntegrationApi ]]"
+                                    route="[[ subroute ]]"
+                                    authorization-token="[[ authorizationToken ]]"
                                     on-back="_showCompanyProvisioningPage"
-                                    on-resource-section="_onResourceActionPage"></appsco-manage-integration-page-actions>
+                                    on-resource-section="_onResourceActionPage"
+                                    on-force-sync="_onIntegrationForceSync"
+                            ></appsco-manage-integration-page-actions>
 
                             <appsco-customers-page-actions
                                     id="appscoCustomersPageActions"
@@ -1388,6 +1394,14 @@
                 api-errors="[[ _apiErrors ]]"
                 on-integration-rule-run="_onIntegrationRuleRun">
         </appsco-run-integration-rule>
+
+        <appsco-run-integration-force-sync
+                id="appscoRunIntegrationForceSync"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ _apiErrors ]]"
+                on-integration-force-sync-done="_onForceSyncRun"
+        >
+        </appsco-run-integration-force-sync>
 
         <appsco-remove-integration-rule
                 id="appscoRemoveIntegrationRule"
@@ -5638,8 +5652,17 @@
                 this._triggerIntegrationRuleAction(event.detail.integration, event.detail.rule, this.$.appscoRunIntegrationRule);
             },
 
+            _onIntegrationForceSync: function(event) {
+                this.$.appscoRunIntegrationForceSync.setIntegration(event.detail.integration);
+                this.$.appscoRunIntegrationForceSync.open();
+            },
+
             _onIntegrationRuleRun: function(event) {
                 this._notify('Rule for ' + event.detail.integration.name + ' has been applied.');
+            },
+
+            _onForceSyncRun: function(event) {
+                this._notify('Resync for ' + event.detail.integration.name + ' has been finished.');
             },
 
             _onRemoveIntegrationRuleAction: function(event) {
