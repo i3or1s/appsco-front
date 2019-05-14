@@ -38,40 +38,11 @@
                 display: block;
             }
 
-            :host .force-sync-button {
-                @apply(--account-advanced-settings-action);
-                @apply(--primary-button);
-                margin-right: 10px;
-            }
-            :host .force-sync-button[active] {
-                @apply(--shadow-elevation-2dp);
-                @apply(--account-advanced-settings-action-active);
-                @apply(--primary-button-active);
-            }
-            :host .force-sync-button[disabled] {
-                opacity: 0.5;
-            }
         </style>
 
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
 
-        <iron-ajax
-                id="ironAjaxGetIntegration"
-                on-error="_onIntegrationError"
-                on-response="_onIntegrationResponse"
-                headers="[[ _headers ]]">
-        </iron-ajax>
-
-
         <div class="global-page-actions">
-
-            <template is="dom-if" if="[[ _forceSyncAvailable ]]">
-                <paper-button
-                        id="runForceSync"
-                        class="force-sync-button"
-                        on-tap="_onForceSync">Resync integration</paper-button>
-            </template>
-
             <paper-icon-button
                     class="back-action"
                     icon="arrow-back"
@@ -93,45 +64,10 @@
 
             properties: {
 
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                route: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                integrationApi: {
-                    type: String,
-                    value: '',
-                    observer: '_onIntegrationApiChanged'
-                },
-
                 tabletScreen: {
                     type: Boolean,
                     value: false,
                     reflectToAttribute: true
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _forceSyncAvailable: {
-                    type: Boolean,
-                    computed: '_computeForceSyncAvailable(integration)'
                 },
 
                 /**
@@ -170,44 +106,8 @@
 
             _onResourceSectionAction: function() {
                 this.fire('resource-section');
-            },
-
-            _getIntegration: function() {
-                if (!this.integration.self && this.integrationApi && this._headers) {
-                    if (!this.route.path) {
-                        this.fire('page-error');
-                    }
-                    this.$.ironAjaxGetIntegration.url = this.integrationApi + '/active' + this.route.path;
-                    this.$.ironAjaxGetIntegration.generateRequest();
-                }
-            },
-
-            _onIntegrationApiChanged: function() {
-                this._getIntegration();
-            },
-
-            _onForceSync: function() {
-                this.fire('force-sync', {
-                    integration: this.integration
-                });
-            },
-
-            _onIntegrationResponse: function(event) {
-                if (200 === event.detail.status && event.detail.response && event.detail.response.integration_active) {
-                    this.set('integration', event.detail.response.integration_active);
-                }
-            },
-
-            _computeForceSyncAvailable: function(integration) {
-                return (integration && integration.kind === 'ra');
-            },
-
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
             }
+
         });
     </script>
 </dom-module>

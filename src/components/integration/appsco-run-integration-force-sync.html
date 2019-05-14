@@ -180,14 +180,17 @@
             },
 
             open: function () {
+                this._hideError();
                 this.$.dialog.open();
             },
 
             close: function () {
+                this._hideError();
                 this.$.dialog.close();
             },
 
             toggle: function () {
+                this._hideError();
                 this.$.dialog.toggle();
             },
 
@@ -211,6 +214,7 @@
             },
 
             _hideError: function() {
+                this._errorDetails = '';
                 this._error = '';
             },
 
