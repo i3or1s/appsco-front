@@ -79,6 +79,9 @@
             </div>
 
             <div class="actions">
+                <template is="dom-if" if="[[ _forceSyncAvailable ]]">
+                    <paper-button on-tap="_onForceSync">Resync integration</paper-button>
+                </template>
                 <paper-button on-tap="_onEditItemAction">Edit</paper-button>
             </div>
         </div>
@@ -90,10 +93,28 @@
 
             is: 'appsco-active-integration-item',
 
+            properties: {
+                _forceSyncAvailable: {
+                    type: Boolean,
+                    computed: '_computeForceSyncAvailable(item)'
+                }
+            },
+
             behaviors: [
                 Polymer.NeonAnimationRunnerBehavior,
                 Polymer.AppscoListItemBehavior
-            ]
+            ],
+
+            _onForceSync: function() {
+                this.fire('force-sync', {
+                    integration: this.item
+                });
+            },
+
+            _computeForceSyncAvailable: function(item) {
+                return (item && item.kind === 'ra');
+            }
+
         });
     </script>
 </dom-module>

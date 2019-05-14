@@ -375,14 +375,8 @@
 
                             <appsco-manage-integration-page-actions
                                     name="manage-integration"
-                                    integration="[[ _selectedIntegration ]]"
-                                    integration-api="[[ _companyIntegrationApi ]]"
-                                    route="[[ subroute ]]"
-                                    authorization-token="[[ authorizationToken ]]"
-                                    on-back="_showCompanyProvisioningPage"
-                                    on-resource-section="_onResourceActionPage"
-                                    on-force-sync="_onIntegrationForceSync"
-                            ></appsco-manage-integration-page-actions>
+                                    on-back="_showCompanyProvisioningPage">
+                            </appsco-manage-integration-page-actions>
 
                             <appsco-customers-page-actions
                                     id="appscoCustomersPageActions"
@@ -807,6 +801,7 @@
                             api-errors="[[ _apiErrors ]]"
                             on-edit-integration="_onEditIntegrationAction"
                             on-active-integration="_onIntegrationSetup"
+                            on-force-sync="_onIntegrationForceSync"
                     ></appsco-provisioning-page>
 
                     <appsco-manage-integration-page name="manage-integration" page company-page
