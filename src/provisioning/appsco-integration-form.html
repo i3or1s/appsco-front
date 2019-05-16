@@ -149,11 +149,11 @@
         <template is="dom-if" if="[[ _canForceSync ]]">
             <div class="input-container">
                 <p class="input-info">
-                    Force sync interval implies interval in which provisioned users from RA
+                    Resync interval implies interval in which provisioned users from RA
                     which are no longer found in RA will be removed from AppsCo.
                 </p>
                 <paper-dropdown-menu id="integrationForceSyncSelect"
-                                     label="Force sync interval"
+                                     label="Resync interval"
                                      name="activate_integration[forceSyncInterval]"
                                      horizontal-align="left"
                                      on-iron-overlay-closed="_onSelectClosed"
