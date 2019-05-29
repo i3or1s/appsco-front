@@ -118,7 +118,9 @@ Custom property | Description | Default
                  */
                 application: {
                     type: Object,
-                    value: {},
+                    value: function () {
+                        return {};
+                    },
                     observer: '_onApplicationChanged'
                 },
 
