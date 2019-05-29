@@ -208,17 +208,9 @@
                         headers: this._headers,
                         handleAs: 'json'
                     },
-                    body = 'policy[name]=' + policy.name + '&policy[description]=' + policy.description +'&',
-                    length = ipWhiteListInputValue.length,
-                    ipAddress = '';
+                    body = 'policy[name]=' + policy.name + '&policy[description]=' + policy.description +'&';
 
-                for (var i = 0; i < length; i++) {
-                    var next = (i === length) ? '' : '&';
-
-                    ipAddress = ipWhiteListInputValue[i].trim();
-                    body += 'policy[ips][' + i + ']=' + encodeURIComponent(ipAddress) + next;
-                }
-
+                body += 'policy[ips]=' + encodeURIComponent(ipWhiteListInputValue.join(','));
                 options.body = body;
 
                 this._showLoader();
