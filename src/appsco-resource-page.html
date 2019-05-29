@@ -493,7 +493,9 @@
             },
 
             _onShareApplication: function() {
-                this.fire('share-application');
+                this.fire('share-application', {
+                    application: this.application
+                });
             },
 
             _onOpenApplication: function() {
