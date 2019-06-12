@@ -7,6 +7,7 @@
 
 <link rel="import" href="../components/page/appsco-page-global.html">
 <link rel="import" href="../components/components/appsco-search.html">
+<link rel="import" href="../components/page/appsco-page-config-dropdown.html">
 
 
 <dom-module id="appsco-contact-home-page-actions">
@@ -19,8 +20,28 @@
 
                 --application-action-icon-color: var(--app-primary-color);
             }
+            :host .actions-container {
+                width: 100%;
+                margin-right: -10px;
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                @apply(--layout-end-justified);
+            }
+            :host .action {
+                margin-right: 10px;
+                position: relative;
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+            }
             appsco-search {
                 max-width: 200px;
+            }
+            :host .flex-horizontal {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+            }
+            :host .flex-none {
+                @apply(--layout-flex-none);
             }
             :host > * {
                 height: 100%;
@@ -33,8 +54,33 @@
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
-        <appsco-search id="appscoSearch"
-                       label="Search resources"></appsco-search>
+        <div class="actions-container">
+            <div class="flex-horizontal">
+                <div class="action flex-none">
+                    <appsco-search id="appscoSearch"
+                                   label="Search resources"></appsco-search>
+                </div>
+
+                <div class="action flex-none">
+                    <paper-icon-button id="configAction"
+                                       class="config-icon"
+                                       icon="icons:settings"
+                                       alt="Page Settings"
+                                       on-tap="_onShowPageSettings"></paper-icon-button>
+
+                    <appsco-page-config-dropdown
+                            id="resourcePageConfigDropdown"
+                            authorization-token="[[ authorizationToken ]]"
+                            api-errors="[[ apiErrors ]]"
+                            page-config-api="[[ pageConfigApi ]]"
+                            page-config="[[ pageConfig ]]"
+                            page="[[ page ]]"
+                            option-display-list
+                            option-sort
+                    ></appsco-page-config-dropdown>
+                </div>
+            </div>
+        </div>
 
         <appsco-page-global
                 id="appscoPageGlobal"
@@ -47,6 +93,35 @@
             is: 'appsco-contact-home-page-actions',
 
             properties: {
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                pageConfigApi: {
+                    type: String,
+                    value: ''
+                },
+
+                pageConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                page: {
+                    type: String,
+                    value: ''
+                },
 
                 mobileScreen: {
                     type: Boolean,
@@ -102,8 +177,12 @@
 
             },
 
-            _updateScreen: function(mobile, tablet) {
+            _updateScreen: function() {
                 this.updateStyles();
+            },
+
+            _onShowPageSettings: function(event) {
+                this.$$('#resourcePageConfigDropdown').toggle(event.target);
             }
         });
     </script>

@@ -268,6 +268,14 @@
                     value: ''
                 },
 
+                pageConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    observer: '_onPageConfigChanged'
+                },
+
                 _applications: {
                     type: Array,
                     value: function () {
@@ -489,6 +497,27 @@
                 this.fire('info-edit-application-credentials', {
                     application: this.application
                 });
+            },
+
+            _onPageConfigChanged: function(newValue) {
+                newValue = newValue[this.getAttribute('name')];
+
+                if (!newValue) {
+                    return false;
+                }
+
+                var appscoApplicationsComponent = this.$.appscoApplications;
+
+                if (newValue.display_style) {
+                    appscoApplicationsComponent.setDisplayStyle(newValue.display_style);
+                }
+
+                if (newValue.sort_field && 'undefined' !== typeof newValue.sort_ascending) {
+                    appscoApplicationsComponent.setSort({
+                        orderBy: newValue.sort_field,
+                        ascending: newValue.sort_ascending
+                    });
+                }
             }
 
         })

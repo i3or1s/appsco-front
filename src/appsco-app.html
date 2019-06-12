@@ -275,6 +275,11 @@
 
                             <appsco-contact-home-page-actions id="appscoContactHomePageActions"
                                                               name="contact-home"
+                                                              authorization-token="[[ authorizationToken ]]"
+                                                              page-config-api="[[ api.pageConfigApi ]]"
+                                                              page-config="[[ _pageConfig ]]"
+                                                              page="[[ page ]]"
+                                                              api-errors="[[ _apiErrors ]]"
                                                               on-search="_onSearchApplications"
                                                               on-search-clear="_onSearchApplicationsClear"></appsco-contact-home-page-actions>
 
@@ -593,6 +598,7 @@
                             id="appscoContactHomePage"
                             authorization-token="[[ authorizationToken ]]"
                             applications-api="[[ _contactIconsApi ]]"
+                            page-config="[[ _pageConfig ]]"
                             on-loaded="_onLoadedPage"
                             on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
                             on-open-rename-folder-dialog="_onOpenRenameFolderDialog"
@@ -2334,6 +2340,9 @@
                                 display_style: 'grid'
                             },
                             'company-home': {
+                                display_style: 'grid'
+                            },
+                            'contact-home': {
                                 display_style: 'grid'
                             },
                             resources: {
