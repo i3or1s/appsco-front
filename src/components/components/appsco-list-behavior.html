@@ -601,6 +601,9 @@
                 case 'access-on-boarding-user':
                     return 'unresolved access on-boarding event';
 
+                case 'policy-report':
+                    return 'broken policie';
+
                 default:
                     return type;
             }
@@ -759,6 +762,7 @@
                     break;
 
                 case 'account':
+                case 'policy-report':
                     itemList = response.company_roles ? response.company_roles : [];
                     break;
 
@@ -970,6 +974,7 @@
                                 break;
 
                             case 'account':
+                            case 'policy-report':
                                 resolve(request.response.company_roles);
                                 break;
 
