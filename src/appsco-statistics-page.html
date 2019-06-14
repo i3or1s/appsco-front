@@ -7,6 +7,9 @@
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/google-chart/google-chart.html">
 <link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
 
 <link rel="import" href="components/page/appsco-content.html">
 <link rel="import" href="components/page/appsco-page-styles.html">
@@ -64,10 +67,11 @@
             .no-data-info google-chart {
                 opacity: 0.2;
             }
-            .chart-info {
+            .chart-info,
+            .filter {
                 padding: 20px 10px 0;
                 margin: 0 10px;
-                background-color: #ffffff;
+                background-color: var(--chart-background-color);
             }
             .chart-info-no-chart {
                 padding-bottom: 20px;
@@ -83,6 +87,31 @@
             .info {
                 @apply(--info-message);
                 text-align: center;
+            }
+            paper-dropdown-menu {
+                --paper-input-container: {
+                    padding-bottom: 0;
+                };
+                --paper-input-container-input: {
+                    font-size: 14px;
+                    cursor: pointer;
+                };
+            }
+            paper-item {
+                min-height: initial;
+                padding: 8px 10px;
+                line-height: 18px;
+            }
+            :host paper-item:hover {
+                @apply(--paper-item-hover);
+            }
+            .filter {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                @apply(--layout-end-justified);
+                padding-bottom: 20px;
+                position: relative;
+                box-sizing: border-box;
             }
             :host([medium-screen]) .two-charts {
                 @apply(--layout-horizontal);
@@ -163,7 +192,7 @@
                 <div class="one-chart">
 
                     <div class="chart-container">
-                        <template is="dom-if" if="[[ _loginAttemptsMessage ]]">
+                        <template is="dom-if" if="[[ _showLoginAttemptsExampleChart ]]">
                             <div class="no-data-info">
                                 <h2 class="title-h2">Application usage</h2>
                                 <p class="info">
@@ -179,20 +208,52 @@
 
                         <appsco-loader multi-color active="[[ _loginAttemptsChartLoader ]]"></appsco-loader>
 
-                        <template is="dom-if" if="[[ !_loginAttemptsMessage ]]">
+                        <template is="dom-if" if="[[ !_showLoginAttemptsExampleChart ]]">
                             <h2 class="title-h2">Application usage</h2>
-                            <div class="chart-info">
-                                <p class="info">
-                                    Displays login attempts for top five most used applications in the past 30 days.
-                                </p>
-                                <p class="info info-tip">
-                                    * Hover over application's peak to see corresponding values.
-                                </p>
+
+                            <template is="dom-if" if="[[ _loginAttemptsMessage ]]">
+                                <div class="chart-info">
+                                    <p class="info">
+                                        [[ _loginAttemptsMessage ]]
+                                    </p>
+                                </div>
+                            </template>
+
+                            <template is="dom-if" if="[[ !_loginAttemptsMessage ]]">
+                                <div class="chart-info">
+                                    <p class="info">
+                                        Displays login attempts for top five most used applications in the past 30 days.
+                                    </p>
+                                    <p class="info info-tip">
+                                        * Hover over application's peak to see corresponding values.
+                                    </p>
+                                </div>
+                            </template>
+
+                            <div class="filter">
+                                <paper-dropdown-menu horizontal-align="right"
+                                                     label="Filter by account type"
+                                                     on-iron-activate="_onFilterApplicationUsageByAccountTypeAction">
+                                    <paper-listbox id="filterList"
+                                                   class="dropdown-content"
+                                                   attr-for-selected="value"
+                                                   selected="[[ _filterAccountType ]]">
+                                        <template is="dom-repeat" items="[[ _accountTypeList ]]">
+                                            <paper-item value$="[[ item.value ]]"
+                                                        name$="[[ item.name ]]">
+                                                [[ item.name ]]
+                                            </paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
                             </div>
-                            <google-chart id="loginAttemptsChart"
-                                          class="chart-h-380"
-                                          type="line"
-                                          on-google-chart-ready="_onLoginAttemptsChartReady"></google-chart>
+
+                            <template is="dom-if" if="[[ !_loginAttemptsMessage ]]">
+                                <google-chart id="loginAttemptsChart"
+                                              class="chart-h-380"
+                                              type="line"
+                                              on-google-chart-ready="_onLoginAttemptsChartReady"></google-chart>
+                            </template>
                         </template>
                     </div>
 
@@ -381,21 +442,6 @@
                     computed: "_computeHeaders(authorizationToken)"
                 },
 
-                _applicationUsageApi: {
-                    type: String,
-                    computed: '_computeApplicationUsageApi(companyApi)'
-                },
-
-                _applicationsUsageChartLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _applicationUsageMessage: {
-                    type: String,
-                    value: ''
-                },
-
                 _applicationSecurityApi: {
                     type: String,
                     computed: '_computeApplicationSecurityApi(companyApi)'
@@ -428,7 +474,7 @@
 
                 _loginAttemptsApi: {
                     type: String,
-                    computed: '_computeLoginAttemptsApi(companyApi)'
+                    computed: '_computeLoginAttemptsApi(companyApi, _filterAccountType)'
                 },
 
                 _loginAttemptsChartLoader: {
@@ -439,6 +485,35 @@
                 _loginAttemptsMessage: {
                     type: String,
                     value: ''
+                },
+
+                _showLoginAttemptsExampleChart: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _accountTypeList: {
+                    type: Array,
+                    value: function () {
+                        return [
+                            {
+                                name: 'All',
+                                value: 'all'
+                            },
+                            {
+                                name: 'Users',
+                                value: 'roles'
+                            },
+                            {
+                                name: 'Contacts',
+                                value: 'contacts'
+                            }];
+                    }
+                },
+
+                _filterAccountType: {
+                    type: String,
+                    value: 'all'
                 },
 
                 _twoFaApi: {
@@ -521,7 +596,11 @@
                 this.reloadStatistics();
             },
 
-            _updateScreen: function(medium) {
+            resetPage: function() {
+                this._filterAccountType = 'all';
+            },
+
+            _updateScreen: function() {
                 this.updateStyles();
             },
 
@@ -538,10 +617,6 @@
                 }
             },
 
-            _computeApplicationUsageApi: function(companyApi) {
-                return companyApi ? companyApi + '/statistics/application-usage' : '';
-            },
-
             _computeApplicationSecurityApi: function(companyApi) {
                 return companyApi ? companyApi + '/statistics/application-security' : '';
             },
@@ -550,8 +625,11 @@
                 return companyApi ? companyApi + '/statistics/user-password-scores' : '';
             },
 
-            _computeLoginAttemptsApi: function(companyApi) {
-                return companyApi ? companyApi + '/statistics/login-attempts' : '';
+            _computeLoginAttemptsApi: function(companyApi, filterAccountType) {
+                return companyApi ?
+                    ((companyApi + '/statistics/login-attempts') +
+                    (filterAccountType ? ('?type=' + filterAccountType) : ''))
+                    : '';
             },
 
             _computeTwoFaApi: function(companyApi) {
@@ -586,10 +664,13 @@
                 });
             },
 
-            reloadStatistics: function() {
-//                this._showLoader('_applicationsUsageChartLoader');
-//                this.$.applicationUsageAjax.generateRequest();
+            _onFilterApplicationUsageByAccountTypeAction: function(event) {
+                event.stopPropagation();
+                this._showLoader('_loginAttemptsChartLoader');
+                this._filterAccountType = event.detail.item.getAttribute('value');
+            },
 
+            reloadStatistics: function() {
                 this._showLoader('_applicationSecurityChartLoader');
                 this.$.applicationSecurityAjax.generateRequest();
 
@@ -605,66 +686,6 @@
                 this._showLoader('_licenceChartLoader');
                 this.$.licenceAjax.generateRequest();
             },
-
-//            _handleApplicationUsageResponse: function(event) {
-//                var response = event.detail.response,
-//                    chartOptions= {
-//                        titlePosition: 'none',
-//                        backgroundColor: this.getComputedStyleValue('--chart-background-color'),
-//                        animation: {
-//                            startup: 'true',
-//                            duration: 600,
-//                            easing: 'in'
-//                        },
-//                        legend: 'none'
-//                    },
-//                    chart = this.$$('#applicationsUsageChart');
-//
-//                if (null == response || response.applications == 0) {
-//                    this._applicationUsageMessage = 'You don\'t have any applications added to the company. Please add some in order to create statistics.';
-//
-//                    setTimeout(function() {
-//                        var exampleChart = this.$$('#applicationsUsageChartExample');
-//
-//                        exampleChart.options = chartOptions;
-//                        exampleChart.data = [
-//                            ['Data type', 'Count', { role: 'style' }],
-//                            ['Total applications', 20, '#279FBC'],
-//                            ['Shared applications', 15, '#279FBC'],
-//                            ['Non-shared applications', 5, '#279FBC'],
-//                            ['Total shared application', 50, '#279FBC'],
-//                            ['Configured applications', 40, '#279FBC']
-//                        ];
-//                    }.bind(this), 1000);
-//
-//                    this._hideLoader('_applicationsUsageChartLoader');
-//
-//                    return false;
-//                }
-//
-//                for (key in response) {
-//                    this._applicationUsageMessage = '';
-//
-//                    chart.options = chartOptions;
-//                    chart.data = [
-//                        ['Data type', 'Count', { role: 'style' }],
-//                        ['Total applications', response.applications, '#279FBC'],
-//                        ['Shared applications', response.applications_with_instances, '#279FBC'],
-//                        ['Non-shared applications', response.applications_without_instances, '#279FBC'],
-//                        ['Total shared application', response.application_instances, '#279FBC'],
-//                        ['Configured applications', response.application_instances_configured, '#279FBC']
-//                    ];
-//                }
-//            },
-//
-//            _handleApplicationUsageError: function(event) {
-//                this._applicationUsageMessage = 'We couldn\'t load statistics at the moment. Please try again later.';
-//                this._hideLoader('_applicationsUsageChartLoader');
-//            },
-//
-//            _onApplicationsUsageChartReady: function() {
-//                this._hideLoader('_applicationsUsageChartLoader');
-//            },
 
             _handleApplicationSecurityResponse: function(event) {
                 var response = event.detail.response,
@@ -878,6 +899,61 @@
                 this._hideLoader('_userSecurityChartLoader');
             },
 
+            _drawLoginAttemptsExampleChart: function(options) {
+                var exampleChart = this.$$('#loginAttemptsChartExample'),
+                    chartOptions = options ? options : {
+                        titlePosition: 'none',
+                        hAxis: {
+                            title: 'Last 30 days',
+                            textStyle: {
+                                color: this.getComputedStyleValue('--primary-text-color')
+                            },
+                            viewWindowMode: 'explicit',
+                            viewWindow: {
+                                min: 0,
+                                max: 30
+                            },
+                            gridlines: {
+                                count: 30
+                            }
+                        },
+                        vAxis: {
+                            title: 'Login attempts',
+                            textStyle: {
+                                color: this.getComputedStyleValue('--primary-text-color')
+                            },
+                            format: '0'
+                        },
+                        backgroundColor: this.getComputedStyleValue('--chart-background-color'),
+                        animation: {
+                            startup: 'true',
+                            duration: 600,
+                            easing: 'in'
+                        },
+                        focusTarget: 'category'
+                    },
+                    currentDate = new Date(),
+                    year = currentDate.getFullYear(),
+                    month = currentDate.getMonth(),
+                    day = currentDate.getDate();
+
+                if (!exampleChart) {
+                    return false;
+                }
+
+                exampleChart.options = chartOptions;
+                exampleChart.data = [
+                    ['Day in month', 'Facebook', 'Twitter']
+                ];
+
+                for (var i = 0; i < 30; i++){
+                    var date = new Date(year, month, day - i),
+                        chartDay = date.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+
+                    exampleChart.data.push([chartDay, Math.floor(Math.random() * 21), Math.floor(Math.random() * 21)]);
+                }
+            },
+
             _handleLoginAttemptsResponse: function(event) {
                 var response = event.detail.response,
                     chartOptions = {
@@ -917,58 +993,63 @@
                     innerData = [];
 
                 if (response && !length) {
-                    this._loginAttemptsMessage = 'There are no login actions attempted by users. Please invite users to try some applications login.';
 
-                    setTimeout(function() {
-                        var exampleChart = this.$$('#loginAttemptsChartExample'),
-                            currentDate = new Date(),
-                            year = currentDate.getFullYear(),
-                            month = currentDate.getMonth(),
-                            day = currentDate.getDate();
+                    switch (this._filterAccountType) {
+                        case 'all':
+                            this._loginAttemptsMessage = 'There are no login actions attempted.';
+                            break;
 
-                        exampleChart.options = chartOptions;
-                        exampleChart.data = [
-                            ['Day in month', 'Facebook', 'Twitter']
-                        ];
+                        case 'roles':
+                            this._loginAttemptsMessage = 'There are no login actions attempted by users.';
+                            break;
 
-                        for (var i = 0; i < 30; i++){
-                            var date = new Date(year, month, day - i),
-                                chartDay = date.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+                        case 'contacts':
+                            this._loginAttemptsMessage = 'There are no login actions attempted by contacts.';
+                            break;
 
-                            exampleChart.data.push([chartDay, Math.floor(Math.random() * 21), Math.floor(Math.random() * 21)]);
-                        }
-                    }.bind(this), 1000);
+                        default:
+                            this._loginAttemptsMessage = 'There are no login actions attempted. Please invite users and contacts to try some applications login.';
+                            this._showLoginAttemptsExampleChart = true;
 
-                    this._hideLoader('_loginAttemptsChartLoader');
-                    return false;
+                            setTimeout(function() {
+                                this._drawLoginAttemptsExampleChart(chartOptions);
+                                this._hideLoader('_loginAttemptsChartLoader');
+                            }.bind(this), 1000);
+
+                            return false;
+                    }
                 }
 
                 if (response && length > 0) {
                     this._loginAttemptsMessage = '';
+                    this._showLoginAttemptsExampleChart = false;
 
                     chart.options = chartOptions;
 
                     for (var i = 0; i < length; i++) {
                         var record = response[i],
-                                date = new Date(record.created_at.date),
-                                date = date.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+                            date = new Date(record.created_at.date),
+                            date = date.toLocaleDateString('en', { month: 'short', day: 'numeric' });
 
-                        if (chartApplications.indexOf(record.application.title) == -1) {
-                            chartApplications.push(record.application.title);
+                        if (chartApplications.indexOf(record.data.application.title) == -1) {
+                            chartApplications.push(record.data.application.title);
                         }
 
                         if (!innerData[date]) {
                             innerData[date] = [];
                         }
 
-                        innerData[date][record.application.title] = !innerData[date][record.application.title] ? 1 : innerData[date][record.application.title] + 1;
+                        innerData[date][record.data.application.title] =
+                            !innerData[date][record.data.application.title] ?
+                                1 :
+                                (innerData[date][record.data.application.title] + 1);
                     }
 
                     chart.data = [chartApplications];
 
                     for (var i = 29; i >= 0; i--) {
                         var date = new Date(),
-                                chartData = [];
+                            chartData = [];
 
                         date.setDate(date.getDate() - i);
                         date = date.toLocaleDateString('en', { month: 'short', day: 'numeric' });
@@ -991,6 +1072,8 @@
 
             _handleLoginAttemptsError: function(event) {
                 this._loginAttemptsMessage = 'We couldn\'t load statistics at the moment. Please try again later.';
+                this._showLoginAttemptsExampleChart = true;
+                this._drawLoginAttemptsExampleChart();
                 this._hideLoader('_loginAttemptsChartLoader');
             },
 
