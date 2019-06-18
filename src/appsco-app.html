@@ -7012,11 +7012,13 @@
                         application = event.detail.application.application;
 
                 if (!!application.company) {
+                    console.log('Doing track');
+                    console.log(application);
                     appRequest.send({
-                        url: application.self + '/track-events',
+                        url: application.meta.track_events,
                         method: 'POST',
                         handleAs: 'json',
-                        body: 'track_events[event_type] = copy_event&track_events[field]=' + encodeURIComponent(event.detail.attribute),
+                        body: 'track_events[event_type]=copy_event&track_events[field]=' + encodeURIComponent(event.detail.attribute),
                         headers: {
                             'Authorization': 'token ' + this.authorizationToken,
                             'Content-Type': 'application/x-www-form-urlencoded'
