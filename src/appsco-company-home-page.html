@@ -128,6 +128,23 @@
                     @apply(--layout-around-justified);
                 };
             }
+
+            :host div#backgroundContainer {
+                width: 50%;
+                left: 25%;
+                height: 25%;
+                top: 45%;
+                background-position: center;
+                background-size: contain;
+                background-repeat: no-repeat;
+                position: fixed;
+                filter: grayscale(100%) opacity(30%);
+                -webkit-filter: grayscale(100%) opacity(30%);
+            }
+
+            :host div.info-content{
+                background-color: #f5f8fa;
+            }
         </style>
 
         <iron-ajax
@@ -149,6 +166,11 @@
         <appsco-content id="appscoContent">
 
             <div content>
+
+                <div id="backgroundContainer" class="background-container">
+
+                </div>
+
                 <div class="content-container">
                     <div class="items-container folders-container"
                          hidden$="[[ _foldersEmpty ]]">
@@ -314,6 +336,15 @@
                     notify: true
                 },
 
+                company: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    notify: true,
+                    observer: '_companyChanged'
+                },
+
                 account: {
                     type: Object,
                     value: function () {
@@ -471,6 +502,17 @@
 
             _foldersApiChanged: function() {
                 this._hideFolders();
+            },
+
+            _companyChanged: function() {
+                if (!this.company.dashboard_image) {
+                    this.$.backgroundContainer.style.display = 'none';
+                    this.$.backgroundContainer.style.backgroundImage = null;
+                    return;
+                }
+
+                this.$.backgroundContainer.style.display = 'block';
+                this.$.backgroundContainer.style.backgroundImage =  "url('" + this.company.dashboard_image + "')";
             },
 
             _updateScreen: function(mobile, tablet, tabletS1024Screen, tabletS1280Screen, laptop) {

@@ -10,6 +10,7 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 <link rel="import" href="appsco-company-image-settings.html">
+<link rel="import" href="appsco-company-dashboard-image-settings.html">
 
 <!--
 `appsco-company-brand-settings`
@@ -80,6 +81,9 @@ Custom property | Description | Default
             .submit-button {
                 margin: 20px 0 0 0;
                 @apply(--form-action);
+            }
+            :host .description {
+                font-size: 12px;
             }
         </style>
 
@@ -154,6 +158,20 @@ Custom property | Description | Default
                     image-settings-api="[[ imageSettingsApi ]]"></appsco-company-image-settings>
         </div>
 
+        <div class="logo-upload">
+            <label for="appscoCompanyDashboardImageSettings" class="label">Dashboard logo</label>
+            <div class="description">
+                Dashboard logo will show up on the dashboard background. Please keep in mind that the image should
+                be a transparent .png logo file. For the best possible result upload a larger image.
+            </div>
+            <br />
+            <appsco-company-dashboard-image-settings
+                    id="appscoCompanyDashboardImageSettings"
+                    company="[[ company ]]"
+                    authorization-token="[[ authorizationToken ]]"
+                    image-settings-api="[[ dashboardImageSettingsApi ]]"></appsco-company-dashboard-image-settings>
+        </div>
+
         <paper-button id="companyBrandSettingsSaveBtn"
                       class="submit-button"
                       on-tap="_submitForm">Save</paper-button>
@@ -198,6 +216,11 @@ Custom property | Description | Default
                 },
 
                 imageSettingsApi: {
+                    type: String,
+                    value: ''
+                },
+
+                dashboardImageSettingsApi: {
                     type: String,
                     value: ''
                 },
