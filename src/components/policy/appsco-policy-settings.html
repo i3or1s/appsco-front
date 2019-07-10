@@ -2,6 +2,7 @@
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="appsco-ip-whitelist-policy-settings.html">
+<link rel="import" href="appsco-enforce-two-factor-policy-settings.html">
 
 <dom-module id="appsco-policy-settings">
     <template>
@@ -17,7 +18,7 @@
             }
         </style>
 
-        <template is="dom-if" if="[[ !_ipWhitelistPolicyActive ]]">
+        <template is="dom-if" if="[[ !_customSettings ]]">
             <p class="info">There are no additional settings for this policy.</p>
         </template>
 
@@ -25,6 +26,12 @@
             <appsco-ip-whitelist-policy-settings policy="[[ policy ]]"
                                                  authorization-token="[[ authorizationToken ]]"
                                                  api-errors="[[ apiErrors ]]"></appsco-ip-whitelist-policy-settings>
+        </template>
+
+        <template is="dom-if" if="[[ _enforceTwoFactoryPolicyActive ]]">
+            <appsco-enforce-two-factor-policy-settings policy="[[ policy ]]"
+                                                 authorization-token="[[ authorizationToken ]]"
+                                                 api-errors="[[ apiErrors ]]"></appsco-enforce-two-factor-policy-settings>
         </template>
 
     </template>
@@ -58,11 +65,30 @@
                 _ipWhitelistPolicyActive: {
                     type: Boolean,
                     computed: '_computeIpWhitelistPolicyActive(policy)'
+                },
+
+                _enforceTwoFactoryPolicyActive: {
+                    type: Boolean,
+                    computed: '_computeEnforceTwoFactoryPolicyActive(policy)'
+                },
+
+                _customSettings: {
+                    type: Boolean,
+                    computed: '_computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive)'
+
                 }
             },
 
             _computeIpWhitelistPolicyActive: function(policy) {
                 return (policy.name && 'ip whitelist' === policy.name.toLowerCase());
+            },
+
+            _computeEnforceTwoFactoryPolicyActive: function(policy) {
+                return (policy.name && 'enforce two-factor' === policy.name.toLowerCase());
+            },
+
+            _computeHasCustomSettings: function(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive) {
+                return _ipWhitelistPolicyActive || _enforceTwoFactoryPolicyActive;
             }
         });
     </script>
