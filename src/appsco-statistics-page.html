@@ -950,7 +950,7 @@
                     var date = new Date(year, month, day - i),
                         chartDay = date.toLocaleDateString('en', { month: 'short', day: 'numeric' });
 
-                    exampleChart.data.push([chartDay, Math.floor(Math.random() * 21), Math.floor(Math.random() * 21)]);
+                   exampleChart.data.push([chartDay, Math.floor(Math.random() * 21), Math.floor(Math.random() * 21)]);
                 }
             },
 
@@ -1009,15 +1009,15 @@
 
                         default:
                             this._loginAttemptsMessage = 'There are no login actions attempted. Please invite users and contacts to try some applications login.';
-                            this._showLoginAttemptsExampleChart = true;
-
-                            setTimeout(function() {
-                                this._drawLoginAttemptsExampleChart(chartOptions);
-                                this._hideLoader('_loginAttemptsChartLoader');
-                            }.bind(this), 1000);
 
                             return false;
                     }
+
+                    this._showLoginAttemptsExampleChart = true;
+                    setTimeout(function() {
+                        this._drawLoginAttemptsExampleChart(chartOptions);
+                        this._hideLoader('_loginAttemptsChartLoader');
+                    }.bind(this), 1000);
                 }
 
                 if (response && length > 0) {
