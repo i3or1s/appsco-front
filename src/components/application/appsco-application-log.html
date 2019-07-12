@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+appsco-application-log<link rel="import" href="../../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -383,6 +383,14 @@ Custom property | Description | Default
 
                     case 'orgunit_removed':
                         message = 'Organization unit '+ item.data.name +' removed by ' + item.account.display_name + '.';
+                        break;
+
+                    case 'username_copied':
+                        message = 'Username copied by ' + item.account.display_name + '.';
+                        break;
+
+                    case 'password_copied':
+                        message = 'Password copied by ' + item.account.display_name + '.';
                         break;
 
                     default:
