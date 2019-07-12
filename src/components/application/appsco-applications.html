@@ -157,7 +157,8 @@ Custom property | Description | Default
                 applicationsApi: {
                     type: String,
                     value: '',
-                    notify: true
+                    notify: true,
+                    observer: '_onApplicationsApiChanged'
                 },
 
                 currentFolder: {
@@ -338,15 +339,12 @@ Custom property | Description | Default
                 Polymer.AppscoDragHTMLElementBehavior
             ],
 
-            listeners: {
-                'applications-api-changed': '_onApplicationsApiChanged'
-            },
-
             observers: [
                 '_setSearchApplicationsApi(applicationsApi, _sort)'
             ],
 
             ready: function () {
+                this._clearApplications();
 
                 if (this.applicationsApi && this.applicationsApi != '' &&
                         (this._personalDashboardAllowed || this.isOnCompany == true)) {
@@ -405,6 +403,7 @@ Custom property | Description | Default
             },
 
             _onApplicationsApiChanged: function(api) {
+                this._clearApplications();
                 this._loadApplications();
             },
 
@@ -463,64 +462,58 @@ Custom property | Description | Default
                 if (!e.detail.response) {
                     return false;
                 }
-                var me = this,
-                    response = e.detail.response,
+
+                var response = e.detail.response,
                     icons = response.icons ? response.icons : response.applications,
+                    icon = null,
                     meta = response.meta,
-                    iconsCount = icons.length - 1;
+                    iconTimeout = 30,
+                    createAdderFunction = function(icon) {
+                        return function() {
+                            if (this.company) {
+                                el.selected = false;
+                            }
+                            this.push('_allApplications', icon);
+                            this.push('_applications', icon);
+
+                            this._loadMore = (this._applications.length < meta.total);
+                        }.bind(this);
+                    }.bind(this);
+
+                if (meta.page.toString() === '1') {
+                    this._clearApplications();
+                }
 
                 this._totalApplications = meta.total;
                 this._next = this._computeNextPageListApi(meta.next, this.size, this._sort);
-
                 if (meta.total === 0) {
-                    this._message = 'There are no applications.';
+                    this._message = 'There are no applications';
                     this._handleEmptyLoad();
-                    return false;
+                    return;
                 }
 
                 this._applicationsEmpty = false;
                 this._message = '';
 
-                icons.forEach(function(el, index) {
+                for (var idx in icons) {
+                    if (!icons.hasOwnProperty(idx)) {
+                        continue;
+                    }
+                    icon = icons[idx];
+                    this._loaders.push(setTimeout(createAdderFunction(icon), (iconTimeout + 30)));
+                }
 
-                    this._loaders.push(setTimeout( function() {
+                this.fire('loaded', {
+                    applications: e.detail.response.icons
+                });
 
-                        if (this.company) {
-                            el.selected = false;
-                        }
+                this._hideLoadMoreProgressBar();
+                this._hideProgressBar();
 
-                        this.push('_allApplications', el);
-                        this.push('_applications', el);
+                if (this._filterOrgunit.selected) {
+                    this._filterByOrgunit();
+                }
 
-                        if (index == iconsCount) {
-
-                            this._loadMore = me.loadMore;
-
-                            if (this._applications.length === meta.total) {
-                                this._loadMore = false;
-                            }
-
-                            this._hideProgressBar();
-                            this._hideLoadMoreProgressBar();
-
-                            /**
-                             * Fired when applications are loaded
-                             *
-                             * @event loaded
-                             * @param {Object} application[] [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
-                             */
-                            this.fire('loaded', {
-                                applications: e.detail.response.icons
-                            });
-
-                            if (this._filterOrgunit.selected) {
-                                this._filterByOrgunit();
-                            }
-                        }
-
-                    }.bind(this), (index + 1) * 30 ));
-
-                }.bind(this));
             },
 
             _computeHeaders: function (authorizationToken) {
