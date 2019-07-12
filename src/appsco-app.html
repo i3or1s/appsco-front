@@ -585,6 +585,7 @@
                             netscaler-api="[[ _companyNetscalerFeatureApi ]]"
                             account="[[ account ]]"
                             page-config="[[ _pageConfig ]]"
+                            company="{{ currentCompany.company }}"
                             on-loaded="_onLoadedPage"
                             on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
                             on-open-rename-folder-dialog="_onOpenRenameFolderDialog"
@@ -932,6 +933,7 @@
                             on-company-brand-settings-changed="_onCompanyBrandSettingsChanged"
                             on-company-branded-login-changed="_onCompanyBrandedLoginChanged"
                             on-company-logo-changed="_onCompanyLogoChanged"
+                            on-company-dashboard-logo-changed="_onCompanyDashboardLogoChanged"
                             on-show-domains-page-actions="_onShowDomainsPageActions"
                             on-hide-domains-page-actions="_onHideDomainsPageActions"
                             on-show-groups-page-actions="_onShowGroupsPageActions"
@@ -5749,6 +5751,13 @@
                 this._notifyAccountLog();
             },
 
+            _onCompanyDashboardLogoChanged: function(event) {
+                this._setAccountCompany(event.detail.company);
+                this._notify('Company dashboard logo was successfully saved.');
+
+                this._notifyAccountLog();
+            },
+
             _upgradedToBusiness: function(e) {
                 this.account = {};
                 this.account = e.detail.account;
@@ -7012,8 +7021,6 @@
                         application = event.detail.application.application;
 
                 if (!!application.company) {
-                    console.log('Doing track');
-                    console.log(application);
                     appRequest.send({
                         url: application.meta.track_events,
                         method: 'POST',

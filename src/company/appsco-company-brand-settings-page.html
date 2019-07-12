@@ -50,7 +50,9 @@
                         company="[[ company ]]"
                         authorization-token="[[ authorizationToken ]]"
                         settings-api="[[ settingsApi ]]"
-                        image-settings-api="[[ imageSettingsApi ]]"></appsco-company-brand-settings>
+                        image-settings-api="[[ imageSettingsApi ]]"
+                        dashboard-image-settings-api="[[ dashboardImageSettingsApi ]]"
+                ></appsco-company-brand-settings>
             </div>
         </paper-card>
 
@@ -82,6 +84,11 @@
                 },
 
                 imageSettingsApi: {
+                    type: String,
+                    value: ''
+                },
+
+                dashboardImageSettingsApi: {
                     type: String,
                     value: ''
                 },

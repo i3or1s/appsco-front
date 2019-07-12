@@ -101,6 +101,7 @@
                                 authorization-token="[[ authorizationToken ]]"
                                 settings-api="[[ _brandSettingsApi ]]"
                                 image-settings-api="[[ _imageSettingsApi ]]"
+                                dashboard-image-settings-api="[[ _dashboardImageSettingsApi ]]"
                                 on-company-brand-settings-changed="_onCompanyBrandSettingsChanged"
                                 on-back="_onResourceBack">
                         </appsco-company-brand-settings-page>
@@ -219,6 +220,11 @@
                 _imageSettingsApi: {
                     type: String,
                     computed: '_computeImageSettingsApi(company)'
+                },
+
+                _dashboardImageSettingsApi: {
+                    type: String,
+                    computed: '_computeDashboardImageSettingsApi(company)'
                 },
 
                 /**
@@ -354,6 +360,10 @@
 
             _computeImageSettingsApi: function(company) {
                 return (company.meta && company.meta.logo) ? company.meta.logo : '';
+            },
+
+            _computeDashboardImageSettingsApi: function(company) {
+                return (company.meta && company.meta.dashboard_logo) ? company.meta.dashboard_logo : '';
             },
 
             _computeDomainsApi: function(company) {
