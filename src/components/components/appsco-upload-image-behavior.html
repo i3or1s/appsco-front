@@ -99,7 +99,7 @@
                 this._showLoader();
 
                 /** To ensure that on-change event will be triggered even if user tries to upload same image again */
-                this.$$('#imageInput').value = null;
+                this.$$('input[type="file"]').value = null;
 
                 if (!this._validateImageFile(file)) {
                     this._hideLoader();
