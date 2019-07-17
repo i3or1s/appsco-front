@@ -30,14 +30,14 @@
                         sizing="cover"></iron-image>
 
             <template is="dom-if" if="[[ !previewOnly ]]">
-                <label for="imageInput"
+                <label for="resourceImageInput"
                        class$="item-image-upload [[ _imagePreview ]]">
                     <iron-icon icon="file-upload" class="icon-upload"></iron-icon>
                 </label>
 
                 <input type="file"
                        accept="image/*"
-                       id="imageInput"
+                       id="resourceImageInput"
                        name="resource-image"
                        class="upload-file"
                        on-change="_onUploadImage">
