@@ -22,14 +22,14 @@
                         sizing="contain"></iron-image>
 
             <template is="dom-if" if="[[ !previewOnly ]]">
-                <label for="imageInput"
+                <label for="dashboardImageInput"
                        class$="item-image-upload [[ _imagePreview ]]">
                     <iron-icon icon="file-upload" class="icon-upload"></iron-icon>
                 </label>
 
                 <input type="file"
                        accept="image/*"
-                       id="imageInput"
+                       id="dashboardImageInput"
                        name="company-image"
                        class="upload-file"
                        on-change="_onUploadImage">
@@ -83,7 +83,7 @@
                 var reader = new FileReader();
 
                 reader.onload = function(e) {
-                    this._setObjectAttribute('company', 'image', e.target.result);
+                    this._setObjectAttribute('company', 'dashboard_image', e.target.result);
                 }.bind(this);
 
                 reader.readAsDataURL(file);
