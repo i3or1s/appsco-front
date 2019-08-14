@@ -19,37 +19,42 @@
 <dom-module id="appsco-credit-card">
     <template>
         <style>
-            :host {
-                display: block;
-                position: relative;
-
-                --vaadin-date-picker-calendar-icon: {
-                     width: 24px;
-                     height: 24px;
-                 };
-            }
-            :host paper-dialog {
+            #stripe_cc_dialog {
                 width: 670px;
                 top: 10vh;
                 @apply(--appsco-paper-dialog);
             }
-            :host paper-dialog-scrollable > * {
+            #stripe_cc_dialog paper-dialog-scrollable > * {
                 @apply(--paper-dialog-scrollable-child);
             }
-            :host appsco-loader {
+            #stripe_cc_dialog appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
-            .date-container {
-                margin-top: 10px;
-                margin-bottom: 10px;
-            }
-            :host .buttons paper-button {
+            #stripe_cc_dialog .buttons paper-button {
                 @apply(--paper-dialog-button);
             }
-            :host .buttons paper-button[dialog-dismiss] {
+            #stripe_cc_dialog .buttons paper-button[dialog-dismiss] {
                 @apply(--paper-dialog-dismiss-button);
             }
+
+            #stripe_cc_dialog {
+                background-color: #fff;
+            }
+
+            #stripe_cc_dialog .form-row {
+                margin-bottom: 40px;
+                border-bottom: 1px solid #EEE;
+            }
+
+            #stripe_cc_dialog #creditCardForm {
+                margin-top: 40px;
+            }
+
+            #stripe_cc_dialog #card_number {
+
+            }
+
         </style>
 
         <iron-ajax id="getPublicKeyCall"
@@ -60,81 +65,23 @@
                    on-response="_handlePublicKeyResponse">
         </iron-ajax>
 
-        <paper-dialog id="dialog"
+        <paper-dialog id="stripe_cc_dialog"
                       with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
-                      on-iron-overlay-closed="_onDialogClosed">
-
+                      on-iron-overlay-closed="_onDialogClosed" style="display: none;">
             <h2>Payment method</h2>
-
-            <appsco-loader active="[[ _loader ]]"
-                           loader-alt="Appsco is processing request"
-                           multi-color></appsco-loader>
-
             <paper-dialog-scrollable>
                 <div class="dialog-container">
+                    <appsco-loader active="[[ _loader ]]"
+                                   loader-alt="Appsco is processing request"
+                                   multi-color></appsco-loader>
                     <p>Once new credit card is added previous credit card will be lost.</p>
-
                     <appsco-form-error message="[[ _error ]]"></appsco-form-error>
-
-                    <form is="iron-form"
-                          id="creditCardForm"
-                          method="POST"
-                          action="[[ _creditCardApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
-
-                        <div class="input-container">
-                            <gold-cc-input id="cardNumber"
-                                           label="Card number"
-                                           card-type='{{ cardType }}'
-                                           required
-                                           auto-validate
-                                           error-message="Credit card number is not valid."
-                                           data-stripe="number"></gold-cc-input>
-                        </div>
-
-                        <div class="input-container date-container">
-                            <vaadin-date-picker
-                                    id="expiryDate"
-                                    label="Expiry date"
-                                    required
-                                    auto-validate
-                                    error-message="Expiry date is not valid."
-                                    on-iron-overlay-opened="_onDatePickerOpened"
-                                    on-iron-overlay-closed="_onDatePickerClosed"></vaadin-date-picker>
-                        </div>
-
-                        <paper-input id="expMonth"
-                                     data-stripe="exp_month"
-                                     hidden></paper-input>
-
-                        <paper-input id="expYear"
-                                     data-stripe="exp_year"
-                                     hidden></paper-input>
-
-                        <div class="input-container">
-                            <gold-cc-cvc-input id="verificationNumber"
-                                               label="Verification number"
-                                               card-type='[[ cardType ]]'
-                                               required
-                                               auto-validate
-                                               error-message="Verification number is not valid."></gold-cc-cvc-input>
-                        </div>
-
-                        <div class="input-container">
-                            <paper-input id="cardHolder"
-                                         label="Card holder"
-                                         data-stripe="name"></paper-input>
-                        </div>
-
-                        <paper-input id="stripeToken"
-                                     name="stripeToken"
-                                     hidden></paper-input>
-                    </form>
+                    <div class="form-row">
+                        <div class="input-container" id="card_number"></div>
+                    </div>
                 </div>
             </paper-dialog-scrollable>
 
@@ -217,8 +164,9 @@
                 }
             },
 
+            /** Stripe controls do not work with shadow root so this hack is ugly but necessary */
             attached: function() {
-                this._setValidExpiryDate();
+                document.body.appendChild(this.root);
             },
 
             /**
@@ -247,26 +195,7 @@
              * Toggles add applications dialog.
              */
             toggle: function() {
-                this.$.dialog.toggle();
-            },
-
-            _setValidExpiryDate: function() {
-                var date = new Date(),
-                    day = date.getDate(),
-                    month = date.getMonth() + 1,
-                    year = date.getFullYear();
-
-                if (day < 10) {
-                    day = '0' + day;
-                }
-
-                if (month < 10) {
-                    month= '0' + month
-                }
-
-                date = year + '-' + month + '-' + day;
-
-                this.$.expiryDate.min = date;
+                this.$.stripe_cc_dialog.toggle();
             },
 
             _showLoader: function() {
@@ -277,22 +206,14 @@
                 this._loader = false;
             },
 
-            _onDatePickerOpened: function(event) {
-                event.stopPropagation();
-            },
-
-            _onDatePickerClosed: function(event) {
-                event.stopPropagation();
-            },
-
             /**
              * Called after dialog has been opened.
              *
              * @private
              */
             _onDialogOpened: function() {
+                this._showLoader();
                 this.$.getPublicKeyCall.generateRequest();
-                this.$.cardNumber.focus();
             },
 
             /**
@@ -302,53 +223,54 @@
              */
             _onDialogClosed: function() {
                 this._hideLoader();
-                this.$.creditCardForm.reset();
             },
 
             _handlePublicKeyResponse: function(event) {
                 this._stripePublicKey = event.detail.response.stripePublicKey;
-                Stripe.setPublishableKey(this._stripePublicKey);
+                this.stripe = new Stripe(this._stripePublicKey);
+                this.elements = this.stripe.elements();
+                this.cardNumber = this.elements.create('card', {
+                    hidePostalCode: true
+                });
+                this.cardNumber.mount('#card_number');
+                this._hideLoader();
             },
 
-            _stripeResponseHandler: function(status, response) {
-
-                if (response.error) {
-                    this._error = response.error.message;
+            _stripeResponseHandler: function(result) {
+                if (result.error) {
+                    this._error = result.error.message;
                     this._hideLoader();
                 } else {
+                    var request = document.createElement('iron-request'),
+                        options = {
+                            url: this._creditCardApi,
+                            method: 'POST',
+                            handleAs: 'json',
+                            headers: this._headers,
+                            body: 'stripeToken=' + result.token.id
+                        };
 
-
-
-                    this.$.stripeToken.value = response.id;
-                    this._submitForm();
+                    this._showLoader();
+                    request.send(options).then(function() {
+                        if (200 === request.status) {
+                            this.$.stripe_cc_dialog.close();
+                            this.fire('credit-card-added', {
+                                credit_card: request.response
+                            });
+                        }
+                    }.bind(this), function() {
+                        this._showError(this.apiErrors.getError(request.response.code));
+                        this._hideLoader();
+                    }.bind(this));
                 }
             },
 
             _onAddCreditCard: function() {
-
-                if (this.$.creditCardForm.validate()) {
-
-                    this._showLoader();
-
-                    if (this.$.expiryDate.value) {
-                        var expiryDate = new Date(this.$.expiryDate.value),
-                            month = expiryDate.getMonth() + 1;
-
-                        this.$.expMonth.value = (month < 10) ? '0' + month : month;
-                        this.$.expYear.value = expiryDate.getFullYear().toString().substr(2,2);
-                    }
-
-                    Stripe.card.createToken({
-                        'number': this.$.cardNumber.value,
-                        'exp_month': this.$.expMonth.value,
-                        'exp_year': this.$.expYear.value,
-                        'cvc': this.$.verificationNumber.value,
-                        'name': this.$.cardHolder.value
-                    }, function(status, response) {
-                        this._stripeResponseHandler(status, response);
+                if (this.stripe) {
+                    this.stripe.createToken(this.cardNumber).then(function(result) {
+                        this._stripeResponseHandler(result);
                     }.bind(this));
                 }
-
             },
 
             /**
@@ -358,37 +280,8 @@
              */
             _onEnter: function() {
                 this._onAddCreditCard();
-            },
-
-            _submitForm: function() {
-                this.$.creditCardForm.submit();
-            },
-
-            /**
-             * Called on form error when trying to save settings.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onFormError: function(event) {
-                this._error = event.detail.error.message;
-                this._hideLoader();
-            },
-
-            /**
-             * Called after settings have been submited.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onFormResponse: function(event) {
-                this.$.dialog.close();
-
-                this.fire('credit-card-added', {
-                    credit_card: event.detail.response
-                });
-
             }
+
         });
     </script>
 </dom-module>
