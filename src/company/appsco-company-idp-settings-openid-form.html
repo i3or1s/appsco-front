@@ -9,35 +9,85 @@
         <style>
         </style>
 
-        <paper-input label="Subdomain"
-                     data-field
-                     name="[[ formPrefix ]][company]"
-                     value="[[ idPConfig.company ]]"
-                     required
-                     error-message="Please type in subdomain."
-                     on-keyup="_onKeyUp">
+        <template is="dom-if" if="[[_needsSubDomain]]">
+            <paper-input label="Subdomain"
+                         data-field
+                         name="[[ formPrefix ]][company]"
+                         value="[[ idPConfig.company ]]"
+                         required
+                         error-message="Please type in subdomain."
+                         on-keyup="_onKeyUp">
 
-            <template is="dom-if" if="[[ _subdomain ]]">
-                <div suffix>[[ _subdomain ]]</div>
-            </template>
-        </paper-input>
+                <template is="dom-if" if="[[ _subdomain ]]">
+                    <div suffix>[[ _subdomain ]]</div>
+                </template>
+            </paper-input>
+        </template>
 
-        <paper-input label="Client ID"
-                     data-field
-                     name="[[ formPrefix ]][client_id]"
-                     value="[[ idPConfig.client_id ]]"
-                     required
-                     error-message="Please type in client ID."
-                     on-keyup="_onKeyUp"></paper-input>
+        <template is="dom-if" if="[[_needsClientId]]">
+            <paper-input label="Client ID"
+                         data-field
+                         name="[[ formPrefix ]][client_id]"
+                         value="[[ idPConfig.client_id ]]"
+                         required
+                         error-message="Please type in client ID."
+                         on-keyup="_onKeyUp"></paper-input>
+        </template>
 
-        <paper-input label="Client Secret"
-                     data-field
-                     name="[[ formPrefix ]][client_secret]"
-                     value="[[ idPConfig.client_secret ]]"
-                     required
-                     error-message="Please type in client secret."
-                     on-keyup="_onKeyUp"></paper-input>
-    
+        <template is="dom-if" if="[[_needsClientSecret]]">
+            <paper-input label="Client Secret"
+                         data-field
+                         name="[[ formPrefix ]][client_secret]"
+                         value="[[ idPConfig.client_secret ]]"
+                         required
+                         error-message="Please type in client secret."
+                         on-keyup="_onKeyUp"></paper-input>
+        </template>
+
+        <template is="dom-if" if="[[_needsAuthUrl]]">
+            <paper-input label="Authentication url"
+                         data-field
+                         name="[[ formPrefix ]][authentication_url]"
+                         value="[[ idPConfig.authentication_url ]]"
+                         required
+                         error-message="Please type in authentication url."
+                         on-keyup="_onKeyUp">
+            </paper-input>
+        </template>
+
+        <template is="dom-if" if="[[_needsUserInfoUrl]]">
+            <paper-input label="User info url"
+                         data-field
+                         name="[[ formPrefix ]][user_info_url]"
+                         value="[[ idPConfig.user_info_url ]]"
+                         required
+                         error-message="Please type in user info url."
+                         on-keyup="_onKeyUp">
+            </paper-input>
+        </template>
+
+        <template is="dom-if" if="[[_needsTokenUrl]]">
+            <paper-input label="Token url"
+                         data-field
+                         name="[[ formPrefix ]][token_url]"
+                         value="[[ idPConfig.token_url]]"
+                         required
+                         error-message="Please type in token url."
+                         on-keyup="_onKeyUp">
+            </paper-input>
+        </template>
+
+        <template is="dom-if" if="[[_needsScope]]">
+            <paper-input label="Scope"
+                         data-field
+                         name="[[ formPrefix ]][scope]"
+                         value="[[ idPConfig.scope]]"
+                         required
+                         error-message="Please type in scope."
+                         on-keyup="_onKeyUp">
+            </paper-input>
+        </template>
+
     </template>
     <script>
         Polymer({
@@ -57,7 +107,70 @@
                 _subdomain: {
                     type: String,
                     value: ''
+                },
+
+                _needsSubDomain: {
+                    type: Boolean,
+                    computed: '_computeNeedsSubDomain(integration)'
+                },
+
+                _needsClientId: {
+                    type: Boolean,
+                    computed: '_computeNeedsClientId(integration)'
+                },
+
+                _needsClientSecret: {
+                    type: Boolean,
+                    computed: '_computeNeedsClientSecret(integration)'
+                },
+
+                _needsAuthUrl: {
+                    type: Boolean,
+                    computed: '_computeNeedsAuthUrl(integration)'
+                },
+
+                _needsUserInfoUrl: {
+                    type: Boolean,
+                    computed: '_computeNeedsUserInfoUrl(integration)'
+                },
+
+                _needsTokenUrl: {
+                    type: Boolean,
+                    computed: '_computeNeedsTokenUrl(integration)'
+                },
+
+                _needsScope: {
+                    type: Boolean,
+                    computed: '_computeNeedsScope(integration)'
                 }
+            },
+
+            _computeNeedsSubDomain: function(integration) {
+                return integration.id === 'bamboo_hr';
+            },
+
+            _computeNeedsClientId: function(integration) {
+                return integration.id === 'generic_open_id' || integration.id === 'bamboo_hr';
+            },
+
+            _computeNeedsClientSecret: function(integration) {
+                return integration.id === 'generic_open_id' || integration.id === 'bamboo_hr';
+            },
+
+            _computeNeedsAuthUrl: function(integration) {
+                return integration.id === 'generic_open_id';
+            },
+
+            _computeNeedsUserInfoUrl: function(integration) {
+                return integration.id === 'generic_open_id';
+            },
+
+            _computeNeedsTokenUrl: function(integration) {
+                return integration.id === 'generic_open_id';
+            },
+
+            _computeNeedsScope: function(integration) {
+                return integration.id === 'generic_open_id';
             },
 
             behaviors: [
