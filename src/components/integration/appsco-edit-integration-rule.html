@@ -334,9 +334,12 @@
                                 <p>Set default values that should be applied in affected object</p>
                                 <div class="input-container-title">Fields:</div>
                                 <template is="dom-repeat" items="[[ _toParamsList ]]">
-                                    <div class="input-container">
+                                    <template is="dom-if" if="[[ item.options ]]">
+                                        <suggestion-combo-box label="[[ item.key ]]" value="{{ item.value }}" options="[[ item.options ]]" ></suggestion-combo-box>
+                                    </template>
+                                    <template is="dom-if" if="[[ !item.options ]]">
                                         <paper-input label="[[ item.key ]]" value="{{ item.value }}"></paper-input>
-                                    </div>
+                                    </template>
                                 </template>
                             </div>
                         </template>
@@ -1000,10 +1003,11 @@
                 this._toPSOList.forEach(function(element) {
 
                     if (pso === element.key) {
-                        this.set('_toParamsList', element.params.map(function(element) {
+                        this.set('_toParamsList', element.params.map(function(el) {
                             return {
-                                key: element,
-                                value: ''
+                                key: el,
+                                value: '',
+                                options: (element.target_options[el] && element.target_options[el].length ? element.target_options[el] : null)
                             };
                         }));
                         return false;
