@@ -94,6 +94,15 @@
             }
         </style>
 
+        <iron-ajax id="getPublicKeyCall"
+                   auto
+                   url="[[ _publicKeyApi ]]"
+                   method="GET"
+                   headers="[[ _headers ]]"
+                   handle-as="json"
+                   on-response="_handlePublicKeyResponse">
+        </iron-ajax>
+
         <paper-dialog id="dialog"
                       with-backdrop
                       entry-animation="scale-up-animation"
@@ -238,10 +247,39 @@
                 _selectedPlan: {
                     type: String,
                     value: ''
+                },
+
+                _stripePublicKey: {
+                    type: String,
+                    value: ''
+                },
+
+                /**
+                 * Computed headers.
+                 * It contains authorization token.
+                 */
+                _headers: {
+                    type: Object,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                _publicKeyApi: {
+                    type: String,
+                    computed: '_computePublicKeyApi(companyApi)'
                 }
 
             },
 
+            _computePublicKeyApi: function(companyApi) {
+                return companyApi + '/billing/pk';
+            },
+
+            _handlePublicKeyResponse: function(event) {
+                if (!event.detail.response) {
+                    return;
+                }
+                this._stripePublicKey = event.detail.response.stripePublicKey;
+            },
 
             initializePage: function () {
                 this._preselectPlan();
@@ -353,24 +391,28 @@
                 options.body = body;
 
                 request.send(options).then(
-                        function(request) {
-                            this.$.dialog.close();
+                    function(request) {
+                        if (request.response.requires_action) {
+                            var stripe = Stripe(this._stripePublicKey);
+                            var elements = stripe.elements();
 
-                            /**
-                             * Fired when application has been shared.
-                             *
-                             * @event application-shared
-                             */
-                            this.fire('subscription-changed', {
-                                subscription: request.response
-                            });
+                            stripe.handleCardPayment(request.response.client_secret).then(function(result) {
+                                if (result.error) {
+                                    this._error = 'An error occured';
+                                    this._purchaseLoader = false;
+                                } else {
+                                    this._paymentCompleted(request.response);
+                                }
+                            }.bind(this));
+                            return;
+                        }
 
-                            this._purchaseLoader = false;
-                        }.bind(this),
-                        function() {
-                            this._error = request.response.message;
-                            this._purchaseLoader = false;
-                        }.bind(this)
+                        this._paymentCompleted(request.response);
+                    }.bind(this),
+                    function() {
+                        this._error = request.response.message;
+                        this._purchaseLoader = false;
+                    }.bind(this)
                 );
             },
 
@@ -382,6 +424,47 @@
 
             _isPlanYearly: function(plan) {
                 return plan &&  'year' === plan.interval;
+            },
+
+            _paymentCompleted: function(response) {
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: response.on_confirm,
+                        method: 'POST',
+                        handleAs: 'json',
+                        headers: {
+                            'Authorization': 'token ' + this.authorizationToken,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    };
+                request.send(options).then(function() {
+                    this.$.dialog.close();
+
+                    /**
+                     * Fired when application has been shared.
+                     *
+                     * @event application-shared
+                     */
+                    this.fire('subscription-changed', {
+                        subscription: response
+                    });
+
+                    this._purchaseLoader = false;
+                }.bind(this));
+            },
+
+            /**
+             * Computes authorization headers.
+             *
+             * @param {Object} authorizationToken
+             * @returns {{ Authorization: string }}
+             * @private
+             */
+            _computeHeaders: function (authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
             }
         });
     </script>
