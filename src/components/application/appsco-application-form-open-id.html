@@ -1,0 +1,64 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="appsco-application-form-behavior.html">
+<link rel="import" href="../../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+
+<dom-module id="appsco-application-form-open-id">
+    <style>
+        paper-dropdown-menu {
+            display: block;
+        }
+        paper-toggle-button {
+            margin-top: 20px;
+        }
+        paper-toggle-button[disabled] {
+            --paper-toggle-button-label-color: var(--secondary-text-color);
+        }
+    </style>
+    <template>
+        <paper-input
+                id="redirectUri"
+                data-field
+                label="Redirect URI"
+                value="[[ claims.redirectUri ]]"
+                name$="[[ claimsNamePrefix ]][redirectUri]"
+                error-message="Please enter redirect URI"
+        ></paper-input>
+
+        <paper-input
+                id="clientSecret"
+                data-field
+                label="Client secret"
+                value="[[ claims.clientSecret ]]"
+                name$="[[ claimsNamePrefix ]][clientSecret]"
+                error-message="Please enter client secret"
+        ></paper-input>
+
+        <iron-a11y-keys keys="enter"></iron-a11y-keys>
+    </template>
+    <script>
+        Polymer({
+            is: 'appsco-application-form-open-id',
+
+            properties: {
+                claims: {
+                    type: Object,
+                    value: function () { return {}; }
+                },
+
+                claimsNamePrefix: {
+                    type: String,
+                    value: "claims_open_id"
+                }
+            },
+
+            behaviors: [
+                Polymer.AppscoApplicationFormBehavior
+            ]
+        });
+    </script>
+</dom-module>

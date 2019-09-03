@@ -326,6 +326,11 @@
                     computed: '_computeIsSAMLApp(application)'
                 },
 
+                _isOpenIDApp: {
+                    type: Boolean,
+                    computed: '_computeIsOpenIDApp(application)'
+                },
+
                 _isUnPwAuthType: {
                     type: Boolean,
                     computed: '_computeIsUnPwAuthType(application)'
@@ -433,6 +438,10 @@
              */
             _computeIsSAMLApp: function(application) {
                 return ['saml', 'saml_dropbox', 'saml_office_365'].indexOf(application.auth_type) !== -1;
+            },
+
+            _computeIsOpenIDApp: function(application) {
+                return application.auth_type === 'open_id';
             },
 
             _computeIsUnPwAuthType: function (application) {

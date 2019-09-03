@@ -24,6 +24,7 @@
 <link rel="import" href="../appsco-application-form-saml.html">
 <link rel="import" href="../appsco-application-form-saml-dropbox.html">
 <link rel="import" href="../appsco-application-form-saml-office-365.html">
+<link rel="import" href="../appsco-application-form-open-id.html">
 
 <!--
 `appsco-company-resource-settings`
@@ -239,6 +240,18 @@ Used to update company resource - configuration fields and claims.
                     ></appsco-application-form-saml>
                 </template>
 
+                <template is="dom-if" if="[[ _openIDAuthType ]]"
+                          restamp
+                          on-dom-change="_onAuthTypeChanged">
+                    <appsco-application-form-open-id
+                            data-claims
+                            application="application"
+                            claims-name-prefix="application_claims[claims]"
+                            claims="[[ resource.claims ]]"
+                            domain="[[ domain ]]"
+                    ></appsco-application-form-open-id>
+                </template>
+
                 <template is="dom-if" if="[[ _samlDropBoxAuthType ]]"
                           restamp
                           on-dom-change="_onAuthTypeChanged">
@@ -445,6 +458,11 @@ Used to update company resource - configuration fields and claims.
                 _samlAuthType: {
                     type: Boolean,
                     computed: '_computeAuthType(resource, "saml")'
+                },
+
+                _openIDAuthType: {
+                    type: Boolean,
+                    computed: '_computeAuthType(resource, "open_id")'
                 },
 
                 _samlDropBoxAuthType: {

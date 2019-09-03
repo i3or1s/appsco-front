@@ -123,6 +123,12 @@
                             Created by: [[ application.added_by.display_name ]]
                     </div>
 
+                    <template is="dom-if" if="[[ application.identifier ]]">
+                        <div class="info">
+                                Client ID: [[ application.identifier ]] <appsco-copy value="[[ application.identifier ]]" name="clientID"></appsco-copy>
+                        </div>
+                    </template>
+
                     <div class="info">
                         Last modified: [[ _lastEditedDate ]] by [[ application.last_modified.account ]].
                     </div>
