@@ -24,6 +24,8 @@
 <link rel="import" href="../appsco-application-form-saml.html">
 <link rel="import" href="../appsco-application-form-saml-dropbox.html">
 <link rel="import" href="../appsco-application-form-saml-office-365.html">
+<link rel="import" href="../appsco-application-form-open-id.html">
+
 
 <!--
 `appsco-company-application-add-settings`
@@ -213,6 +215,16 @@ Custom property | Description | Default
                             claims-name-prefix="application_claims[claims]"
                             domain="[[ domain ]]"
                     ></appsco-application-form-saml>
+                </template>
+
+                <template is="dom-if" if="[[ _openIDAuthType ]]"
+                          restamp
+                          on-dom-change="_onAuthTypeChanged">
+                    <appsco-application-form-open-id
+                            data-claims
+                            claims-name-prefix="application_claims[claims]"
+                            domain="[[ domain ]]"
+                    ></appsco-application-form-open-id>
                 </template>
 
                 <template is="dom-if" if="[[ _samlDropBoxAuthType ]]"
@@ -410,6 +422,11 @@ Custom property | Description | Default
                     computed: '_computeSAMLAuthType(application, _action, "saml")'
                 },
 
+                _openIDAuthType: {
+                    type: Boolean,
+                    computed: "_computeOpenIDAuthType(application, _action, 'open_id')"
+                },
+
                 _samlDropBoxAuthType: {
                     type: Boolean,
                     computed: "_computeSAMLAuthType(application, _action, 'saml_dropbox')"
@@ -490,6 +507,20 @@ Custom property | Description | Default
                 return false;
             },
 
+            _computeOpenIDAuthType: function(application, _action, authType) {
+                if(_action !== 'sso-application') {
+                    return false;
+                }
+
+                for(type in application.auth_types) {
+                    if (type === authType) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+
             _computeIsSSOApplication: function(samlAuthType, samlDropBoxAuthType, samlOffice365AuthType) {
                 return (samlAuthType || samlDropBoxAuthType || samlOffice365AuthType);
             },
@@ -540,7 +571,7 @@ Custom property | Description | Default
 
                 var auth = this._supportedAuthTypeByPriority(application.auth_types);
                 return application.url_editable &&
-                    ['unpw', 'item', 'login', 'none'].indexOf(auth) !== -1;
+                    ['unpw', 'item', 'login', 'none', 'open_id'].indexOf(auth) !== -1;
             },
 
             _computeUrlValidationPattern: function (application) {
@@ -744,8 +775,10 @@ Custom property | Description | Default
              * Submits form which adds application as item.
              */
             addApplication: function() {
-
-                if (this._claimsFormActive && this._applicationClaimsActiveForm && false === this._applicationClaimsActiveForm.isValid()) {
+                if (this._claimsFormActive
+                    && this._applicationClaimsActiveForm
+                    && false === this._applicationClaimsActiveForm.isValid()
+                ) {
                     this.fire('form-error');
                     return;
                 }
