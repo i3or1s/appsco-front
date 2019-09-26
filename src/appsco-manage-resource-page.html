@@ -129,6 +129,12 @@
                         </div>
                     </template>
 
+                    <template is="dom-if" if="[[ application.discovery ]]">
+                        <div class="info">
+                                Discovery url: [[ application.discovery ]] <appsco-copy value="[[ application.discovery ]]" name="discoveryUrl"></appsco-copy>
+                        </div>
+                    </template>
+
                     <div class="info">
                         Last modified: [[ _lastEditedDate ]] by [[ application.last_modified.account ]].
                     </div>
