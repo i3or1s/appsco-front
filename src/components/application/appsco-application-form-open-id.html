@@ -21,6 +21,15 @@
     </style>
     <template>
         <paper-input
+                id="issuer"
+                data-field
+                label="Issuer"
+                value="[[ claims.issuer ]]"
+                name$="[[ claimsNamePrefix ]][issuer]"
+                error-message="Please enter issuer"
+        ></paper-input>
+
+        <paper-input
                 id="redirectUri"
                 data-field
                 label="Redirect URI"
