@@ -103,13 +103,11 @@ Custom property | Description | Default
             </template>
         </div>
 
-        <template is="dom-if" if="[[ _customApplicationAction ]]">
-            <div class="or-add-container add-custom-app-container">
-                or&nbsp;
-                <paper-button class="link-button"
-                              on-tap="_onAddItem">Add custom application</paper-button>
-            </div>
-        </template>
+        <div class="or-add-container add-custom-app-container">
+            or&nbsp;
+            <paper-button class="link-button"
+                          on-tap="_onAddItem">Add custom application</paper-button>
+        </div>
 
         <!--<template is="dom-if" if="[[ !_searchActive ]]">
             <div class="or-add-container add-link-container">
@@ -266,7 +264,6 @@ Custom property | Description | Default
 
                 if (searchLength === 0) {
                     this._searchActive = false;
-                    this._hideCustomApplicationAction();
                     this._message = '';
                     this._searchLoader = false;
                     this.set('_searchList', []);
@@ -274,7 +271,6 @@ Custom property | Description | Default
                 }
 
                 if (searchLength < 2) {
-                    this._hideCustomApplicationAction();
                     this._message = 'Please type two or more letters.';
                     this._searchLoader = false;
                     this.set('_searchList', []);
@@ -298,12 +294,11 @@ Custom property | Description | Default
 
                     if (applications && applications.length > 0) {
                         this.set('_searchList', applications);
-                        this._hideCustomApplicationAction();
                     }
                     else {
                         this.set('_searchList', []);
                         this._message = 'There are no applications with asked title. Please check your input.';
-                        this._showCustomApplicationAction();
+
                     }
 
                     this._searchLoader = false;
@@ -360,14 +355,6 @@ Custom property | Description | Default
                 this.fire('add-link');
             },
 
-            _showCustomApplicationAction: function() {
-                this._customApplicationAction = true;
-            },
-
-            _hideCustomApplicationAction: function() {
-                this._customApplicationAction = false;
-            },
-
             /**
              * Sets focus on search input.
              */
@@ -383,7 +370,6 @@ Custom property | Description | Default
                 this._searchList = [];
                 this._searchActive = false;
                 this._message = '';
-                this._hideCustomApplicationAction();
             }
         });
     </script>
