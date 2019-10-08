@@ -222,6 +222,9 @@
 
             _onFilterPanelBlur: function() {
                 setTimeout(function() {
+                    if (this.$$('#searchPanelInput').contains(document.activeElement)) {
+                        return;
+                    }
                     this.animationConfig.entry.node.style.display = 'none';
                     this.playAnimation('exit');
                 }.bind(this), 300);
