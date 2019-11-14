@@ -3,6 +3,7 @@
 
 <link rel="import" href="appsco-ip-whitelist-policy-settings.html">
 <link rel="import" href="appsco-enforce-two-factor-policy-settings.html">
+<link rel="import" href="appsco-login-time-restriction-policy-settings.html">
 
 <dom-module id="appsco-policy-settings">
     <template>
@@ -32,6 +33,12 @@
             <appsco-enforce-two-factor-policy-settings policy="[[ policy ]]"
                                                  authorization-token="[[ authorizationToken ]]"
                                                  api-errors="[[ apiErrors ]]"></appsco-enforce-two-factor-policy-settings>
+        </template>
+
+        <template is="dom-if" if="[[ _loginTimeRestrictionPolicyActive ]]">
+            <appsco-login-time-restriction-policy-settings policy="[[ policy ]]"
+                                                 authorization-token="[[ authorizationToken ]]"
+                                                 api-errors="[[ apiErrors ]]"></appsco-login-time-restriction-policy-settings>
         </template>
 
     </template>
@@ -72,10 +79,14 @@
                     computed: '_computeEnforceTwoFactoryPolicyActive(policy)'
                 },
 
+                _loginTimeRestrictionPolicyActive: {
+                    type: Boolean,
+                    computed: '_computeLoginTimeRestrictionPolicyActive(policy)'
+                },
+
                 _customSettings: {
                     type: Boolean,
                     computed: '_computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive)'
-
                 }
             },
 
@@ -85,6 +96,10 @@
 
             _computeEnforceTwoFactoryPolicyActive: function(policy) {
                 return (policy.name && 'enforce two-factor' === policy.name.toLowerCase());
+            },
+
+            _computeLoginTimeRestrictionPolicyActive: function(policy) {
+                return (policy.name && 'login time restriction' === policy.name.toLowerCase());
             },
 
             _computeHasCustomSettings: function(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive) {
