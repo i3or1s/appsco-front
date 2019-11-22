@@ -42,14 +42,14 @@
             </div>
         </template>
 
-        <template is="dom-if" if="[[ claims.password ]]">
+        <template is="dom-if" if="[[ _showPassword ]]">
             <div label>Password</div>
             <div content>
                 <div class="flex">
                     ********************
                 </div>
                 <div>
-                    <appsco-copy value="[[ claims.password ]]" name="password"></appsco-copy>
+                    <appsco-copy value="[[ _showPassword ]]" name="password"></appsco-copy>
                 </div>
             </div>
         </template>
@@ -74,6 +74,16 @@
 
             properties: {
 
+                _showPassword: {
+                    type: Boolean,
+                    computed: '_computeShowPassword(company, claims)'
+                },
+
+                company: {
+                    type: Object,
+                    notify: true
+                },
+
                 claims: {
                     type: Object,
                     value: function() {
@@ -81,6 +91,12 @@
                     },
                     notify: true
                 }
+            },
+
+            _computeShowPassword: function(company, claims) {
+                return company
+                    && (!company.disable_resource_copy_button)
+                    && claims.password;
             }
         });
     </script>
