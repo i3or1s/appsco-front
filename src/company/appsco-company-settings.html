@@ -129,13 +129,18 @@ Custom property | Description | Default
                                      on-change="_mailAdminOnNewDeviceChanged">
                     Send email notification to system admin when managed users log in from a new device
                 </paper-toggle-button>
+                <paper-toggle-button name="company_settings[disableCopyPassword]"
+                                     id="disableCopyButtonOnResources"
+                                     checked$="[[ company.disable_resource_copy_button ]]"
+                                     on-change="_disableResourceCopyButtonChanged">
+                    Disable copy password option on all company resources.
+                </paper-toggle-button>
                 <paper-toggle-button name="company_settings[sendEmailToAdminOnNewUser]"
                                      id="newUserInfoAdminEmail"
                                      checked$="[[ company.mail_admin_on_new_user ]]"
                                      on-change="_mailAdminOnNewUserChanged">
                     Send email notification to admins when user/contact invite is accepted.
                 </paper-toggle-button>
-
                 <template is="dom-if" if="[[ _showAdminEmailField ]]">
                     <paper-input id="sendEmailToAdminOnNewDevice"
                                  label="Admin email"
@@ -244,6 +249,11 @@ Custom property | Description | Default
                     value: false
                 },
 
+                _disableResourcePasswordCopy: {
+                    type: Boolean,
+                    value: false
+                },
+
                 _showAdminEmailField: {
                     type: Boolean,
                     computed: '_computeShowAdminEmailField(_emailAdminOnNewDevice, _emailAdminOnNewUser)'
@@ -273,6 +283,7 @@ Custom property | Description | Default
                 this.$.billingEmail.invalid = false;
                 this._emailAdminOnNewDevice = this.company ? this.company.mail_admin_on_new_device : false;
                 this._emailAdminOnNewUser = this.company ? this.company.mail_admin_on_new_user : false;
+                this._disableResourcePasswordCopy = this.company ? this.company.disable_resource_copy_button : false;
             },
 
             _showLoader: function() {
@@ -348,6 +359,10 @@ Custom property | Description | Default
 
             _mailAdminOnNewDeviceChanged: function() {
                 this._emailAdminOnNewDevice = this.$.newDeviceInfoAdminEmail.checked;
+            },
+
+            _disableResourceCopyButtonChanged: function() {
+                this._disableResourcePasswordCopy = this.$.disableCopyButtonOnResources.checked;
             },
 
             _computeShowAdminEmailField: function(_emailAdminOnNewDevice, _emailAdminOnNewUser) {
