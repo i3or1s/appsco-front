@@ -125,6 +125,7 @@ Custom property | Description | Default
                 </div>
 
                 <div class="actions">
+                    <paper-button on-tap="_onRenameGroupAction">Rename</paper-button>
                     <paper-button on-tap="_onEditItemAction">Edit</paper-button>
                 </div>
             </div>
@@ -296,6 +297,13 @@ Custom property | Description | Default
                 if (this.noAutoDisplay && rolesLoaded && resourcesLoaded && contactsLoaded) {
                     this._showItem();
                 }
+            },
+
+            _onRenameGroupAction: function(event) {
+                event.stopPropagation();
+                this.fire('group-rename', {
+                    group: this.item
+                });
             }
         });
     </script>

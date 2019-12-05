@@ -726,6 +726,7 @@
                             authorization-token="[[ authorizationToken ]]"
                             groups-api="[[ _companyGroupsApi ]]"
                             on-edit-item="_onEditCompanyGroupAction"
+                            on-group-rename="_onRenameCompanyGroupAction"
                             on-info-edit-group="_onEditCompanyGroupAction"
                             on-show-bulk-actions="_onShowBulkActions"
                             on-hide-bulk-actions="_onHideGroupsBulkActions"
@@ -1527,6 +1528,12 @@
                 authorization-token="[[ authorizationToken ]]"
                 company-groups-api="[[ _companyGroupsApi ]]"
                 api-errors="[[ _apiErrors ]]"></appsco-company-add-group>
+
+        <appsco-company-rename-group
+                id="appscoCompanyRenameGroup"
+                authorization-token="[[ authorizationToken ]]"
+                company-groups-api="[[ _companyGroupsApi ]]"
+                api-errors="[[ _apiErrors ]]"></appsco-company-rename-group>
 
         <appsco-convert-contact
                 id="appscoConvertContact"
@@ -2393,6 +2400,7 @@
                 'show-subscription-limit-reached-info': '_onShowSubscriptionLimitReachedInfo',
                 'copied-application-attribute': '_onCopiedApplicationAttribute',
                 'group-added': '_onGroupAdded',
+                'group-renamed': '_onGroupRenamed',
                 'remove-invitation': '_onRemoveInvitationAction',
                 'reload-contacts': '_onReloadContacts',
                 'change-assignee-claims': '_onChangeAssigneeClaims',
@@ -5314,6 +5322,11 @@
                 this.$.appscoCompanyAddGroup.open();
             },
 
+            _onRenameCompanyGroupAction: function(event) {
+                this.$.appscoCompanyRenameGroup.setGroup(event.detail.group);
+                this.$.appscoCompanyRenameGroup.open();
+            },
+
             _onSearchCompanyGroupAction: function(event) {
                 this._searchCompanyGroups(event.detail.term);
             },
@@ -6082,10 +6095,21 @@
                 }
             },
 
+            _renameGroup: function() {
+                this._reloadGroups();
+            },
+
             _onGroupAdded: function(event) {
                 var group = event.detail.group;
 
                 this._addGroup(group);
+                this._notify('Group ' + group.name + ' was successfully saved.');
+            },
+
+            _onGroupRenamed: function(event) {
+                var group = event.detail.group;
+
+                this._renameGroup(group);
                 this._notify('Group ' + group.name + ' was successfully saved.');
             },
 
