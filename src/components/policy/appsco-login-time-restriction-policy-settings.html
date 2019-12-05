@@ -1,0 +1,331 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../components/appsco-loader.html">
+<link rel="import" href="../components/appsco-form-error.html">
+<link rel="import" href="../appsco-time-picker/appsco-time-picker.html">
+
+<dom-module id="appsco-login-time-restriction-policy-settings">
+    <template>
+        <style>
+            :host {
+                @apply(--appsco-login-time-restriction-policy-settings);
+            }
+            :host .info {
+                @apply(--info-message);
+                margin-bottom: 0;
+            }
+            :host .save-action {
+                @apply(--primary-button);
+                width: 60px;
+                padding: 4px 8px;
+                margin-top: 10px;
+            }
+        </style>
+
+        <appsco-loader active="[[ _loader ]]"
+                       loader-alt="Appsco is processing request"
+                       multi-color></appsco-loader>
+
+        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+
+        <iron-ajax
+                auto
+                url="[[ _timeZoneListUrl ]]"
+                handle-as="json"
+                on-response="_onTimezoneListResponse">
+        </iron-ajax>
+
+        <div>
+            <paper-dropdown-menu id="restrictionTimezone"
+                                 name="restrictionTimezone"
+                                 label="Timezone"
+                                 horizontal-align="left">
+                <paper-listbox id="paperListboxTimezone"
+                               class="dropdown-content filter"
+                               attr-for-selected="value">
+                    <template is="dom-repeat" items="[[ _timezoneList ]]">
+                        <paper-item value="[[ item.value ]]" >[[ item.text ]]</paper-item>
+                    </template>
+                </paper-listbox>
+            </paper-dropdown-menu>
+        </div>
+
+        <div class="form">
+            <table>
+                <tr>
+                    <th>Day</th>
+                    <th>From</th>
+                    <th>To</th>
+                </tr>
+                <tr>
+                    <td>Monday:</td>
+                    <td><appsco-time-picker id="mondayFrom" name="mondayFrom" value="[[ _restrictions.monday.from ]]"></appsco-time-picker></td>
+                    <td><appsco-time-picker id="mondayTo" name="mondayTo" value="[[ _restrictions.monday.to ]]"></appsco-time-picker></td>
+                </tr>
+                <tr>
+                    <td>Tuesday:</td>
+                    <td><appsco-time-picker id="tuesdayFrom" name="tuesdayFrom" value="[[ _restrictions.tuesday.from ]]"></appsco-time-picker></td>
+                    <td><appsco-time-picker id="tuesdayTo" name="tuesdayTo" value="[[ _restrictions.tuesday.to ]]"></appsco-time-picker></td>
+                </tr>
+                <tr>
+                    <td>Wednesday:</td>
+                    <td><appsco-time-picker id="wednesdayFrom" name="wednesdayFrom" value="[[ _restrictions.wednesday.from ]]"></appsco-time-picker></td>
+                    <td><appsco-time-picker id="wednesdayTo" name="wednesdayTo" value="[[ _restrictions.wednesday.to ]]"></appsco-time-picker></td>
+                </tr>
+                <tr>
+                    <td>Thursday:</td>
+                    <td><appsco-time-picker id="thursdayFrom" name="thursdayFrom" value="[[ _restrictions.thursday.from ]]"></appsco-time-picker></td>
+                    <td><appsco-time-picker id="thursdayTo" name="thursdayTo" value="[[ _restrictions.thursday.to ]]"></appsco-time-picker></td>
+                </tr>
+                <tr>
+                    <td>Friday:</td>
+                    <td><appsco-time-picker id="fridayFrom" name="fridayFrom" value="[[ _restrictions.friday.from ]]"></appsco-time-picker></td>
+                    <td><appsco-time-picker id="fridayTo" name="fridayTo" value="[[ _restrictions.friday.to ]]"></appsco-time-picker></td>
+                </tr>
+                <tr>
+                    <td>Saturday:</td>
+                    <td><appsco-time-picker id="saturdayFrom" name="saturdayFrom" value="[[ _restrictions.saturday.from ]]"></appsco-time-picker></td>
+                    <td><appsco-time-picker id="saturdayTo" name="saturdayTo" value="[[ _restrictions.saturday.to ]]"></appsco-time-picker></td>
+                </tr>
+                <tr>
+                    <td>Sunday:</td>
+                    <td><appsco-time-picker id="sundayFrom" name="sundayFrom" value="[[ _restrictions.sunday.from ]]"></appsco-time-picker></td>
+                    <td><appsco-time-picker id="sundayTo" name="sundayTo" value="[[ _restrictions.sunday.to ]]"></appsco-time-picker></td>
+                </tr>
+            </table>
+
+            <paper-button type="button"
+                          class="save-action"
+                          on-tap="_onSaveAction">Save</paper-button>
+        </div>
+
+        <iron-a11y-keys target="[[ _target ]]"
+                        keys="enter"
+                        on-keys-pressed="_onEnterAction"></iron-a11y-keys>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'appsco-login-time-restriction-policy-settings',
+
+            properties: {
+
+                policy: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    observer: '_restrictionsChanged'
+                },
+
+                authorizationToken: {
+                    type: String,
+                    value: ''
+                },
+
+                apiErrors: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+
+                _headers: {
+                    type: Object,
+                    computed: '_computeHeaders(authorizationToken)'
+                },
+
+                _loader: {
+                    type: Boolean,
+                    value: false
+                },
+
+                _error: {
+                    type: String
+                },
+
+                _target: {
+                    type: Object,
+                    value: function() {
+                        return this;
+                    }
+                },
+
+                _restrictions: {
+                    type: Object,
+                    computed: '_computeRestrictions(policy)'
+                },
+
+                _timezoneList: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+
+                _timeZoneListUrl: {
+                    type: String,
+                    value: function() {
+                        return this.resolveUrl('./data/timezone-list.json');
+                    }
+                }
+            },
+
+            _restrictionsChanged: function(newValue, oldValue) {
+                if (newValue.restrictions) {
+                    this.$.paperListboxTimezone.select(newValue.restrictions.timezone);
+                }
+            },
+
+            _computeMondayFrom: function(policy) {
+                return policy.restrictions.mondayFrom;
+            },
+
+            _computeHeaders: function (authorizationToken) {
+                return {
+                    'Authorization': 'token ' + authorizationToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            },
+
+            _computeRestrictions: function(policy) {
+                return policy.restrictions ? policy.restrictions : {};
+            },
+
+            _showLoader: function() {
+                this._loader = true;
+            },
+
+            _hideLoader: function() {
+                this._loader = false;
+            },
+
+            _showError: function(message) {
+                this._error = message;
+            },
+
+            _hideError: function() {
+                this._error = '';
+            },
+
+            _onKeyUp: function(event) {
+
+                if (13 !== event.keyCode) {
+                    this._hideError();
+                    event.target.invalid = false;
+                }
+            },
+
+            _onEnterAction: function(event) {
+                event.stopPropagation();
+                this._onSaveAction();
+            },
+
+            _onSaveAction: function() {
+                this._saveRestrictions();
+            },
+
+            _onTimezoneListResponse: function(event, ironRequest) {
+                var response = [];
+
+                ironRequest.response.forEach(function(zone, i) {
+
+                    if (zone.utc) {
+
+                        zone.utc.forEach(function(utc, index) {
+                            var item = {
+                                value: utc,
+                                text: utc.split('/')[1]
+                            };
+
+                            response.push(item);
+                        }.bind(this));
+
+                    }
+
+                }.bind(this));
+
+                this._timezoneList = response.sort(function(zoneA, zoneB) {
+                    zoneA = zoneA.text.toLowerCase();
+                    zoneB = zoneB.text.toLowerCase();
+
+                    return zoneA < zoneB ? -1 : zoneA > zoneB ? 1 : 0;
+                });
+
+            },
+
+            _saveRestrictions: function() {
+                var restrictions = {
+                        'timezone': this.$.restrictionTimezone.selectedItem.value,
+                        'monday': {
+                            'from': this.$.mondayFrom.value,
+                            'to': this.$.mondayTo.value
+                        },
+                        'tuesday': {
+                            'from': this.$.tuesdayFrom.value,
+                            'to': this.$.tuesdayTo.value
+                        },
+                        'wednesday': {
+                            'from': this.$.wednesdayFrom.value,
+                            'to': this.$.wednesdayTo.value
+                        },
+                        'thursday': {
+                            'from': this.$.thursdayFrom.value,
+                            'to': this.$.thursdayTo.value
+                        },
+                        'friday': {
+                            'from': this.$.fridayFrom.value,
+                            'to': this.$.fridayTo.value
+                        },
+                        'saturday': {
+                            'from': this.$.saturdayFrom.value,
+                            'to': this.$.saturdayTo.value
+                        },
+                        'sunday': {
+                            'from': this.$.sundayFrom.value,
+                            'to': this.$.sundayTo.value
+                        }
+                    },
+                    policy = this.policy;
+
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: policy.self,
+                        method: 'PUT',
+                        headers: this._headers,
+                        handleAs: 'json'
+                    },
+                    body = 'policy[name]=' + policy.name + '&policy[description]=' + policy.description +'&';
+
+                body += 'policy[restrictions]=' + encodeURIComponent(JSON.stringify(restrictions));
+                options.body = body;
+
+                this._showLoader();
+
+                request.send(options).then(function() {
+
+                    if (200 === request.status) {
+
+                        this.fire('policy-updated', {
+                            policy: request.response
+                        });
+
+                        this.set('policy', {});
+                        this.set('policy', request.response);
+                        this._hideLoader();
+                    }
+
+                }.bind(this), function() {
+                    this._showError(this.apiErrors.getError(request.response.code));
+                    this._hideLoader();
+                }.bind(this));
+            }
+        });
+    </script>
+</dom-module>
