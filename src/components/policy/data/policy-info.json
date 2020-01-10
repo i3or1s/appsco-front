@@ -8,6 +8,7 @@
         "disapprove_create_company_info": "Managed users can create companies. If you disapprove this option, managed users will be prevented from creating a company. This option does not apply to admins even if they are managed users. Click Enable to enforce this policy.",
         "disapprove_mobile_login_info": "This policy is used to prevent managed users to log in from mobile devices. Click Enable to enforce this policy.",
         "block_tor_info": "This policy is used to prevent the users coming from TOR browsers and anonymous networks from logging in. Click Enable to enforce this policy.",
-        "ignore_signature_verification_info": "This policy is used to allow users to log in using SAML assertion without valid signature. It is strongly advised not to enable this policy on production instances."
+        "ignore_signature_verification_info": "This policy is used to allow users to log in using SAML assertion without valid signature. It is strongly advised not to enable this policy on production instances.",
+        "login_time_restriction_info": "To set up a login time restriction policy, choose the timezone first. AppsCo will use the chosen timezone as the only relevant parameter and disregard the timezone provided by the client.\nLeave the time setting fields empty for days when login is entirely forbidden.\nRemember that admins can always log in regardless of the time restriction policy."
     }
 }
