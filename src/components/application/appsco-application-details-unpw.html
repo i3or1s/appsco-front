@@ -94,9 +94,8 @@
             },
 
             _computeShowPassword: function(company, claims) {
-                return company
-                    && (!company.disable_resource_copy_button)
-                    && claims.password;
+                return !company
+                    || (!company.disable_resource_copy_button && claims.password);
             }
         });
     </script>
