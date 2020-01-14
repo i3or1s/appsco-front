@@ -101,7 +101,6 @@
 
                 renameGroupApi: {
                     type: String,
-                    value: '',
                     computed: '_computeRenameGroupApi(group)'
                 },
 
@@ -109,7 +108,8 @@
                     type: Object,
                     value: function() {
                         return {};
-                    }
+                    },
+                    observer: '_onGroupChanged'
                 },
 
                 apiErrors: {
@@ -273,6 +273,10 @@
 
             _computeRenameGroupApi: function(group) {
                 return group ? group.self : null;
+            },
+
+            _onGroupChanged: function(group) {
+                this.$.groupName.value = group ? group.name : '';
             },
 
             setGroup: function(group) {
