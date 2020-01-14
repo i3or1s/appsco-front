@@ -21,9 +21,9 @@
             :host {
                 display: block;
                 overflow-y: auto;
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
-                @apply(--layout-justified);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
+                @apply --layout-justified;
                 font-size: 14px;
                 color: var(--primary-text-color);
 
@@ -59,18 +59,18 @@
                  };
             }
             :host([col2]) {
-                @apply(--layout-start-justified);
+                @apply --layout-start-justified;
             }
             :host > * {
                 width: calc(100% / 3 - 10px);
                 margin-bottom: 10px;
-                @apply(--layout-self-start);
+                @apply --layout-self-start;
             }
             :host([col2]) > * {
                 width: calc(100% / 2 - 10px);
             }
             :host .details-subscribers, :host .security-autologin {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             appsco-application-settings-card {
                 --appsco-application-icons-color: var(--app-secondary-color);
@@ -130,7 +130,7 @@
                 margin-right: 0;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
         </style>
 

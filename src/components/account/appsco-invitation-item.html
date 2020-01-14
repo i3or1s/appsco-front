@@ -49,7 +49,7 @@ Custom property | Description | Default
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--item-progress-bar);
+                @apply --item-progress-bar;
             }
             .item {
                 width: 100%;
@@ -60,14 +60,14 @@ Custom property | Description | Default
                 position: relative;
                 background-color: var(--item-background-color, #fff);
                 border-radius: 3px;
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 transition: all 0.1s ease-out;
-                @apply(--appsco-invitation-item);
+                @apply --appsco-invitation-item;
             }
             .item:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             :host([active]) .item {
                 background: var(--app-primary-color);
@@ -78,7 +78,7 @@ Custom property | Description | Default
                 width: 52px;
                 height: 52px;
                 background-color: var(--app-primary-color);
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
                 border-radius: 50%;
                 position: relative;
             }
@@ -113,21 +113,21 @@ Custom property | Description | Default
                 display: block;
                 height: 32px;
                 line-height: 16px;
-                @apply(--paper-font-common-base);
+                @apply --paper-font-common-base;
                 font-size: 14px;
                 font-weight: 400;
                 overflow: hidden;
             }
             .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             paper-button {
-                @apply(--paper-font-common-base);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-base;
+                @apply --paper-font-common-nowrap;
 
                 padding: 4px;
                 font-size: 12px;
@@ -140,27 +140,27 @@ Custom property | Description | Default
                 background: transparent;
             }
             .invitation-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             .invitation-basic-info {
                 width: 220px;
-                @apply(--invitation-basic-info);
+                @apply --invitation-basic-info;
             }
             .invitation-status-info {
                 border-left: 1px solid var(--divider-color);
-                @apply(--invitation-status-info);
+                @apply --invitation-status-info;
             }
             .invitation-basic-info .info-label, .invitation-basic-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--invitation-basic-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --invitation-basic-info-values;
             }
             .invitation-status-info .info-label, .invitation-status-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--invitation-status-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --invitation-status-info-values;
             }
             .invitation-status-info .info-label {
                 color: var(--app-primary-color);

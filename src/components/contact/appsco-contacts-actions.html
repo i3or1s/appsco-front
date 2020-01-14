@@ -21,15 +21,15 @@
                 display: inline-block;
                 position: relative;
                 margin-right: -10px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-contacts-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-contacts-actions;
 
                 --paper-dropdown-menu-button: {
                     display: block;
                     padding: 0 0 0 8px;
-                    @apply(--contacts-actions-paper-dropdown-menu-button);
+                    @apply --contacts-actions-paper-dropdown-menu-button;
                 };
             }
             paper-icon-button {
@@ -42,15 +42,15 @@
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--application-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --application-action;
             }
             :host .bulk-action {
                 display: none;
             }
             :host .flex-none {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;
@@ -63,7 +63,7 @@
                 font-weight: 500;
                 min-width: 100px;
                 text-align: center;
-                @apply(--action-tooltip);
+                @apply --action-tooltip;
             }
             paper-dropdown-menu {
                 --paper-input-container-underline: {
@@ -78,15 +78,15 @@
                 --paper-input-container-input: {
                     vertical-align: middle;
                     cursor: pointer;
-                    @apply(--contacts-actions-paper-dropdown-menu-input);
+                    @apply --contacts-actions-paper-dropdown-menu-input;
                 };
             }
             :host paper-listbox {
-                @apply(--paper-listbox);
+                @apply --paper-listbox;
                 overflow: hidden;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             :host .bulk-action[hidden] {
                 display: none !important;
@@ -105,7 +105,7 @@
                                  on-iron-activate="_onActivePageSelected">
                 <paper-listbox id="pagesListbox"
                                class="dropdown-content"
-                               selected="0">
+                               selected="0" slot="dropdown-content">
 
                     <template is="dom-repeat" items="[[ _pages ]]">
                         <paper-item value$="[[ item.value ]]" name$="[[ item.name ]]">[[ item.name ]]</paper-item>

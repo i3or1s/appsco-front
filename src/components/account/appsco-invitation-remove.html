@@ -27,23 +27,23 @@ Shows dialog screen with confirmation for invitation removal.
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-            @apply(--appsco-paper-dialog);
+            @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             .buttons paper-button {
-            @apply(--paper-dialog-button);
+            @apply --paper-dialog-button;
             }
             .buttons paper-button[dialog-confirm] {
-            @apply(--paper-dialog-confirm-button);
+            @apply --paper-dialog-confirm-button;
             }
             .buttons paper-button[dialog-dismiss] {
-            @apply(--paper-dialog-dismiss-button);
+            @apply --paper-dialog-dismiss-button;
             }
         </style>
         <paper-dialog

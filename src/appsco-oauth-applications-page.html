@@ -51,7 +51,7 @@
                 --iron-icon-fill-color: var(--primary-text-color, #ffffff);
             }
             :host .application-name {
-                @apply(--paper-font-subhead);
+                @apply --paper-font-subhead;
                 font-size: 18px;
             }
         </style>
@@ -60,7 +60,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent" resource-active>
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-header">
                     oAuth Applications
                 </div>
@@ -84,7 +84,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-oauth-applications
                             id="oAuthApplications"
@@ -100,7 +100,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <div class="application-image">
                         <iron-icon icon="device:widgets"></iron-icon>

@@ -31,7 +31,7 @@ Example:
                 color: var(--primary-text-color, #414042);
 
                 --paper-card-content: {
-                    @apply(--layout-flex-vertical);
+                    @apply --layout-flex-vertical;
                     padding: 10px;
                     font-size: 14px;
                 };
@@ -44,12 +44,12 @@ Example:
             appsco-dropdown {
                 top: 12px;
                 right: 0;
-                @apply(--appsco-info-dropdown);
+                @apply --appsco-info-dropdown;
 
                 --dropdown-caret-background-color: var(--paper-orange-300);
             }
             :host paper-card {
-                @apply(--layout-flex-vertical);
+                @apply --layout-flex-vertical;
                 width: 100%;
                 background-color: var(--paper-orange-300);
                 color: #ffffff;
@@ -73,7 +73,7 @@ Example:
 
                 <div class="card-content">
 
-                    <content select="[content]"></content>
+                    <slot name="content" old-content-selector="[content]"></slot>
 
                 </div>
 

@@ -32,20 +32,20 @@
             :host paper-dialog {
                 width: 980px;
                 top: 10vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             paper-dropdown-menu {
                 width: 100%;
@@ -61,12 +61,12 @@
                 text-transform: uppercase;
             }
             :host .primary-button, :host .danger-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 display: inline-block;
                 margin-top: 10px;
             }
             :host .primary-button[active] {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             :host .display-none {
                 display: none;
@@ -175,7 +175,7 @@
                                                class="dropdown-content"
                                                on-iron-activate="_onFromMethodSelected"
                                                attr-for-selected="value"
-                                               selected="[[ rule.fromMethod ]]">
+                                               selected="[[ rule.fromMethod ]]" slot="dropdown-content">
                                     <template is="dom-repeat" items="[[ _computedFromMethodList ]]">
                                         <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                                     </template>
@@ -197,7 +197,7 @@
                                                attr-for-selected="value"
                                                on-iron-activate="_onFromPSOSelected"
                                                on-selected-changed="_onFromPSOSelectedChanged"
-                                               selected="[[ rule.fromPSO ]]">
+                                               selected="[[ rule.fromPSO ]]" slot="dropdown-content">
                                     <template is="dom-repeat" items="[[ _computedFromPSOList ]]">
                                         <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
                                     </template>
@@ -234,7 +234,7 @@
                                                                      auto-validate>
                                                     <paper-listbox id="fromCondition_[[ item.key ]]"
                                                                    class="dropdown-content"
-                                                                   attr-for-selected="value" selected="{{ item.operator }}">
+                                                                   attr-for-selected="value" selected="{{ item.operator }}" slot="dropdown-content">
                                                         <template is="dom-repeat" items="[[ item.supportedOperators ]]" as="operator">
                                                             <paper-item value="[[ operator ]]">[[ _formatOperator(operator) ]]</paper-item>
                                                         </template>
@@ -292,7 +292,7 @@
                                                class="dropdown-content"
                                                on-iron-activate="_onToMethodSelected"
                                                attr-for-selected="value"
-                                               selected="[[ rule.toMethod ]]">
+                                               selected="[[ rule.toMethod ]]" slot="dropdown-content">
                                     <template is="dom-repeat" items="[[ _computedToMethodList ]]">
                                         <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                                     </template>
@@ -314,7 +314,7 @@
                                                attr-for-selected="value"
                                                selected="[[ rule.toPSO ]]"
                                                on-iron-activate="_onToPSOSelected"
-                                               on-selected-changed="_onToPSOSelectedChanged">
+                                               on-selected-changed="_onToPSOSelectedChanged" slot="dropdown-content">
                                     <template is="dom-repeat" items="[[ _computedToPSOList ]]">
                                         <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
                                     </template>

@@ -35,7 +35,7 @@ Custom property | Description | Default
         <style>
             :host {
                 display: block;
-            @apply(--appsco-application-security);
+            @apply --appsco-application-security;
 
                 --iron-icon-height: 20px;
                 --iron-icon-width: 20px;
@@ -44,16 +44,16 @@ Custom property | Description | Default
              };
             }
             .security-score {
-            @apply(--paper-font-code1);
-            @apply(--layout);
-            @apply(--layout-center);
-            @apply(--layout-center-justified);
+            @apply --paper-font-code1;
+            @apply --layout;
+            @apply --layout-center;
+            @apply --layout-center-justified;
                 width: 40px;
                 height: 40px;
                 box-sizing: border-box;
                 border-radius: 50%;
                 color: #ffffff;
-            @apply(--security-score);
+            @apply --security-score;
             }
             :host([strong]) .security-score {
                 background-color: var(--strong-color, #0f9d58);

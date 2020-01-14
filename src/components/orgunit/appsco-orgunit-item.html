@@ -34,9 +34,9 @@ Custom property | Description | Default
     <template>
         <style>
             :host {
-            @apply(--paper-font-body1);
-            @apply(--layout-horizontal);
-            @apply(--layout-justified);
+            @apply --paper-font-body1;
+            @apply --layout-horizontal;
+            @apply --layout-justified;
                 position: relative;
                 width: 100%;
                 height: 24px;
@@ -49,19 +49,19 @@ Custom property | Description | Default
                 -moz-user-select: none;
                 -ms-user-select: none;
                 user-select: none;
-            @apply(--appsco-orgunit-item);
+            @apply --appsco-orgunit-item;
             }
             :host([selected]) {
                 background-color: #e8e8e8;
-            @apply(--appsco-orgunit-item-selected);
+            @apply --appsco-orgunit-item-selected;
             }
             :host *[hidden] {
                 display: none;
             }
             .orgunit-name {
                 max-width: 200px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--orgunit-name);
+                @apply --paper-font-common-nowrap;
+                @apply --orgunit-name;
             }
             :host .icon-options {
                 opacity: 0;
@@ -75,10 +75,10 @@ Custom property | Description | Default
                 opacity: 1;
             }
             :host .flex {
-            @apply(--layout-flex);
+            @apply --layout-flex;
             }
             :host paper-material {
-            @apply(--paper-listbox);
+            @apply --paper-listbox;
             }
             :host .options {
                 z-index: 10;
@@ -91,14 +91,14 @@ Custom property | Description | Default
             }
             :host paper-item {
                 border-bottom: 1px solid rgba(0,0,0, 0.1);
-            @apply(--paper-font-caption);
+            @apply --paper-font-caption;
                 min-height: 32px;
             }
             :host paper-item:last-child {
                 border-bottom: 0;
             }
             :host paper-item:hover {
-            @apply(--paper-item-hover);
+            @apply --paper-item-hover;
             }
         </style>
 

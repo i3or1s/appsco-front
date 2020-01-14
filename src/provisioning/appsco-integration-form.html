@@ -109,7 +109,7 @@
                 <paper-listbox id="integrationKindList"
                                class="dropdown-content"
                                attr-for-selected="value"
-                               selected="[[ _preselectedIntegrationKind ]]">
+                               selected="[[ _preselectedIntegrationKind ]]" slot="dropdown-content">
                     <template is="dom-repeat" items="[[ _integrationKindList ]]">
                         <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                     </template>
@@ -138,7 +138,7 @@
                 <paper-listbox id="integrationScheduleSyncList"
                                class="dropdown-content filter"
                                attr-for-selected="value"
-                               selected="[[ integration.scheduleSyncInterval ]]">
+                               selected="[[ integration.scheduleSyncInterval ]]" slot="dropdown-content">
                     <template is="dom-repeat" items="[[ _integrationScheduleSyncList ]]">
                         <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                     </template>
@@ -161,7 +161,7 @@
                     <paper-listbox id="integrationScheduleForceSyncList"
                                    class="dropdown-content filter"
                                    attr-for-selected="value"
-                                   selected="[[ integration.forceSyncInterval ]]">
+                                   selected="[[ integration.forceSyncInterval ]]" slot="dropdown-content">
                         <template is="dom-repeat" items="[[ _integrationForceSyncList ]]">
                             <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                         </template>

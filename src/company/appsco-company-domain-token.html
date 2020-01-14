@@ -29,7 +29,7 @@ Shows dialog screen with confirmation for account removal from organization unit
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-company-domain-token);
+                @apply --appsco-company-domain-token;
 
                 --form-error-box: {
                      margin-top: 0;
@@ -38,30 +38,30 @@ Shows dialog screen with confirmation for account removal from organization unit
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             .emphasized {
                 font-weight: 500;
             }
             .token-container {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             .token {
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-nowrap;
                 color: var(--success-color);
             }
             appsco-copy {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
 
                 --appsco-copy-action: {
                     width: 24px;
@@ -71,7 +71,7 @@ Shows dialog screen with confirmation for account removal from organization unit
                 };
             }
             .learn-more-action {
-                @apply(--link-button);
+                @apply --link-button;
             }
         </style>
         <paper-dialog

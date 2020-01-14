@@ -40,19 +40,19 @@ Example:
                 display: block;
                 position: relative;
                 width: 100%;
-            @apply(--account-authorized-apps);
+            @apply --account-authorized-apps;
             }
             .authorized-apps {
                 padding-top: 10px;
                 position: relative;
-            @apply(--layout-vertical);
-            @apply(--account-authorized-apps-container);
+            @apply --layout-vertical;
+            @apply --account-authorized-apps-container;
             }
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-            @apply(--paper-font-body2);
-            @apply(--info-message);
+            @apply --paper-font-body2;
+            @apply --info-message;
             }
             :host paper-progress {
                 position: absolute;
@@ -61,20 +61,20 @@ Example:
                 right: 0;
                 margin: auto;
                 width: 100%;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             :host appsco-account-authorized-app {
-            @apply(--account-authorized-app);
+            @apply --account-authorized-app;
             }
             :host appsco-account-authorized-app:first-of-type {
-            @apply(--account-authorized-app-first);
+            @apply --account-authorized-app-first;
             }
             :host .load-more-button {
                 display: block;
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
         </style>
 

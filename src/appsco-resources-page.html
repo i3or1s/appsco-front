@@ -61,7 +61,7 @@
             }
             :host .details-log paper-tabs {
                 height: 32px;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
                 color: var(--primary-text-color);
             }
             :host div[info] .info-details-section {
@@ -70,7 +70,7 @@
             }
             .tab-content {
                 margin-top: 20px;
-                @apply(--paper-tabs-content-style);
+                @apply --paper-tabs-content-style;
             }
             :host .info-actions > .view-button {
                 margin-right: 1px;
@@ -106,7 +106,7 @@
         <appsco-content id="appscoContent" resource-active>
 
             <template is="dom-if" if="[[ !resourceAdmin ]]">
-                <div class="flex-vertical" resource>
+                <div class="flex-vertical" resource slot="resource">
                     <div class="resource-header">
                         Groups
                     </div>
@@ -128,7 +128,7 @@
                 </div>
             </template>
 
-            <div content-top>
+            <div content-top slot="content-top">
                 <div class="content-top-header">
                     Additional options
                 </div>
@@ -164,7 +164,7 @@
                 </template>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-company-resources
                             id="appscoResources"
@@ -189,7 +189,7 @@
             </div>
 
             <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
-                <div class="flex-vertical" info>
+                <div class="flex-vertical" info slot="info">
                     <div class="info-header flex-horizontal">
                         <appsco-application-info class="flex"
                                                  application="[[ resource ]]"

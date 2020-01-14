@@ -44,7 +44,7 @@ Custom property | Description | Default
                 position: relative;
                 display: inline-block;
 
-            @apply(--appsco-account-info);
+            @apply --appsco-account-info;
             }
             :host([display-name]) .account-info.hidden {
                 display: inline;
@@ -57,7 +57,7 @@ Custom property | Description | Default
                 right: -10px;
             }
             :host paper-button {
-            @apply(--paper-font-button);
+            @apply --paper-font-button;
                 max-width: 110px;
                 height: 26px;
                 padding: 0 6px;
@@ -68,7 +68,7 @@ Custom property | Description | Default
                 display: block;
             }
             :host .truncate {
-            @apply(--paper-font-common-nowrap);
+            @apply --paper-font-common-nowrap;
                 display: block;
             }
             :host .account-holder:after {
@@ -80,13 +80,13 @@ Custom property | Description | Default
                 font-size: 16px;
                 cursor: pointer;
 
-            @apply(--appsco-account-info-user-holder);
+            @apply --appsco-account-info-user-holder;
             }
             appsco-account-image {
                 --account-image: {
                     width: 32px;
                     height: 32px;
-                    @apply(--appsco-account-info-account-img);
+                    @apply --appsco-account-info-account-img;
                 };
                 --account-initials-font-size: 14px;
             }
@@ -124,14 +124,14 @@ Custom property | Description | Default
                 top: 35px;
                 right: -6px;
 
-            @apply(--appsco-account-info-dropdown);
+            @apply --appsco-account-info-dropdown;
             }
             :host appsco-dropdown .info {
                 font-size: 11px;
                 background-color: var(--account-info-background-color, #edf9ff);
                 color: var(--secondary-text-color);
 
-            @apply(--appsco-account-info-box);
+            @apply --appsco-account-info-box;
             }
             :host appsco-dropdown .actions {
                 background-color: var(--light-background-color, #f5f5f5);
@@ -163,7 +163,7 @@ Custom property | Description | Default
                 margin-top: 2px;
             }
             :host .end-justified {
-            @apply(--layout-end-justified);
+            @apply --layout-end-justified;
             }
             :host([mobile]) appsco-dropdown {
                 top: 35px;

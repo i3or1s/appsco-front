@@ -37,7 +37,7 @@ Custom property | Description | Default
 
                 --paper-icon-button-ink-color: var(--appsco-account-action-color);
 
-            @apply(--appsco-header-account-actions);
+            @apply --appsco-header-account-actions;
             }
             :host a {
                 text-decoration: none;
@@ -49,8 +49,8 @@ Custom property | Description | Default
                 color: var(--appsco-account-action-color);
             }
             :host .new-notifications-icon {
-                color: var(--appsco-account-new-notifications-color, --primary-color);
-                --paper-icon-button-ink-color: var(--appsco-account-new-notifications-color, --primary-color);
+                color: var(--appsco-account-new-notifications-color, var(--primary-color));
+                --paper-icon-button-ink-color: var(--appsco-account-new-notifications-color, var(--primary-color));
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;

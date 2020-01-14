@@ -35,18 +35,18 @@ Custom property | Description | Default
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--appsco-company-domains);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --appsco-company-domains;
             }
             .domains {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
             }
             appsco-company-domain-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-company-domain-item);
+                @apply --appsco-company-domain-item;
             }
             .domains-container {
                 width: 100%;
@@ -72,20 +72,20 @@ Custom property | Description | Default
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             paper-button {
                 display: block;
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             .info-total {
                 margin-bottom: 10px;
             }
             .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 color: var(--secondary-text-color);
             }
             .emphasized {
@@ -94,8 +94,8 @@ Custom property | Description | Default
             .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
         </style>
 

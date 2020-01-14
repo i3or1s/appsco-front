@@ -28,7 +28,7 @@
                 margin: 8px 0;
             }
             :host .action-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 margin: 10px 0;
                 min-width: 130px;
                 display: inline-block;
@@ -37,8 +37,8 @@
                 max-width: 500px;
                 padding: 6px 30px 6px 6px;
                 height: 18px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--shadow-elevation-2dp);
+                @apply --paper-font-common-nowrap;
+                @apply --shadow-elevation-2dp;
                 color: var(--secondary-text-color, #eeeeee);
                 font-size: 14px;
                 font-style: italic;
@@ -112,7 +112,7 @@
                                  disabled$="[[ !_tokenGenerated ]]">
                 <paper-listbox id="paperListboxPartners"
                                class="dropdown-content filter"
-                               attr-for-selected="value">
+                               attr-for-selected="value" slot="dropdown-content">
                     <template is="dom-repeat" items="[[ _partnerList ]]">
                         <paper-item value="[[ item.self ]]" >[[ item.name ]]</paper-item>
                     </template>

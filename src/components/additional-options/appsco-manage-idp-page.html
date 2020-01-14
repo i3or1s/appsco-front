@@ -13,7 +13,7 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                     border-bottom: 1px solid var(--divider-color);
@@ -29,22 +29,22 @@
                     cursor: auto;
                 };
                 --appsco-list-item-activated: {
-                    @apply(--shadow-elevation-2dp);
+                    @apply --shadow-elevation-2dp;
                 };
                 --item-background-color: var(--body-background-color);
             }
             :host paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
 
                 --paper-card-header-text: {
                     color: var(--primary-text-color);
                 };
             }
             :host .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
             :host .info {
-                @apply(--info-message);
+                @apply --info-message;
             }
             :host appsco-integration-resources {
                 margin-top: 20px;

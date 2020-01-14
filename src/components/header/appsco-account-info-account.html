@@ -35,7 +35,7 @@ Example:
                 border-bottom: 1px solid var(--divider-color);
                 position: relative;
 
-            @apply(--appsco-account-info-account);
+            @apply --appsco-account-info-account;
             }
             :host:hover {
                 background-color: var(--inactive-account-background-hover, #f9f7f7);
@@ -50,7 +50,7 @@ Example:
                 box-sizing: border-box;
                 cursor: pointer;
 
-            @apply(--appsco-account);
+            @apply --appsco-account;
             }
             :host .account:hover {
                 background-color: var(--hover-background-color);
@@ -60,7 +60,7 @@ Example:
                     width: 32px;
                     height: 32px;
                     margin-right: 10px;
-                    @apply(--appsco-account-img);
+                    @apply --appsco-account-img;
                 };
                 --account-initials-font-size: 14px;
             }
@@ -70,13 +70,13 @@ Example:
                 margin: 0;
                 display: block;
 
-            @apply(--appsco-account-info-lead);
+            @apply --appsco-account-info-lead;
             }
             :host .account .info-additional {
                 font-size: 12px;
                 line-height: 14px;
 
-            @apply(--appsco-account-info-additional);
+            @apply --appsco-account-info-additional;
             }
             :host .account .info-lead, :host .account .info-additional {
                 display: block;
@@ -90,7 +90,7 @@ Example:
                 margin: auto;
             }
             :host .truncate {
-            @apply(--paper-font-common-nowrap);
+            @apply --paper-font-common-nowrap;
                 display: block;
             }
         </style>

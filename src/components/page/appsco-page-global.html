@@ -32,13 +32,13 @@ Custom property | Description | Default
             :host {
                 display: inline-block;
                 margin-right: -20px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
 
                 --paper-icon-button-ink-color: var(--appsco-page-global-action-color);
 
-                @apply(--appsco-page-global);
+                @apply --appsco-page-global;
             }
             :host *[hidden] {
                 display: none;
@@ -46,15 +46,15 @@ Custom property | Description | Default
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--global-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --global-action;
             }
             :host paper-icon-button {
                 color: var(--appsco-page-global-action-color);
             }
             :host paper-icon-button[active] {
-                @apply(--appsco-icon-active);
+                @apply --appsco-icon-active;
             }
             :host .expand-icon {
                 width: 32px;
@@ -72,7 +72,7 @@ Custom property | Description | Default
                 left: -25%;
             }
             .flex-none {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
         </style>
 

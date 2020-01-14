@@ -87,24 +87,24 @@
                 right: 0;
             }
             :host .open-button, :host .remove-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 border-radius: 0;
             }
             :host .open-button {
                 margin-right: 1px;
             }
             :host .remove-button {
-                @apply(--danger-button);
+                @apply --danger-button;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             :host .flex {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host([medium-screen]) {
                 --resource-width: 240px;
@@ -126,7 +126,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     <paper-icon-button
@@ -170,7 +170,7 @@
 
             </div>
 
-            <div content>
+            <div content slot="content">
 
                 <div class="application-components">
                     <neon-animated-pages class="flex"

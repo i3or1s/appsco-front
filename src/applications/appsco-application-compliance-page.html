@@ -17,7 +17,7 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                     border-bottom: 1px solid var(--divider-color);
@@ -26,21 +26,21 @@
                 --item-background-color: var(--body-background-color);
             }
             paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
 
                 --paper-card-header-text: {
                     color: var(--primary-text-color);
                 };
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
             :host .info {
                 margin-bottom: 0;
             }
             :host .submit-button {
                 margin: 20px 0 0 0;
-                @apply(--form-action);
+                @apply --form-action;
             }
         </style>
 

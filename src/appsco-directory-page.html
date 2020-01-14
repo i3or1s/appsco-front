@@ -28,7 +28,7 @@
 
                 --appsco-list-item-message: {
                     font-size: 14px;
-                    @apply(--paper-font-common-nowrap);
+                    @apply --paper-font-common-nowrap;
                 };
 
                 --account-log-appsco-list-item: {
@@ -59,14 +59,14 @@
             }
             paper-tabs {
                 height: 32px;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             .paper-tabs-pages {
-                @apply(--paper-tabs-pages);
+                @apply --paper-tabs-pages;
             }
             .tab-content {
                 margin-top: 20px;
-                @apply(--paper-tabs-content-style);
+                @apply --paper-tabs-content-style;
             }
             appsco-company-groups {
                 margin-top: 20px;
@@ -87,8 +87,8 @@
                 --account-initials-font-size: 14px;
             }
             :host .account-name {
-                @apply(--paper-font-subhead);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-subhead;
+                @apply --paper-font-common-nowrap;
                 font-size: 18px;
             }
             :host([mobile-screen]) {
@@ -137,7 +137,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-content flex-vertical">
                     <paper-tabs id="paperTabs" selected="{{ _selectedFilter }}">
@@ -177,7 +177,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
 
                     <appsco-invitations
@@ -211,7 +211,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <appsco-account-image account="[[ role.account ]]"></appsco-account-image>
                     <span class="account-name flex">[[ role.account.name ]]</span>

@@ -54,8 +54,8 @@
             }
 
             :host([has-notifications]) paper-icon-button {
-                color: var(--appsco-account-new-notifications-color, --primary-color);
-                --paper-icon-button-ink-color: var(--appsco-account-new-notifications-color, --primary-color);
+                color: var(--appsco-account-new-notifications-color, var(--primary-color));
+                --paper-icon-button-ink-color: var(--appsco-account-new-notifications-color, var(--primary-color));
             }
 
             :host .notification-count {

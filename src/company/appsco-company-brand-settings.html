@@ -37,7 +37,7 @@ Custom property | Description | Default
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-company-brand-settings);
+                @apply --appsco-company-brand-settings;
 
                 --paper-input-container-label: {
                     font-size: 14px;
@@ -48,15 +48,15 @@ Custom property | Description | Default
                 };
             }
             .form-input-container {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 margin-bottom: 20px;
             }
             .form-input-picker {
                 min-width: 130px;
             }
             .form-input-text {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             paper-swatch-picker.background {
                 background-color: var(--body-background-color, #fafafa);
@@ -65,7 +65,7 @@ Custom property | Description | Default
                 margin-top: 20px;
             }
             .label {
-                @apply(--paper-font-subhead);
+                @apply --paper-font-subhead;
                 display: block;
                 color: var(--secondary-text-color);
                 font-size: 14px;
@@ -80,7 +80,7 @@ Custom property | Description | Default
             }
             .submit-button {
                 margin: 20px 0 0 0;
-                @apply(--form-action);
+                @apply --form-action;
             }
             :host .description {
                 font-size: 12px;

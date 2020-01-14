@@ -29,7 +29,7 @@ Contains info about resources shared to company role.
             :host paper-progress {
                 width: 100%;
                 --paper-progress-active-color: #7baaf7;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             :host .progress {
                 height: 6px;
@@ -38,7 +38,7 @@ Contains info about resources shared to company role.
                 margin-bottom: 10px;
             }
             :host .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 opacity: 0.6;
             }
             :host paper-button {
@@ -46,25 +46,25 @@ Contains info about resources shared to company role.
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host appsco-directory-role-application {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-directory-role-application);
+                @apply --appsco-directory-role-application;
             }
             :host([preview]) appsco-directory-role-application {
                 width: auto;
                 margin: 0 0 5px 0;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
         </style>
 

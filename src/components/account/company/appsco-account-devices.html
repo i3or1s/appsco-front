@@ -11,11 +11,11 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-account-devices);
+                @apply --appsco-account-devices;
             }
             :host .devices {
-                @apply(--layout-vertical);
-                @apply(--appsco-devices);
+                @apply --layout-vertical;
+                @apply --appsco-devices;
             }
             :host appsco-account-devices-item:first-of-type {
                 border-top: none;
@@ -23,21 +23,21 @@
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host paper-progress {
                 width: 100%;
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             .info-total {
                 margin-top: 10px;
             }
             .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 color: var(--secondary-text-color);
             }
 

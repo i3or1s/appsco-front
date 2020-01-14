@@ -21,8 +21,8 @@
             }
             :host div[label] {
                 color: var(--secondary-text-color);
-                @apply(--paper-font-body1);
-                @apply(--application-details-label);
+                @apply --paper-font-body1;
+                @apply --application-details-label;
                 font-size: 12px;
             }
             .customer-icon {
@@ -50,7 +50,7 @@
                 font-size: 14px;
                 font-weight: bold;
                 margin-bottom: 16px;
-                @apply(--text-wrap-break);
+                @apply --text-wrap-break;
             }
         </style>
 
@@ -65,7 +65,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     <div class="customer-icon">
@@ -90,7 +90,7 @@
 
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <neon-animated-pages class="flex"
                                          selected="{{ _selected }}"

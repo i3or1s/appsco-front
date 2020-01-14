@@ -36,10 +36,10 @@ Provides functionality of adding accounts to organization units.
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-            @apply(--appsco-paper-dialog);
+            @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             paper-dropdown-menu {
             --paper-input-container: {
@@ -47,27 +47,27 @@ Provides functionality of adding accounts to organization units.
              };
             }
             :host paper-listbox {
-            @apply(--paper-listbox);
+            @apply --paper-listbox;
                 min-width: 225px;
             }
             :host paper-item:hover {
-            @apply(--paper-item-hover);
+            @apply --paper-item-hover;
             }
             :host .message {
                 margin: 0;
                 color: var(--secondary-text-color);
                 font-style: italic;
-            @apply(--paper-font-body2);
-            @apply(--info-message);
+            @apply --paper-font-body2;
+            @apply --info-message;
             }
             :host .buttons paper-button {
-            @apply(--paper-dialog-button);
+            @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-            @apply(--paper-dialog-confirm-button);
+            @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-            @apply(--paper-dialog-dismiss-button);
+            @apply --paper-dialog-dismiss-button;
             }
         </style>
 
@@ -106,7 +106,7 @@ Provides functionality of adding accounts to organization units.
                                              on-iron-overlay-closed="_onOrgunitsDropdownClosed">
                             <paper-listbox id="orgunits"
                                            class="dropdown-content"
-                                           attr-for-selected="value">
+                                           attr-for-selected="value" slot="dropdown-content">
                                 <template is="dom-repeat" items="[[ _orgunits ]]">
                                     <paper-item value="[[ item.self ]]"
                                                 name="[[ item.name ]]">[[ item.name ]]</paper-item>

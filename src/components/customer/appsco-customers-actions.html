@@ -23,10 +23,10 @@
                 display: inline-block;
                 position: relative;
                 margin-right: -10px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-customers-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-customers-actions;
             }
             appsco-search {
                 max-width: 200px;
@@ -34,43 +34,43 @@
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--customers-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --customers-action;
             }
             :host .flex-none {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host .bulk-action {
                 display: none;
             }
             :host .add-action {
-                @apply(--add-item-action);
+                @apply --add-item-action;
             }
             :host .bulk-action[hidden] {
                 display: none !important;
             }
             :host .import-action {
-                @apply(--import-action);
+                @apply --import-action;
             }
             :host .export-action {
-                @apply(--export-action);
+                @apply --export-action;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             .item-action-list {
                 position: absolute;
                 top: 34px;
                 right: 0;
                 width: 200px;
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 opacity: 0;
                 visibility: hidden;
                 transform: scale(1, 0.6);
                 transform-origin: top center;
                 transition: all 0.1s linear;
-                @apply(--item-action-list);
+                @apply --item-action-list;
 
             }
             :host([_import-actions-visible]) .item-action-list {
@@ -96,7 +96,7 @@
                 font-weight: 500;
                 min-width: 100px;
                 text-align: center;
-                @apply(--customer-actions-tooltip);
+                @apply --customer-actions-tooltip;
             }
             :host([tablet-screen]) .removable-button {
                 display: none;

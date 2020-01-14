@@ -11,24 +11,26 @@
 
     <link rel="import" href="../appsco-dropdown.html">
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-        :root {
-            --appsco-dropdown: {
-                 width: 150px;
-                 top: 15px;
-             };
-            --appsco-dropdown-content: {
-                 padding: 20px;
-             };
-        }
-        :root .demo {
-            min-height: 100px;
-        }
-        :root .dropdown-container {
-            width: 200px;
-            position: relative;
-        }
-    </style>
+    <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles">
+          html {
+              --appsco-dropdown: {
+                   width: 150px;
+                   top: 15px;
+               };
+              --appsco-dropdown-content: {
+                   padding: 20px;
+               };
+          }
+          :root .demo {
+              min-height: 100px;
+          }
+          :root .dropdown-container {
+              width: 200px;
+              position: relative;
+          }
+      </style>
+      </custom-style>
 </head>
 <body>
 

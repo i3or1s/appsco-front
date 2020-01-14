@@ -54,7 +54,7 @@
                                         logout-api="[[ logoutApi ]]"></appsco-account-remove-personal>
 
         <appsco-content id="appscoContent" resource-active>
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-header">
                     <appsco-account-image-settings
                             id="appscoAccountImageSettings"
@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <neon-animated-pages class="flex"
                                          selected="[[ _selected ]]"

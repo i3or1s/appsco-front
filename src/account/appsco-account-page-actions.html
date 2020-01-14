@@ -12,16 +12,16 @@
     <template>
         <style include="shared-styles">
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
 
                 --account-advanced-settings-action: {
-                     @apply(--primary-button);
+                     @apply --primary-button;
                  };
 
                 --account-advanced-settings-action-active: {
-                     @apply(--primary-button-active);
+                     @apply --primary-button-active;
                  };
             }
             :host > * {
@@ -31,7 +31,7 @@
                 margin-right: 10px;
             }
             .global-page-actions {
-                @apply(--manage-page-global-actions);
+                @apply --manage-page-global-actions;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;

@@ -47,7 +47,7 @@
             }
             :host .citrix-item {
                 margin: 0 10px 10px 0;
-                @apply(--appsco-applications-item);
+                @apply --appsco-applications-item;
             }
             appsco-application-security {
                 --security-score: {
@@ -124,8 +124,8 @@
                 --applications-container: {
                     margin-right: -25px;
                     display: block;
-                    @apply(--layout-horizontal);
-                    @apply(--layout-around-justified);
+                    @apply --layout-horizontal;
+                    @apply --layout-around-justified;
                 };
             }
 
@@ -165,7 +165,7 @@
 
         <appsco-content id="appscoContent">
 
-            <div content>
+            <div content slot="content">
 
                 <div id="backgroundContainer" class="background-container">
 
@@ -220,7 +220,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
 
                 <div class="info-header flex-horizontal">
                     <appsco-application-info

@@ -81,7 +81,7 @@
                 line-height: 90%;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             :host .credit-card-logo {
                 width: auto;
@@ -99,13 +99,13 @@
                 padding: 2px 5px 2px 0;
             }
             :host .subscription-info {
-                @apply(--info-box);
+                @apply --info-box;
                 margin-bottom: 20px;
                 font-size: 14px;
             }
             :host([medium-screen]) .subscription-plan {
                 min-width: inherit;
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host([tablet-screen]) .subscription-plan {
                 margin-right: 0;
@@ -131,7 +131,7 @@
                 margin: 20px 0 0 0;
             }
             :host .flex-start {
-                @apply(--layout-start);
+                @apply --layout-start;
             }
             :host .border-bottom {
                 border-bottom: 1px solid #dbdbdb;
@@ -211,7 +211,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     Payment Method
@@ -292,7 +292,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <template is="dom-if" if="[[ _subscriptionCanceled ]]">
                         <div class="subscription-info">
@@ -467,7 +467,7 @@
                 </div>
             </div>
 
-            <div info class="flex-vertical">
+            <div info class="flex-vertical" slot="info">
                 <div class="info-header">
                     <appsco-brand
                             logo="/images/appsco-logo-white.png"

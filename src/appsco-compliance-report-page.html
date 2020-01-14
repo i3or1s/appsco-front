@@ -27,7 +27,7 @@
                     cursor: default;
                 };
                 --appsco-compliance-report-list-item-activated: {
-                    @apply(--shadow-elevation-2dp);
+                    @apply --shadow-elevation-2dp;
                 };
             }
             :host div[resource] .resource-content {
@@ -44,7 +44,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent" resource-active>
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-content">
                     <appsco-compliance-report-page-filters id="complianceReportPageFilters"
                                                        groups-api="[[ groupsApi ]]"
@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-compliance-report-accounts
                             id="appscoComplianceReportRoles"

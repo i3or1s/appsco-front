@@ -1514,6 +1514,13 @@
                     on-notification-sent="_onNotificationSent"
                     disable-upgrade$="[[!_applicationsApi]]"
             ></appsco-company-group-notification-dialog>
+
+            <appsco-company-rename-group
+                    id="appscoCompanyRenameGroup"
+                    authorization-token="[[ authorizationToken ]]"
+                    company-groups-api="[[ _companyGroupsApi ]]"
+                    api-errors="[[ _apiErrors ]]"
+                    disable-upgrade$="[[!_companyGroupsApi]]"></appsco-company-rename-group>
         </template>
 
         <template is="dom-if" if="[[ _anyContactPage ]]">
@@ -1778,7 +1785,7 @@
                     id="appscoShareToGroupDialog"
                     authorization-token="[[ authorizationToken ]]"
                     groups-api="[[ _companyGroupsApi ]]"
-                    disable-upgrade$="[[!_applicationsApi]]"></appsco-resource-add-groups>
+                    disable-upgrade$="[[!_companyGroupsApi]]"></appsco-resource-add-groups>
 
             <appsco-resource-remove-from-group
                     id="appscoResourceRemoveFromGroup"
@@ -1787,44 +1794,12 @@
                     on-resource-removed-from-group="_onResourceRemovedFromGroup"
                     disable-upgrade$="[[!_applicationsApi]]"></appsco-resource-remove-from-group>
 
-        <appsco-company-rename-group
-                id="appscoCompanyRenameGroup"
-                authorization-token="[[ authorizationToken ]]"
-                company-groups-api="[[ _companyGroupsApi ]]"
-                api-errors="[[ _apiErrors ]]"
-                disable-upgrade$="[[!_applicationsApi]]"></appsco-company-rename-group>
-
-        <appsco-convert-contact
-                id="appscoConvertContact"
-                authorization-token="[[ authorizationToken ]]"
-                api-errors="[[ _apiErrors ]]"
-                on-contact-converted="_onContactConverted"
-                disable-upgrade$="[[!_applicationsApi]]"></appsco-convert-contact>
-
-        <appsco-delete-contact
-                id="appscoDeleteContact"
-                authorization-token="[[ authorizationToken ]]"
-                api-errors="[[ _apiErrors ]]"
-                on-contact-deleted="_onContactDeleted"
-                disable-upgrade$="[[!_applicationsApi]]"></appsco-delete-contact>
-
-        <appsco-delete-contacts
-                id="appscoContactsRemove"
-                contacts="[[ _selectedContacts ]]"
-                company-api="[[ _companyApi ]]"
-                authorization-token="[[ authorizationToken ]]"
-                on-contacts-removed="_onDeletedContacts"
-                on-contacts-remove-failed="_onDeleteContactsFailed"
-                disable-upgrade$="[[!_applicationsApi]]"></appsco-delete-contacts>
-
-        <appsco-delete-groups
-                id="appscoGroupsRemove"
-                groups="[[ _selectedGroups ]]"
-                company-api="[[ _companyApi ]]"
-                authorization-token="[[ authorizationToken ]]"
-                on-groups-removed="_onRemovedGroups"
-                on-groups-remove-failed="_onGroupsRemoveFailed"
-                disable-upgrade$="[[!_applicationsApi]]"></appsco-delete-groups>
+            <appsco-convert-contact
+                    id="appscoConvertContact"
+                    authorization-token="[[ authorizationToken ]]"
+                    api-errors="[[ _apiErrors ]]"
+                    on-contact-converted="_onContactConverted"
+                    disable-upgrade$="[[!_applicationsApi]]"></appsco-convert-contact>
 
             <appsco-deactivate-idp-settings
                     id="appscoDeactivateIdPSettings"
@@ -5810,8 +5785,9 @@
             },
 
             _onRenameCompanyGroupAction: function(event) {
-                this.$.appscoCompanyRenameGroup.setGroup(event.detail.group);
-                this.$.appscoCompanyRenameGroup.open();
+                var groupModal = this.$$('#appscoCompanyRenameGroup');
+                groupModal.setGroup(event.detail.group);
+                groupModal.open();
             },
 
             _onSearchCompanyGroupAction: function(event) {

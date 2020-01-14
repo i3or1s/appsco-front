@@ -11,7 +11,7 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-import-customers);
+                @apply --appsco-import-customers;
             }
             :host .info {
                 margin: 0;
@@ -33,9 +33,9 @@
                                 authorization-token="[[ authorizationToken ]]"
                                 import-api="[[ importApi ]]">
 
-            <h2 title>Importing customers</h2>
+            <h2 title slot="title">Importing customers</h2>
 
-            <div info>
+            <div info slot="info">
                 <p class="info">
                     To get started, prepare your organization’s business customer data so it’s in the proper format
                     for importing to AppsCo. Allowed format is csv.

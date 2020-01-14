@@ -19,7 +19,7 @@
                          on-keyup="_onKeyUp">
 
                 <template is="dom-if" if="[[ _subdomain ]]">
-                    <div suffix>[[ _subdomain ]]</div>
+                    <div suffix slot="suffix">[[ _subdomain ]]</div>
                 </template>
             </paper-input>
         </template>

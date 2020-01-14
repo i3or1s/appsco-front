@@ -39,7 +39,7 @@ Custom property | Description | Default
     <template>
         <style>
             :host {
-                @apply(--appsco-application-details);
+                @apply --appsco-application-details;
                 display: none;
 
                 --paper-icon-button: {
@@ -47,27 +47,27 @@ Custom property | Description | Default
                      width: 18px;
                      padding: 0;
                      color: var(--appsco-application-icons-color);
-                 @apply(--application-details-icon-button);
+                 @apply --application-details-icon-button;
              };
             }
 
             :host div[label] {
                 color: var(--secondary-text-color);
-            @apply(--paper-font-body1);
-            @apply(--application-details-label);
+            @apply --paper-font-body1;
+            @apply --application-details-label;
             }
 
             :host div[content] {
                 color: var(--primary-text-color);
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--paper-font-subhead);
-            @apply(--application-details-value);
+            @apply --layout-horizontal;
+            @apply --layout-center;
+            @apply --paper-font-subhead;
+            @apply --application-details-value;
             }
 
             :host .flex {
-            @apply(--layout-flex);
-            @apply(--paper-font-common-nowrap);
+            @apply --layout-flex;
+            @apply --paper-font-common-nowrap;
             }
 
             :host > div {

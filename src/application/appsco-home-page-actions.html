@@ -16,12 +16,12 @@
     <template>
         <style>
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
 
                 --add-item-action: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                  };
 
                 --application-action-icon-color: var(--app-primary-color);
@@ -64,7 +64,7 @@
                 height: 100%;
             }
             :host appsco-application-actions {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host([tablet-screen]) {
 
@@ -79,7 +79,7 @@
                      position: absolute;
                      left: 0;
                      z-index: 10;
-                     @apply(--paper-input-search-container-tablet);
+                     @apply --paper-input-search-container-tablet;
                  };
 
                 --paper-input-search: {
@@ -111,11 +111,11 @@
             }
             .action-button {
                 min-width: 100px;
-                @apply(--add-item-action);
+                @apply --add-item-action;
             }
             :host .new-folder-action {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 background: none;
                 border: none;
                 color: var(--primary-text-color);
@@ -134,9 +134,9 @@
                 width: 100%;
                 padding-left: 10px;
                 border-left: 1px solid var(--divider-color);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-justified;
             }
         </style>
 

@@ -34,10 +34,10 @@ Presents report in form of an item.
                 height: 52px;
                 margin: 0;
                 border-radius: 50%;
-                background-color: var(--report-icon-background-color, --account-initials-background-color);
+                background-color: var(--report-icon-background-color, var(--account-initials-background-color));
                 position: relative;
-                @apply(--layout-flex-none);
-                @apply(--report-icon);
+                @apply --layout-flex-none;
+                @apply --report-icon;
             }
             .report-icon::shadow #sizedImgDiv, :host .report-icon::shadow #placeholder {
                 border-radius: 50%;

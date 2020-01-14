@@ -35,10 +35,10 @@ Provides functionality of adding resource item to groups.
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .dialog-loader {
                 margin: 0 !important;
@@ -51,8 +51,8 @@ Provides functionality of adding resource item to groups.
                 padding-bottom: 20px;
             }
             .group-list {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
                 padding: 2px;
                 margin-right: -8px;
             }
@@ -70,23 +70,23 @@ Provides functionality of adding resource item to groups.
                 margin: 0;
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-                @apply(--paper-dialog-confirm-button);
+                @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             .link-button {
                 padding: 0;
                 margin: 0 0 0 5px;
                 min-width: initial;
-                @apply(--link-button);
+                @apply --link-button;
             }
         </style>
 

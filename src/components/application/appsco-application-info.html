@@ -27,13 +27,13 @@ Custom property | Description | Default
         <style>
             :host {
                 display: block;
-                @apply(--layout-vertical);
-                @apply(--appsco-application-info);
+                @apply --layout-vertical;
+                @apply --appsco-application-info;
             }
 
             :host .basic-info {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
 
             :host iron-image {
@@ -44,11 +44,11 @@ Custom property | Description | Default
             }
 
             :host span[caption] {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
             }
 
             :host .info {
-                @apply(--info-message);
+                @apply --info-message;
             }
         </style>
         <div class="basic-info">

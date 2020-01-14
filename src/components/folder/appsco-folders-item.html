@@ -19,7 +19,7 @@
 
         <style>
             :host {
-                @apply(--folder-item-host);
+                @apply --folder-item-host;
                 --icon-action-border-radius: 16px;
             }
             :host .item, :host .folder-icon {
@@ -33,22 +33,22 @@
             }
             :host .item-basic-info {
                 width: calc(100% - 32px - 5px);
-                @apply(--item-basic-info);
+                @apply --item-basic-info;
             }
             :host .item-basic-info .info-label, :host .item-basic-info .info-value {
                 width: 100%;
             }
             :host .item-basic-info .info-label {
-                @apply(--item-info-label);
+                @apply --item-info-label;
             }
             :host .item-basic-info .info-value {
-                @apply(--item-info-value);
+                @apply --item-info-value;
             }
             :host .folder-icon {
                 --iron-icon-height: 32px;
                 --iron-icon-width: 32px;
                 margin-right: 5px;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host([tablet-screen]) {
                 display: none;

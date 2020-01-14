@@ -12,8 +12,8 @@
     <template>
         <style>
             :host {
-                @apply(--layout-vertical);
-                @apply(--layout-center);
+                @apply --layout-vertical;
+                @apply --layout-center;
                 position: relative;
                 color: var(--primary-text-color);
             }
@@ -22,18 +22,18 @@
             }
             :host paper-progress {
                 width: 100%;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             :host .info-total {
                 margin-bottom: 10px;
             }
             :host .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 opacity: 0.6;
             }
             :host .assignees {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
                 width: 100%;
             }
             :host .load-more-box {
@@ -52,28 +52,28 @@
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             :host .message {
                 width: 100%;
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host appsco-application-assignee {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-application-assignee);
+                @apply --appsco-application-assignee;
             }
             :host([preview]) {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
                 display: block;
             }
             :host([preview]) appsco-application-assignee {
                 width: auto;
                 margin: 0 2px 0 0;
-                @apply(--appsco-application-assignee-preview);
+                @apply --appsco-application-assignee-preview;
             }
         </style>
 

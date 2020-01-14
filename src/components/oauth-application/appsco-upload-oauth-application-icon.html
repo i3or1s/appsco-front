@@ -9,7 +9,7 @@
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--appsco-upload-oauth-application-icon);
+                @apply --appsco-upload-oauth-application-icon;
             }
             .upload-container {
                 width: 64px;
@@ -18,7 +18,7 @@
                 margin-right: auto;
                 overflow: hidden;
                 position: relative;
-                @apply(--upload-container);
+                @apply --upload-container;
             }
             .item-icon, .item-icon-upload, .icon-upload {
                 position: absolute;
@@ -35,7 +35,7 @@
                     background: #eeeeee;
                 };
 
-                @apply(--item-icon);
+                @apply --item-icon;
             }
             .item-icon-upload {
                 background-color: rgba(250, 250, 250, 0.8);
@@ -43,7 +43,7 @@
                 opacity: 0;
                 z-index: 5;
                 cursor: pointer;
-                @apply(--item-icon-upload-field);
+                @apply --item-icon-upload-field;
             }
             .item-icon-upload.no-image {
                 opacity: 1;
@@ -55,7 +55,7 @@
             .icon-upload {
                 width: 32px;
                 height: 32px;
-                @apply(--item-icon-upload-icon);
+                @apply --item-icon-upload-icon;
             }
             .upload-file {
                 width: 0;
@@ -86,7 +86,7 @@
                    on-change="_onUploadAction">
         </div>
 
-        <content select="[info]"></content>
+        <slot name="info" old-content-selector="[info]"></slot>
 
     </template>
     <script>

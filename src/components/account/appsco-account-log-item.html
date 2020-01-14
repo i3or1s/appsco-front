@@ -47,46 +47,46 @@ Example:
                 line-height: 1.4;
                 position: relative;
 
-            @apply(--account-log-item);
+            @apply --account-log-item;
             }
             :host .item {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--log-item);
+            @apply --layout-horizontal;
+            @apply --layout-center;
+            @apply --log-item;
             }
             :host .item-container {
                 overflow: hidden;
-            @apply(--layout-vertical);
-            @apply(--layout-flex);
+            @apply --layout-vertical;
+            @apply --layout-flex;
             }
             :host .basic-info {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --layout-horizontal;
+            @apply --layout-center;
             }
             :host .additional-info {
                 margin-top: 10px;
                 font-size: 12px;
                 opacity: 0.8;
-            @apply(--layout-vertical);
-            @apply(--log-item-additional-info);
+            @apply --layout-vertical;
+            @apply --log-item-additional-info;
             }
             :host .item-image {
                 width: 32px;
                 height: 32px;
                 margin-right: 10px;
-            @apply(--layout-flex-none);
-            @apply(--log-item-image);
+            @apply --layout-flex-none;
+            @apply --log-item-image;
             }
             :host .item-image::shadow #sizedImgDiv {
-            @apply(--log-item-image-contain);
+            @apply --log-item-image-contain;
             }
             :host .item-icon {
                 width: 28px;
                 height: 28px;
                 margin-left: 2px;
                 margin-right: 12px;
-            @apply(--layout-flex-none);
-            @apply(--log-item-icon);
+            @apply --layout-flex-none;
+            @apply --log-item-icon;
             }
             :host .item-date {
                 font-size: 11px;
@@ -94,11 +94,11 @@ Example:
                 top: 5px;
                 right: 6px;
                 opacity: 0.5;
-            @apply(--log-item-date);
+            @apply --log-item-date;
             }
             :host .item-message {
-                @apply(--text-wrap-break);
-            @apply(--log-item-message);
+                @apply --text-wrap-break;
+            @apply --log-item-message;
             }
             :host([short-view]) .additional-info {
                 display: none;

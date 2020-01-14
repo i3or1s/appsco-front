@@ -12,8 +12,8 @@
     <template>
         <style>
             :host {
-                @apply(--layout-vertical);
-                @apply(--appsco-access-on-boarding-page-filters);
+                @apply --layout-vertical;
+                @apply --appsco-access-on-boarding-page-filters;
 
                 --paper-dropdown-menu: {
                     width: 100%;
@@ -34,7 +34,7 @@
                 box-sizing: border-box;
             }
             .suggested-groups {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 width: 100%;
                 min-height: 100px;
                 max-height: calc(100vh - 2*64px - 30px - 10px - 3*54px);
@@ -62,7 +62,7 @@
                 line-height: 18px;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
         </style>
 

@@ -49,34 +49,34 @@ Custom property | Description | Default
                 position: relative;
                 background-color: var(--item-background-color, #ffffff);
                 border-radius: 3px;
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 transition: all 0.1s ease-out;
-                @apply(--appsco-company-idp-domain-item);
+                @apply --appsco-company-idp-domain-item;
             }
             .item:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             .domain-title {
                 display: block;
                 height: 32px;
                 line-height: 16px;
-            @apply(--paper-font-common-base);
+            @apply --paper-font-common-base;
                 font-size: 14px;
                 font-weight: 400;
                 overflow: hidden;
             }
             .actions {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --layout-horizontal;
+            @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             paper-button {
-            @apply(--paper-font-common-base);
-            @apply(--paper-font-common-nowrap);
+            @apply --paper-font-common-base;
+            @apply --paper-font-common-nowrap;
 
                 padding: 4px;
                 font-size: 12px;
@@ -89,27 +89,27 @@ Custom property | Description | Default
                 background: transparent;
             }
             .domain-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             .domain-basic-info {
                 width: 220px;
-                @apply(--domain-basic-info);
+                @apply --domain-basic-info;
             }
             .domain-status-info {
                 border-left: 1px solid var(--divider-color);
-                @apply(--domain-status-info);
+                @apply --domain-status-info;
             }
             .domain-basic-info .info-label, .domain-basic-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--domain-basic-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --domain-basic-info-values;
             }
             .domain-status-info .info-label, .domain-status-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--domain-status-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --domain-status-info-values;
             }
             .domain-status-info .info-label {
                 color: var(--app-primary-color);

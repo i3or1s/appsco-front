@@ -40,9 +40,9 @@
                 };
             }
             :host .list {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
-                @apply(--layout-start);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
+                @apply --layout-start;
                 margin-right: -10px;
             }
             :host .list-container {
@@ -50,7 +50,7 @@
             }
             :host appsco-folders-item {
                 margin: 0 10px 10px 0;
-                @apply(--appsco-folders-item);
+                @apply --appsco-folders-item;
             }
         </style>
 
@@ -78,11 +78,11 @@
                     <template>
                         <paper-listbox>
                             <paper-icon-item class="popup-menu-item" list-item="[[ target ]]" on-click="_openRenameDialog">
-                                <iron-icon icon="create" list-item="[[ target ]]" item-icon></iron-icon> Rename
+                                <iron-icon icon="create" list-item="[[ target ]]" item-icon slot="item-icon"></iron-icon> Rename
                             </paper-icon-item>
 
                             <paper-icon-item list-item="[[ target ]]" on-click="_openRemoveDialog">
-                                <iron-icon icon="delete" list-item="[[ target ]]" item-icon></iron-icon> Remove
+                                <iron-icon icon="delete" list-item="[[ target ]]" item-icon slot="item-icon"></iron-icon> Remove
                             </paper-icon-item>
                         </paper-listbox>
                     </template>

@@ -16,7 +16,7 @@
                     cursor: default;
                 };
                 --appsco-active-integration-item-activated: {
-                    @apply(--shadow-elevation-2dp);
+                    @apply --shadow-elevation-2dp;
                 };
             }
         </style>
@@ -25,7 +25,7 @@
 
         <appsco-content id="appscoContent">
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-active-integrations
                             id="appscoActiveIntegrations"

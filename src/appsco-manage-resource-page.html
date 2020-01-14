@@ -61,7 +61,7 @@
                 box-sizing: border-box;
             }
             :host .info {
-                @apply(--paper-font-body1);
+                @apply --paper-font-body1;
                 margin-top: 10px;
             }
             :host div.help-title {
@@ -83,7 +83,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
@@ -164,7 +164,7 @@
                 </template>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <neon-animated-pages class="flex"
                                          selected="{{ _selected }}"

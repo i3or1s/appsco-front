@@ -24,13 +24,13 @@
                 }
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             .filter {
                 position: relative;
             }
             paper-listbox.searchable {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 width: 100%;
                 min-height: 100px;
                 max-height: calc(100vh - 2*64px - 20px - 45px - 2*54px);
@@ -61,7 +61,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent" resource-active on-component-ready="_onPageLoaded">
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-header">
                     Filters
                 </div>
@@ -95,7 +95,7 @@
                                            class="dropdown-content"
                                            attr-for-selected="value"
                                            on-selected-changed="_onPaymentTypeSelect"
-                                           selected="">
+                                           selected="" slot="dropdown-content">
                                 <paper-item value="">All</paper-item>
                                 <paper-item value="paid_by_partner">Paid by partner</paper-item>
                                 <paper-item value="paid_by_customer_cc_monthly">Paid by customer monthly</paper-item>
@@ -113,7 +113,7 @@
                                            class="dropdown-content"
                                            attr-for-selected="value"
                                            on-selected-changed="_onPeriodSelect"
-                                           selected="">
+                                           selected="" slot="dropdown-content">
                                 <paper-item value="">All</paper-item>
                                 <paper-item value="1">1 month</paper-item>
                                 <paper-item value="2">2 months</paper-item>
@@ -128,7 +128,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-customers-billing
                             id="appscoCustomers"

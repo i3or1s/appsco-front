@@ -41,20 +41,20 @@ Custom property | Description | Default
                 padding: 0;
                 margin: 0;
 
-                @apply(--appsco-dropdown);
+                @apply --appsco-dropdown;
             }
             :host .content {
                 height: 100%;
                 background-color: #ffffff;
 
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
             }
             :host .caret {
                 height: 10px;
                 position: relative;
                 overflow: hidden;
                 z-index: 100;
-                @apply(--appsco-dropdown-caret);
+                @apply --appsco-dropdown-caret;
             }
             :host .caret > div:first-child {
                 width: 0;
@@ -81,7 +81,7 @@ Custom property | Description | Default
             <div></div>
         </div>
 
-        <div class="content"><content></content></div>
+        <div class="content"><slot></slot></div>
 
     </template>
 

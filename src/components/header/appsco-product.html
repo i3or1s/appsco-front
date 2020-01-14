@@ -41,12 +41,12 @@ Custom property | Description | Default
     <template>
         <style>
             :host {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 font-size: 16px;
                 position: relative;
-                color: var(--appsco-product-text-color, --primary-text-color);
-                @apply(--appsco-product);
+                color: var(--appsco-product-text-color, var(--primary-text-color));
+                @apply --appsco-product;
             }
             paper-input {
                 width: 220px;
@@ -59,17 +59,17 @@ Custom property | Description | Default
                 --paper-input-container-input: {
                     font-size: 18px;
                 };
-                --paper-input-container-color: var(--appsco-product-text-color, --primary-text-color);
-                --paper-input-container-input-color: var(--appsco-product-text-color, --primary-text-color);
-                --paper-input-container-focus-color: var(--appsco-product-text-color, --primary-text-color);
+                --paper-input-container-color: var(--appsco-product-text-color, var(--primary-text-color));
+                --paper-input-container-input-color: var(--appsco-product-text-color, var(--primary-text-color));
+                --paper-input-container-focus-color: var(--appsco-product-text-color, var(--primary-text-color));
                 --paper-input-container-underline-focus: {
-                    border-bottom: 1px solid var(--appsco-product-text-color, --primary-text-color);
+                    border-bottom: 1px solid var(--appsco-product-text-color, var(--primary-text-color));
                 };
                 --paper-input-prefix: {
                     color: var(--secondary-text-color);
                 };
 
-                @apply(--appsco-product-search-input);
+                @apply --appsco-product-search-input;
             }
             .input-icon {
                 width: 18px;
@@ -92,7 +92,7 @@ Custom property | Description | Default
                 display: none;
             }
             .dropdown-content {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 padding: 0;
                 position: absolute;
                 top: 4px;
@@ -100,7 +100,7 @@ Custom property | Description | Default
                 width: 100%;
                 z-index: 5;
                 overflow-y: auto;
-                @apply(--appsco-product-dropdown);
+                @apply --appsco-product-dropdown;
             }
             .paper-item {
                 padding: 0 8px;
@@ -110,7 +110,7 @@ Custom property | Description | Default
                 cursor: pointer;
             }
             .paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             .product-active {
                 font-size: 18px;
@@ -139,7 +139,7 @@ Custom property | Description | Default
                                            id="clearSearch"
                                            class="input-icon"
                                            suffix
-                                           on-tap="_clearFilterPanel"></paper-icon-button>
+                                           on-tap="_clearFilterPanel" slot="suffix"></paper-icon-button>
                     </template>
                 </paper-input>
             </div>

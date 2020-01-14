@@ -44,34 +44,34 @@ Custom property | Description | Default
                 position: relative;
                 background-color: var(--item-background-color, #fff);
                 border-radius: 3px;
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 transition: all 0.1s ease-out;
-                @apply(--appsco-company-group-resource-item);
+                @apply --appsco-company-group-resource-item;
             }
             .item:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             .account-title {
                 display: block;
                 height: 32px;
                 line-height: 16px;
-                @apply(--paper-font-common-base);
+                @apply --paper-font-common-base;
                 font-size: 14px;
                 font-weight: 400;
                 overflow: hidden;
             }
             .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             paper-button {
-                @apply(--paper-font-common-base);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-base;
+                @apply --paper-font-common-nowrap;
 
                 padding: 4px;
                 font-size: 12px;
@@ -94,14 +94,14 @@ Custom property | Description | Default
             :host .application-title {
                 display: block;
                 line-height: 16px;
-                @apply(--paper-font-common-base);
+                @apply --paper-font-common-base;
                 font-size: 14px;
                 font-weight: 400;
-                @apply(--text-wrap-break);
+                @apply --text-wrap-break;
             }
             :host .application-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             :host .application-basic-info {

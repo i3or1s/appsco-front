@@ -45,14 +45,14 @@
             }
             paper-tabs {
                 height: 32px;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             .paper-tabs-pages {
-                @apply(--paper-tabs-pages);
+                @apply --paper-tabs-pages;
             }
             .tab-content {
                 margin-top: 20px;
-                @apply(--paper-tabs-content-style);
+                @apply --paper-tabs-content-style;
             }
             appsco-company-groups {
                 margin-top: 20px;
@@ -73,7 +73,7 @@
                 --account-initials-font-size: 14px;
             }
             :host .account-name {
-                @apply(--paper-font-subhead);
+                @apply --paper-font-subhead;
                 font-size: 18px;
             }
             :host([screen992]) {
@@ -99,7 +99,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-header">
                     Groups
                 </div>
@@ -121,7 +121,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
 
                     <neon-animated-pages selected="[[ _page ]]"
@@ -165,7 +165,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <appsco-account-image account="[[ _account ]]"></appsco-account-image>
                     <span class="account-name flex">[[ contact.display_name ]]</span>

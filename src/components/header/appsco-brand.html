@@ -41,7 +41,7 @@ Custom property | Description | Default
             :host {
                 display: inline-block;
 
-                @apply(--appsco-brand);
+                @apply --appsco-brand;
             }
             .brand {
                 cursor: pointer;
@@ -51,13 +51,13 @@ Custom property | Description | Default
             }
             .logo {
                 float: left;
-                @apply(--appsco-brand-logo);
+                @apply --appsco-brand-logo;
             }
             .title {
                 margin-left: 10px;
             }
             .brand-info {
-                @apply(--appsco-brand-info);
+                @apply --appsco-brand-info;
             }
             :host[mobile] .title {
                 display: none;
@@ -78,7 +78,7 @@ Custom property | Description | Default
             </div>
 
             <div class="brand-info">
-                <content select="[brand-info]"></content>
+                <slot name="brand-info" old-content-selector="[brand-info]"></slot>
             </div>
 
         </div>

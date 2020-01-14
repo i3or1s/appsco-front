@@ -44,6 +44,9 @@
     "src/appsco-get-started-page.html",
     "src/appsco-additional-options-page.html"
   ],
+  "lint": {
+    "rules": ["polymer-2-hybrid"]
+  },
   "sources": [
     "src/**/*",
     "images/**/*",

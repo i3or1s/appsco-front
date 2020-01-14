@@ -46,7 +46,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent" resource-active>
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-content">
                     <appsco-policy-report-page-filters id="policyReportPageFilters"
                                                        policies-api="[[ policiesApi ]]"
@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-policy-report-roles
                             id="appscoPolicyReportRoles"

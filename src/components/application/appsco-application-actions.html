@@ -50,15 +50,15 @@ Custom property | Description | Default
                 display: inline-block;
                 position: relative;
                 margin-right: -10px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-application-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-application-actions;
 
                 --paper-dropdown-menu-button: {
                     display: block;
                     padding: 0 0 0 8px;
-                    @apply(--applications-actions-paper-dropdown-menu-button);
+                    @apply --applications-actions-paper-dropdown-menu-button;
                 };
             }
             appsco-search {
@@ -71,9 +71,9 @@ Custom property | Description | Default
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--application-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --application-action;
             }
             :host .bulk-action {
                 display: none;
@@ -97,36 +97,36 @@ Custom property | Description | Default
                 --paper-input-container-input: {
                     vertical-align: middle;
                     cursor: pointer;
-                    @apply(--application-actions-paper-dropdown-menu-input);
+                    @apply --application-actions-paper-dropdown-menu-input;
                 };
             }
             :host paper-listbox {
-                @apply(--paper-listbox);
+                @apply --paper-listbox;
                 max-width: 230px;
                 overflow: hidden;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             .add-item-action, .import-action {
                 min-width: 100px;
             }
             :host .add-item-action {
-                @apply(--add-item-action);
+                @apply --add-item-action;
             }
             :host .import-action {
-                @apply(--import-item-action);
+                @apply --import-item-action;
             }
             .add-item-icon-button {
                 display: none;
-                @apply(--add-item-icon-button);
+                @apply --add-item-icon-button;
             }
             .import-item-icon-button {
                 display: none;
-                @apply(--import-item-icon-button);
+                @apply --import-item-icon-button;
             }
             :host .flex-none {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;
@@ -139,7 +139,7 @@ Custom property | Description | Default
                 font-weight: 500;
                 min-width: 110px;
                 text-align: center;
-                @apply(--application-actions-tooltip);
+                @apply --application-actions-tooltip;
 
                 --paper-tooltip: {
                     font-size: 11px;
@@ -150,13 +150,13 @@ Custom property | Description | Default
                 top: 34px;
                 right: 0;
                 width: 200px;
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 opacity: 0;
                 visibility: hidden;
                 transform: scale(1, 0.6);
                 transform-origin: top center;
                 transition: all 0.1s linear;
-                @apply(--item-action-list);
+                @apply --item-action-list;
 
             }
             :host([_add-item-actions-visible]) .item-action-list {
@@ -191,7 +191,7 @@ Custom property | Description | Default
                                          no-label-float>
                         <paper-listbox id="filterItemsList"
                                        class="dropdown-content filter"
-                                       selected="0">
+                                       selected="0" slot="dropdown-content">
                             <template is="dom-repeat" items="[[ _filterItems ]]">
                                 <paper-item value$="[[ item.value ]]"
                                             name$="[[ item.name ]]">[[ item.name ]]</paper-item>

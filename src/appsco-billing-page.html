@@ -55,7 +55,7 @@
                 font-weight: 400;
             }
             :host .subscription-info {
-                @apply(--info-box);
+                @apply --info-box;
                 margin-bottom: 20px;
                 font-size: 14px;
             }
@@ -81,7 +81,7 @@
                 max-height: 48px;
             }
             :host .flex-start {
-                @apply(--layout-start);
+                @apply --layout-start;
             }
             :host appsco-billing-invoice {
                 margin-bottom: 5px;
@@ -104,7 +104,7 @@
                 padding: 5px;
             }
             :host .upgrade {
-                @apply(--primary-button);
+                @apply --primary-button;
                 display: inline-block;
             }
             :host .info-header {
@@ -172,25 +172,25 @@
                 min-height: 260px;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             :host([medium-screen]) .subscription-plan {
                 min-width: inherit;
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host([tablet-screen]) {
                 --info-width: 100%;
                 --resource-width: 240px;
             }
             :host([tablet-screen]) .plan-upcoming-invoice {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             :host([tablet-screen]) .subscription-plan {
                 margin-right: 0;
                 margin-bottom: 10px;
             }
             :host([tablet-screen]) .plan-upcoming-invoice paper-card{
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
                 width: 100%;
             }
             :host([mobile-screen]) {
@@ -245,7 +245,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     Payment Method
@@ -302,7 +302,7 @@
 
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <template is="dom-if" if="[[ _subscriptionCanceled ]]">
                         <div class="subscription-info">
@@ -458,7 +458,7 @@
                 </div>
             </div>
 
-            <div info class="flex-vertical">
+            <div info class="flex-vertical" slot="info">
                 <div class="info-header">
                     <appsco-brand
                             logo="/images/appsco-logo-white.png"

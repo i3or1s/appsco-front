@@ -31,7 +31,7 @@
                 word-wrap: break-word;
             }
             :host .info {
-                @apply(--paper-font-body1);
+                @apply --paper-font-body1;
                 margin-top: 10px;
             }
             :host appsco-oauth-application-info {
@@ -50,7 +50,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     <iron-image class="application-icon"
@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <neon-animated-pages class="flex"
                                          selected="{{ _selected }}"

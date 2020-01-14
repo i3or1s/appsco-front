@@ -22,7 +22,7 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                     border-bottom: 1px solid var(--divider-color);
@@ -33,20 +33,20 @@
                 };
             }
             paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
 
                 --paper-card-header-text: {
                     color: var(--primary-text-color);
                 };
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             .label {
-                @apply(--paper-font-subhead);
+                @apply --paper-font-subhead;
                 display: block;
                 font-size: 16px;
                 margin-top:20px;
@@ -54,7 +54,7 @@
             }
             :host .submit-button {
                 margin: 20px 0 0 0;
-                @apply(--form-action);
+                @apply --form-action;
             }
             :host .reset-button {
                 margin: 20px 0 0 0;

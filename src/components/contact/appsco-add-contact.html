@@ -21,15 +21,15 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-add-contact);
+                @apply --appsco-add-contact;
             }
             :host paper-dialog {
                 width: 670px;
                 top: 10vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host paper-input {
                 --paper-input-container-label: {
@@ -41,13 +41,13 @@
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-                @apply(--paper-dialog-confirm-button);
+                @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host .info {
                 margin: 0;
@@ -56,17 +56,17 @@
                 margin-top: 15px;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .flex-horizontal > div:first-child {
                 padding-right: 10px;
             }
             :host .flex{
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host .baseline{
-                @apply(--layout-self-end);
+                @apply --layout-self-end;
                 padding-bottom: 10px;
             }
             paper-toggle-button {

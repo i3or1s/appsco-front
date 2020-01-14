@@ -47,7 +47,7 @@ Custom property | Description | Default
                 width: auto;
                 margin: 0 10px 10px 0;
                 position: relative;
-                @apply(--appsco-applications-item);
+                @apply --appsco-applications-item;
             }
             *[draggable="true"] {
                 -moz-user-select: none;
@@ -87,7 +87,7 @@ Custom property | Description | Default
                     <template>
                         <paper-listbox >
                             <paper-icon-item list-item="[[ target ]]" on-click="_openMoveToDialog">
-                                <iron-icon icon="folder" list-item="[[ target ]]" item-icon></iron-icon>
+                                <iron-icon icon="folder" list-item="[[ target ]]" item-icon slot="item-icon"></iron-icon>
                                 Move to
                             </paper-icon-item>
                         </paper-listbox>

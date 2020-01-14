@@ -15,22 +15,22 @@
         <style>
             :host {
                 --appsco-list-item: {
-                    @apply(--appsco-access-report-list-item);
+                    @apply --appsco-access-report-list-item;
                 };
                 --appsco-list-item-activated: {
-                    @apply(--appsco-access-report-list-item-activated);
+                    @apply --appsco-access-report-list-item-activated;
                 };
             }
             :host appsco-access-report-account-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-access-report-account-item);
+                @apply --appsco-access-report-account-item;
             }
             :host .info-total {
                 margin-bottom: 10px;
             }
             :host .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 opacity: 0.6;
             }
         </style>

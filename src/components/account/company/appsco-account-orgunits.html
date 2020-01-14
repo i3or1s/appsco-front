@@ -28,11 +28,11 @@ Custom property | Description | Default
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-account-orgunits);
+                @apply --appsco-account-orgunits;
             }
             :host .orgunits {
-                @apply(--layout-vertical);
-                @apply(--appsco-orgunits);
+                @apply --layout-vertical;
+                @apply --appsco-orgunits;
             }
             :host appsco-account-orgunit-item:first-of-type {
                 border-top: none;
@@ -40,8 +40,8 @@ Custom property | Description | Default
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
         </style>
 

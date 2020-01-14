@@ -23,14 +23,14 @@
                 bottom: 0;
                 left: 0;
                 margin: auto;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .info {
                 width: 100vw;
                 height: calc(100vh / 1.7);
-                @apply(--layout-vertical);
-                @apply(--layout-center);
+                @apply --layout-vertical;
+                @apply --layout-center;
                 position: absolute;
                 top: 0;
                 right: 0;
@@ -53,7 +53,7 @@
                 margin-top: 20px;
             }
             :host paper-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 text-align: center;
                 font-size: calc(100vh / 58);
             }

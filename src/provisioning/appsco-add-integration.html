@@ -29,19 +29,19 @@
             :host paper-dialog {
                 width: 670px;
                 top: 10vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host neon-animated-pages > * {
-                @apply(--neon-animated-pages);
+                @apply --neon-animated-pages;
             }
             :host neon-animated-pages > .iron-selected {
                 position: relative;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             .dialog-container {
                 min-height: 420px;
@@ -50,7 +50,7 @@
                 margin: 25px;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
         </style>
 

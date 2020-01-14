@@ -32,22 +32,22 @@ Custom property | Description | Default
         <style>
             :host {
                 display: none;
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             :host .details-info {
                 margin: 2px 0;
-                @apply(--layout-horizontal);
-                @apply(--details-container);
+                @apply --layout-horizontal;
+                @apply --details-container;
             }
             :host .details-label, :host .details-value, :host appsco-resource-auth-type {
                 font-size: 13px;
                 color: var(--primary-text-color);
             }
             :host .details-label, :host appsco-resource-auth-type {
-                @apply(--details-label);
+                @apply --details-label;
             }
             :host .details-value {
-                @apply(--details-value);
+                @apply --details-value;
             }
             :host .auth-types {
                 margin-top: 20px;

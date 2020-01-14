@@ -18,32 +18,32 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-import-resource);
+                @apply --appsco-import-resource;
             }
             :host paper-dialog {
                 width: 670px;
                 top: 10vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-                @apply(--paper-dialog-confirm-button);
+                @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             vaadin-upload {
                 --vaadin-upload-button-add: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                 }
             }
         </style>
@@ -55,7 +55,7 @@
                       on-iron-overlay-opened="_onDialogOpened"
                       on-iron-overlay-closed="_onDialogClosed">
 
-            <content select="[title]"></content>
+            <slot name="title" old-content-selector="[title]"></slot>
 
             <appsco-loader active="[[ _loader ]]"
                            loader-alt="Appsco is processing request"
@@ -64,7 +64,7 @@
             <paper-dialog-scrollable>
                 <div class="dialog-container">
 
-                    <content select="[info]"></content>
+                    <slot name="info" old-content-selector="[info]"></slot>
 
                     <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 

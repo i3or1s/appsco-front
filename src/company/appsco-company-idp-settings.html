@@ -29,7 +29,7 @@
             }
             :host .submit-button {
                 margin: 20px 0 0 0;
-                @apply(--form-action);
+                @apply --form-action;
             }
             :host neon-animated-pages > .iron-selected {
                 position: relative;
@@ -85,7 +85,7 @@
                            class="dropdown-content"
                            attr-for-selected="value"
                            selected="[[ _idPConfig.integrationId ]]"
-                           on-selected-changed="_onIntegrationTypeSelect">
+                           on-selected-changed="_onIntegrationTypeSelect" slot="dropdown-content">
                 <template is="dom-repeat" items="[[ _integrations ]]">
                     <paper-item value="[[ item.id ]]"
                                 integration-id="[[ item.id ]]">[[ item.name ]]</paper-item>

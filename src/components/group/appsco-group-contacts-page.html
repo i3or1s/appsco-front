@@ -15,7 +15,7 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                     border-bottom: 1px solid var(--divider-color);
@@ -27,13 +27,13 @@
                 --group-contact-initials-background-color: var(--body-background-color-darker);
             }
             :host paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
             .add-action {
-                @apply(--primary-button);
+                @apply --primary-button;
                 display: inline-block;
             }
             .group-item-list {

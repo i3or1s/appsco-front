@@ -25,17 +25,17 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-update-subscription-action);
+                @apply --appsco-update-subscription-action;
 
                 --paper-radio-button-checked-color: var(--app-primary-color-dark);
             }
             :host paper-dialog {
                 width: 670px;
                 top: 10vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host paper-input {
                 --paper-input-container-label: {
@@ -53,13 +53,13 @@
                 margin: 0;
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
+                @apply --paper-font-body2;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host .info {
                 margin: 0;
@@ -68,19 +68,19 @@
                 margin-top: 15px;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             :host .flex-center {
-                @apply(--layout-center);
+                @apply --layout-center;
             }
             :host .flex{
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host .baseline {
-                @apply(--layout-self-end);
+                @apply --layout-self-end;
                 padding-bottom: 10px;
                 text-align: center;
             }

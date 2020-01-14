@@ -34,7 +34,7 @@ Example:
             :host {
                 display: none;
                 color: var(--primary-text-color);
-                @apply(--appsco-directory-role-application);
+                @apply --appsco-directory-role-application;
                 margin-bottom: 4px;
                 font-size: 14px;
             }
@@ -47,17 +47,17 @@ Example:
             :host .companyRole-image-preview {
                 width: 28px;
                 height: 28px;
-                @apply(--appsco-directory-role-application-image);
+                @apply --appsco-directory-role-application-image;
             }
             :host .companyRole-image-preview::shadow #sizedImgDiv, :host .companyRole-image-preview::shadow #placeholder {
-                @apply(--appsco-directory-role-application-image-contain);
+                @apply --appsco-directory-role-application-image-contain;
             }
             :host .account-initials {
                 position: relative;
                 background-color: var(--body-background-color, #f5f8fa);
                 color: var(--primary-text-color);
                 cursor: default;
-                @apply(--subscriber-initials);
+                @apply --subscriber-initials;
             }
             :host .account-initials .initials {
                 position: absolute;
@@ -78,9 +78,9 @@ Example:
                 };
             }
             :host .companyRole {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--shadow-elevation-2dp);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --shadow-elevation-2dp;
                 width: 100%;
                 height: 70px;
                 padding: 0 10px;
@@ -89,25 +89,25 @@ Example:
                 overflow: hidden;
                 position: relative;
                 background-color: var(--item-background-color, #fafafa);
-                @apply(--appsco-directory-role-resource-admin-application);
+                @apply --appsco-directory-role-resource-admin-application;
             }
             :host .companyRole:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             :host .companyRole .companyRole-image-preview {
                 width: 52px;
                 height: 52px;
                 margin: 0;
                 border-radius: 50%;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host .companyRole .initials {
                 line-height: 52px;
                 font-size: 18px;
             }
             :host .companyRole-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             :host .companyRole-basic-info {
@@ -115,7 +115,7 @@ Example:
             }
             :host.companyRole-basic-info .info-label, :host .companyRole-basic-info .info-value {
                 width: 226px;
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-nowrap;
             }
             :host .companyRole-security-info {
                 border-left: 1px solid var(--divider-color);
@@ -131,21 +131,21 @@ Example:
             }
             :host .companyRole-name {
                 display: block;
-                @apply(--paper-font-common-base);
+                @apply --paper-font-common-base;
                 font-size: 16px;
                 font-weight: 400;
                 overflow: hidden;
             }
             :host .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             :host paper-button {
-                @apply(--paper-font-common-base);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-base;
+                @apply --paper-font-common-nowrap;
                 padding: 4px;
                 font-size: 12px;
                 font-weight: 400;
@@ -162,11 +162,11 @@ Example:
                 margin-right: 5px;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
         </style>
 

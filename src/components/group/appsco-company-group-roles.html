@@ -39,18 +39,18 @@ Custom property | Description | Default
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--appsco-company-group-roles);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --appsco-company-group-roles;
             }
             .roles {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
             }
             appsco-company-group-role-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-company-group-role-item);
+                @apply --appsco-company-group-role-item;
             }
             .group-roles-container {
                 width: 100%;
@@ -76,18 +76,18 @@ Custom property | Description | Default
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             .roles {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
                 width: 100%;
             }
             .info-total {
                 margin-bottom: 10px;
             }
             .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 color: var(--secondary-text-color);
             }
             paper-button {
@@ -95,22 +95,22 @@ Custom property | Description | Default
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
-                @apply(--text-wrap-break);
+                @apply --paper-font-body2;
+                @apply --info-message;
+                @apply --text-wrap-break;
             }
             :host([preview]) .roles {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             :host([preview]) appsco-company-group-role-item {
                 width: auto;
                 margin: 0 2px 0 0;
-                @apply(--appsco-company-group-role-item-preview);
+                @apply --appsco-company-group-role-item-preview;
             }
         </style>
 

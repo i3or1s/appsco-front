@@ -31,8 +31,8 @@ Custom property | Description | Default
     <template>
         <style>
             :host {
-            @apply(--layout-vertical);
-            @apply(--layout-center);
+            @apply --layout-vertical;
+            @apply --layout-center;
                 position: relative;
                 color: var(--primary-text-color);
             }
@@ -46,12 +46,12 @@ Custom property | Description | Default
                 margin-bottom: 10px;
             }
             :host .total {
-            @apply(--paper-font-caption);
+            @apply --paper-font-caption;
                 opacity: 0.6;
             }
             :host .accounts {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
                 width: 100%;
             }
             :host .load-more-box {
@@ -70,28 +70,28 @@ Custom property | Description | Default
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-            @apply(--load-more-button);
+            @apply --load-more-button;
             }
             :host .message {
                 width: 100%;
                 color: var(--secondary-text-color);
                 font-style: italic;
-            @apply(--paper-font-body2);
-            @apply(--info-message);
+            @apply --paper-font-body2;
+            @apply --info-message;
             }
             :host appsco-application-subscriber {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-application-subscriber);
+                @apply --appsco-application-subscriber;
             }
             :host([preview]) {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
                 display: block;
             }
             :host([preview]) appsco-application-subscriber {
                 width: auto;
                 margin: 0 2px 0 0;
-                @apply(--appsco-application-subscriber-preview);
+                @apply --appsco-application-subscriber-preview;
             }
         </style>
 

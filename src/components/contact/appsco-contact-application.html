@@ -16,7 +16,7 @@
             :host {
                 display: none;
                 color: var(--primary-text-color);
-                @apply(--appsco-contact-application);
+                @apply --appsco-contact-application;
                 margin-bottom: 4px;
                 font-size: 14px;
             }
@@ -29,17 +29,17 @@
             :host .assignee-image-preview {
                 width: 28px;
                 height: 28px;
-                @apply(--appsco-contact-application-image);
+                @apply --appsco-contact-application-image;
             }
             :host .assignee-image-preview::shadow #sizedImgDiv, :host .assignee-image-preview::shadow #placeholder {
-                @apply(--appsco-contact-application-image-contain);
+                @apply --appsco-contact-application-image-contain;
             }
             :host .account-initials {
                 position: relative;
                 background-color: var(--body-background-color, #f5f8fa);
                 color: var(--primary-text-color);
                 cursor: default;
-                @apply(--subscriber-initials);
+                @apply --subscriber-initials;
             }
             :host .account-initials .initials {
                 position: absolute;
@@ -60,9 +60,9 @@
                 };
             }
             :host .assignee {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--shadow-elevation-2dp);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --shadow-elevation-2dp;
                 width: 100%;
                 height: 70px;
                 padding: 0 10px;
@@ -71,25 +71,25 @@
                 overflow: hidden;
                 position: relative;
                 background-color: var(--item-background-color, #fafafa);
-                @apply(--appsco-contact-application);
+                @apply --appsco-contact-application;
             }
             :host .assignee:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             :host .assignee .assignee-image-preview {
                 width: 52px;
                 height: 52px;
                 margin: 0;
                 border-radius: 50%;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host .assignee .initials {
                 line-height: 52px;
                 font-size: 18px;
             }
             :host .assignee-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             :host .assignee-basic-info {
@@ -97,7 +97,7 @@
             }
             :host.assignee-basic-info .info-label, :host .assignee-basic-info .info-value {
                 width: 226px;
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-nowrap;
             }
             :host .assignee-security-info {
                 border-left: 1px solid var(--divider-color);
@@ -113,21 +113,21 @@
             }
             :host .assignee-name {
                 display: block;
-                @apply(--paper-font-common-base);
+                @apply --paper-font-common-base;
                 font-size: 16px;
                 font-weight: 400;
                 overflow: hidden;
             }
             :host .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             :host paper-button {
-                @apply(--paper-font-common-base);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-base;
+                @apply --paper-font-common-nowrap;
                 padding: 4px;
                 font-size: 12px;
                 font-weight: 400;
@@ -144,11 +144,11 @@
                 margin-right: 5px;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
         </style>
 

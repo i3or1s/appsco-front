@@ -26,9 +26,9 @@
                 height: 52px;
                 margin: 0;
                 border-radius: 26px;
-                background-color: var(--rule-icon-background-color, --account-initials-background-color);
+                background-color: var(--rule-icon-background-color, var(--account-initials-background-color));
                 position: relative;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host .rule-icon {
                 width: 24px;

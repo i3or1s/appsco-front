@@ -33,7 +33,7 @@ Example:
             :host {
                 display: none;
                 color: var(--primary-text-color);
-            @apply(--appsco-application-assignee);
+            @apply --appsco-application-assignee;
             }
             appsco-account-image.preview-account-image {
                 --account-image: {
@@ -50,9 +50,9 @@ Example:
              };
             }
             :host .assignee {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--shadow-elevation-2dp);
+            @apply --layout-horizontal;
+            @apply --layout-center;
+            @apply --shadow-elevation-2dp;
                 width: 100%;
                 height: 70px;
                 padding: 0 10px;
@@ -62,10 +62,10 @@ Example:
                 position: relative;
                 background-color: var(--item-background-color, #fafafa);
                 cursor: pointer;
-            @apply(--appsco-application-assignee);
+            @apply --appsco-application-assignee;
             }
             :host .assignee:hover {
-            @apply(--shadow-elevation-4dp);
+            @apply --shadow-elevation-4dp;
             }
             appsco-account-image.full-account-image {
                 --account-image: {
@@ -74,8 +74,8 @@ Example:
                 };
             }
             :host .assignee-info {
-            @apply(--layout-vertical);
-            @apply(--layout-start);
+            @apply --layout-vertical;
+            @apply --layout-start;
                 padding: 0 10px;
             }
             :host .assignee-basic-info {
@@ -83,7 +83,7 @@ Example:
             }
             :host .assignee-basic-info .info-label, :host .assignee-basic-info .info-value {
                 width: 226px;
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-nowrap;
             }
             :host .assignee-security-info {
                 border-left: 1px solid var(--divider-color);
@@ -99,21 +99,21 @@ Example:
             }
             :host .assignee-name {
                 display: block;
-            @apply(--paper-font-common-base);
+            @apply --paper-font-common-base;
                 font-size: 16px;
                 font-weight: 400;
                 overflow: hidden;
             }
             :host .actions {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --layout-horizontal;
+            @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             :host .action-button {
-            @apply(--paper-font-common-base);
-            @apply(--paper-font-common-nowrap);
+            @apply --paper-font-common-base;
+            @apply --paper-font-common-nowrap;
                 padding: 4px;
                 font-size: 12px;
                 font-weight: 400;

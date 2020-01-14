@@ -33,7 +33,7 @@
                 <paper-listbox id="paperListboxCardType"
                                class="dropdown-content filter"
                                attr-for-selected="name"
-                               selected="[[ cardType ]]">
+                               selected="[[ cardType ]]" slot="dropdown-content">
 
                     <template is="dom-repeat" items="[[ cardTypes ]]">
                         <paper-item name="[[ item.name ]]"

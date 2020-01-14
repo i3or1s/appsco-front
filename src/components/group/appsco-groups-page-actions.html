@@ -13,18 +13,18 @@
     <template>
         <style>
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host > * {
                 height: 100%;
             }
             appsco-group-actions {
-                @apply(--layout-flex);
+                @apply --layout-flex;
 
                 --add-item-action: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                 };
             }
             appsco-page-global {

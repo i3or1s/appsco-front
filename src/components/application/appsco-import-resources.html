@@ -11,7 +11,7 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-import-resources);
+                @apply --appsco-import-resources;
             }
             :host .info {
                 margin: 0;
@@ -22,9 +22,9 @@
                                 authorization-token="[[ authorizationToken ]]"
                                 import-api="[[ importApi ]]">
 
-            <h2 title>Importing resources</h2>
+            <h2 title slot="title">Importing resources</h2>
 
-            <div info>
+            <div info slot="info">
                 <p class="info">
                     To get started, prepare your data in the proper format
                     for importing to AppsCo. Allowed format is comma separated csv.

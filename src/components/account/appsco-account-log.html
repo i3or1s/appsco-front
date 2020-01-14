@@ -46,40 +46,40 @@ Custom property | Description | Default
                 display: block;
                 font-size: 14px;
                 color: var(--primary-text-color);
-                @apply(--appsco-account-log);
+                @apply --appsco-account-log;
             }
             :host .account-log {
                 padding-top: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--appsco-account-log-container);
+                @apply --layout-vertical;
+                @apply --appsco-account-log-container;
             }
             :host appsco-account-log-item {
-                @apply(--appsco-account-log-item);
+                @apply --appsco-account-log-item;
             }
             :host appsco-account-log-item:first-of-type {
-                @apply(--appsco-account-log-item-first);
+                @apply --appsco-account-log-item-first;
             }
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
-                @apply(--text-wrap-break);
+                @apply --paper-font-body2;
+                @apply --info-message;
+                @apply --text-wrap-break;
             }
             :host paper-progress {
                 width: 100%;
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             :host paper-button {
                 display: block;
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
         </style>
 

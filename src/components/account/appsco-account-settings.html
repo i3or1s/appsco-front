@@ -43,7 +43,7 @@ Custom property | Description | Default
             :host {
                 display: block;
                 position: relative;
-            @apply(--appsco-account-settings);
+            @apply --appsco-account-settings;
 
             --paper-dropdown-menu: {
                  display: block;
@@ -51,7 +51,7 @@ Custom property | Description | Default
             }
             :host .submit-button {
                 margin: 20px 0 0 0;
-                @apply(--form-action);
+                @apply --form-action;
             }
             :host paper-toggle-button {
                 cursor: pointer;
@@ -61,11 +61,11 @@ Custom property | Description | Default
             }
             .input-upload-image {
                 margin-top: 30px;
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --layout-horizontal;
+            @apply --layout-center;
             }
             .input-upload-image paper-input {
-            @apply(--layout-flex);
+            @apply --layout-flex;
 
             --paper-input-container-underline: {
                  display: none;
@@ -76,7 +76,7 @@ Custom property | Description | Default
             }
             .input-upload-image iron-image {
                 margin-left: 20px;
-            @apply(--layout-flex-none);
+            @apply --layout-flex-none;
             }
             .account-image {
                 width: 64px;
@@ -157,7 +157,7 @@ Custom property | Description | Default
                                      horizontal-align="left">
                     <paper-listbox id="paperListboxTimezone"
                                    class="dropdown-content filter"
-                                   attr-for-selected="value">
+                                   attr-for-selected="value" slot="dropdown-content">
                         <template is="dom-repeat" items="[[ _timezoneList ]]">
                             <paper-item value="[[ item.value ]]" >[[ item.text ]]</paper-item>
                         </template>
@@ -179,7 +179,7 @@ Custom property | Description | Default
                                      horizontal-align="left">
                     <paper-listbox id="paperListboxCountry"
                                    class="dropdown-content filter"
-                                   attr-for-selected="value">
+                                   attr-for-selected="value" slot="dropdown-content">
                         <template is="dom-repeat" items="[[ _countryList ]]">
                             <paper-item value="[[ item.code ]]">[[ item.name ]]</paper-item>
                         </template>
@@ -202,7 +202,7 @@ Custom property | Description | Default
                                      horizontal-align="left">
                     <paper-listbox id="paperListboxGender"
                                    class="dropdown-content filter"
-                                   attr-for-selected="value">
+                                   attr-for-selected="value" slot="dropdown-content">
                         <template is="dom-repeat" items="[[ _genderList ]]">
                             <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                         </template>
@@ -217,7 +217,7 @@ Custom property | Description | Default
                                      horizontal-align="left">
                     <paper-listbox id="paperListboxCompanies"
                                    class="dropdown-content filter"
-                                   attr-for-selected="value">
+                                   attr-for-selected="value" slot="dropdown-content">
                         <template is="dom-repeat" items="[[ _companiesList ]]">
                             <paper-item value="[[ item.company.alias ]]">[[ item.company.name ]]</paper-item>
                         </template>
@@ -235,7 +235,7 @@ Custom property | Description | Default
                                      horizontal-align="left">
                     <paper-listbox id="paperListboxPages"
                                    class="dropdown-content filter"
-                                   attr-for-selected="value">
+                                   attr-for-selected="value" slot="dropdown-content">
                         <template is="dom-repeat" items="[[ _pagesList ]]">
                             <paper-item value="[[ item.value ]]">[[ item.title ]]</paper-item>
                         </template>

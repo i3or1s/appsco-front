@@ -17,13 +17,13 @@ Account image is used to present account in form of an image or initials if imag
                 display: block;
             }
             :host .account-image {
-                @apply(--layout-vertical);
-                @apply(--layout-center-justified);
+                @apply --layout-vertical;
+                @apply --layout-center-justified;
                 width: 52px;
                 height: 52px;
                 margin: 0;
                 border-radius: 50%;
-                @apply(--account-image);
+                @apply --account-image;
             }
             :host .account-image::shadow #sizedImgDiv, :host .account-image::shadow #placeholder {
                 border-radius: 50%;

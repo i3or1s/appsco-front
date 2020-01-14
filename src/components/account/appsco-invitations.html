@@ -39,20 +39,20 @@ Custom property | Description | Default
                 display: inline-block;
                 position: relative;
                 color: var(--primary-text-color);
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--appsco-invitations);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --appsco-invitations;
             }
 
             :host .invitations {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
-                @apply(--appsco-invitations);
+                @apply --layout-vertical;
+                @apply --layout-start;
+                @apply --appsco-invitations;
             }
             :host appsco-invitation-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-invitation-item);
+                @apply --appsco-invitation-item;
             }
             :host .invitations-container {
                 width: 100%;
@@ -78,23 +78,23 @@ Custom property | Description | Default
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--invitations-progress-bar);
+                @apply --invitations-progress-bar;
             }
             :host paper-button {
                 display: block;
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host .invitations-empty-message {
-                @apply(--invitations-empty-message);
+                @apply --invitations-empty-message;
             }
         </style>
 

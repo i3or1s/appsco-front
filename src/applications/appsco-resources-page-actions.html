@@ -13,15 +13,15 @@
     <template>
         <style>
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
 
                 --add-item-action: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                  };
                 --import-item-action: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                 };
 
                 --paper-input-container-color: var(--secondary-text-color);
@@ -79,7 +79,7 @@
                 height: 100%;
             }
             :host appsco-application-actions {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host([tablet-screen]) {
                 --add-item-action: {
@@ -106,7 +106,7 @@
                      position: absolute;
                      left: 0;
                      z-index: 10;
-                     @apply(--paper-input-search-container-tablet);
+                     @apply --paper-input-search-container-tablet;
                  };
 
                 --paper-input-search: {

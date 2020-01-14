@@ -26,13 +26,13 @@
                 background-color: var(--divider-color);
             }
             :host .button {
-                @apply(--primary-button);
+                @apply --primary-button;
             }
             :host .secondary-button {
-                @apply(--secondary-button);
+                @apply --secondary-button;
             }
             :host .danger-button {
-                @apply(--danger-button);
+                @apply --danger-button;
             }
             :host div[resource] {
                 height: 100%;
@@ -44,7 +44,7 @@
                 color: var(--primary-text-color);
                 font-size: 16px;
                 border-bottom: 1px solid var(--divider-color);
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host div[resource] > *:not(.resource-actions), :host div[info] > *:not(.info-actions) , :host *[content-top] > * {
                 padding: 10px;
@@ -63,7 +63,7 @@
                 overflow: hidden;
             }
             :host .content-top-actions .action {
-                @apply(--link-button);
+                @apply --link-button;
                 padding: 4px;
                 font-size: 14px;
                 font-weight: 400;
@@ -75,7 +75,7 @@
             }
             :host .content-container {
                 padding: 10px;
-                @apply(--content-container);
+                @apply --content-container;
             }
             :host div[info] {
                 height: 100%;
@@ -86,7 +86,7 @@
                 margin-right: 5px;
             }
             :host .info-header .info-title {
-                @apply(--paper-font-subhead);
+                @apply --paper-font-subhead;
                 font-size: 18px;
             }
             :host .info-content {
@@ -98,17 +98,17 @@
                 display: none;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             :host .flex {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host .flex-end {
-                @apply(--layout-end-justified);
+                @apply --layout-end-justified;
             }
             :host([tablet-screen]) {
                 --resource-width: 250px;

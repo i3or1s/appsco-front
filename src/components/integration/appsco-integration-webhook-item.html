@@ -25,9 +25,9 @@
                 height: 52px;
                 margin: 0;
                 border-radius: 26px;
-                background-color: var(--webhook-icon-background-color, --account-initials-background-color);
+                background-color: var(--webhook-icon-background-color, var(--account-initials-background-color));
                 position: relative;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host .webhook-icon {
                 width: 24px;

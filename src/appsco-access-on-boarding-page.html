@@ -24,7 +24,7 @@
                     cursor: default;
                 };
                 --appsco-access-on-boarding-list-item-activated: {
-                    @apply(--shadow-elevation-2dp);
+                    @apply --shadow-elevation-2dp;
                 };
             }
             :host div[resource] .resource-header, :host div[resource] .resource-actions {
@@ -44,7 +44,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent" resource-active>
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-content">
                     <appsco-access-on-boarding-page-filters id="accessOnBoardingPageFilters"
                                                             groups-api="[[ groupsApi ]]"
@@ -53,7 +53,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-access-on-boarding-roles
                             id="appscoAccessOnBoardingRoles"

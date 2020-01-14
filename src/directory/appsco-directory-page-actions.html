@@ -14,7 +14,7 @@
         <style>
             :host {
                 --add-item-action: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                 };
 
                 --paper-input-container-color: var(--secondary-text-color);
@@ -77,9 +77,9 @@
                 --info-icon-color: var(--paper-orange-300);
             }
             :host .page-actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
                 height: 100%;
             }
             :host .page-actions * {
@@ -89,7 +89,7 @@
                 display: none;
             }
             :host appsco-directory-actions {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host([tablet-screen]) {
                 --add-item-action: {
@@ -113,7 +113,7 @@
                     position: absolute;
                     left: 0;
                     z-index: 10;
-                    @apply(--paper-input-search-container-tablet);
+                    @apply --paper-input-search-container-tablet;
                 };
 
                 --paper-input-search: {

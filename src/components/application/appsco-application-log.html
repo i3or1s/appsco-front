@@ -37,12 +37,12 @@ Custom property | Description | Default
         <style>
             :host {
                 display: block;
-                @apply(--appsco-application-log);
+                @apply --appsco-application-log;
             }
 
             :host .logs {
-                @apply(--layout-vertical);
-                @apply(--appsco-application-logs);
+                @apply --layout-vertical;
+                @apply --appsco-application-logs;
             }
 
             :host .progress {
@@ -55,7 +55,7 @@ Custom property | Description | Default
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--application-log-progress);
+                @apply --application-log-progress;
             }
 
             :host paper-button {
@@ -63,21 +63,21 @@ Custom property | Description | Default
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
 
             :host .message {
                 color: var(--secondary-text-color);
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
 
             :host appsco-list-item {
-                @apply(--application-log-item);
+                @apply --application-log-item;
             }
 
             :host appsco-list-item:first-of-type {
-                @apply(--application-log-item-first);
+                @apply --application-log-item-first;
             }
         </style>
 

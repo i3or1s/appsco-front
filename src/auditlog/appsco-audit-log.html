@@ -18,19 +18,19 @@
                 display: block;
                 font-size: 14px;
                 color: var(--primary-text-color);
-                @apply(--appsco-audit-log);
+                @apply --appsco-audit-log;
             }
             .audit-log {
                 width: 100%;
                 padding-top: 10px;
                 overflow: hidden;
-                @apply(--audit-log-list);
+                @apply --audit-log-list;
             }
             .log-record {
                 width: 100%;
                 margin-bottom: 10px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             .log-header {
                 margin-bottom: 4px;
@@ -45,8 +45,8 @@
             .log-record .account-info {
                 width: 20%;
                 overflow: hidden;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             .account-name {
                 display: block;
@@ -67,7 +67,7 @@
             }
             .log-record .event {
                 width: 30%;
-                @apply(--text-wrap-break);
+                @apply --text-wrap-break;
             }
             .log-record .ip-address {
                 width: 10%;
@@ -85,8 +85,8 @@
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host .log-progress-bar {
                 min-width: 100px;
@@ -94,7 +94,7 @@
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-audit-log-progress);
+                @apply --appsco-audit-log-progress;
             }
             :host .load-more-box {
                 width: 120px;
@@ -114,14 +114,14 @@
                 display: block;
                 margin: 10px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             :host .account-info div {
                 overflow: hidden;
                 width: 80%;
             }
             :host .account-info div span {
-                @apply(--text-wrap-break);
+                @apply --text-wrap-break;
             }
         </style>
 

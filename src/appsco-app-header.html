@@ -346,11 +346,11 @@
                 padding: 0 10px;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .flex {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             .pages {
                 height: 100%;
@@ -388,16 +388,16 @@
             :host div[purchase] {
                 margin-top: 20px;
                 padding: 0 18px;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--paper-font-body1);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --paper-font-body1;
                 color: var(--primary-text-color);
             }
             :host div[purchase] a {
                 width: 100%;
             }
             :host div[purchase] paper-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 background-color: var(--brand-color);
                 border-color: var(--brand-color);
                 width: 100%;

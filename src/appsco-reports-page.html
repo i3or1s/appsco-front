@@ -27,7 +27,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent">
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-reports-list id="reportsList"
                                          type="reports"
@@ -42,7 +42,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <iron-icon icon="icons:description"
                                class="info-icon"></iron-icon>

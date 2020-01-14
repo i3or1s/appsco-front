@@ -50,7 +50,7 @@ Custom property | Description | Default
                 overflow: hidden;
             }
             :host .flex-horizontal {
-            @apply(--layout-horizontal);
+            @apply --layout-horizontal;
                 height: 100%;
             }
             :host .resource,
@@ -61,7 +61,7 @@ Custom property | Description | Default
                 overflow: hidden;
                 position: relative;
                 box-sizing: border-box;
-            @apply(--appsco-content-sections);
+            @apply --appsco-content-sections;
             }
             :host .resource {
                 width: var(--resource-width, 25%);
@@ -71,7 +71,7 @@ Custom property | Description | Default
                 display: none;
             }
             :host .content {
-                @apply(--layout-flex);
+                @apply --layout-flex;
                 background-color: var(--content-background-color, transparent);
                 color: var(--content-color, #000);
                 overflow-x: hidden;
@@ -91,15 +91,15 @@ Custom property | Description | Default
         </style>
 
         <div class="container flex-horizontal">
-            <div id="resource" class="resource"><content select="[resource]"></content></div>
+            <div id="resource" class="resource"><slot name="resource" old-content-selector="[resource]"></slot></div>
             <div id="content"  class="content">
                 <iron-collapse id="contentTop" content-top>
-                    <content select="[content-top]"></content>
+                    <slot name="content-top" old-content-selector="[content-top]"></slot>
                 </iron-collapse>
 
-                <content select="[content]"></content>
+                <slot name="content" old-content-selector="[content]"></slot>
             </div>
-            <div id="info" class="info"><content select="[info]"></content></div>
+            <div id="info" class="info"><slot name="info" old-content-selector="[info]"></slot></div>
         </div>
     </template>
 

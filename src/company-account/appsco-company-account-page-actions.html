@@ -12,16 +12,16 @@
     <template>
         <style include="shared-styles">
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
 
                 --account-advanced-settings-action: {
-                     @apply(--primary-button);
+                     @apply --primary-button;
                  };
 
                 --account-advanced-settings-action-active: {
-                     @apply(--primary-button-active);
+                     @apply --primary-button-active;
                  };
             }
             :host > * {
@@ -31,9 +31,9 @@
                 padding-left: 10px;
                 margin-left: 16px;
                 border-left: 1px solid var(--divider-color);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;

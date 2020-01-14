@@ -18,10 +18,10 @@
                 display: inline-block;
                 position: relative;
                 margin-right: -10px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-group-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-group-actions;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;
@@ -35,22 +35,22 @@
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--group-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --group-action;
             }
             :host .flex-none {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host .add-group-button {
-                @apply(--add-item-action);
+                @apply --add-item-action;
             }
             :host paper-tooltip {
                 top: 100% !important;
                 font-weight: 500;
                 min-width: 100px;
                 text-align: center;
-                @apply(--group-actions-tooltip);
+                @apply --group-actions-tooltip;
             }
         </style>
 

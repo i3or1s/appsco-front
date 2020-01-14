@@ -29,17 +29,17 @@ Custom property | Description | Default
         <style>
             :host {
                 display: block;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-account-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-account-actions;
             }
             :host .advanced-settings-button {
-                @apply(--account-advanced-settings-action);
+                @apply --account-advanced-settings-action;
             }
             :host .advanced-settings-button[active] {
-                @apply(--shadow-elevation-2dp);
-                @apply(--account-advanced-settings-action-active);
+                @apply --shadow-elevation-2dp;
+                @apply --account-advanced-settings-action-active;
             }
             :host .advanced-settings-button[disabled] {
                 opacity: 0.5;

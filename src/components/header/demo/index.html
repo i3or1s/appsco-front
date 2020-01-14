@@ -11,65 +11,67 @@
 
     <link rel="import" href="../appsco-header.html">
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-        :root .vertical-section-container {
-            max-width: none;
-        }
-        :root {
+    <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles">
+          :root .vertical-section-container {
+              max-width: none;
+          }
+          html {
 
-            --primary-color: #03BCFF;
-            --border-color: #d5d8d8;
+                --primary-color: #03BCFF;
+              --border-color: #d5d8d8;
 
-            --paper-button: {
-                 background-color: var(--primary-color);
-                 color: #ffffff;
-                 font-weight: normal;
-                 border-radius: 0;
-                 margin-left: 0;
-                 margin-right: 0;
-             };
+                --paper-button: {
+                   background-color: var(--primary-color);
+                   color: #ffffff;
+                   font-weight: normal;
+                   border-radius: 0;
+                   margin-left: 0;
+                   margin-right: 0;
+               };
 
-            --appsco-header: {
-                 height: 40px;
-                 padding: 12px;
-             };
+                --appsco-header: {
+                   height: 40px;
+                   padding: 12px;
+               };
 
-            --appsco-brand-logo: {
-                 margin-right: 10px;
-             };
+                --appsco-brand-logo: {
+                   margin-right: 10px;
+               };
 
-            --appsco-product: {
-                 font-size: 18px;
-             };
+                --appsco-product: {
+                   font-size: 18px;
+               };
 
-            --appsco-account-actions: {
-                 margin-right: 10px;
-             };
-        }
-        :root appsco-header .vertical-divider {
-            background-color: #8398b1;
-        }
-        :root .default-btn {
-            background-color: transparent;
-            color: var(--primary-text-color);
-            border: 1px solid var(--border-color);
-        }
-        :root .link-btn {
-            background-color: transparent;
-            border: none;
-        }
-        @media (max-width: 768px) {
-            :root appsco-header .vertical-divider {
-                display: none;
-            }
+                --appsco-account-actions: {
+                   margin-right: 10px;
+               };
+          }
+          :root appsco-header .vertical-divider {
+              background-color: #8398b1;
+          }
+          :root .default-btn {
+              background-color: transparent;
+              color: var(--primary-text-color);
+              border: 1px solid var(--border-color);
+          }
+          :root .link-btn {
+              background-color: transparent;
+              border: none;
+          }
+          @media (max-width: 768px) {
+              :root appsco-header .vertical-divider {
+                  display: none;
+              }
 
-            :root {
-                --appsco-account-notifications-dropdown: {
-                     margin-bottom: 20px;
-                 };
-            }
-        }
-    </style>
+                html {
+                  --appsco-account-notifications-dropdown: {
+                       margin-bottom: 20px;
+                   };
+              }
+          }
+      </style>
+      </custom-style>
 </head>
 <body>
 

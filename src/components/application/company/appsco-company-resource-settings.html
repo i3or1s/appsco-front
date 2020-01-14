@@ -62,7 +62,7 @@ Used to update company resource - configuration fields and claims.
                 margin-top: 10px;
             }
             :host .info {
-                @apply(--info-message);
+                @apply --info-message;
                 margin-top: 20px;
             }
             :host .user-can-edit-toggle {
@@ -70,7 +70,7 @@ Used to update company resource - configuration fields and claims.
             }
             :host .save-action {
                 margin: 10px 0 0 0;
-                @apply(--form-action);
+                @apply --form-action;
             }
         </style>
 
@@ -114,7 +114,7 @@ Used to update company resource - configuration fields and claims.
                     <paper-listbox id="provisioningSupportList"
                                    class="dropdown-content"
                                    attr-for-selected="value"
-                                   selected="[[ _preselectedProvisioningSupport ]]">
+                                   selected="[[ _preselectedProvisioningSupport ]]" slot="dropdown-content">
                         <template is="dom-repeat" items="[[ _provisioningSupportList ]]">
                             <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                         </template>

@@ -12,14 +12,14 @@
     <template>
         <style>
             :host {
-                @apply(--appsco-login-time-restriction-policy-settings);
+                @apply --appsco-login-time-restriction-policy-settings;
             }
             :host .info {
-                @apply(--info-message);
+                @apply --info-message;
                 margin-bottom: 0;
             }
             :host .save-action {
-                @apply(--primary-button);
+                @apply --primary-button;
                 width: 60px;
                 padding: 4px 8px;
                 margin-top: 10px;
@@ -46,7 +46,7 @@
                                  horizontal-align="left">
                 <paper-listbox id="paperListboxTimezone"
                                class="dropdown-content filter"
-                               attr-for-selected="value">
+                               attr-for-selected="value" slot="dropdown-content">
                     <template is="dom-repeat" items="[[ _timezoneList ]]">
                         <paper-item value="[[ item.value ]]" >[[ item.text ]]</paper-item>
                     </template>

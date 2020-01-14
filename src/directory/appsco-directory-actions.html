@@ -24,15 +24,15 @@
                 display: inline-block;
                 position: relative;
                 margin-right: -10px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-directory-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-directory-actions;
 
                 --paper-dropdown-menu-button: {
                     display: block;
                     padding: 0 0 0 8px;
-                    @apply(--accounts-actions-paper-dropdown-menu-button);
+                    @apply --accounts-actions-paper-dropdown-menu-button;
                 };
             }
             paper-icon-button {
@@ -56,14 +56,14 @@
                 --paper-input-container-input: {
                     vertical-align: middle;
                     cursor: pointer;
-                    @apply(--accounts-actions-paper-dropdown-menu-input);
+                    @apply --accounts-actions-paper-dropdown-menu-input;
                 };
             }
             :host paper-listbox {
                 min-width: 150px;
                 max-width: 230px;
                 overflow: hidden;
-                @apply(--paper-listbox);
+                @apply --paper-listbox;
             }
             :host paper-item {
                 min-height: 40px;
@@ -72,14 +72,14 @@
                 color: var(--primary-text-color);
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--directory-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --directory-action;
             }
             :host .bulk-action {
                 display: none;
@@ -91,7 +91,7 @@
                 display: none !important;
             }
             :host .flex-none {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;
@@ -104,10 +104,10 @@
                 font-weight: 500;
                 min-width: 100px;
                 text-align: center;
-                @apply(--application-actions-tooltip);
+                @apply --application-actions-tooltip;
             }
             .info-icon {
-                --iron-icon-fill-color: var(--info-icon-color, --paper-orange-300);
+                --iron-icon-fill-color: var(--info-icon-color, var(--paper-orange-300));
             }
             :host .info {
                 margin: 0;
@@ -128,7 +128,7 @@
                                  on-iron-activate="_onFilterAction">
                 <paper-listbox id="filterList"
                                class="dropdown-content"
-                               selected="0">
+                               selected="0" slot="dropdown-content">
                     <template is="dom-repeat" items="[[ _filterItems ]]">
                         <paper-item value$="[[ item.value ]]" name$="[[ item.name ]]">[[ item.name ]]</paper-item>
                     </template>
@@ -176,7 +176,7 @@
                                   action-label="Upgrade"
                                   on-info-action="_onSubscriptionInfoAction">
 
-                <div content>
+                <div content slot="content">
                     <p class="info">Maximum number of
                         <span class="emphasis">[[ _subscription.quantity ]] AppsCo licences</span> have been reached.</p>
                     <p class="info">Please upgrade subscription in order to add more accounts.</p>
@@ -198,7 +198,7 @@
                                   action-label="Manage domains"
                                   on-info-action="_onDomainInfoAction">
 
-                <div content>
+                <div content slot="content">
                     <p class="info">
                         You do not have any managed domains registered in AppsCo.
                     </p>

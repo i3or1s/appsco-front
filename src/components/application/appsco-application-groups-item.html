@@ -32,34 +32,34 @@
                 position: relative;
                 background-color: var(--item-background-color, #ffffff);
                 border-radius: 3px;
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 transition: all 0.1s ease-out;
-                @apply(--appsco-application-groups-item);
+                @apply --appsco-application-groups-item;
             }
             .item:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             .group-title {
                 display: block;
                 height: 32px;
                 line-height: 16px;
-                @apply(--paper-font-common-base);
+                @apply --paper-font-common-base;
                 font-size: 14px;
                 font-weight: 400;
                 overflow: hidden;
             }
             .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             paper-button {
-                @apply(--paper-font-common-base);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-base;
+                @apply --paper-font-common-nowrap;
 
                 padding: 4px;
                 font-size: 12px;
@@ -69,23 +69,23 @@
                 text-transform: uppercase;
             }
             .group-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             .group-basic-info {
                 width: 220px;
-                @apply(--group-basic-info);
+                @apply --group-basic-info;
             }
             .group-basic-info .info-group, .group-basic-info {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--group-basic-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --group-basic-info-values;
             }
             .group-status-info .info-group {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--group-status-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --group-status-info-values;
             }
             .info-group {
                 font-size: 16px;

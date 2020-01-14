@@ -14,9 +14,9 @@
     <template>
         <style include="shared-styles">
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
 
                 --application-action-icon-color: var(--app-primary-color);
             }
@@ -30,16 +30,16 @@
                 left: -25%;
             }
             .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--company-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --company-action;
             }
             appsco-search {
                 max-width: 200px;
@@ -51,13 +51,13 @@
                 display: none;
             }
             .add-action {
-                @apply(--primary-button);
+                @apply --primary-button;
             }
             :host([tablet-screen]) .global-page-actions {
                 display: block;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
         </style>
 

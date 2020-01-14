@@ -13,9 +13,9 @@
     <template>
         <style include="shared-styles">
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host > * {
                 height: 100%;
@@ -27,7 +27,7 @@
                 left: -25%;
             }
             .global-page-actions {
-                @apply(--manage-page-global-actions);
+                @apply --manage-page-global-actions;
             }
             :host .back-action {
                 margin-right: 0;

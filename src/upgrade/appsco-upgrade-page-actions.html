@@ -10,17 +10,17 @@
     <template>
         <style>
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host .pricing-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 width: 120px;
                 display: none;
             }
             :host .pricing-button[active] {
-                @apply(--primary-button-active);
+                @apply --primary-button-active;
             }
             :host([tablet-s768-screen]) .pricing-button {
                 display: block;

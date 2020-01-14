@@ -29,7 +29,7 @@
                 height: 78px;
             }
             :host .group-items {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             appsco-company-group-image {
                 --group-image-preview: {
@@ -41,7 +41,7 @@
                 --group-image-background-color: var(--body-background-color-darker);
             }
             :host .info-header .group-name {
-                @apply(--paper-font-subhead);
+                @apply --paper-font-subhead;
                 font-size: 18px;
             }
             :host([screen992]) {
@@ -67,7 +67,7 @@
 
         <appsco-content id="appscoContent">
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-company-groups id="appscoGroups"
                                            type="group"
@@ -85,7 +85,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <appsco-company-group-image group="[[ group ]]" preview></appsco-company-group-image>
                     <span class="group-name flex">[[ group.name ]]</span>

@@ -13,7 +13,7 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                     border-bottom: 1px solid var(--divider-color);
@@ -24,10 +24,10 @@
                  };
             }
             :host paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
             .info p {
                 margin-top: 5px;
@@ -37,7 +37,7 @@
                 margin-bottom: 20px;
             }
             .add-action {
-                @apply(--primary-button);
+                @apply --primary-button;
                 display: inline-block;
             }
         </style>

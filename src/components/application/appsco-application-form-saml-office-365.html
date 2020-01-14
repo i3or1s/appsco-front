@@ -8,18 +8,18 @@
 <link rel="import" href="appsco-application-form-behavior.html">
 
 <dom-module id="appsco-application-form-saml-office-365">
-    <style>
-        paper-dropdown-menu {
-            display: block;
-        }
-        paper-toggle-button {
-            margin-top: 20px;
-        }
-        paper-toggle-button[disabled] {
-            --paper-toggle-button-label-color: var(--secondary-text-color);
-        }
-    </style>
     <template>
+        <style>
+          paper-dropdown-menu {
+              display: block;
+          }
+          paper-toggle-button {
+              margin-top: 20px;
+          }
+          paper-toggle-button[disabled] {
+              --paper-toggle-button-label-color: var(--secondary-text-color);
+          }
+      </style>
         <paper-input
                 id="samlIssuer"
                 data-field
@@ -51,7 +51,7 @@
             <paper-listbox
                     id="paperListboxNameIdPolicy"
                     class="dropdown-content filter"
-                    attr-for-selected="value" selected="[[ claims.nameIdPolicy ]]">
+                    attr-for-selected="value" selected="[[ claims.nameIdPolicy ]]" slot="dropdown-content">
                 <template is="dom-repeat" items="[[ _nameIdPolicyList ]]">
                     <paper-item
                             value="[[ item.value ]]">[[ item.name ]]</paper-item>
@@ -68,7 +68,7 @@
             <paper-listbox
                     id="paperListboxConfirmationMethod"
                     class="dropdown-content filter"
-                    attr-for-selected="value" selected="[[ claims.confirmationMethod ]]">
+                    attr-for-selected="value" selected="[[ claims.confirmationMethod ]]" slot="dropdown-content">
                 <template is="dom-repeat" items="[[ _confirmationMethodList ]]">
                     <paper-item
                             value="[[ item.value ]]">[[ item.name ]]</paper-item>
@@ -85,7 +85,7 @@
             <paper-listbox
                     id="paperListboxAuthenticationContext"
                     class="dropdown-content filter"
-                    attr-for-selected="value" selected="[[ claims.authenticationContext ]]">
+                    attr-for-selected="value" selected="[[ claims.authenticationContext ]]" slot="dropdown-content">
                 <template is="dom-repeat" items="[[ _authenticationContextList ]]">
                     <paper-item
                             value="[[ item.value ]]">[[ item.name ]]</paper-item>

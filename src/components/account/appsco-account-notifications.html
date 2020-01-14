@@ -39,28 +39,28 @@ Example:
                 display: block;
                 position: relative;
                 width: 100%;
-            @apply(--layout-vertical);
-            @apply(--appsco-account-notifications);
+            @apply --layout-vertical;
+            @apply --appsco-account-notifications;
             }
             .account-notifications {
                 padding-top: 10px;
                 position: relative;
-            @apply(--appsco-account-notifications-container);
+            @apply --appsco-account-notifications-container;
             }
             :host appsco-list-item {
                 font-size: 14px;
                 padding: 20px 6px 10px 6px;
-            @apply(--account-notifications-appsco-list-item);
+            @apply --account-notifications-appsco-list-item;
             }
             :host appsco-list-item:first-of-type {
-            @apply(--account-notifications-appsco-list-item-first);
+            @apply --account-notifications-appsco-list-item-first;
             }
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
                 padding: 0 16px;
-            @apply(--paper-font-body2);
-            @apply(--info-message);
+            @apply --paper-font-body2;
+            @apply --info-message;
             }
             :host paper-progress {
                 position: absolute;
@@ -69,14 +69,14 @@ Example:
                 right: 0;
                 margin: auto;
                 width: 100%;
-            @apply(--appsco-account-notifications-paper-progress);
+            @apply --appsco-account-notifications-paper-progress;
             }
             :host paper-button {
                 display: block;
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-            @apply(--load-more-button);
+            @apply --load-more-button;
             }
         </style>
 

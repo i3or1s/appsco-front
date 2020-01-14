@@ -13,9 +13,9 @@
     <template>
         <style include="shared-styles">
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host > * {
                 height: 100%;
@@ -30,13 +30,13 @@
                 left: -25%;
             }
             .search-assignees-action {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
                 margin-right: 10px;
             }
             .global-page-actions {
-                @apply(--manage-page-global-actions);
+                @apply --manage-page-global-actions;
             }
             :host .info-action {
                 margin-left: 10px;
@@ -50,14 +50,14 @@
                 display: block;
             }
             :host .advanced-settings-button {
-                @apply(--account-advanced-settings-action);
-                @apply(--primary-button);
+                @apply --account-advanced-settings-action;
+                @apply --primary-button;
                 margin-right: 10px;
             }
             :host .advanced-settings-button[active] {
-                @apply(--shadow-elevation-2dp);
-                @apply(--account-advanced-settings-action-active);
-                @apply(--primary-button-active);
+                @apply --shadow-elevation-2dp;
+                @apply --account-advanced-settings-action-active;
+                @apply --primary-button-active;
             }
             :host .advanced-settings-button[disabled] {
                 opacity: 0.5;

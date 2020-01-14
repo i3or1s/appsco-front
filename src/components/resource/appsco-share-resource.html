@@ -46,13 +46,13 @@
             :host paper-dialog {
                 width: 670px;
                 top: 10vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host neon-animated-pages > * {
-                @apply(--neon-animated-pages);
+                @apply --neon-animated-pages;
             }
             :host neon-animated-pages > .iron-selected {
                 position: relative;
@@ -73,24 +73,24 @@
             }
             paper-tabs {
                 height: 32px;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             .paper-tabs-pages {
-                @apply(--paper-tabs-pages);
+                @apply --paper-tabs-pages;
                 margin-top: 0;
             }
             :host .filter-container {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host appsco-search {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host .filter-accounts appsco-search {
                 margin-right: 20px;
             }
             paper-dropdown-menu {
-                @apply(--layou-flex-none);
+                @apply --layou-flex-none;
                 width: 150px;
                 position: relative;
                 top: 11px;
@@ -140,7 +140,7 @@
                 left: -50% !important;
             }
             :host .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             :host .selected-info {
                 font-size: 12px;
@@ -158,10 +158,10 @@
                 margin: 0;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host *[hidden] {
                 display: none;
@@ -250,7 +250,7 @@
                                                  on-iron-overlay-closed="_onInnerIronOverlay">
                                 <paper-listbox id="accountTypeList"
                                                class="dropdown-content"
-                                               selected="0">
+                                               selected="0" slot="dropdown-content">
                                     <template is="dom-repeat" items="[[ _accountTypeList ]]">
                                         <paper-item value$="[[ item.value ]]"
                                                     name$="[[ item.name ]]">

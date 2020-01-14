@@ -65,34 +65,34 @@ Custom property | Description | Default
                 position: relative;
                 background-color: var(--item-background-color, #fff);
                 border-radius: 3px;
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 transition: all 0.1s ease-out;
-                @apply(--appsco-company-group-contact-item);
+                @apply --appsco-company-group-contact-item;
             }
             .item:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             .account-title {
                 display: block;
                 height: 32px;
                 line-height: 16px;
-                @apply(--paper-font-common-base);
+                @apply --paper-font-common-base;
                 font-size: 14px;
                 font-weight: 400;
                 overflow: hidden;
             }
             .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             paper-button {
-                @apply(--paper-font-common-base);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-base;
+                @apply --paper-font-common-nowrap;
 
                 padding: 4px;
                 font-size: 12px;
@@ -105,24 +105,24 @@ Custom property | Description | Default
                 background: transparent;
             }
             .account-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             .account-basic-info {
                 width: 220px;
-                @apply(--account-basic-info);
+                @apply --account-basic-info;
             }
             .account-basic-info .info-label, .account-basic-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--account-basic-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --account-basic-info-values;
             }
             .account-additional-info .info-label, .account-additional-info .info-value {
                 font-size: 13px;
                 line-height: 18px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--account-additional-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --account-additional-info-values;
             }
             .account-additional-info .info-label {
                 color: var(--secondary-text-color);

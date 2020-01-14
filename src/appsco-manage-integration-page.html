@@ -50,7 +50,7 @@
                 margin-top: 10px;
             }
             :host .info {
-                @apply(--info-message);
+                @apply --info-message;
             }
             :host .kind-info {
                 font-size: 12px;
@@ -94,7 +94,7 @@
                 margin-top: 20px;
 
                 --appsco-list-item: {
-                    @apply(--shadow-none);
+                    @apply --shadow-none;
                     height: auto;
                     padding-top: 10px;
                     padding-bottom: 26px;
@@ -102,7 +102,7 @@
                     border-top: 1px solid var(--divider-color);
                 };
                 --appsco-list-item-activated: {
-                    @apply(--shadow-none);
+                    @apply --shadow-none;
                 };
                 --item-actions: {
                     right: 0;
@@ -131,7 +131,7 @@
 
         <appsco-content id="appscoContent" resource-active info-active$="[[ _infoSectionActive ]]">
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     <div class="integration-image">
@@ -222,7 +222,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <neon-animated-pages class="flex"
                                          selected="{{ _selected }}"
@@ -271,7 +271,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <span class="info-title">Integration templates</span>
                 </div>

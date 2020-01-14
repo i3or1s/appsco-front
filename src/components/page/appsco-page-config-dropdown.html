@@ -20,7 +20,7 @@
                 color: var(--primary-text-color);
 
                 --paper-card-content: {
-                    @apply(--layout-flex-vertical);
+                    @apply --layout-flex-vertical;
                     padding: 10px;
                     font-size: 14px;
                 };
@@ -61,7 +61,7 @@
                 --paper-input-container-input: {
                     vertical-align: middle;
                     cursor: pointer;
-                    @apply(--application-actions-paper-dropdown-menu-input);
+                    @apply --application-actions-paper-dropdown-menu-input;
                 };
             }
 
@@ -72,7 +72,7 @@
             }
 
             :host paper-card {
-                @apply(--layout-flex-vertical);
+                @apply --layout-flex-vertical;
                 width: 100%;
                 background-color: white;
             }
@@ -125,7 +125,7 @@
                                                class="dropdown-content filter"
                                                attr-for-selected="value"
                                                selected="{{ _displayKind }}"
-                                >
+                                 slot="dropdown-content">
                                     <template is="dom-repeat" items="[[ _displayKindList ]]">
                                         <paper-item value="[[ item.value ]]" on-tap="_onSaveChanges">[[ item.name ]]</paper-item>
                                     </template>
@@ -146,7 +146,7 @@
                                 <paper-listbox id="paperListboxSortOptions"
                                                class="dropdown-content filter"
                                                attr-for-selected="value"
-                                               selected="{{ _sortOption }}">
+                                               selected="{{ _sortOption }}" slot="dropdown-content">
                                     <template is="dom-repeat" items="[[ _sortOptionList ]]">
                                         <paper-item value="[[ item.value ]]"
                                                     sort-field="[[ item.sortField ]]"

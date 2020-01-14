@@ -36,7 +36,7 @@ Custom property | Description | Default
             :host {
                 display: block;
                 position: relative;
-            @apply(--appsco-orgunit-modify);
+            @apply --appsco-orgunit-modify;
             }
             paper-dialog {
                 width: 670px;
@@ -46,16 +46,16 @@ Custom property | Description | Default
              };
             }
             :host paper-dialog-scrollable > * {
-            @apply(--paper-dialog-scrollable-child);
+            @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-            @apply(--paper-dialog-button);
+            @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-            @apply(--paper-dialog-confirm-button);
+            @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-            @apply(--paper-dialog-dismiss-button);
+            @apply --paper-dialog-dismiss-button;
             }
         </style>
         <paper-dialog

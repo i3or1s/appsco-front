@@ -27,19 +27,19 @@
                 };
             }
             .one-chart {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             .two-charts {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             .one-chart .chart-container {
                 width: 100%;
-                @apply(--layout-flex);
+                @apply --layout-flex;
                 position: relative;
             }
             .two-charts .chart-container {
                 width: var(--chart-container-width);
-                @apply(--layout-flex);
+                @apply --layout-flex;
                 position: relative;
             }
             google-chart {
@@ -85,7 +85,7 @@
                 font-style: italic;
             }
             .info {
-                @apply(--info-message);
+                @apply --info-message;
                 text-align: center;
             }
             paper-dropdown-menu {
@@ -103,29 +103,29 @@
                 line-height: 18px;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             .filter {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
                 padding-bottom: 20px;
                 position: relative;
                 box-sizing: border-box;
             }
             :host([medium-screen]) .two-charts {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
                 width: 100%;
             }
             :host([medium-screen]) .chart-container {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host([tablet-screen]) .two-charts {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
                 width: 100%;
             }
             :host([tablet-screen]) .chart-container {
-                @apply(--layout-flex);
+                @apply --layout-flex;
                 width: 100%;
             }
 
@@ -187,7 +187,7 @@
 
         <appsco-content id="appscoContent">
 
-            <div content>
+            <div content slot="content">
 
                 <div class="one-chart">
 
@@ -237,7 +237,7 @@
                                     <paper-listbox id="filterList"
                                                    class="dropdown-content"
                                                    attr-for-selected="value"
-                                                   selected="[[ _filterAccountType ]]">
+                                                   selected="[[ _filterAccountType ]]" slot="dropdown-content">
                                         <template is="dom-repeat" items="[[ _accountTypeList ]]">
                                             <paper-item value$="[[ item.value ]]"
                                                         name$="[[ item.name ]]">

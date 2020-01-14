@@ -11,15 +11,17 @@
 
     <link rel="import" href="../appsco-brand.html">
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-        :root {
-            --primary-text-color: #8398b1;
+    <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles">
+          html {
+              --primary-text-color: #8398b1;
 
-            --appsco-brand-info: {
-                 margin-top: 20px;
-             };
-        }
-    </style>
+                --appsco-brand-info: {
+                   margin-top: 20px;
+               };
+          }
+      </style>
+      </custom-style>
 </head>
 <body>
 
@@ -33,7 +35,7 @@
                     logo-height="64"
                     brand-title="AppsCo">
 
-                <div brand-info>
+                <div brand-info slot="brand-info">
                     This is brand info text that can be long description about what to do or what happens in the section below.
                 </div>
 

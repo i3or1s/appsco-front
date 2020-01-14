@@ -12,11 +12,13 @@
 
     <link rel="import" href="../appsco-content.html">
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-        appsco-content {
-            height: 200px;
-        }
-    </style>
+    <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles">
+          appsco-content {
+              height: 200px;
+          }
+      </style>
+      </custom-style>
 </head>
 <body>
 
@@ -27,9 +29,9 @@
         <template>
 
             <appsco-content id="content">
-                <div resource> Resource section </div>
-                <div content> Content section </div>
-                <div info> Info section </div>
+                <div resource slot="resource"> Resource section </div>
+                <div content slot="content"> Content section </div>
+                <div info slot="info"> Info section </div>
             </appsco-content>
         </template>
     </demo-snippet>
@@ -38,8 +40,8 @@
     <demo-snippet>
         <template>
             <appsco-content id="content2">
-                <div content> Content section </div>
-                <div info> Info section </div>
+                <div content slot="content"> Content section </div>
+                <div info slot="info"> Info section </div>
             </appsco-content>
         </template>
     </demo-snippet>
@@ -47,7 +49,7 @@
     <demo-snippet>
         <template>
             <appsco-content>
-                <div content> Content section </div>
+                <div content slot="content"> Content section </div>
             </appsco-content>
         </template>
     </demo-snippet>

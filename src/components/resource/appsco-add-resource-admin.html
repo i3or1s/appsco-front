@@ -33,10 +33,10 @@
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host paper-progress {
                 width: 100%;
@@ -53,16 +53,16 @@
                 padding-bottom: 20px;
             }
             .filter-accounts {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 margin-top: 0 !important;
             }
             appsco-search {
                 margin-right: 20px;
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             paper-dropdown-menu {
-                @apply(--layou-flex-none);
+                @apply --layou-flex-none;
                 width: 150px;
                 margin-top: 2px;
 
@@ -111,7 +111,7 @@
                 left: -50% !important;
             }
             :host .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             :host .selected-info {
                 height: 20px;
@@ -124,10 +124,10 @@
                 color: var(--secondary-text-color);
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host *[hidden] {
                 display: none;

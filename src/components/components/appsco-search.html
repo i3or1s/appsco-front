@@ -38,9 +38,9 @@ Custom property | Description | Default
         <style>
             :host {
                 display: block;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--appsco-search);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --appsco-search;
             }
             paper-icon-button {
                 color: var(--paper-input-color);
@@ -50,11 +50,11 @@ Custom property | Description | Default
                 width: 100%;
                 line-height: 26px;
                 box-sizing: border-box;
-                @apply(--paper-input-search);
+                @apply --paper-input-search;
 
                 --paper-input-container: {
                     padding: 0;
-                    @apply(--appsco-search-input-container);
+                    @apply --appsco-search-input-container;
                 };
 
                 --paper-input-container-label: {
@@ -62,13 +62,13 @@ Custom property | Description | Default
                     line-height: 20px;
                     bottom: 0;
                     top: initial;
-                    @apply(--appsco-search-label);
+                    @apply --appsco-search-label;
                 };
 
                 --paper-input-container-input: {
                     font-size: 14px;
                     line-height: 20px;
-                    @apply(--appsco-search-input);
+                    @apply --appsco-search-input;
                 };
 
                 --paper-input-container-underline-focus: {
@@ -78,20 +78,20 @@ Custom property | Description | Default
             div[prefix] {
                 height: 20px;
                 margin-right: 4px;
-                @apply(--paper-input-prefix);
-                @apply(--appsco-search-input-prefix);
+                @apply --paper-input-prefix;
+                @apply --appsco-search-input-prefix;
             }
             div[prefix] iron-icon {
                 width: 18px;
                 height: 18px;
                 margin: 0;
-                @apply(--paper-input-prefix-icon);
-                @apply(--appsco-search-input-prefix-icon);
+                @apply --paper-input-prefix-icon;
+                @apply --appsco-search-input-prefix-icon;
 
                 --iron-icon-fill-color: var(--paper-input-color);
             }
             paper-input[focused] div[prefix] {
-                @apply(--paper-input-focused-prefix);
+                @apply --paper-input-focused-prefix;
             }
             paper-input[focused] div[prefix] iron-icon {
                 fill: var(--paper-input-focused-color);
@@ -104,14 +104,14 @@ Custom property | Description | Default
                 color: var(--paper-input-color);
                 --paper-icon-button-ink-color: var(--paper-input-color);
 
-                @apply(--paper-input-suffix);
-                @apply(--appsco-search-input-suffix);
+                @apply --paper-input-suffix;
+                @apply --appsco-search-input-suffix;
             }
             paper-input[focused] paper-icon-button[suffix] {
                 color: var(--paper-input-focused-color);
                 --paper-icon-button-ink-color: var(--paper-input-focused-color);
 
-                @apply(--paper-input-focused-suffix);
+                @apply --paper-input-focused-suffix;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;
@@ -130,7 +130,7 @@ Custom property | Description | Default
                      on-value-changed="_onValueChanged"
                      on-input="_onSearch">
 
-            <div prefix>
+            <div prefix slot="prefix">
                 <iron-icon icon="icons:search"></iron-icon>
             </div>
 
@@ -138,7 +138,7 @@ Custom property | Description | Default
                 <paper-icon-button id="clear"
                                    icon="icons:clear"
                                    suffix
-                                   on-tap="_onClearSearch"></paper-icon-button>
+                                   on-tap="_onClearSearch" slot="suffix"></paper-icon-button>
             </template>
 
         </paper-input>

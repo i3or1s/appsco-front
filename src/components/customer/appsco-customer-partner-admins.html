@@ -40,18 +40,18 @@ Custom property | Description | Default
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--appsco-customer-partner-admins);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --appsco-customer-partner-admins;
             }
             .roles {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
             }
             appsco-company-partner-admin-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-company-group-role-item);
+                @apply --appsco-company-group-role-item;
             }
             .partner-admins-container {
                 width: 100%;
@@ -77,18 +77,18 @@ Custom property | Description | Default
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             .roles {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
                 width: 100%;
             }
             .info-total {
                 margin-bottom: 10px;
             }
             .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 color: var(--secondary-text-color);
             }
             .load-more-box paper-button {
@@ -96,24 +96,24 @@ Custom property | Description | Default
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host([preview]) .roles {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             :host([preview]) appsco-company-partner-admin-item {
                 width: auto;
                 margin: 0 2px 0 0;
-                @apply(--appsco-company-partner-admin-item-preview);
+                @apply --appsco-company-partner-admin-item-preview;
             }
             :host .options paper-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 display: inline-block;
             }
             :host .options {

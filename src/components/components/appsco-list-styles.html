@@ -9,9 +9,9 @@
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--appsco-list);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --appsco-list;
 
                 --paper-progress-container-color: var(--body-background-color);
                 --paper-progress-height: 2px;
@@ -21,12 +21,12 @@
                 min-height: 160px;
                 padding-top: 10px;
                 position: relative;
-                @apply(--list-container);
+                @apply --list-container;
             }
             :host .list {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
-                @apply(--list);
+                @apply --layout-vertical;
+                @apply --layout-start;
+                @apply --list;
             }
             :host .load-more-box {
                 margin-top: 10px;
@@ -45,25 +45,25 @@
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             :host .load-more-action {
                 display: block;
                 width: 120px;
                 margin: 10px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host([display-grid]) .list {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
-                @apply(--layout-start);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
+                @apply --layout-start;
                 margin-right: -20px;
             }
         </style>

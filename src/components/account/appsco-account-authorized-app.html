@@ -37,7 +37,7 @@ Example:
                 display: none;
                 padding: 16px 0 10px 6px;
                 border-top: 1px solid var(--divider-color);
-                @apply(--account-authorized-app);
+                @apply --account-authorized-app;
 
             --paper-icon-button: {
                  width: 32px;
@@ -49,17 +49,17 @@ Example:
             :host .application {
                 position: relative;
                 padding-top: 20px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--authorized-app);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --authorized-app;
             }
             :host .application-info-container {
-                @apply(--layout-vertical);
-                @apply(--layout-flex);
+                @apply --layout-vertical;
+                @apply --layout-flex;
             }
             :host .application-basic {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .application-date {
                 font-size: 11px;
@@ -67,20 +67,20 @@ Example:
                 top: 5px;
                 right: 6px;
                 opacity: 0.5;
-                @apply(--authorized-app-date);
+                @apply --authorized-app-date;
             }
             :host .application-icon {
                 min-width: 32px;
                 margin-right: 10px;
-                @apply(--layout-flex-none);
-                @apply(--authorized-app-icon);
+                @apply --layout-flex-none;
+                @apply --authorized-app-icon;
             }
             :host .application-info {
-                @apply(--layout-vertical);
-                @apply(--authorized-app-info);
+                @apply --layout-vertical;
+                @apply --authorized-app-info;
             }
             :host .application-title {
-                @apply(--authorized-app-title);
+                @apply --authorized-app-title;
             }
             :host .application-scope {
                 font-size: 12px;
@@ -93,8 +93,8 @@ Example:
                 margin-top: 10px;
                 font-size: 12px;
                 opacity: 0.8;
-                @apply(--layout-vertical);
-                @apply(--authorized-app-additional-info);
+                @apply --layout-vertical;
+                @apply --authorized-app-additional-info;
             }
             :host .application-description {
                 margin-top: 4px;
