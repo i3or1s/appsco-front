@@ -471,8 +471,6 @@
                             body: this._getEncodedBodyValues(form)
                         };
 
-                    console.log('Request options: ', options);
-
                     if (this.domain.hasIdp) {
                         options.url = this.domain.meta.idpConfig;
                         options.method = 'PUT';
