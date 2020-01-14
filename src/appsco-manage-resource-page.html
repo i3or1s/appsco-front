@@ -341,15 +341,13 @@
                 },
 
                 companyIdpSamlMetadataApi: {
-                    type: String,
-                    value: ''
+                    type: String
                 },
                 /**
                  * Get accounts link.
                  */
                 accountsApi: {
-                    type: String,
-                    value: ''
+                    type: String
                 },
 
                 /**
@@ -357,7 +355,6 @@
                  */
                 companyApi: {
                     type: String,
-                    value: '',
                     observer: '_onCompanyApiChanged'
                 },
 
@@ -491,11 +488,11 @@
             },
 
             _computeGroupsForApplication: function(application) {
-                return application.meta ? application.meta.groups + '?extended=1' : '';
+                return application.meta ? application.meta.groups + '?extended=1' : null;
             },
 
             _computeResourceImageSettingsApi: function(application) {
-                return application.meta ? application.meta.change_application_image : '';
+                return application.meta ? application.meta.change_application_image : null;
             },
 
             _computeLastEditedDate: function(application) {

@@ -321,7 +321,7 @@
             },
 
             _computePlansApi: function(companyApi) {
-                return companyApi ? companyApi + '/billing/plans' : '';
+                return companyApi ? companyApi + '/billing/plans' : null;
             },
 
             _isYearlyPlan: function(plan) {
@@ -354,9 +354,9 @@
 
             _computePurchaseApi: function(companyApi, subscription) {
                 if (subscription && subscription.id) {
-                    return companyApi ? companyApi + '/billing/subscriptions/' + this.subscription.id : '';
+                    return companyApi ? companyApi + '/billing/subscriptions/' + this.subscription.id : null;
                 }
-                return companyApi ? companyApi + '/billing/subscriptions' : '';
+                return companyApi ? companyApi + '/billing/subscriptions' : null;
             },
 
             /**
