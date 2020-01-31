@@ -44,85 +44,85 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoOAuthApplicationSettingsPage extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-oauth-application-settings-page'; }
 
-            is: 'appsco-oauth-application-settings-page',
-
-            properties: {
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
-                    }
-                },
+                    },
 
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            setPage: function() {
-                this.$.appscoEditOAuthApplicationForm.initialize();
-            },
-
-            resetPage: function() {
-                this.$.appscoEditOAuthApplicationForm.reset();
-            },
-
-            _onClosePageAction: function() {
-                this.resetPage();
-                this.fire('back');
+                };
             }
-        });
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            setPage() {
+                this.$.appscoEditOAuthApplicationForm.initialize();
+            }
+
+            resetPage() {
+                this.$.appscoEditOAuthApplicationForm.reset();
+            }
+
+            _onClosePageAction() {
+                this.resetPage();
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoOAuthApplicationSettingsPage.is, AppscoOAuthApplicationSettingsPage);
     </script>
 </dom-module>
 

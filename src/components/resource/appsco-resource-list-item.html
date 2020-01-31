@@ -7,14 +7,12 @@
 <link rel="import" href="../../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
 
-
 <link rel="import" href="../components/appsco-list-item-behavior.html">
 <link rel="import" href="../components/appsco-list-item-styles.html">
 
 <dom-module id="appsco-resource-list-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 --resource-image: {
                     width: 32px;
@@ -56,14 +54,12 @@
     </template>
 
     <script>
-        Polymer({
-
-            is: 'appsco-resource-list-item',
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ]
-        });
+        class AppscoResourceListItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-resource-list-item'; }
+        }
+        window.customElements.define(AppscoResourceListItem.is, AppscoResourceListItem);
     </script>
 </dom-module>

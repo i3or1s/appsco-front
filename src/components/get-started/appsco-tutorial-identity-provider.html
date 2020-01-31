@@ -119,55 +119,60 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoTutorialIdentityProvider extends Polymer.mixinBehaviors([
+            Polymer.AppscoTutorialBehaviour,
+            Polymer.AppscoCoverBehaviour
+        ], Polymer.Element) {
+            static get is() { return 'appsco-tutorial-identity-provider'; }
 
-            is: 'appsco-tutorial-identity-provider',
+            static get properties() {
+                return {
+                    page: {
+                        type: String
+                    },
 
-            _readMore: function () {
+                    companyDomainsLoaded: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.tutorialId = 'identity_provider';
+                this.tutorialTitle = 'Identity provider';
+                this.description = 'Set up an external identity provider';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                this.tutorialId = 'identity_provider';
+                this.tutorialTitle = 'Identity provider';
+                this.description = 'Set up an external identity provider';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.init();
+                });
+            }
+
+            _readMore() {
                 window.open(this.readme, '_blank');
-            },
+            }
 
-            property: {
-                page: {
-                    type: String
-                },
-
-                companyDomainsLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoTutorialBehaviour,
-                Polymer.AppscoCoverBehaviour
-            ],
-
-            pageChanged: function() {
+            pageChanged() {
                 if(this.page !== 'company' && this.step === 2) {
                     this.reset();
                 }
-            },
+            }
 
-            ready: function() {
-                this.tutorialId = 'identity_provider';
-                this.tutorialTitle = 'Identity provider';
-                this.description = 'Set up an external identity provider';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
-            },
-
-            attached: function() {
-                this.tutorialId = 'identity_provider';
-                this.tutorialTitle = 'Identity provider';
-                this.description = 'Set up an external identity provider';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
-
-                this.init();
-            },
-
-            getPopperConfig: function() {
+            getPopperConfig() {
                 return {
                     step1: {
                         reference: '* /deep/ #menuBurger',
@@ -212,13 +217,12 @@
                         }
                     }
                 };
-            },
+            }
 
-            step3: function(index, item, doneBuildingPopperHandler) {
-                var handleFunction = function() {
-                    var element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
+            step3(index, item, doneBuildingPopperHandler) {
+                const handleFunction = function () {
+                    const element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
                     if (this.page !== 'company') {
-
                         return;
                     }
                     if (!element || this.page !== 'company' || !this.companyDomainsLoaded) {
@@ -229,27 +233,27 @@
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this);
                 setTimeout(handleFunction, 300);
-            },
+            }
 
-            step4: function(index, item, doneBuildingPopperHandler) {
-                var closeElement = this._querySelector('* /deep/ appsco-company-idp-settings-page /deep/ paper-icon-button.page-close-action');
+            step4(index, item, doneBuildingPopperHandler) {
+                const closeElement = this._querySelector('* /deep/ appsco-company-idp-settings-page /deep/ paper-icon-button.page-close-action');
                 if (closeElement) {
                     closeElement.click();
                 }
-                var handleFunction = function() {
-                    var element = this._querySelector('* /deep/ * /deep/ paper-button.manage-domain-action');
+                const handleFunction = function () {
+                    const element = this._querySelector('* /deep/ * /deep/ paper-button.manage-domain-action');
                     if (this.page !== 'company') {
                         return;
                     }
 
                     if (this.companyDomainsLoaded && !element) {
-                        var cover = this.buildCover(this._querySelector('* /deep/ div[content] /deep/ appsco-company-idp-domains-page')),
+                        const cover = this.buildCover(this._querySelector('* /deep/ div[content] /deep/ appsco-company-idp-domains-page')),
                             failElement = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'),
                             closeButton = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial paper-button'),
                             popper = new Popper(this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'), failElement, {
                                 placement: 'top-start'
                             }),
-                            closeListener = function() {
+                            closeListener = function () {
                                 cover.destroy();
                                 popper.destroy();
                                 failElement.hidden = true;
@@ -272,22 +276,23 @@
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this);
                 setTimeout(handleFunction, 500);
-            },
+            }
 
-            step5: function(index, item, doneBuildingPopperHandler) {
+            step5(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 400);
-            },
+            }
 
-            start: function() {
+            start() {
                 this.step = 0;
                 this.nextStep();
-            },
+            }
 
-            _nextStep: function() {
+            _nextStep() {
                 this.currentStep.reference.click();
             }
-        });
+        }
+        window.customElements.define(AppscoTutorialIdentityProvider.is, AppscoTutorialIdentityProvider);
     </script>
 </dom-module>

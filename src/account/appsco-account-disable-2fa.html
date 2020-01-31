@@ -74,90 +74,90 @@ Shows dialog screen with confirmation for disabling two-factor authentication.
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountDisable2fa extends Polymer.Element {
+            static get is() { return 'appsco-account-disable-2fa'; }
 
-            is: 'appsco-account-disable-2fa',
+            static get properties() {
+                return {
+                    twoFaApi: {
+                        type: String
+                    },
 
-            properties: {
+                    /**
+                     * Authorization token.
+                     */
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                twoFaApi: {
-                    type: String
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _headers: {
+                        type: String,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Error message.
+                     */
+                    _error: {
+                        type: String
                     }
-                },
+                };
+            }
 
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            open: function () {
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            close: function () {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            toggle: function () {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
+            _computeHeaders(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 };
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onDisableAction: function() {
+            _onDisableAction() {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this.twoFaApi,
@@ -169,23 +169,16 @@ Shows dialog screen with confirmation for disabling two-factor authentication.
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when two-factor authentication is disabled.
-                         *
-                         * @event twofa-disabled
-                         */
-                        this.fire('twofa-disabled');
+                        this.dispatchEvent(new CustomEvent('twofa-disabled', { bubbles: true, composed: true }));
                         this.close();
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountDisable2fa.is, AppscoAccountDisable2fa);
     </script>
 </dom-module>

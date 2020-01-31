@@ -8,6 +8,8 @@
 <link rel="import" href="../components/appsco-form-error.html">
 <link rel="import" href="../appsco-time-picker/appsco-time-picker.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-login-time-restriction-policy-settings">
     <template>
         <style>
@@ -110,134 +112,117 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoLoginTimeRestrictionPolicySettings extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-login-time-restriction-policy-settings'; }
 
-            is: 'appsco-login-time-restriction-policy-settings',
-
-            properties: {
-
-                policy: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    policy: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_restrictionsChanged'
                     },
-                    observer: '_restrictionsChanged'
-                },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
+                    },
+
+                    _restrictions: {
+                        type: Object,
+                        computed: '_computeRestrictions(policy)'
+                    },
+
+                    _timezoneList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _timeZoneListUrl: {
+                        type: String,
+                        value: function () {
+                            return this.resolveUrl('./data/timezone-list.json');
+                        }
                     }
-                },
+                };
+            }
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+            ready() {
+                super.ready();
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
+                this._target = this;
+            }
 
-                _error: {
-                    type: String
-                },
-
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this;
-                    }
-                },
-
-                _restrictions: {
-                    type: Object,
-                    computed: '_computeRestrictions(policy)'
-                },
-
-                _timezoneList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _timeZoneListUrl: {
-                    type: String,
-                    value: function() {
-                        return this.resolveUrl('./data/timezone-list.json');
-                    }
-                }
-            },
-
-            _restrictionsChanged: function(newValue, oldValue) {
+            _restrictionsChanged(newValue, oldValue) {
                 if (newValue.restrictions) {
                     this.$.paperListboxTimezone.select(newValue.restrictions.timezone);
                 }
-            },
+            }
 
-            _computeMondayFrom: function(policy) {
+            _computeMondayFrom(policy) {
                 return policy.restrictions.mondayFrom;
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
-
-            _computeRestrictions: function(policy) {
+            _computeRestrictions(policy) {
                 return policy.restrictions ? policy.restrictions : {};
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onKeyUp: function(event) {
-
+            _onKeyUp(event) {
                 if (13 !== event.keyCode) {
                     this._hideError();
                     event.target.invalid = false;
                 }
-            },
+            }
 
-            _onEnterAction: function(event) {
+            _onEnterAction(event) {
                 event.stopPropagation();
                 this._onSaveAction();
-            },
+            }
 
-            _onSaveAction: function() {
+            _onSaveAction() {
                 this._saveRestrictions();
-            },
+            }
 
-            _onTimezoneListResponse: function(event, ironRequest) {
-                var response = [];
+            _onTimezoneListResponse(event, ironRequest) {
+                const response = [];
 
                 ironRequest.response.forEach(function(zone, i) {
-
                     if (zone.utc) {
-
                         zone.utc.forEach(function(utc, index) {
                             var item = {
                                 value: utc,
@@ -246,9 +231,7 @@
 
                             response.push(item);
                         }.bind(this));
-
                     }
-
                 }.bind(this));
 
                 this._timezoneList = response.sort(function(zoneA, zoneB) {
@@ -258,10 +241,10 @@
                     return zoneA < zoneB ? -1 : zoneA > zoneB ? 1 : 0;
                 });
 
-            },
+            }
 
-            _saveRestrictions: function() {
-                var restrictions = {
+            _saveRestrictions() {
+                const restrictions = {
                         'timezone': this.$.restrictionTimezone.selectedItem.value,
                         'monday': {
                             'from': this.$.mondayFrom.value,
@@ -294,14 +277,14 @@
                     },
                     policy = this.policy;
 
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     options = {
                         url: policy.self,
                         method: 'PUT',
                         headers: this._headers,
                         handleAs: 'json'
-                    },
-                    body = 'policy[name]=' + policy.name + '&policy[description]=' + policy.description +'&';
+                    };
+                let body = 'policy[name]=' + policy.name + '&policy[description]=' + policy.description +'&';
 
                 body += 'policy[restrictions]=' + encodeURIComponent(JSON.stringify(restrictions));
                 options.body = body;
@@ -309,23 +292,25 @@
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('policy-updated', {
-                            policy: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('policy-updated', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                policy: request.response
+                            }
+                        }));
 
                         this.set('policy', {});
                         this.set('policy', request.response);
                         this._hideLoader();
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoLoginTimeRestrictionPolicySettings.is, AppscoLoginTimeRestrictionPolicySettings);
     </script>
 </dom-module>

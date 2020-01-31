@@ -14,9 +14,7 @@
 
 <dom-module id="appsco-oauth-application-certificate-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host .item-icon-container {
                 width: 52px;
                 height: 52px;
@@ -107,43 +105,40 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoOAuthApplicationCertificateItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-oauth-application-certificate-item'; }
 
-            is: 'appsco-oauth-application-certificate-item',
+            static get properties() {
+                return {
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            _onRemoveItemAction: function(event) {
+            _onRemoveItemAction(event) {
                 event.stopPropagation();
 
-                /**
-                 * Fired when `remove` is tapped.
-                 *
-                 * @event remove-item
-                 * @param {Object} item
-                 */
-                this.fire('remove-item', {
-                    item: this.item
-                });
+                this.dispatchEvent(new CustomEvent('remove-item', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        item: this.item
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoOAuthApplicationCertificateItem.is, AppscoOAuthApplicationCertificateItem);
     </script>
 </dom-module>

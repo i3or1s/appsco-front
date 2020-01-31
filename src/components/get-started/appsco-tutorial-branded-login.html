@@ -84,26 +84,49 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoTutorialBrandedLogin extends Polymer.mixinBehaviors([
+            Polymer.AppscoTutorialBehaviour,
+            Polymer.AppscoCoverBehaviour
+        ], Polymer.Element) {
+            static get is() { return 'appsco-tutorial-branded-login'; }
 
-            is: 'appsco-tutorial-branded-login',
+            static get properties() {
+                return {
+                    page: {
+                        type: String
+                    }
+                };
+            }
 
-            _readMore: function () {
+            ready() {
+                super.ready();
+
+                this.tutorialId = 'branded_login';
+                this.tutorialTitle = 'Branded login';
+                this.description = 'Set customized login for your company';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360014981992-Branded-login';
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                this.tutorialId = 'branded_login';
+                this.tutorialTitle = 'Branded login';
+                this.description = 'Set customized login for your company';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360014981992-Branded-login';
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.init();
+                });
+            }
+
+            _readMore() {
                 window.open(this.readme, '_blank');
-            },
+            }
 
-            property: {
-                page: {
-                    type: String
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoTutorialBehaviour,
-                Polymer.AppscoCoverBehaviour
-            ],
-
-            pageChanged: function() {
+            pageChanged() {
                 if(this.page !== 'company' && this.step === 2) {
                     this.reset();
                 }
@@ -112,27 +135,9 @@
                         this.nextStep();
                     }.bind(this), 3000);
                 }
-            },
+            }
 
-            ready: function() {
-                this.tutorialId = 'branded_login';
-                this.tutorialTitle = 'Branded login';
-                this.description = 'Set customized login for your company';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360014981992-Branded-login';
-            },
-
-            attached: function() {
-                this.tutorialId = 'branded_login';
-                this.tutorialTitle = 'Branded login';
-                this.description = 'Set customized login for your company';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360014981992-Branded-login';
-
-                this.init();
-            },
-
-            getPopperConfig: function() {
+            getPopperConfig() {
                 return {
                     step1: {
                         reference: '* /deep/ #menuBurger',
@@ -170,11 +175,11 @@
                         }
                     }
                 };
-            },
+            }
 
-            step3: function(index, item, doneBuildingPopperHandler) {
-                var handleFunction = function() {
-                    var element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
+            step3(index, item, doneBuildingPopperHandler) {
+                const handleFunction = function () {
+                    const element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
                     if (!element || this.page !== 'company') {
                         setTimeout(handleFunction, 200);
                         return;
@@ -183,27 +188,28 @@
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this);
                 handleFunction();
-            },
+            }
 
-            step4: function(index, item, doneBuildingPopperHandler) {
+            step4(index, item, doneBuildingPopperHandler) {
                 // wait 400 msec for animation to finish
                 setTimeout(function() {
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 400);
-            },
+            }
 
-            start: function() {
+            start() {
                 this.step = 0;
                 this.nextStep();
-            },
+            }
 
-            _nextStep: function() {
+            _nextStep() {
                 this.currentStep.reference.click();
-            },
+            }
 
-            _nextStep5: function() {
+            _nextStep5() {
                 this.nextStep();
             }
-        });
+        }
+        window.customElements.define(AppscoTutorialBrandedLogin.is, AppscoTutorialBrandedLogin);
     </script>
 </dom-module>

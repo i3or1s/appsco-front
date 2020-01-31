@@ -228,183 +228,159 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyDomainItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-domain-item'; }
 
-            is: 'appsco-company-domain-item',
-
-            properties: {
-
-                /**
-                 * Domain that is to be rendered
-                 */
-                domain: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    domain: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_domainChanged'
                     },
-                    observer: '_domainChanged'
-                },
 
-                domainsApi: {
-                    type: String
-                },
+                    domainsApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    /**
+                     * Indicates if domain should be in preview mode rather then full detailed view.
+                     */
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Indicates if domain should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    screen1000: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                screen1000: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _verificationAction: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _verificationAction: {
-                    type: Boolean,
-                    value: false
-                },
+                    _verified: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _verified: {
-                    type: Boolean,
-                    value: false
-                },
+                    _domainStatusApiUrl: {
+                        type: String,
+                        computed: '_computeDomainStatusApi(domain)'
+                    },
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _progressBarDisplay: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _domainStatusApiUrl: {
-                    type: String,
-                    computed: '_computeDomainStatusApi(domain)'
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                _progressBarDisplay: {
-                    type: Boolean,
-                    value: false
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, screen1000)'
+                ];
+            }
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.screen1000) {
+                        this.style.display = 'inline-block';
+                        this.updateStyles();
+                    }
+                });
 
-            observers: [
-                '_updateScreen(mobileScreen, screen1000)'
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
 
-            attached: function() {
-
-                if (this.mobileScreen || this.screen1000) {
-                    this.updateStyles();
-                }
-
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _notifyDomainStatus: function() {
-                var verified = this._verified;
-
-                this.domain.verified = verified;
+            _notifyDomainStatus() {
+                this.domain.verified = this._verified;
 
                 if (this._verificationAction) {
                     var eventType = this._verified ? 'domain-verified' : 'domain-not-verified';
-
-                    this.fire(eventType, {
-                        domain: this.domain
-                    });
+                    this.dispatchEvent(new CustomEvent(eventType, {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            domain: this.domain
+                        }
+                    }));
                 }
-            },
+            }
 
-            _domainChanged: function(domain) {
+            _domainChanged(domain) {
                 this._verified = domain.verified;
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                };
-            },
-
-            _computeDomainStatusApi: function(domain) {
+            _computeDomainStatusApi(domain) {
                 return domain.self ? (domain.self + '/verify') : null;
-            },
+            }
 
-            _showProgressBar: function() {
+            _showProgressBar() {
                 this._progressBarDisplay = true;
-            },
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
                     this._progressBarDisplay = false;
                 }.bind(this), 500);
-            },
+            }
 
-            _checkDomainStatus: function() {
+            _checkDomainStatus() {
                 this._showProgressBar();
                 this.$.getDomainStatus.generateRequest();
-            },
+            }
 
-            _onDomainStatusError: function(event) {
-
+            _onDomainStatusError(event) {
                 if (422 === event.detail.request.status) {
                     this._verified = false;
                     this._notifyDomainStatus();
                 }
 
                 this._hideProgressBar();
-            },
+            }
 
-            _onDomainStatusResponse: function(event) {
+            _onDomainStatusResponse(event) {
 
                 if (event.detail.response && 200 === event.detail.status) {
                     this._verified = true;
@@ -412,41 +388,37 @@ Custom property | Description | Default
                 }
 
                 this._hideProgressBar();
-            },
-
-            _onGetToken: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `get token` action is tapped.
-                 *
-                 * @event get-token
-                 * @param {Object} domain
-                 */
-                this.fire('get-token', {
-                    domain: this.domain
-                });
-            },
-
-            _onVerify: function() {
-                this._verificationAction = true;
-                this._checkDomainStatus();
-            },
-
-            _onRemove: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `remove` action is tapped.
-                 *
-                 * @event remove
-                 * @param {Object} domain
-                 */
-                this.fire('remove', {
-                    domain: this.domain
-                });
             }
 
-        });
+            _onGetToken(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('get-token', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: this.domain
+                    }
+                }));
+            }
+
+            _onVerify() {
+                this._verificationAction = true;
+                this._checkDomainStatus();
+            }
+
+            _onRemove(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('remove', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: this.domain
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyDomainItem.is, AppscoCompanyDomainItem);
     </script>
 </dom-module>

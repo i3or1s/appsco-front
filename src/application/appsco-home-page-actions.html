@@ -171,158 +171,164 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoHomePageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-home-page-actions'; }
 
-            is: 'appsco-home-page-actions',
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    pageConfigApi: {
+                        type: String
+                    },
+
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    page: {
+                        type: String,
+                        value: ''
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    _searchActive: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _isAddingResourceAllowed: {
+                        type: Boolean,
+                        computed: '_computeIsAddingResourceAllowed(account)'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+            static get observers(){
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen)'
+                ];
+            }
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                pageConfigApi: {
-                    type: String
-                },
-
-                pageConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                page: {
-                    type: String,
-                    value: ''
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                _searchActive: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _isAddingResourceAllowed: {
-                    type: Boolean,
-                    computed: '_computeIsAddingResourceAllowed(account)'
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 200,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 200,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen)'
-            ],
-
-            attached: function() {
-
-                if (this.mobileScreen || this.tabletScreen) {
+                Polymer.RenderStatus.beforeNextRender(this, function() {
                     this.updateStyles();
-                }
+                    if (this.mobileScreen || this.tabletScreen) {
+                        this.updateStyles();
+                    }
+                });
+            }
 
-            },
-
-            _updateScreen: function(mobile, tablet) {
+            _updateScreen(mobile, tablet) {
                 this.updateStyles();
-            },
+            }
 
-            _showSearch: function() {
-                this.customStyle['--input-search-max-width'] = '100%';
-                this.customStyle['--paper-input-search-container-tablet'] = 'width: 100%;';
+            _showSearch() {
                 this.$.appscoApplicationActions.focusSearch();
 
-                this.updateStyles();
-            },
+                this.updateStyles({
+                    '--input-search-max-width': '100%',
+                    '--paper-input-search-container-tablet': 'width: 100%;'
+                });
+            }
 
-            _closeSearch: function() {
+            _closeSearch() {
                 this._searchActive = false;
-
-                this.customStyle['--input-search-max-width'] = '22px';
 
                 // Wait for animation to finish.
                 setTimeout(function() {
-                    this.customStyle['--paper-input-search-container-tablet'] = 'width: auto';
-                    this.updateStyles();
+                    this.updateStyles({
+                        '--input-search-max-width': '22px',
+                        '--paper-input-search-container-tablet': 'width: auto'
+                    });
                 }.bind(this), 200);
 
                 this.updateStyles();
-            },
+            }
 
-            _onSearchIcon: function() {
+            _onSearchIcon() {
                 this._searchActive = !this._searchActive;
                 this._searchActive ? this._showSearch() : this._closeSearch();
-            },
-
-            _computeIsAddingResourceAllowed: function(account) {
-                return !(account && account.native_company && !account.native_company.adding_resource_on_personal_allowed);
-            },
-
-            resetPage: function() {
-                this.$.appscoApplicationActions.reset();
-            },
-
-            resetPageActions: function() {
-                this.$.appscoApplicationActions.reset();
-            },
-
-            _onAddNewFolderAction: function() {
-                this.fire('add-new-folder', {'personal' : true});
             }
-        });
+
+            _computeIsAddingResourceAllowed(account) {
+                return !(account && account.native_company && !account.native_company.adding_resource_on_personal_allowed);
+            }
+
+            resetPage() {
+                this.$.appscoApplicationActions.reset();
+            }
+
+            resetPageActions() {
+                this.$.appscoApplicationActions.reset();
+            }
+
+            _onAddNewFolderAction() {
+                this.dispatchEvent(new CustomEvent('add-new-folder', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        'personal' : true
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoHomePageActions.is, AppscoHomePageActions);
     </script>
 </dom-module>
 

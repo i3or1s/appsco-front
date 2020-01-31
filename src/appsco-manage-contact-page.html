@@ -124,152 +124,151 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-manage-contact-page',
+        class AppscoManageContactPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-manage-contact-page'; }
 
-            properties: {
-
-                route: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                contact: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    observer: '_onContactChanged'
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                contactsApi: {
-                    type: String,
-                    observer: '_onContactsApiChanged'
-                },
-
-                _logApi: {
-                    type: String,
-                    computed: '_computeLogApi(contact)'
-                },
-
-                _groupsApi: {
-                    type: String,
-                    computed: '_computeGroupsApi(contact)'
-                },
-
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Selected page.
-                 * It has value of component's 'name' attribute.
-                 */
-                _selected: {
-                    type: String,
-                    value: 'appsco-contact-components-page',
-                    notify: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            static get properties() {
+                return {
+                    route: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    contact: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onContactChanged'
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    contactsApi: {
+                        type: String,
+                        observer: '_onContactsApiChanged'
+                    },
+
+                    _logApi: {
+                        type: String,
+                        computed: '_computeLogApi(contact)'
+                    },
+
+                    _groupsApi: {
+                        type: String,
+                        computed: '_computeGroupsApi(contact)'
+                    },
+
+
+                    /**
+                     * Computed headers.
+                     * It contains authorization token.
+                     */
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    /**
+                     * Selected page.
+                     * It has value of component's 'name' attribute.
+                     */
+                    _selected: {
+                        type: String,
+                        value: 'appsco-contact-components-page',
+                        notify: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+            static get observers() {
+                return [
+                    '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-            ],
-
-            attached: function() {
+            ready() {
+                super.ready();
 
                 this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-                if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-                this._getContact();
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._getContact();
+                });
+            }
 
-            },
-
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            setContact: function(contact) {
+            setContact(contact) {
                 this.set('contact', contact);
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._showContactComponentsPage();
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _updateScreen: function(medium, tablet, mobile) {
+            _updateScreen(medium, tablet, mobile) {
                 this.updateStyles();
 
                 if (mobile) {
@@ -278,40 +277,39 @@
                 else if (!this.$.appscoContent.resourceActive) {
                     this.$.appscoContent.showSection('resource');
                 }
-            },
+            }
 
-            _computeLogApi: function(contact) {
+            _computeLogApi(contact) {
                 return contact.meta ? contact.meta.log : null;
-            },
+            }
 
-            _computeGroupsApi: function(contact) {
+            _computeGroupsApi(contact) {
                 return contact.meta ? contact.meta.groups + '?extended=1' : null;
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders (authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken
                 }
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _onContactsApiChanged: function() {
+            _onContactsApiChanged() {
                 this._getContact();
-            },
+            }
 
-            _onContactChanged: function(contact) {
+            _onContactChanged(contact) {
                 if (contact.self) {
                     this.$.appscoManageContactComponentsPage.load();
                     this.$.appscoContactsGroup.loadGroups();
                 }
-            },
+            }
 
-            _getContact: function() {
-
+            _getContact() {
                 if (!this.contact.self && this.contactsApi && this._headers) {
                     var contactApi = this.contactsApi + this.route.path,
                         getContactRequest = this.$.ironAjaxGetContact;
@@ -323,71 +321,76 @@
                     getContactRequest.url = contactApi;
                     getContactRequest.generateRequest();
                 }
-            },
+            }
 
-            _onGetContactResponse: function(event) {
-
+            _onGetContactResponse(event) {
                 if (200 === event.detail.status && event.detail.response) {
                     this.set('contact', event.detail.response);
                 }
 
                 this._onPageLoaded();
-            },
-
-            _onGetContactError: function(event) {
-
-                if (!event.detail.request.aborted) {
-                    this.fire('page-error');
-                }
-            },
-
-            _onConvertContactToUserAction: function() {
-
-                this.fire('convert-contact-to-user', {
-                    contact: this.contact
-                });
-            },
-
-            _onDeleteContactAction: function() {
-
-                this.fire('delete-contact', {
-                    contact: this.contact
-                });
-            },
-
-            _onManageApplications: function() {
-                this._selected = 'appsco-contact-applications-page';
-            },
-
-            _onManageActivityLog: function() {
-                this._selected = 'appsco-account-log-page';
-            },
-
-            _onManageGroups: function() {
-                this._selected = 'appsco-contact-groups-page';
-            },
-
-            _onResourceBack: function() {
-                this._showContactComponentsPage();
-            },
-
-            _showContactComponentsPage: function() {
-                this._selected = 'appsco-contact-components-page';
-            },
-
-            reloadApplications: function() {
-                this.$.appscoContactApplicationsPage.reloadApplications();
-                this.$.appscoManageContactComponentsPage.reloadApplications();
-            },
-
-            removeGroup: function(group) {
-                this.$.appscoContactsGroup.removeGroup(group);
-            },
-
-            reload: function() {
-                this.$.appscoManageContactComponentsPage.load();
             }
 
-        });
+            _onGetContactError(event) {
+
+                if (!event.detail.request.aborted) {
+                    this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
+                }
+            }
+
+            _onConvertContactToUserAction() {
+                this.dispatchEvent(new CustomEvent('convert-contact-to-user', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        contact: this.contact
+                    }
+                }));
+            }
+
+            _onDeleteContactAction() {
+                this.dispatchEvent(new CustomEvent('delete-contact', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        contact: this.contact
+                    }
+                }));
+            }
+
+            _onManageApplications() {
+                this._selected = 'appsco-contact-applications-page';
+            }
+
+            _onManageActivityLog() {
+                this._selected = 'appsco-account-log-page';
+            }
+
+            _onManageGroups() {
+                this._selected = 'appsco-contact-groups-page';
+            }
+
+            _onResourceBack() {
+                this._showContactComponentsPage();
+            }
+
+            _showContactComponentsPage() {
+                this._selected = 'appsco-contact-components-page';
+            }
+
+            reloadApplications() {
+                this.$.appscoContactApplicationsPage.reloadApplications();
+                this.$.appscoManageContactComponentsPage.reloadApplications();
+            }
+
+            removeGroup(group) {
+                this.$.appscoContactsGroup.removeGroup(group);
+            }
+
+            reload() {
+                this.$.appscoManageContactComponentsPage.load();
+            }
+        }
+        window.customElements.define(AppscoManageContactPage.is, AppscoManageContactPage);
     </script>
 </dom-module>

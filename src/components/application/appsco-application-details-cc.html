@@ -105,20 +105,21 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationDetailsCC extends Polymer.Element {
+            static get is() { return 'appsco-application-details-cc'; }
 
-            is: 'appsco-application-details-cc',
-
-            properties: {
-
-                claims: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                }
+            static get properties() {
+                return {
+                    claims: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    }
+                };
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationDetailsCC.is, AppscoApplicationDetailsCC);
     </script>
 </dom-module>

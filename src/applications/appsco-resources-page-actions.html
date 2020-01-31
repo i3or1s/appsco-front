@@ -173,158 +173,154 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoResourcesPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-resources-page-actions'; }
 
-            is: 'appsco-resources-page-actions',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    pageConfigApi: {
+                        type: String
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    page: {
+                        type: String,
+                        value: ''
+                    },
+
+                    /**
+                     * Link to retrieve filters from
+                     */
+                    filterApi: {
+                        type: String
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    _searchActive: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                pageConfigApi: {
-                    type: String
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen)'
+                ];
+            }
 
-                pageConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                page: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Link to retrieve filters from
-                 */
-                filterApi: {
-                    type: String
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                _searchActive: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 200,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 200,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen) {
+                        this.updateStyles();
+                    }
+                });
+            }
 
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen)'
-            ],
-
-            attached: function() {
-
-                if (this.mobileScreen || this.tabletScreen) {
-                    this.updateStyles();
-                }
-
-            },
-
-            _updateScreen: function(mobile, tablet) {
+            _updateScreen(mobile, tablet) {
                 this.updateStyles();
-            },
+            }
 
-            _showSearch: function() {
-                this.customStyle['--paper-input-search-container-tablet'] = 'width: 100%;';
+            _showSearch() {
                 this.$.appscoApplicationsActions.focusSearch();
 
-                this.updateStyles();
-            },
+                this.updateStyles({'--paper-input-search-container-tablet': 'width: 100%;'});
+            }
 
-            _closeSearch: function() {
+            _closeSearch() {
                 this._searchActive = false;
 
                 // Wait for animation to finish.
                 setTimeout(function() {
-                    this.customStyle['--paper-input-search-container-tablet'] = 'width: auto';
-                    this.updateStyles();
+                    this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
                 }.bind(this), 200);
 
                 this.updateStyles();
-            },
+            }
 
-            _onSearchIcon: function() {
+            _onSearchIcon() {
                 this._searchActive = !this._searchActive;
                 this._searchActive ? this._showSearch() : this._closeSearch();
-            },
+            }
 
-            showBulkActions: function() {
+            showBulkActions() {
                 this.$.appscoApplicationsActions.showBulkActions();
-            },
+            }
 
-            hideBulkActions: function() {
+            hideBulkActions() {
                 this.$.appscoApplicationsActions.hideBulkActions();
-            },
+            }
 
-            showBulkSelectAll: function() {
+            showBulkSelectAll() {
                 this.$.appscoApplicationsActions.showBulkSelectAll();
-            },
+            }
 
-            hideBulkSelectAll: function() {
+            hideBulkSelectAll() {
                 this.$.appscoApplicationsActions.hideBulkSelectAll();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.$.appscoApplicationsActions.reset();
-            },
+            }
 
-            resetPageActions: function() {
+            resetPageActions() {
                 this.resetPage();
             }
-        });
+        }
+        window.customElements.define(AppscoResourcesPageActions.is, AppscoResourcesPageActions);
     </script>
 </dom-module>
 

@@ -8,6 +8,8 @@
 
 <link rel="import" href="appsco-company-group-contact-item.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-group-contacts`
 Contains group's contact list and Load More action.
@@ -118,7 +120,7 @@ Custom property | Description | Default
             <iron-ajax
                     id="getGroupContactsApiRequest"
                     url="[[ _listApi ]]"
-                    headers="[[ _computedHeaders ]]"
+                    headers="[[ _headers ]]"
                     debounce-duration="300"
                     on-error="_onError"
                     on-response="_onResponse"></iron-ajax>
@@ -163,219 +165,187 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroupContacts extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior, Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-group-contacts'; }
 
-            is: 'appsco-company-group-contacts',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Route to retrieve list
-                 */
-                listApi: {
-                    type: String,
-                    observer: '_onListApiChanged'
-                },
-
-                /**
-                 * Number of items to load and present
-                 */
-                size: {
-                    type: Number,
-                    value: 10
-                },
-
-                /**
-                 * Show load more button
-                 */
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if group should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _contacts: {
-                    type: Array,
-                    value: function() {
-                        return [];
+            static get properties() {
+                return {
+                    listApi: {
+                        type: String,
+                        observer: '_onListApiChanged'
                     },
-                    notify: true
-                },
 
-                _allContacts: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    size: {
+                        type: Number,
+                        value: 10
+                    },
+
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    _contacts: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
+                    },
+
+                    _allContacts: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _contactsEmpty: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _message: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _nextPageApiUrl: {
+                        type: String
+                    },
+
+                    _totalContacts: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _renderedIndex: {
+                        type: Number,
+                        value: -1
+                    },
+
+                    _loaders: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _contactsEmpty: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                _message: {
-                    type: String,
-                    value: ''
-                },
-
-                _nextPageApiUrl: {
-                    type: String
-                },
-
-                _totalContacts: {
-                    type: Number,
-                    value: 0
-                },
-
-                _renderedIndex: {
-                    type: Number,
-                    value: -1
-                },
-
-                _loaders: {
-                    type: Array,
-                    value: function() { return []; }
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'slide-from-left-animation',
-                                nodes: [],
-                                nodeDelay: 50,
-                                timing: {
-                                    duration: 300
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'slide-from-left-animation',
+                        nodes: [],
+                        nodeDelay: 50,
+                        timing: {
+                            duration: 300
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _onListApiChanged: function(url) {
+            _onListApiChanged(url) {
                 if (!url) {
                     return;
                 }
-                this._listApi = ((url.indexOf('extended') != -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
+                this._listApi = ((url.indexOf('extended') !== -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
                 if (url && url.length > 0) {
                     this._loadContacts();
                 }
-            },
+            }
 
-            _setLoadMoreAction: function() {
+            _setLoadMoreAction() {
                 this._loadMore = (!this.preview && this.loadMore && this._allContacts.length < this._totalContacts);
-            },
+            }
 
-            _hideLoadMoreAction: function() {
+            _hideLoadMoreAction() {
                 this._loadMore = false;
-            },
+            }
 
-            loadItems: function() {
+            loadItems() {
                 this._loadContacts();
-            },
+            }
 
-            _loadContacts: function() {
+            _loadContacts() {
                 this._showProgressBar();
                 this._loadMore = false;
                 this._clearContacts();
                 this.$.getGroupContactsApiRequest.generateRequest();
-            },
+            }
 
-            reloadContacts: function() {
+            reloadContacts() {
                 this._loadContacts();
-            },
+            }
 
-            _loadMoreContacts: function() {
+            _loadMoreContacts() {
                 this._showLoadMoreProgressBar();
                 this.$.getGroupContactsApiRequest.url = this._nextPageApiUrl;
                 this.$.getGroupContactsApiRequest.generateRequest();
-            },
+            }
 
-            _onError: function() {
+            _onError() {
                 this._message = 'We couldn\'t load contacts at the moment. Please try again in a minute.';
                 this._handleEmptyLoad();
-            },
+            }
 
-            _handleEmptyLoad: function() {
+            _handleEmptyLoad() {
                 this._contactsEmpty = true;
                 this._message = 'There are no contacts attached to this group.';
 
-                /**
-                 * Fired when there are no contacts.
-                 *
-                 * @event empty-load
-                 */
-                this.fire('empty-load');
+                this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
 
                 this._hideProgressBar();
                 this._hideLoadMoreProgressBar();
-            },
+            }
 
-            _clearLoaders: function() {
-                for (var idx in this._loaders) {
+            _clearLoaders() {
+                for (const idx in this._loaders) {
                     clearTimeout(this._loaders[idx]);
                 }
                 this.set('_loaders', []);
-            },
+            }
 
-            _clearContacts: function() {
+            _clearContacts() {
                 this._clearLoaders();
                 this.set('_contacts', []);
                 this.set('_allContacts', []);
-            },
+            }
 
-            _onResponse: function(event) {
-                var response = event.detail.response;
+            _onResponse(event) {
+                const response = event.detail.response;
                 if (response && response.contacts) {
-                    var contacts = response.contacts,
+                    const contacts = response.contacts,
                         meta = response.meta,
                         contactsCount = contacts.length - 1;
 
@@ -394,14 +364,11 @@ Custom property | Description | Default
                         this._clearContacts();
                     }
                     contacts.forEach(function(el, index) {
-
                         this._loaders.push(setTimeout(function() {
-
                             this.push('_contacts', el);
                             this.push('_allContacts', el);
 
-                            if (index == contactsCount) {
-
+                            if (index === contactsCount) {
                                 this._loadMore = this.loadMore;
 
                                 if (this._contacts.length === meta.total) {
@@ -412,56 +379,48 @@ Custom property | Description | Default
                                 this._hideLoadMoreProgressBar();
                                 this._setLoadMoreAction();
 
-                                /**
-                                 * Fired when contacts are loaded
-                                 *
-                                 * @event loaded
-                                 * @param {Object} companyContacts[]
-                                 */
-                                this.fire('loaded', {
-                                    companyContacts: contacts
-                                });
+                                this.dispatchEvent(new CustomEvent('loaded', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        companyContacts: contacts
+                                    }
+                                }));
                             }
-
                         }.bind(this), (index + 1) * 30));
-
                     }.bind(this));
                 }
-            },
+            }
 
-            _showProgressBar: function() {
-                this.$$('#paperProgress').hidden = false;
-            },
+            _showProgressBar() {
+                this.shadowRoot.getElementById('paperProgress').hidden = false;
+            }
 
-            _showLoadMoreProgressBar: function() {
-                this.$$('#loadMoreProgress').hidden = false;
-            },
+            _showLoadMoreProgressBar() {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
-                    this.$$('#paperProgress').hidden = true;
+                    this.shadowRoot.getElementById('paperProgress').hidden = true;
                 }.bind(this), 300);
 
-            },
+            }
 
-            _hideLoadMoreProgressBar: function() {
-
+            _hideLoadMoreProgressBar() {
                 setTimeout(function() {
-                    this.$$('#loadMoreProgress').hidden = true;
+                    this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                 }.bind(this), 300);
+            }
 
-            },
+            _onItemsDomChange() {
+                const index = this._renderedIndex;
 
-            _onItemsDomChange: function() {
-                var index = this._renderedIndex;
-
-                if (-1 != index) {
-
+                if (-1 !== index) {
                     this.animationConfig.entry.nodes = [];
 
-                    for (var i = 0; i <= index; i++) {
-                        var addedItem = this.$$('#appscoGroupContactItem_' + i);
+                    for (let i = 0; i <= index; i++) {
+                        const addedItem = this.shadowRoot.getElementById('appscoGroupContactItem_' + i);
                         this.animationConfig.entry.nodes.push(addedItem);
                     }
 
@@ -469,21 +428,18 @@ Custom property | Description | Default
 
                     this._renderedIndex = -1;
                 }
+            }
 
-            },
-
-
-            addGroupItems: function(contacts) {
-                var length = contacts.length,
-                        allContacts = this._allContacts,
-                        allLength = allContacts.length;
+            addGroupItems(contacts) {
+                const length = contacts.length,
+                    allContacts = this._allContacts,
+                    allLength = allContacts.length;
 
                 this._contactsEmpty = false;
                 this._message = '';
                 this._renderedIndex = length - 1;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (0 === allLength) {
                         this.push('_contacts', contacts[i]);
                         this.push('_allContacts', contacts[i]);
@@ -491,9 +447,7 @@ Custom property | Description | Default
                         this._totalContacts++;
                     }
                     else {
-
-                        for (var j = 0; j < allLength; j++) {
-
+                        for (let j = 0; j < allLength; j++) {
                             if (allContacts[j].alias === contacts[i].alias) {
                                 break;
                             }
@@ -503,32 +457,29 @@ Custom property | Description | Default
 
                                 this._totalContacts++;
                             }
-
                         }
                     }
                 }
-            },
+            }
 
-            removeGroupItems: function(contacts) {
-                var length = contacts.length,
-                        _contacts = this._contacts,
-                        _length = _contacts.length,
-                        allContacts = this._allContacts,
-                        allLength = allContacts.length;
+            removeGroupItems(contacts) {
+                const length = contacts.length,
+                    _contacts = this._contacts,
+                    _length = _contacts.length,
+                    allContacts = this._allContacts,
+                    allLength = allContacts.length;
 
-                for (var i = 0; i < length; i++) {
-                    var contact = contacts[i];
+                for (let i = 0; i < length; i++) {
+                    const contact = contacts[i];
 
-                    for (var j = 0; j < _length; j++) {
-
+                    for (let j = 0; j < _length; j++) {
                         if (contact.self === _contacts[j].self) {
                             this.splice('_contacts', j, 1);
                             break;
                         }
                     }
 
-                    for (var k = 0; k < allLength; k++) {
-
+                    for (let k = 0; k < allLength; k++) {
                         if (contact.self === allContacts[k].self) {
                             this.splice('_allContacts', k, 1);
                             break;
@@ -536,13 +487,13 @@ Custom property | Description | Default
                     }
 
                     this._totalContacts--;
-
                 }
 
                 if (0 === this._contacts.length) {
                     this._handleEmptyLoad();
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyGroupContacts.is, AppscoCompanyGroupContacts);
     </script>
 </dom-module>

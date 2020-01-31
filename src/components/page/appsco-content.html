@@ -41,54 +41,56 @@ Custom property | Description | Default
 
 <dom-module id="appsco-content">
     <template>
-        <style is="custom-style" include="webkit-scrollbar-style">
-            :host {
-                display: block;
-                position: relative;
-                height: 100%;
-                width: 100%;
-                overflow: hidden;
-            }
-            :host .flex-horizontal {
-            @apply --layout-horizontal;
-                height: 100%;
-            }
-            :host .resource,
-            :host .content,
-            :host .info
-            {
-                height: 100%;
-                overflow: hidden;
-                position: relative;
-                box-sizing: border-box;
-            @apply --appsco-content-sections;
-            }
-            :host .resource {
-                width: var(--resource-width, 25%);
-                background-color: var(--resource-background-color, transparent);
-                color: var(--resource-color, #000);
-                border-right: 1px solid var(--divider-color);
-                display: none;
-            }
-            :host .content {
-                @apply --layout-flex;
-                background-color: var(--content-background-color, transparent);
-                color: var(--content-color, #000);
-                overflow-x: hidden;
-                overflow-y: auto;
-            }
-            :host .info {
-                width: var(--info-width, 25%);
-                background-color: var(--info-background-color, transparent);
-                color: var(--info-color, #000);
+        <custom-style>
+            <style include="webkit-scrollbar-style">
+                :host {
+                    display: block;
+                    position: relative;
+                    height: 100%;
+                    width: 100%;
+                    overflow: hidden;
+                }
+                :host .flex-horizontal {
+                @apply --layout-horizontal;
+                    height: 100%;
+                }
+                :host .resource,
+                :host .content,
+                :host .info
+                {
+                    height: 100%;
+                    overflow: hidden;
+                    position: relative;
+                    box-sizing: border-box;
+                @apply --appsco-content-sections;
+                }
+                :host .resource {
+                    width: var(--resource-width, 25%);
+                    background-color: var(--resource-background-color, transparent);
+                    color: var(--resource-color, #000);
+                    border-right: 1px solid var(--divider-color);
+                    display: none;
+                }
+                :host .content {
+                    @apply --layout-flex;
+                    background-color: var(--content-background-color, transparent);
+                    color: var(--content-color, #000);
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                }
+                :host .info {
+                    width: var(--info-width, 25%);
+                    background-color: var(--info-background-color, transparent);
+                    color: var(--info-color, #000);
 
-                border-left: 1px solid var(--divider-color);
-                display: none;
-            }
-            :host([resource-active]) .resource, :host([info-active]) .info {
-                display: block;
-            }
-        </style>
+                    border-left: 1px solid var(--divider-color);
+                    display: none;
+                }
+                :host([resource-active]) .resource, :host([info-active]) .info {
+                    display: block;
+                }
+            </style>
+        </custom-style>
 
         <div class="container flex-horizontal">
             <div id="resource" class="resource"><slot name="resource" old-content-selector="[resource]"></slot></div>
@@ -104,100 +106,102 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoContent extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-content'; }
 
-            is: 'appsco-content',
+            static get properties() {
+                return {
+                    /**
+                     * Indicates if resource section is shown or not.
+                     */
+                    resourceActive: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onResourceActiveChanged'
+                    },
 
-            behaviors: [Polymer.NeonAnimationRunnerBehavior],
+                    /**
+                     * Indicates if info section is shown or not.
+                     */
+                    infoActive: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onInfoActiveChanged'
+                    },
 
-            properties: {
+                    /**
+                     * Indicates if content-top section is shown or not.
+                     */
+                    contentTopActive: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onContentTopActiveChanged'
+                    },
 
-                /**
-                 * Animation config used for the info section.
-                 *
-                 * @type Object
-                 */
-                animationConfig: {
-                    type: Object,
-                    value: function() {
-                        return {
-                            entry: {
-                                timing: {
-                                    "duration": 200
-                                }
-                            },
-                            exit: {
-                                timing: {
-                                    "duration": 100
-                                }
-                            }
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    entry: {
+                        timing: {
+                            "duration": 200
+                        }
+                    },
+                    exit: {
+                        timing: {
+                            "duration": 100
                         }
                     }
-                },
+                };
 
-                /**
-                 * Indicates if resource section is shown or not.
-                 */
-                resourceActive: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onResourceActiveChanged'
-                },
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
-                /**
-                 * Indicates if info section is shown or not.
-                 */
-                infoActive: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onInfoActiveChanged'
-                },
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+            }
 
-                /**
-                 * Indicates if content-top section is shown or not.
-                 */
-                contentTopActive: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onContentTopActiveChanged'
-                }
-            },
+            _onResourceActiveChanged(active) {
+                Polymer.RenderStatus.beforeNextRender(this, function () {
+                    this.animationConfig.entry.node = this.$.resource;
+                    this.animationConfig.exit.node = this.$.resource;
+                    this.animationConfig.entry.name = 'slide-from-left-animation';
+                    this.animationConfig.exit.name = 'slide-left-animation';
+                    active ? this.showSection('resource') : this.hideSection('resource');
+                });
+            }
 
-            listeners: {
-                'neon-animation-finish': '_onAnimationFinish'
-            },
+            _onInfoActiveChanged(active) {
+                Polymer.RenderStatus.beforeNextRender(this, function () {
+                    this.animationConfig.entry.node = this.$.info;
+                    this.animationConfig.exit.node = this.$.info;
+                    this.animationConfig.entry.name = 'slide-from-right-animation';
+                    this.animationConfig.exit.name = 'slide-right-animation';
 
-            _onResourceActiveChanged: function(active) {
-                this.animationConfig.entry.node = this.$.resource;
-                this.animationConfig.exit.node = this.$.resource;
-                this.animationConfig.entry.name = 'slide-from-left-animation';
-                this.animationConfig.exit.name = 'slide-left-animation';
+                    active ? this.showSection('info') : this.hideSection('info');
+                });
+            }
 
-                active ? this.showSection('resource') : this.hideSection('resource');
-            },
-
-            _onInfoActiveChanged: function(active) {
-                this.animationConfig.entry.node = this.$.info;
-                this.animationConfig.exit.node = this.$.info;
-                this.animationConfig.entry.name = 'slide-from-right-animation';
-                this.animationConfig.exit.name = 'slide-right-animation';
-
-                active ? this.showSection('info') : this.hideSection('info');
-            },
-
-            _onContentTopActiveChanged: function(active) {
+            _onContentTopActiveChanged(active) {
                 active ? this.showSection('content-top') : this.hideSection('content-top');
-            },
+            }
 
             /**
              * Shows section - info or resource.
              *
              * @param section
              */
-            showSection: function(section) {
-
+            showSection(section) {
                 if (section === 'content-top' && this.contentTopActive) {
-                    this.$.contentTop.show();
+                    this.shadowRoot.getElementById('contentTop').show();
                     return false;
                 }
 
@@ -208,19 +212,18 @@ Custom property | Description | Default
                     this.resourceActive = true;
                 }
 
-                this.$$('#' + section).style.display = 'inline-block';
+                this.shadowRoot.getElementById(section).style.display = 'inline-block';
                 this.playAnimation('entry');
-            },
+            }
 
             /**
              * Hides section - info or resource.
              *
              * @param section
              */
-            hideSection: function(section) {
-
+            hideSection(section) {
                 if (section === 'content-top' && !this.contentTopActive) {
-                    this.$.contentTop.hide();
+                    this.shadowRoot.getElementById('contentTop').hide();
                     return false;
                 }
 
@@ -232,15 +235,14 @@ Custom property | Description | Default
                 }
 
                 this.playAnimation('exit');
-            },
+            }
 
             /**
              * Toggles section - info or resource.
              *
              * @param section
              */
-            toggleSection: function(section) {
-
+            toggleSection(section) {
                 if (section === 'info') {
                     this.infoActive = !this.infoActive;
                 }
@@ -250,11 +252,9 @@ Custom property | Description | Default
                 else if (section === 'content-top') {
                     this.contentTopActive = !this.contentTopActive;
                 }
+            }
 
-            },
-
-            _onAnimationFinish: function() {
-
+            _onAnimationFinish() {
                 if (!this.infoActive) {
                     this.$.info.style.display = 'none';
                 }
@@ -263,6 +263,7 @@ Custom property | Description | Default
                     this.$.resource.style.display = 'none';
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoContent.is, AppscoContent);
     </script>
 </dom-module>

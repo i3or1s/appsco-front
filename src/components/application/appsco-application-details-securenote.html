@@ -50,20 +50,21 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationDetailsSecureNote extends Polymer.Element {
+            static get is() { return 'appsco-application-details-securenote'; }
 
-            is: 'appsco-application-details-securenote',
-
-            properties: {
-
-                claims: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                }
+            static get properties() {
+                return {
+                    claims: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    }
+                };
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationDetailsSecureNote.is, AppscoApplicationDetailsSecureNote);
     </script>
 </dom-module>

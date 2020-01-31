@@ -79,101 +79,86 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoManageAccountPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-manage-account-page-actions'; }
 
-            is: 'appsco-manage-account-page-actions',
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    /**
+                     * Indicates if advanced action(s) should be visible or not.
+                     */
+                    advanced: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                /**
-                 * Indicates if advanced action(s) should be visible or not.
-                 */
-                advanced: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            resetPageActions: function() {},
-
-            _backToDirectory: function() {
-                this.fire('back');
-            },
-
-            _onResourceAction: function() {
-                this.fire('resource-section');
-            },
-
-            /**
-             * Called on account advanced settings action.
-             *
-             * @private
-             */
-            _onAdvancedSettingsAction: function() {
-
-                /**
-                 * Fired when advanced settings action is triggered.
-                 *
-                 * @event advanced-settings
-                 */
-                this.fire('advanced-settings', {
-                    showAdvanced: this.$$('#advancedSettingsAction').active
-                });
-            },
-
-            /**
-             * Disables advanced settings action.
-             */
-            disableAdvancedSettings: function() {
-                this.$$('#advancedSettingsAction').disabled = true;
-            },
-
-            /**
-             * Enables advanced settings action.
-             */
-            enableAdvancedSettings: function() {
-                this.$$('#advancedSettingsAction').disabled = false;
-            },
-
-            resetAdvancedSettingsAction: function() {
-                this.$$('#advancedSettingsAction').active = false;
+                };
             }
-        });
+
+            resetPageActions() {}
+
+            _backToDirectory() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            _onResourceAction() {
+                this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+            }
+
+            _onAdvancedSettingsAction() {
+                this.dispatchEvent(new CustomEvent('advanced-settings', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        showAdvanced: this.shadowRoot.getElementById('advancedSettingsAction').active
+                    }
+                }));
+            }
+
+            disableAdvancedSettings() {
+                this.shadowRoot.getElementById('advancedSettingsAction').disabled = true;
+            }
+
+            enableAdvancedSettings() {
+                this.shadowRoot.getElementById('advancedSettingsAction').disabled = false;
+            }
+
+            resetAdvancedSettingsAction() {
+                this.shadowRoot.getElementById('advancedSettingsAction').active = false;
+            }
+        }
+        window.customElements.define(AppscoManageAccountPageActions.is, AppscoManageAccountPageActions);
     </script>
 </dom-module>
 

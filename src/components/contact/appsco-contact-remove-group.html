@@ -9,6 +9,7 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-contact-remove-group">
     <template>
@@ -66,107 +67,90 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoContactRemoveGroup extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-contact-remove-group'; }
 
-            is: 'appsco-contact-remove-group',
+            static get properties() {
+                return {
+                    /**
+                     * Account to remove from group.
+                     */
+                    contact: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    /**
+                     * Group to remove from.
+                     */
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Account to remove from group.
-                 */
-                contact: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
                     }
-                },
+                };
+            }
 
-                /**
-                 * Group to remove from.
-                 */
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            toggle: function () {
+            toggle() {
                 this.$.dialog.open();
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._error = '';
                 this._loader = false;
-            },
+            }
 
-            setGroup: function(group) {
+            setGroup(group) {
                 this.group = group;
-            },
+            }
 
-            setContact: function(contact) {
+            setContact(contact) {
                 this.contact = contact;
-            },
+            }
 
-            _remove: function() {
-                var appRequest = document.createElement('iron-request'),
-                        options = {
-                            url: this.group.meta.self + '/contacts/' + this.contact.alias,
-                            method: 'DELETE',
-                            handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        };
+            _remove() {
+                const appRequest = document.createElement('iron-request'),
+                    options = {
+                        url: this.group.meta.self + '/contacts/' + this.contact.alias,
+                        method: 'DELETE',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._loader = true;
 
                 appRequest.send(options).then(function(request) {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when account is detached from group
-                     *
-                     * @event application-removed-from-group
-                     * @param [Object] account
-                     * @param [Object] group
-                     */
-                    this.fire('contact-removed-from-group', {
-                        contact: request.response,
-                        group: this.group
-                    });
-
+                    this.dispatchEvent(new CustomEvent('contact-removed-from-group', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            contact: request.response,
+                            group: this.group
+                        }
+                    }));
                 }.bind(this), function() {
-
-                    if (appRequest.status != 200) {
+                    if (appRequest.status !== 200) {
                         this._error = this.apiErrors.getError(request.response.code);
                     }
 
                     this._loader = false;
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoContactRemoveGroup.is, AppscoContactRemoveGroup);
     </script>
 </dom-module>

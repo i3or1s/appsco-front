@@ -205,144 +205,133 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoUpdateSubscriptionAction extends Polymer.Element {
+            static get is() { return 'appsco-update-subscription-action'; }
 
-            is: 'appsco-update-subscription-action',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    _computedHeaders: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    companyApi: {
+                        type: String
+                    },
 
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                companyApi: {
-                    type: String
-                },
+                    /**
+                     * Indicates if add application loader should be displayed or not.
+                     */
+                    _purchaseLoader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _subscriptionYear: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _subscriptionMonth: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _plansApi: {
+                        type: String,
+                        computed: "_computePlansApi(companyApi)"
+                    },
+
+                    _loadingPlans: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _plans: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _purchaseApi: {
+                        type: String,
+                        computed: "_computePurchaseApi(companyApi, subscription)"
+                    },
+
+                    _selectedPlan: {
+                        type: String,
+                        computed: "_computeSelectedPlan(subscription, _plans)"
+                    },
+
+                    _stripePublicKey: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    _publicKeyApi: {
+                        type: String,
+                        computed: '_computePublicKeyApi(companyApi)'
                     }
-                },
+                };
+            }
 
-                /**
-                 * Indicates if add application loader should be displayed or not.
-                 */
-                _purchaseLoader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _subscriptionYear: {
-                    type: Number,
-                    value: 0
-                },
-
-                _subscriptionMonth: {
-                    type: Number,
-                    value: 0
-                },
-
-                _plansApi: {
-                    type: String,
-                    computed: "_computePlansApi(companyApi)"
-                },
-
-                _loadingPlans: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _plans: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _purchaseApi: {
-                    type: String,
-                    computed: "_computePurchaseApi(companyApi, subscription)"
-                },
-
-                _selectedPlan: {
-                    type: String,
-                    computed: "_computeSelectedPlan(subscription, _plans)"
-                },
-
-                _stripePublicKey: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _publicKeyApi: {
-                    type: String,
-                    computed: '_computePublicKeyApi(companyApi)'
-                }
-            },
-
-            _computePublicKeyApi: function(companyApi) {
+            _computePublicKeyApi(companyApi) {
                 return companyApi + '/billing/pk';
-            },
+            }
 
-            _handlePublicKeyResponse: function(event) {
+            _handlePublicKeyResponse(event) {
                 if (!event.detail.response) {
                     return;
                 }
                 this._stripePublicKey = event.detail.response.stripePublicKey;
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders (authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken
                 }
-            },
+            }
 
-            _computePlansApi: function(companyApi) {
+            _computePlansApi(companyApi) {
                 return companyApi ? companyApi + '/billing/plans' : null;
-            },
+            }
 
-            _isYearlyPlan: function(plan) {
+            _isYearlyPlan(plan) {
                 return plan && plan.interval == 'year';
-            },
+            }
 
-            _updateTotalPrice: function() {
+            _updateTotalPrice() {
                 var clonedPlansList = JSON.parse(JSON.stringify(this._plans));
                 this.set('_plans', []);
                 this.set('_plans', clonedPlansList);
-            },
+            }
 
-            _calculateTotalPrice: function(plan) {
+            _calculateTotalPrice(plan) {
                 if (!plan) {
                     return;
                 }
 
                 return this.$.quantity && this.$.quantity.value ? plan.amount * this.$.quantity.value : plan.amount;
-            },
+            }
 
-            _computeSelectedPlan: function(subscription, plans) {
+            _computeSelectedPlan(subscription, plans) {
                 if (subscription && subscription.plan) {
                     return subscription.plan.id;
                 }
@@ -350,48 +339,35 @@
                     return plans[0].id;
                 }
                 return null;
-            },
+            }
 
-            _computePurchaseApi: function(companyApi, subscription) {
+            _computePurchaseApi(companyApi, subscription) {
                 if (subscription && subscription.id) {
                     return companyApi ? companyApi + '/billing/subscriptions/' + this.subscription.id : null;
                 }
                 return companyApi ? companyApi + '/billing/subscriptions' : null;
-            },
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            setSubscription: function(subscription) {
+            setSubscription(subscription) {
                 this.subscription = subscription;
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.quantity.focus();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._purchaseLoader = false;
                 this._error = '';
                 this.$.quantity.value = '';
                 this.$.quantity.invalid = false;
-            },
+            }
 
-            _handlePlansResponse: function(event) {
+            _handlePlansResponse(event) {
                 var response = event.detail.response;
                 this.set('_plans', []);
 
@@ -407,9 +383,9 @@
                 }, this);
 
                 this._loadingPlans = false;
-            },
+            }
 
-            _onPurchaseAction: function() {
+            _onPurchaseAction() {
                 var subscriptionsInput = this.$.quantity;
 
                 if (subscriptionsInput.value.length === 0) {
@@ -473,9 +449,9 @@
                         this._purchaseLoader = false;
                     }.bind(this)
                 );
-            },
+            }
 
-            _paymentCompleted: function(response) {
+            _paymentCompleted(response) {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: response.on_confirm,
@@ -489,19 +465,18 @@
                 request.send(options).then(function() {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when application has been shared.
-                     *
-                     * @event application-shared
-                     */
-                    this.fire('subscription-updated', {
-                        subscription: response
-                    });
+                    this.dispatchEvent(new CustomEvent('subscription-updated', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            subscription: response
+                        }
+                    }));
 
                     this._purchaseLoader = false;
                 }.bind(this));
             }
-
-        });
+        }
+        window.customElements.define(AppscoUpdateSubscriptionAction.is, AppscoUpdateSubscriptionAction);
     </script>
 </dom-module>

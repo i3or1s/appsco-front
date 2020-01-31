@@ -12,8 +12,7 @@
 
 <dom-module id="appsco-account-list-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 --account-image: {
                     width: 32px;
@@ -45,14 +44,12 @@
     </template>
 
     <script>
-        Polymer({
-
-            is: 'appsco-account-list-item',
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ]
-        });
+        class AppscoAccountListItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-account-list-item'; }
+        }
+        window.customElements.define(AppscoAccountListItem.is, AppscoAccountListItem);
     </script>
 </dom-module>

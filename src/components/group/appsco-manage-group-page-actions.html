@@ -57,56 +57,54 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoManageGroupPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-manage-group-page-actions'; }
 
-            is: 'appsco-manage-group-page-actions',
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            _onBackToAction: function() {
-                this.fire('back');
-            },
-
-            _onResourceSectionAction: function() {
-                this.fire('resource-section');
+                };
             }
-        });
+
+            _onBackToAction() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            _onResourceSectionAction() {
+                this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoManageGroupPageActions.is, AppscoManageGroupPageActions);
     </script>
 </dom-module>
 

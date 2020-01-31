@@ -250,255 +250,265 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-contact-home-page',
+        class AppscoContactHomePage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-contact-home-page'; }
 
-            properties: {
-
-                application: {
-                    type: Object,
-                    notify: true
-                },
-
-                /**
-                 * Get applications from dashboard link.
-                 */
-                applicationsApi: {
-                    type: String
-                },
-
-                pageConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        notify: true
                     },
-                    observer: '_onPageConfigChanged'
-                },
 
-                _applications: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
+                    applicationsApi: {
+                        type: String
+                    },
 
-                _shared: {
-                    type: Boolean,
-                    computed: '_computeApplicationShared(application)',
-                    notify: true
-                },
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onPageConfigChanged'
+                    },
 
-                _selectedTab: {
-                    type: Number
-                },
-
-                _infoShown: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _editClaims: {
-                    type: Boolean,
-                    computed: '_computeEditClaims(application)',
-                    notify: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletS1024Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletS1280Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                laptopScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function () {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                    _applications: {
+                        type: Array,
+                        value: function () {
+                            return [];
                         }
+                    },
+
+                    _shared: {
+                        type: Boolean,
+                        computed: '_computeApplicationShared(application)',
+                        notify: true
+                    },
+
+                    _selectedTab: {
+                        type: Number
+                    },
+
+                    _infoShown: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _editClaims: {
+                        type: Boolean,
+                        computed: '_computeEditClaims(application)',
+                        notify: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletS1024Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletS1280Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    laptopScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)'
-            ],
-
-            attached: function () {
+            ready() {
+                super.ready();
 
                 this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-                if (this.mobileScreen || this.tabletScreen || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopScreen) {
-                    this.updateStyles();
-                }
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopScreen) {
+                        this.updateStyles();
+                    }
+                });
+            }
 
-            },
-
-            initializePage: function () {
+            initializePage() {
                 this.setDefaultApplication();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.$.appscoApplications.reset();
                 this.$.appscoApplications.reloadApplications();
                 this._hideInfo();
-            },
+            }
 
-            setDefaultApplication: function () {
+            setDefaultApplication () {
                 this.set('application', this.$.appscoApplications.getFirstApplication());
-            },
+            }
 
-            setApplication: function(application) {
+            setApplication(application) {
                 this.application = application;
                 this.$.appscoApplications.modifyApplications([application]);
-            },
+            }
 
-            removeApplications: function (applications) {
+            removeApplications (applications) {
                 this.$.appscoApplications.removeApplications(applications);
-            },
+            }
 
-            filterApplicationsByTerm: function(term) {
+            filterApplicationsByTerm(term) {
                 this.$.appscoApplications.filterByTerm(term);
-            },
+            }
 
-            toggleInfo: function() {
+            toggleInfo() {
                 this.$.appscoContent.toggleSection('info');
                 this._infoShown = !this._infoShown;
 
                 if (this._infoShown) {
                     this._selectedTab = 0;
                 }
-            },
+            }
 
-            _pageLoaded: function () {
+            _pageLoaded () {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
                 this._infoShown = true;
                 this._selectedTab = 0;
-            },
+            }
 
-            _hideInfo: function() {
+            _hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
-            },
+            }
 
-            _updateScreen: function (mobile, tablet, tabletS1024Screen, tabletS1280Screen, laptop) {
+            _updateScreen (mobile, tablet, tabletS1024Screen, tabletS1280Screen, laptop) {
                 this.updateStyles();
-            },
+            }
 
-            _computeApplicationShared: function(application) {
+            _computeApplicationShared(application) {
                 return application && !application.owner;
-            },
+            }
 
-            _computeEditClaims: function(application) {
+            _computeEditClaims(application) {
                 return application.permisions && application.permisions.edit_claims;
-            },
+            }
 
-            _onViewApplicationInfo: function (event) {
+            _onViewApplicationInfo(event) {
                 this.set('application', event.detail.application);
 
                 if (!this._infoShown) {
                     this._showInfo();
                 }
-            },
+            }
 
-            _onApplicationEdit: function (event) {
+            _onApplicationEdit (event) {
                 this.set('application', event.detail.application);
-                this.fire('edit-application');
-            },
+                this.dispatchEvent(new CustomEvent('edit-application', { bubbles: true, composed: true }));
+            }
 
-            _onEditSharedApplication: function(event) {
-                this.fire('edit-shared-application', {
-                    application: event.detail.application
-                });
-            },
+            _onEditSharedApplication(event) {
+                this.dispatchEvent(new CustomEvent('edit-shared-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: event.detail.application
+                    }
+                }));
+            }
 
-            _onShareApplication: function() {
-                this.fire('share-application', {
-                    application: this.application
-                });
-            },
+            _onShareApplication() {
+                this.dispatchEvent(new CustomEvent('share-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onApplicationRemoved: function() {
+            _onApplicationRemoved() {
                 this.setDefaultApplication();
-            },
+            }
 
-            _onApplication: function (event) {
+            _onApplication (event) {
                 if(['unpw', 'item', 'none', 'saml', 'saml_dropbox', 'saml_office_365'].indexOf(event.detail.application.auth_type) > -1) {
                     window.open(event.detail.application.meta.plugin_go, "_blank");
                 } else {
                     this._onViewApplicationInfo(event);
                 }
-            },
+            }
 
-            _onApplicationInfoEdit: function() {
-                this.fire('info-edit-application');
-            },
+            _onApplicationInfoEdit() {
+                this.dispatchEvent(new CustomEvent('info-edit-application', { bubbles: true, composed: true }));
+            }
 
-            _onRevokeApplication: function() {
-                this.fire('revoke-application', {
-                    application: this.application
-                });
-            },
+            _onRevokeApplication() {
+                this.dispatchEvent(new CustomEvent('revoke-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onApplicationEditCredentials: function() {
-                this.fire('info-edit-application-credentials', {
-                    application: this.application
-                });
-            },
+            _onApplicationEditCredentials() {
+                this.dispatchEvent(new CustomEvent('info-edit-application-credentials', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onPageConfigChanged: function(newValue) {
+            _onPageConfigChanged(newValue) {
                 newValue = newValue[this.getAttribute('name')];
 
                 if (!newValue) {
@@ -518,7 +528,7 @@
                     });
                 }
             }
-
-        })
+        }
+        window.customElements.define(AppscoContactHomePage.is, AppscoContactHomePage);
     </script>
 </dom-module>

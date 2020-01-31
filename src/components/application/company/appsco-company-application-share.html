@@ -14,6 +14,8 @@
 <link rel="import" href="../appsco-account-card.html">
 <link rel="import" href="../../components/appsco-search.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-application-share`
 Provides functionality of sharing resources to users.
@@ -144,160 +146,126 @@ Provides functionality of sharing resources to users.
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyApplicationShare extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-application-share'; }
 
-            is: 'appsco-company-application-share',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Company API link
-                 */
-                companyApi: {
-                    type: String
-                },
-
-                /**
-                 * Applications to share.
-                 */
-                applications: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Number of accounts to load show in search result.
-                 */
-                size: {
-                    type: Number,
-                    value: 8
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                /**
-                 * Applications which are shared.
-                 * This array is populated from sharing API response.
-                 */
-                _responseApplications: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Application list from search.
-                 */
-                _searchList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Message to display if there is no search result.
-                 */
-                _message: {
-                    type: String
-                },
-
-                /**
-                 * Selected accounts from search list.
-                 */
-                _selectedAccounts: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Indicates if search loader should be displayed or not.
-                 */
-                _searchLoader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if share applications loader should be displayed or not.
-                 */
-                _shareLoader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    companyApi: {
+                        type: String
+                    },
 
-            /**
-             * Toggles sharing dialog.
-             */
-            toggle: function() {
+                    /**
+                     * Applications to share.
+                     */
+                    applications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    /**
+                     * Number of accounts to load show in search result.
+                     */
+                    size: {
+                        type: Number,
+                        value: 8
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    /**
+                     * Applications which are shared.
+                     * This array is populated from sharing API response.
+                     */
+                    _responseApplications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    /**
+                     * Application list from search.
+                     */
+                    _searchList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _message: {
+                        type: String
+                    },
+
+                    /**
+                     * Selected accounts from search list.
+                     */
+                    _selectedAccounts: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    /**
+                     * Indicates if search loader should be displayed or not.
+                     */
+                    _searchLoader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Indicates if share applications loader should be displayed or not.
+                     */
+                    _shareLoader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._shareLoader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._shareLoader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.appscoSearch.setup();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._reset();
                 this.set('_selectedAccounts', []);
-            },
+            }
 
             /**
              * Gets accounts by term.
@@ -305,8 +273,8 @@ Provides functionality of sharing resources to users.
              * @param {Object} event
              * @private
              */
-            _onSearch: function(event) {
-                var searchValue = event.detail.term,
+            _onSearch(event) {
+                const searchValue = event.detail.term,
                     searchLength = searchValue.length;
 
                 this._searchLoader = true;
@@ -326,20 +294,20 @@ Provides functionality of sharing resources to users.
                     return false;
                 }
 
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     url = this.companyApi + '/directory/accounts/search?extended=1&limit=' + this.size + '&term=' + searchValue;
 
                 this._message = '';
 
-                var options = {
+                const options = {
                     url: url,
                     method: 'GET',
                     handleAs: 'json',
-                    headers: this._computedHeaders
+                    headers: this._headers
                 };
 
                 request.send(options).then(function() {
-                    var accounts = request.response.accounts;
+                    const accounts = request.response.accounts;
 
                     if (accounts && accounts.length > 0) {
                         this.set('_searchList', accounts);
@@ -351,20 +319,20 @@ Provides functionality of sharing resources to users.
 
                     this._searchLoader = false;
                 }.bind(this));
-            },
+            }
 
-            _onSearchClear: function() {
+            _onSearchClear() {
                 this._reset();
-            },
+            }
 
-            _reset: function() {
+            _reset() {
                 this.$.appscoSearch.reset();
                 this.set('_searchList', []);
                 this._searchLoader = false;
                 this._hideLoader();
                 this._hideError();
                 this._message = '';
-            },
+            }
 
             /**
              * Called after account has been selected from search list.
@@ -372,58 +340,53 @@ Provides functionality of sharing resources to users.
              * @param {Object} event
              * @private
              */
-            _onAccountSelect: function(event) {
+            _onAccountSelect(event) {
                 this._hideError();
                 this.push('_selectedAccounts', event.model.item);
                 this.splice('_searchList', this._searchList.indexOf(event.model.item), 1);
-            },
+            }
 
-            _onAccountRemove: function(event) {
+            _onAccountRemove(event) {
                 this.push('_searchList', event.model.item);
                 this.splice('_selectedAccounts', this._selectedAccounts.indexOf(event.model.item), 1);
-            },
+            }
 
-            _applicationsShareFinished: function() {
+            _applicationsShareFinished() {
                 this.$.dialog.close();
 
-                /**
-                 * Fired when applications have been shared.
-                 *
-                 * @event applications-shared
-                 */
-                this.fire('applications-shared', {
-                    applications: this._responseApplications
-                });
+                this.dispatchEvent(new CustomEvent('applications-shared', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        applications: this._responseApplications
+                    }
+                }));
 
                 this.set('_selectedAccounts', []);
                 this.set('_responseApplications', []);
                 this._hideLoader();
-            },
+            }
 
-            _shareToAccounts: function(application, last) {
-                var accounts = this._selectedAccounts,
+            _shareToAccounts(application, last) {
+                let accounts = this._selectedAccounts,
                     length = accounts.length - 1,
                     request = document.createElement('iron-request'),
                     options = {
                         url: application.self + '/share',
                         method: 'POST',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     },
                     body = '';
 
-                for (var i = 0; i <= length; i++) {
-                    var next = (i === length) ? '' : '&';
+                for (let i = 0; i <= length; i++) {
+                    let next = (i === length) ? '' : '&';
                     body += 'accounts[]=' + encodeURIComponent(accounts[i].self) + next;
                 }
 
                 options.body = body;
 
                 request.send(options).then(function() {
-
                     this.push('_responseApplications', request.response);
 
                     if (last) {
@@ -433,32 +396,29 @@ Provides functionality of sharing resources to users.
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
-            },
+            }
 
-            _onShareApplicationsAction: function() {
-
+            _onShareApplicationsAction() {
                 if (0 === this._selectedAccounts.length) {
                     this._showError('Please add at least one user to share resources to.');
                     return false;
                 }
 
-                var applications = this.applications,
+                const applications = this.applications,
                     length = applications.length - 1;
 
                 this._showLoader();
 
-                for (var i = 0; i <= length; i++) {
-
+                for (let i = 0; i <= length; i++) {
                     if (i === length) {
                         this._shareToAccounts(applications[i], true);
                         return false;
                     }
 
                     this._shareToAccounts(applications[i], false);
-
-
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyApplicationShare.is, AppscoCompanyApplicationShare);
     </script>
 </dom-module>

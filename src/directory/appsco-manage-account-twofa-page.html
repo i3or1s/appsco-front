@@ -61,86 +61,83 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoManageAccountTwofaPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-manage-account-twofa-page'; }
 
-            is: 'appsco-manage-account-twofa-page',
-
-            properties: {
-
-                role: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _twoFaEnabled: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            static get properties() {
+                return {
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    _twoFaEnabled: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            setTwoFAEnabled: function(twoFAEnabled) {
-                this._twoFaEnabled = twoFAEnabled;
-            },
-
-            _onClosePageAction: function() {
-                this.fire('back');
-            },
-
-            _onResetTwoFA: function() {
-
-                this.fire('reset-role-two-fa', {
-                    role: this.role
-                });
+                };
             }
-        });
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            setTwoFAEnabled(twoFAEnabled) {
+                this._twoFaEnabled = twoFAEnabled;
+            }
+
+            _onClosePageAction() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            _onResetTwoFA() {
+                this.dispatchEvent(new CustomEvent('reset-role-two-fa', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        role: this.role
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoManageAccountTwofaPage.is, AppscoManageAccountTwofaPage);
     </script>
 </dom-module>
 

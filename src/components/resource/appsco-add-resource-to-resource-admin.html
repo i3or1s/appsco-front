@@ -20,12 +20,11 @@
 
 <link rel="import" href="appsco-resource-list-item.html">
 
-
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-add-resource-to-resource-admin">
     <template>
-        <style include="appsco-list-item-styles"></style>
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 display: block;
                 position: relative;
@@ -244,247 +243,223 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAddResourceToResourceAdmin extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-add-resource-to-resource-admin'; }
 
-            is: 'appsco-add-resource-to-resource-admin',
-
-            properties: {
-
-                authorizationToken: {
-                    type: String
-                },
-
-                getResourcesApi: {
-                    type: String
-                },
-
-                resources: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                role: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _resourceTypeList: {
-                    type: Array,
-                    value: function () {
-                        return [
-                            {
-                                name: 'All',
-                                value: 'all',
-                                auth_types: []
-                            },
-                            {
-                                name: 'Application',
-                                value: 'application',
-                                auth_types: ['item', 'unpw']
-                            },
-                            {
-                                name: 'SSO application',
-                                value: 'ssp_application',
-                                auth_types: ['saml', 'saml_dropbox', 'saml_office_365']
-                            },
-                            {
-                                name: 'Link',
-                                value: 'link',
-                                auth_types: ['none']
-                            },
-                            {
-                                name: 'Login',
-                                value: 'login',
-                                auth_types: ['login']
-                            },
-                            {
-                                name: 'Credit card',
-                                value: 'cc',
-                                auth_types: ['cc']
-                            },
-                            {
-                                name: 'Software licence',
-                                value: 'software_licence',
-                                auth_types: ['softwarelicence']
-                            },
-                            {
-                                name: 'Passport',
-                                value: 'passport',
-                                auth_types: ['passport']
-                            },
-                            {
-                                name: 'Secure note',
-                                value: 'secure_note',
-                                auth_types: ['securenote']
-                            }
-                        ];
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _responseApplications: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _resourceList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _resourceListAll: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _message: {
-                    type: String
-                },
-
-                _selectedResources: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _shareLoader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _resourcesLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _componentReady: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _bulkSelect: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _resourcesCount: {
-                    type: Number,
-                    value: 0
-                },
-
-                _numberOfSelectedResources: {
-                    type: Number,
-                    value: 0
-                },
-
-                _filterTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterType: {
-                    type: String,
-                    value: 'all'
-                }
-            },
-
-            observers: [
-                '_setResourceList(_resourcesLoaded)'
-            ],
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    getResourcesApi: {
+                        type: String
+                    },
 
-            toggle: function() {
+                    resources: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _resourceTypeList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'All',
+                                    value: 'all',
+                                    auth_types: []
+                                },
+                                {
+                                    name: 'Application',
+                                    value: 'application',
+                                    auth_types: ['item', 'unpw']
+                                },
+                                {
+                                    name: 'SSO application',
+                                    value: 'ssp_application',
+                                    auth_types: ['saml', 'saml_dropbox', 'saml_office_365']
+                                },
+                                {
+                                    name: 'Link',
+                                    value: 'link',
+                                    auth_types: ['none']
+                                },
+                                {
+                                    name: 'Login',
+                                    value: 'login',
+                                    auth_types: ['login']
+                                },
+                                {
+                                    name: 'Credit card',
+                                    value: 'cc',
+                                    auth_types: ['cc']
+                                },
+                                {
+                                    name: 'Software licence',
+                                    value: 'software_licence',
+                                    auth_types: ['softwarelicence']
+                                },
+                                {
+                                    name: 'Passport',
+                                    value: 'passport',
+                                    auth_types: ['passport']
+                                },
+                                {
+                                    name: 'Secure note',
+                                    value: 'secure_note',
+                                    auth_types: ['securenote']
+                                }
+                            ];
+                        }
+                    },
+
+                    _responseApplications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _resourceList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _resourceListAll: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _message: {
+                        type: String
+                    },
+
+                    _selectedResources: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _shareLoader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _resourcesLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _componentReady: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _bulkSelect: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _resourcesCount: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _numberOfSelectedResources: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _filterTerm: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _filterType: {
+                        type: String,
+                        value: 'all'
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_setResourceList(_resourcesLoaded)'
+                ];
+            }
+
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._shareLoader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._shareLoader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _showMessage: function(message) {
+            _showMessage(message) {
                 this._message = message;
-            },
+            }
 
-            _hideMessage: function() {
+            _hideMessage() {
                 this._message = '';
-            },
+            }
 
-            _showResourceListProgress: function() {
+            _showResourceListProgress() {
                 this.$.resourceListProgress.hidden = false;
-            },
+            }
 
-            _hideResourceListProgress: function() {
+            _hideResourceListProgress() {
                 setTimeout(function() {
                     this.$.resourceListProgress.hidden = true;
                 }.bind(this), 500);
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.appscoSearch.setup();
                 this.reloadApplications();
                 this._componentReady = true;
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._reset();
-            },
+            }
 
-            _onResourcesLoadFinished: function() {
+            _onResourcesLoadFinished() {
                 this._resourcesLoaded = true;
-            },
+            }
 
-            _setResourceList: function(resourcesLoaded) {
-                var listItems = [];
+            _setResourceList(resourcesLoaded) {
+                const listItems = [];
 
                 this._showResourceListProgress();
 
@@ -492,43 +467,40 @@
                 this.set('_resourceListAll', []);
 
                 if (resourcesLoaded) {
-                    var resourcesComponent = this.$$('#appscoRoles'),
+                    const resourcesComponent = this.shadowRoot.getElementById('appscoRoles'),
                         resources = resourcesComponent.getAllItems();
 
                     resources.forEach(function(resource, index) {
                         resource.account.selected = false;
                         listItems.push(resource);
                     }.bind(this));
-
                 }
 
                 this.set('_resourceList', listItems);
                 this.set('_resourceListAll', listItems);
                 this._resourcesCount = this._resourceList.length;
                 this._hideResourceListProgress();
-            },
+            }
 
-            _onBulkSelect: function() {
-
+            _onBulkSelect() {
                 this._hideError();
 
                 if (this._componentReady) {
                     this._bulkSelect = !this._bulkSelect;
                     this._bulkSelect ? this._selectAllResources() : this._deselectAllResources();
                 }
-            },
+            }
 
-            _selectAllResources: function() {
-                var list = JSON.parse(JSON.stringify(this._resourceList)),
+            _selectAllResources() {
+                const list = JSON.parse(JSON.stringify(this._resourceList)),
                     length = list.length,
                     listAll = JSON.parse(JSON.stringify(this._resourceListAll)),
                     lengthAll = listAll.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     list[i].selected = true;
 
-                    for (var j = 0; j < lengthAll; j++) {
-
+                    for (let j = 0; j < lengthAll; j++) {
                         if (listAll[j].self === list[i].self) {
                             listAll[j].selected = true;
                         }
@@ -542,19 +514,18 @@
                 this.set('_resourceListAll', listAll);
 
                 this._recalculateInfo();
-            },
+            }
 
-            _deselectAllResources: function() {
-                var list = JSON.parse(JSON.stringify(this._resourceList)),
+            _deselectAllResources() {
+                const list = JSON.parse(JSON.stringify(this._resourceList)),
                     length = list.length,
                     listAll = JSON.parse(JSON.stringify(this._resourceListAll)),
                     lengthAll = listAll.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     list[i].selected = false;
 
-                    for (var j = 0; j < lengthAll; j++) {
-
+                    for (let j = 0; j < lengthAll; j++) {
                         if (listAll[j].self === list[i].self) {
                             listAll[j].selected = false;
                         }
@@ -568,10 +539,10 @@
                 this.set('_resourceListAll', listAll);
 
                 this._recalculateInfo();
-            },
+            }
 
-            _onResourceListItemSelectChanged: function(event) {
-                var item = event.detail.item,
+            _onResourceListItemSelectChanged(event) {
+                const item = event.detail.item,
                     listAll = JSON.parse(JSON.stringify(this._resourceListAll)),
                     lengthAll = listAll.length;
 
@@ -579,8 +550,7 @@
                     this._bulkSelect = false;
                 }
 
-                for (var j = 0; j < lengthAll; j++) {
-
+                for (let j = 0; j < lengthAll; j++) {
                     if (listAll[j].self === item.self) {
                         listAll[j].selected = item.selected;
                     }
@@ -592,28 +562,27 @@
                 this._recalculateInfo();
                 this._setBulkSelectStatus();
                 this._hideError();
-            },
+            }
 
-            _recalculateInfo: function() {
-                var list = this._resourceListAll,
+            _recalculateInfo() {
+                const list = this._resourceListAll,
                     length = list.length;
 
                 this._numberOfSelectedResources = 0;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (list[i].selected) {
                         this._numberOfSelectedResources++;
                     }
                 }
-            },
+            }
 
-            _setBulkSelectStatus: function() {
+            _setBulkSelectStatus() {
                 this._bulkSelect = (this._numberOfSelectedResources === this._resourceListAll.length);
-            },
+            }
 
-            _onSearchResources: function(event) {
-                var searchValue = event.detail.term,
+            _onSearchResources(event) {
+                const searchValue = event.detail.term,
                     searchLength = searchValue.length;
 
                 this._filterTerm = searchValue;
@@ -623,21 +592,21 @@
                 }
 
                 this._filterResourceList();
-            },
+            }
 
-            _onSearchResourcesClear: function() {
+            _onSearchResourcesClear() {
                 this._filterTerm = '';
                 this._filterResourceList();
-            },
+            }
 
-            _onResourceTypeSelected: function(event) {
+            _onResourceTypeSelected(event) {
                 this._filterType = event.detail.item.getAttribute('value');
                 this._filterResourceList();
                 this._setBulkSelectStatus();
-            },
+            }
 
-            _filterResourceList: function() {
-                var listAll = JSON.parse(JSON.stringify(this._resourceListAll)),
+            _filterResourceList() {
+                const listAll = JSON.parse(JSON.stringify(this._resourceListAll)),
                     lengthAll = listAll.length,
                     term = this._filterTerm.toLowerCase(),
                     type = this._filterType;
@@ -646,12 +615,9 @@
                 this.set('_resourceList', []);
 
                 if ('all' === type) {
-
                     if (term) {
-
-                        for (var i = 0; i < lengthAll; i++) {
-
-                            if (-1 != listAll[i].title.toLowerCase().indexOf(term.toLowerCase())) {
+                        for (let i = 0; i < lengthAll; i++) {
+                            if (-1 !== listAll[i].title.toLowerCase().indexOf(term.toLowerCase())) {
                                 this.push('_resourceList', listAll[i]);
                             }
                         }
@@ -661,20 +627,15 @@
                     }
                 }
                 else {
-
                     if (term) {
-
-                        for (var i = 0; i < lengthAll; i++) {
-
+                        for (let i = 0; i < lengthAll; i++) {
                             if (this.isTypeMatching(type, listAll[i].auth_type) && (-1 != listAll[i].title.toLowerCase().indexOf(term))) {
                                 this.push('_resourceList', listAll[i]);
                             }
                         }
                     }
                     else {
-
-                        for (var i = 0; i < lengthAll; i++) {
-
+                        for (let i = 0; i < lengthAll; i++) {
                             if (this.isTypeMatching(type, listAll[i].auth_type)) {
                                 this.push('_resourceList', listAll[i]);
                             }
@@ -682,13 +643,12 @@
                     }
                 }
 
-
                 if (0 === this._resourceList.length) {
                     this._showMessage('There are no resources available according to selected filters.');
                 }
-            },
+            }
 
-            _reset: function() {
+            _reset() {
                 this.$.appscoSearch.reset();
                 this.$.resourceTypeList.selected = 0;
                 this.set('_resourceList', []);
@@ -705,42 +665,38 @@
                 this._hideLoader();
                 this._hideError();
                 this._hideMessage();
-            },
+            }
 
-            _resourcesAssignFinished: function() {
+            _resourcesAssignFinished() {
                 this.$.dialog.close();
 
-                /**
-                 * Fired when resources have been shared.
-                 *
-                 * @event resources-resource-admin-assigned
-                 */
-                this.fire('resource-admin-assigned', {
-                    companyRole: this.role
-                });
+                this.dispatchEvent(new CustomEvent('resource-admin-assigned', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        companyRole: this.role
+                    }
+                }));
 
                 this.set('_selectedResources', []);
                 this.set('_responseApplications', []);
                 this._hideLoader();
-            },
+            }
 
-            _assignResources: function(companyRole) {
-                var resources = this._selectedResources,
+            _assignResources(companyRole) {
+                const resources = this._selectedResources,
                     length = resources.length - 1,
                     request = document.createElement('iron-request'),
                     options = {
                         url: companyRole.meta.resource_admin_assign_resources,
                         method: 'POST',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
-                    },
-                    body = '';
+                        headers: this._headers
+                    };
+                let body = '';
 
-                for (var i = 0; i <= length; i++) {
-                    var next = (i === length) ? '' : '&';
+                for (let i = 0; i <= length; i++) {
+                    let next = (i === length) ? '' : '&';
                     body += 'resources[]=' + encodeURIComponent(resources[i].self) + next;
                 }
 
@@ -752,14 +708,14 @@
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
-            },
+            }
 
-            _onAssignResourceAdminAction: function() {
-                var list = JSON.parse(JSON.stringify(this._resourceListAll)),
+            _onAssignResourceAdminAction() {
+                const list = JSON.parse(JSON.stringify(this._resourceListAll)),
                     length = list.length;
 
                 this.set('_selectedResources', []);
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     if (list[i].selected) {
                         this._selectedResources.push(list[i]);
                     }
@@ -772,21 +728,21 @@
 
                 this._assignResources(this.role);
 
-            },
+            }
 
-            _onInnerIronOverlay: function(event) {
+            _onInnerIronOverlay(event) {
                 event.stopPropagation();
-            },
+            }
 
-            setRole: function(role) {
+            setRole(role) {
                 this.role = role;
-            },
+            }
 
-            reloadApplications: function(searchValue) {
-                var request = document.createElement('iron-request'),
+            reloadApplications(searchValue) {
+                const request = document.createElement('iron-request'),
                     url = this.getResourcesApi + '?extended=1&limit=9999';
 
-                var options = {
+                const options = {
                     url: url,
                     method: 'GET',
                     handleAs: 'json',
@@ -795,7 +751,7 @@
 
                 this._showLoader();
                 request.send(options).then(function() {
-                    var applications = request.response.applications;
+                    const applications = request.response.applications;
 
                     if (applications && applications.length > 0) {
                         this.set('_resourceListAll', applications);
@@ -809,22 +765,22 @@
 
                     this._hideLoader();
                 }.bind(this));
-            },
+            }
 
-            getDisplayType: function(auth_type) {
-                var resourceTypes = this._resourceTypeList;
-                for (var i = 0; i < resourceTypes.length; i++) {
+            getDisplayType(auth_type) {
+                const resourceTypes = this._resourceTypeList;
+                for (let i = 0; i < resourceTypes.length; i++) {
                     if (resourceTypes[i].auth_types.indexOf(auth_type) > -1) {
                         return resourceTypes[i].name;
                     }
                 }
 
                 return 'Application';
-            },
+            }
 
-            isTypeMatching: function(selectedType, resourceAuthType) {
-                var resourceTypes = this._resourceTypeList;
-                for (var i = 0; i < resourceTypes.length; i++) {
+            isTypeMatching(selectedType, resourceAuthType) {
+                const resourceTypes = this._resourceTypeList;
+                for (let i = 0; i < resourceTypes.length; i++) {
                     if (
                         resourceTypes[i].value === selectedType
                         && resourceTypes[i].auth_types.indexOf(resourceAuthType) > -1
@@ -835,6 +791,7 @@
 
                 return false;
             }
-        });
+        }
+        window.customElements.define(AppscoAddResourceToResourceAdmin.is, AppscoAddResourceToResourceAdmin);
     </script>
 </dom-module>

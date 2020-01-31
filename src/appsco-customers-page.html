@@ -20,7 +20,6 @@
 
 <dom-module id="appsco-customers-page">
     <template>
-
         <style include="appsco-page-styles">
             :host {
 
@@ -154,130 +153,132 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-customers-page',
+        class AppscoCustomersPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppscoPageBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-customers-page'; }
 
-            properties: {
-
-                customer: {
-                    type: Object,
-                    value: function() {
-                        return {}
+            static get properties() {
+                return {
+                    customer: {
+                        type: Object,
+                        value: function () {
+                            return {}
+                        },
+                        observer: '_onCustomerChanged'
                     },
-                    observer: '_onCustomerChanged'
-                },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                customersApi: {
-                    type: String
-                },
+                    customersApi: {
+                        type: String
+                    },
 
-                customersExportApi: {
-                    type: String
-                },
+                    customersExportApi: {
+                        type: String
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _customerLogApi: {
+                        type: String,
+                        computed: '_computeCustomerLogApi(customer)'
+                    },
+
+                    _selectedTab: {
+                        type: Number
+                    },
+
+                    _infoShown: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _customerSelectAction: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    screen992: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _customerLogApi: {
-                    type: String,
-                    computed: '_computeCustomerLogApi(customer)'
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen, screen992)'
+                ];
+            }
 
-                _selectedTab: {
-                    type: Number
-                },
+            ready() {
+                super.ready();
 
-                _infoShown: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _customerSelectAction: {
-                    type: Number,
-                    value: 0
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                screen992: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.AppscoPageBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.set('_itemsComponent', this.$.appscoCustomers);
+                });
+            }
 
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, screen992)'
-            ],
-
-            attached: function() {
-                this.set('_itemsComponent', this.$.appscoCustomers);
-            },
-
-            initializePage: function() {
+            initializePage() {
                 this._setDefaultCustomer();
-            },
+            }
 
-            pageSelected: function () {
+            pageSelected() {
                 this.reloadCustomers();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.hideInfo();
                 this._deselectAllItems();
                 this.$.appscoCustomers.reset();
-            },
+            }
 
-            toggleInfo: function() {
+            toggleInfo() {
                 this.$.appscoContent.toggleSection('info');
                 this._infoShown = !this._infoShown;
 
@@ -288,119 +289,116 @@
                     this.$.appscoCustomers.deactivateItem(this.customer);
                     this._setDefaultCustomer();
                 }
-            },
+            }
 
-            hideInfo: function() {
+            hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            filterByTerm: function(term) {
+            filterByTerm(term) {
                 this.$.appscoCustomers.filterByTerm(term);
-            },
+            }
 
-            addCustomer: function(customer) {
+            addCustomer(customer) {
                 this.$.appscoCustomers.addItems([customer]);
-            },
+            }
 
-            reloadCustomers: function() {
+            reloadCustomers() {
                 this.$.appscoCustomers.reloadItems();
-            },
+            }
 
-            reloadCustomersInfo: function(customers) {
-
-                for (var idx in customers) {
+            reloadCustomersInfo(customers) {
+                for (let idx in customers) {
                     this.$.appscoCustomers.reloadInfo(customers[idx]);
                 }
-            },
+            }
 
-            removeCustomers: function (customers) {
+            removeCustomers(customers) {
                 this.$.appscoCustomers.removeItems(customers);
                 this._setDefaultCustomer();
                 return customers.length;
-            },
+            }
 
-            _computeCustomerLogApi: function(customer) {
+            _computeCustomerLogApi(customer) {
                 return (customer.meta && customer.meta.customer_log) ? customer.meta.customer_log : null;
-            },
+            }
 
-            _onObservableItemListChange: function(event, data) {
+            _onObservableItemListChange(event, data) {
                 if(data.type === 'customers') {
                     this.setObservableType('customers-page');
                     this.populateItems(data.items);
                 }
                 event.stopPropagation();
-            },
+            }
 
-            _resetPageActions: function() {
-                this.fire('reset-page-actions');
-            },
+            _resetPageActions() {
+                this.dispatchEvent(new CustomEvent('reset-page-actions', { bubbles: true, composed: true }));
+            }
 
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _setDefaultCustomer: function() {
+            _setDefaultCustomer() {
                 this.set('customer', this.$.appscoCustomers.getFirstItem());
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _loadLog: function() {
+            _loadLog() {
                 this.$.accountLog.loadLog();
-            },
+            }
 
-            _showBulkActions: function() {
-                this.fire('show-bulk-actions');
-            },
+            _showBulkActions() {
+                this.dispatchEvent(new CustomEvent('show-bulk-actions', { bubbles: true, composed: true }));
+            }
 
-            _hideBulkActions: function() {
-                this.fire('hide-bulk-actions');
-            },
+            _hideBulkActions() {
+                this.dispatchEvent(new CustomEvent('hide-bulk-actions', { bubbles: true, composed: true }));
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
                 this._infoShown = true;
                 this._selectedTab = 0;
-            },
+            }
 
-            _handleInfo: function(customer) {
+            _handleInfo(customer) {
                 this.set('customer', customer);
 
                 if (!this._infoShown) {
                     this._showInfo();
                 }
-            },
+            }
 
-            _onViewInfo: function(event) {
+            _onViewInfo(event) {
                 this._handleInfo(event.detail.item);
-            },
+            }
 
-            _onCustomerChanged: function(customer) {
-
+            _onCustomerChanged(customer) {
                 if (customer.meta && customer.meta.log) {
                     this._loadLog();
                 }
-            },
+            }
 
-            _onCustomersLoaded: function() {
+            _onCustomersLoaded() {
                 this._onPageLoaded();
                 this._setDefaultCustomer();
-            },
+            }
 
-            _onCustomersEmptyLoad: function() {
+            _onCustomersEmptyLoad() {
                 this._onPageLoaded();
-            },
+            }
 
-            _onCustomerAction: function(event) {
-
+            _onCustomerAction(event) {
                 if (event.detail.item.activated) {
                     this._onViewInfo(event);
                 }
@@ -408,45 +406,44 @@
                     this.hideInfo();
                     this._setDefaultCustomer();
                 }
-            },
+            }
 
-            _onSelectCustomerAction: function(event) {
+            _onSelectCustomerAction(event) {
                 var customer = event.detail.item;
 
                 clearTimeout(this._customerSelectAction);
 
                 this._customerSelectAction = setTimeout(function() {
-
                     if (customer.selected) {
                         this._showBulkActions();
                     }
                     else {
                         var selectedCustomer = this.$.appscoCustomers.getFirstSelectedItem();
-
-                        for (key in selectedCustomer) {
+                        for (let key in selectedCustomer) {
                             return false;
                         }
-
                         this._hideBulkActions();
                     }
-
                 }.bind(this), 10);
 
                 this._handleItemsSelectedState();
-            },
+            }
 
-            _onEditCustomerAction: function(event) {
+            _onEditCustomerAction(event) {
                 this._onEditCustomer(event.detail.item);
-            },
+            }
 
-            _onEditCustomer: function(customer) {
+            _onEditCustomer(customer) {
+                this.dispatchEvent(new CustomEvent('edit-customer', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        customer: (customer && customer.alias) ? customer : this.customer
+                    }
+                }));
+            }
 
-                this.fire('edit-customer', {
-                    customer: (customer && customer.alias) ? customer : this.customer
-                });
-            },
-
-            exportToCsv: function() {
+            exportToCsv() {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this.customersExportApi,
@@ -476,12 +473,12 @@
 
                     document.body.removeChild(link);
                 });
-            },
+            }
 
-            getSelectedCustomers: function () {
+            getSelectedCustomers() {
                 return this.$.appscoCustomers.getSelectedItems()
             }
-        });
+        }
+        window.customElements.define(AppscoCustomersPage.is, AppscoCustomersPage);
     </script>
-
 </dom-module>

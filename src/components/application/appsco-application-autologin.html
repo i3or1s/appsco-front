@@ -3,6 +3,8 @@
 <link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-application-autologin`
 Provides switcher for application types: UN/PW and Item.
@@ -39,89 +41,83 @@ Custom property | Description | Default
         <paper-toggle-button id="switch">Auto Login</paper-toggle-button>
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationAutologin extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-application-autologin'; }
 
-            is: 'appsco-application-autologin',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    }
+                };
+            }
 
-            properties: {
-                /**
-                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                },
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                }
-            },
-            listeners: {
-                'change': '_switch',
-                'application-changed': '_processAuthType'
-            },
+            ready() {
+                super.ready();
 
-            attached: function() {
-                this._processAuthType();
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._processAuthType();
+                    this._addListeners();
+                });
+            }
 
-            _processAuthType: function () {
+            _addListeners() {
+                this.addEventListener('change', this._switch);
+                this.addEventListener('application-changed', this._processAuthType);
+            }
 
-                var app = (this.application && this.application.application)
-                            ? this.application.application
-                            : (this.application && this.application.auth_type ? this.application : null);
+            _processAuthType() {
+                const app = (this.application && this.application.application)
+                    ? this.application.application
+                    : (this.application && this.application.auth_type ? this.application : null);
 
                 if (app) {
-
-                    this.$.switch.active = app.auth_type == 'unpw';
+                    this.$.switch.active = app.auth_type === 'unpw';
                     this.$.switch.disabled = true;
 
-                    var appRequest = document.createElement('iron-request'),
-                            me = this;
+                    const appRequest = document.createElement('iron-request'),
+                        me = this;
 
                     appRequest.send({
                         url: app.application_template,
                         method: 'GET',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken
-                        }
+                        headers: this._headers
                     }).then(function() {
-
                         if ('item' in appRequest.response.application.auth_types &&
                                 'unpw' in appRequest.response.application.auth_types
                         ) {
                             me.$.switch.disabled = false;
                             return false;
                         }
-
-                        me.fire('autologin-unavailable');
+                        me.dispatchEvent(new CustomEvent('autologin-unavailable', { bubbles: true, composed: true }));
                     });
                 }
-            },
-            _switch: function() {
-                var request = document.createElement('iron-request'),
-                        me = this;
+            }
+
+            _switch() {
+                const request = document.createElement('iron-request'),
+                    me = this;
 
                 this.$.switch.disabled = true;
 
-                var options = {
+                const options = {
                     url: this.application.meta.autologin,
                     method: 'POST',
                     handleAs: 'json',
-                    headers: {
-                        'Authorization': 'token ' + this.authorizationToken
-                    }
+                    headers: this._headers
                 };
 
                 request.send(options).then(function() {
                     me.$.switch.disabled = false;
-                    this.fire('autologin-changed');
+                    this.dispatchEvent(new CustomEvent('autologin-changed', { bubbles: true, composed: true }));
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationAutologin.is, AppscoApplicationAutologin);
     </script>
 </dom-module>

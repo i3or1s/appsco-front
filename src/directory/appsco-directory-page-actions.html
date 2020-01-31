@@ -178,171 +178,163 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoDirectoryPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-directory-page-actions'; }
 
-            is: 'appsco-directory-page-actions',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    filterApi: {
+                        type: String
+                    },
 
-                authorizationToken: {
-                    type: String
-                },
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                /**
-                 * Link to retrieve filters from
-                 */
-                filterApi: {
-                    type: String
-                },
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _searchActive: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _displayActions: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _searchActive: {
-                    type: Boolean,
-                    value: false
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                _displayActions: {
-                    type: Boolean,
-                    value: false
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen)'
+                ];
+            }
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 200,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 200,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen) {
+                        this.updateStyles();
+                    }
+                });
+            }
 
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen)'
-            ],
-
-            attached: function() {
-
-                if (this.mobileScreen || this.tabletScreen) {
-                    this.updateStyles();
-                }
-
-            },
-
-            _updateScreen: function(mobile, tablet) {
+            _updateScreen(mobile, tablet) {
                 this.updateStyles();
-            },
+            }
 
-            _showSearch: function() {
-                this.customStyle['--paper-input-search-container-tablet'] = 'width: 100%;';
-                this.$$('#appscoDirectoryActions').focusSearch();
+            _showSearch() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').focusSearch();
+                this.updateStyles({'--paper-input-search-container-tablet': 'width: 100%;'});
+            }
 
-                this.updateStyles();
-            },
-
-            _closeSearch: function() {
+            _closeSearch() {
                 this._searchActive = false;
 
                 // Wait for animation to finish.
                 setTimeout(function() {
-                    this.customStyle['--paper-input-search-container-tablet'] = 'width: auto';
-                    this.updateStyles();
+                    this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
                 }.bind(this), 200);
 
                 this.updateStyles();
-            },
+            }
 
-            _onSearchIcon: function() {
+            _onSearchIcon() {
                 this._searchActive = !this._searchActive;
                 this._searchActive ? this._showSearch() : this._closeSearch();
-            },
-
-            showBulkActions: function() {
-                this.$$('#appscoDirectoryActions').showBulkActions();
-            },
-
-            hideBulkActions: function() {
-                this.$$('#appscoDirectoryActions').hideBulkActions();
-            },
-
-            showBulkSelectAll: function() {
-                this.$$('#appscoDirectoryActions').showBulkSelectAll();
-            },
-
-            hideBulkSelectAll: function() {
-                this.$$('#appscoDirectoryActions').hideBulkSelectAll();
-            },
-
-            showSubscriptionLimitReachedInfo: function(subscription) {
-                this.$$('#appscoDirectoryActions').showSubscriptionLimitReachedInfo(subscription);
-                this._showActions();
-            },
-
-            hideSubscriptionLimitReachedInfo: function() {
-                this.$$('#appscoDirectoryActions').hideSubscriptionLimitReachedInfo();
-                this._showActions();
-            },
-
-            showDomainNotVerifiedInfo: function() {
-                this.$$('#appscoDirectoryActions').showDomainNotVerifiedInfo();
-                this._showActions();
-            },
-
-            hideDomainNotVerifiedInfo: function() {
-                this.$$('#appscoDirectoryActions').hideDomainNotVerifiedInfo();
-                this._showActions();
-            },
-
-            _showActions: function() {
-                this._displayActions = true;
-            },
-
-            setupPage: function() {
-                this._showActions();
-            },
-
-            resetPage: function() {
-                this.$$('#appscoDirectoryActions').reset();
-            },
-
-            resetPageActions: function() {
-                this.resetPage();
-            },
-
-            resetTypeFilter: function() {
-                this.$$('#appscoDirectoryActions').resetTypeFilter();
             }
-        });
+
+            showBulkActions() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').showBulkActions();
+            }
+
+            hideBulkActions() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').hideBulkActions();
+            }
+
+            showBulkSelectAll() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').showBulkSelectAll();
+            }
+
+            hideBulkSelectAll() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').hideBulkSelectAll();
+            }
+
+            showSubscriptionLimitReachedInfo(subscription) {
+                this.shadowRoot.getElementById('appscoDirectoryActions').showSubscriptionLimitReachedInfo(subscription);
+                this._showActions();
+            }
+
+            hideSubscriptionLimitReachedInfo() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').hideSubscriptionLimitReachedInfo();
+                this._showActions();
+            }
+
+            showDomainNotVerifiedInfo() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').showDomainNotVerifiedInfo();
+                this._showActions();
+            }
+
+            hideDomainNotVerifiedInfo() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').hideDomainNotVerifiedInfo();
+                this._showActions();
+            }
+
+            _showActions() {
+                this._displayActions = true;
+            }
+
+            setupPage() {
+                this._showActions();
+            }
+
+            resetPage() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').reset();
+            }
+
+            resetPageActions() {
+                this.resetPage();
+            }
+
+            resetTypeFilter() {
+                this.shadowRoot.getElementById('appscoDirectoryActions').resetTypeFilter();
+            }
+        }
+        window.customElements.define(AppscoDirectoryPageActions.is, AppscoDirectoryPageActions);
     </script>
 </dom-module>
 

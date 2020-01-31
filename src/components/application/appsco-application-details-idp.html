@@ -30,7 +30,7 @@
                 margin: 6px 0;
             }
             :host .download-action {
-                margin: 0px;
+                margin: 0;
             }
         </style>
 
@@ -165,30 +165,31 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationDetailsIdp extends Polymer.Element {
+            static get is() { return 'appsco-application-details-idp'; }
 
-            is: 'appsco-application-details-idp',
+            static get properties() {
+                return {
+                    idpMetadata: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    }
+                };
+            }
 
-            properties: {
-
-                idpMetadata: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                }
-            },
-
-            _onDownloadCertificate: function(event) {
+            _onDownloadCertificate(event) {
                 event.preventDefault();
                 window.location.href = this.idpMetadata.certificateUrl;
-            },
+            }
 
-            _onDownloadMetadataXml: function(event) {
+            _onDownloadMetadataXml(event) {
                 event.preventDefault();
                 window.location.href = this.idpMetadata.metadataUrl + '?download=1';
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationDetailsIdp.is, AppscoApplicationDetailsIdp);
     </script>
 </dom-module>

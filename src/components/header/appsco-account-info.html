@@ -268,194 +268,140 @@ Custom property | Description | Default
     </template>
 
     <script>
+        class AppscoAccountInfo extends Polymer.Element {
+            static get is() { return 'appsco-account-info'; }
 
-        Polymer({
+            static get properties() {
+                return {
+                    mobile: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            is: 'appsco-account-info',
+                    /**
+                     * Active account from AppsCo dashboard.
+                     */
+                    account: {
+                        type: Object,
+                        notify: true
+                    },
 
-            properties: {
+                    _accountExists: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Indicates if it is mobile view.
-                 * It uses iron-media-query.
-                 */
-                mobile: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    /**
+                     * Additional accounts from AppsCo dashboard - currently inactive.
+                     */
+                    accounts: {
+                        type: Array,
+                        value: []
+                    },
 
-                /**
-                 * Active account from AppsCo dashboard.
-                 */
-                account: {
-                    type: Object,
-                    notify: true
-                },
+                    /**
+                     * Info related to active account.
+                     */
+                    info: {
+                        type: String
+                    },
 
-                /**
-                 * Indicates if account exists or not.
-                 */
-                _accountExists: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Indicates if account info should display account name or not.
+                     */
+                    displayName: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                /**
-                 * Additional accounts from AppsCo dashboard - currently inactive.
-                 */
-                accounts: {
-                    type: Array,
-                    value: []
-                },
+                    logoutApi: {
+                        type: String
+                    }
+                };
+            }
 
-                /**
-                 * Info related to active account.
-                 */
-                info: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Indicates if account info should display account name or not.
-                 */
-                displayName: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                this._triggerDropdown = this.shadowRoot.getElementById('triggerDropdown');
 
-                /**
-                 * Logout API link.
-                 */
-                logoutApi: {
-                    type: String
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this._checkAccountInfo();
+                    this._checkIfAccountExists();
+                });
 
-            listeners: {
-                'account-changed': '_accountChanged'
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            attached: function() {
-                this._triggerDropdown = this.$$('#triggerDropdown');
+            _addListeners() {
+                this.addEventListener('account-changed', this._accountChanged);
+            }
 
-                this._checkAccountInfo();
-
-                this._checkIfAccountExists();
-            },
-
-            /**
-             * Checks if account exists or not.
-             * It sets _accountExists property value.
-             *
-             * @private
-             */
-            _checkIfAccountExists: function() {
-                var account = this.account;
+            _checkIfAccountExists() {
+                const account = this.account;
 
                 if (account) {
-
-                    for (var key in account) {
+                    for (const key in account) {
                         this._accountExists = true;
-
                         break;
                     }
-
                 }
                 else {
                     this._accountExists = false;
                 }
-            },
+            }
 
-            /**
-             * Checks if info exists and sets appropriate style.
-             *
-             * @private
-             */
-            _checkAccountInfo: function() {
-                var accountInfoDropdown = this.$.accountInfoDropdown;
+            _checkAccountInfo() {
+                const accountInfoDropdown = this.$.accountInfoDropdown;
 
-                if (this.info && this.info.trim() != '') {
+                if (this.info && this.info.trim() !== '') {
                     accountInfoDropdown.customStyle['--dropdown-caret-background-color'] = 'var(--info-background-color, #edf9ff)';
                     accountInfoDropdown.updateStyles();
                 }
+            }
 
-            },
-
-            /**
-             * Listens for account change event.
-             *
-             * @private
-             */
-            _accountChanged: function() {
+            _accountChanged() {
                 this._checkIfAccountExists();
                 if(this.account.company) {
                     this.info = "This account is managed by " + this.account.company.name;
                 }
-            },
-
-            /**
-             * Toggles account dropdown.
-             *
-             * @private
-             */
-            _toggleDropdown: function() {
-                this.$.accountInfoDropdown.toggle();
-            },
-
-            /**
-             * Fires event on account switch.
-             *
-             * @private
-             */
-            _onAccountSettingsAction: function() {
-
-                /**
-                 * Fired when user taps on account settings action.
-                 *
-                 * @event account-settings
-                 */
-                this.fire('account-settings', {
-                    account: this.account
-                });
-
-                this._toggleDropdown();
-            },
-
-            /**
-             * Fires event on add account.
-             * @private
-             */
-            _onAddAccountAction: function() {
-
-                /**
-                 * Fired when tapped on add new account action.
-                 *
-                 * @event account-add
-                 */
-                this.fire('account-add');
-
-            },
-
-            /**
-             * Fires event on account logout.
-             * @private
-             */
-            _onLogoutAccountAction: function() {
-
-                /**
-                 * Fired when tapped on add account logout action.
-                 *
-                 * @event account-logout
-                 */
-                this.fire('account-logout', {
-                    account: this.account
-                });
-
-                this._toggleDropdown();
-
             }
-        });
+
+            _toggleDropdown() {
+                this.$.accountInfoDropdown.toggle();
+            }
+
+            _onAccountSettingsAction() {
+                this.dispatchEvent(new CustomEvent('account-settings', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        account: this.account
+                    }
+                }));
+                this._toggleDropdown();
+            }
+
+            _onAddAccountAction() {
+                this.dispatchEvent(new CustomEvent('account-add', { bubbles: true, composed: true }));
+            }
+
+            _onLogoutAccountAction() {
+                this.dispatchEvent(new CustomEvent('account-logout', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        account: this.account
+                    }
+                }));
+
+                this._toggleDropdown();
+            }
+        }
+        window.customElements.define(AppscoAccountInfo.is, AppscoAccountInfo);
     </script>
 </dom-module>

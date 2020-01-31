@@ -4,7 +4,6 @@
 <link rel="import" href="../../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../../bower_components/gold-email-input/gold-email-input.html">
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html">
@@ -17,6 +16,8 @@
 <link rel="import" href="../../components/components/appsco-loader.html">
 <link rel="import" href="../../components/components/appsco-form-error.html">
 <link rel="import" href="../../components/components/appsco-search.html">
+
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-add-customer">
     <template>
@@ -140,91 +141,97 @@
                     <p>You can add an existing AppsCo Business as a customer by using the partner transfer token they provide you with, or you can create a new AppsCo Business and automatically add your company as a partner. </p>
                 </div>
 
-                 <form is="iron-form"
-                      id="formCustomerNew"
-                      method="POST"
-                      action="[[ customersApi ]]"
-                      headers="[[ _headers ]]"
-                      on-iron-form-presubmit="_onFormPresubmit"
-                      on-iron-form-error="_onFormError"
-                      on-iron-form-response="_onFormResponse">
+                <iron-form
+                        id="formCustomerNew"
+                        headers="[[ _headers ]]"
+                        on-iron-form-presubmit="_onFormPresubmit"
+                        on-iron-form-error="_onFormError"
+                        on-iron-form-response="_onFormResponse">
+                    <form
+                          method="POST"
+                          action="[[ customersApi ]]">
 
-                    <div class="input-container">
-                        <paper-input id="name"
-                                     label="Customer name"
-                                     name="company_customer[name]"
-                                     value="{{ _customerName }}"
-                                     required
-                                     auto-validate
-                                     on-keyup="_onFormCustomerNewFocus"
-                                     error-message="Please enter customer's name."
-                                     on-value-changed="_onNameInputValueChanged"></paper-input>
-                    </div>
-
-                    <div class="input-container">
-                        <gold-email-input label="Contact e-mail"
-                                          id="email"
-                                          name="company_customer[contactEmail]"
-                                          required
-                                          auto-validate
-                                          on-keyup="_onFormCustomerNewFocus"
-                                          error-message="Please enter valid contact e-mail."></gold-email-input>
-                    </div>
-
-                    <div id="searchAdminsContainer" class="input-container">
-                        <appsco-search id="appscoSearchAdmins" 
-                                       label="Partner administrator"
-                                       float-label
-                                       on-focus="_onAdminSearchFocusAction"
-                                       on-keyup="_onAdminSearchKeyupAction"
-                                       on-value-changed="_onAdminValueChangedAction"
-                                       on-search="_onAdminSearchAction"
-                                       on-search-clear="_onAdminSearchClearAction"></appsco-search>
-                        
-                        <div id="adminListContainer" class="admin-list-container">
-
-                            <paper-listbox id="adminList"
-                                           class="dropdown-content"
-                                           selected="[[ _selectedAdministrator.value ]]"
-                                           attr-for-selected="value"
-                                           on-iron-activate="_onAdminSelected"
-                                           on-iron-overlay-closed="_onListboxClosed">
-
-                                <template is="dom-repeat" items="[[ _administratorsToDisplay ]]">
-                                    <paper-item class="paper-item"
-                                                name="[[ item.account.name ]]"
-                                                value="[[ item.self ]]">
-                                        [[ item.account.name ]]
-                                        <paper-ripple></paper-ripple>
-                                    </paper-item>
-                                </template>
-
-                            </paper-listbox>
-
+                        <div class="input-container">
+                            <paper-input id="name"
+                                         label="Customer name"
+                                         name="company_customer[name]"
+                                         value="{{ _customerName }}"
+                                         required
+                                         auto-validate
+                                         on-keyup="_onFormCustomerNewFocus"
+                                         error-message="Please enter customer's name."
+                                         on-value-changed="_onNameInputValueChanged"></paper-input>
                         </div>
-                    </div>
-                </form>
+
+                        <div class="input-container">
+                            <paper-input
+                                    id="email"
+                                    type="email"
+                                    label="Contact e-mail"
+                                    name="company_customer[contactEmail]"
+                                    required
+                                    auto-validate
+                                    on-keyup="_onFormCustomerNewFocus"
+                                    error-message="Please enter valid contact e-mail."></paper-input>
+                        </div>
+
+                        <div id="searchAdminsContainer" class="input-container">
+                            <appsco-search id="appscoSearchAdmins"
+                                           label="Partner administrator"
+                                           float-label
+                                           on-focus="_onAdminSearchFocusAction"
+                                           on-keyup="_onAdminSearchKeyupAction"
+                                           on-value-changed="_onAdminValueChangedAction"
+                                           on-search="_onAdminSearchAction"
+                                           on-search-clear="_onAdminSearchClearAction"></appsco-search>
+
+                            <div id="adminListContainer" class="admin-list-container">
+
+                                <paper-listbox id="adminList"
+                                               class="dropdown-content"
+                                               selected="[[ _selectedAdministrator.value ]]"
+                                               attr-for-selected="value"
+                                               on-iron-activate="_onAdminSelected"
+                                               on-iron-overlay-closed="_onListboxClosed">
+
+                                    <template is="dom-repeat" items="[[ _administratorsToDisplay ]]">
+                                        <paper-item class="paper-item"
+                                                    name="[[ item.account.name ]]"
+                                                    value="[[ item.self ]]">
+                                            [[ item.account.name ]]
+                                            <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+
+                                </paper-listbox>
+
+                            </div>
+                        </div>
+                    </form>
+                </iron-form>
 
                 <div class="or-separator"><span>or</span></div>
 
-                <form is="iron-form"
-                    id="formCustomerConvert"
-                    method="POST"
-                    action="[[ companyConvertToCustomerApi ]]"
-                    headers="[[ _headers ]]"
-                    on-iron-form-presubmit="_onFormTokenPresubmit"
-                    on-iron-form-error="_onFormError"
-                    on-iron-form-response="_onFormResponse">
+                <iron-form
+                        id="formCustomerConvert"
+                        headers="[[ _headers ]]"
+                        on-iron-form-presubmit="_onFormTokenPresubmit"
+                        on-iron-form-error="_onFormError"
+                        on-iron-form-response="_onFormResponse">
+                    <form
+                        method="POST"
+                        action="[[ companyConvertToCustomerApi ]]">
 
-                    <paper-input id="customerToken"
-                                 label="Customer token"
-                                 name="customer_convert[token]"
-                                 value=""
-                                 required
-                                 auto-validate
-                                 on-keyup="_onFormCustomerConvertFocus"
-                                 error-message="Please enter customer's token."></paper-input>
-                </form>
+                        <paper-input id="customerToken"
+                                     label="Customer token"
+                                     name="customer_convert[token]"
+                                     value=""
+                                     required
+                                     auto-validate
+                                     on-keyup="_onFormCustomerConvertFocus"
+                                     error-message="Please enter customer's token."></paper-input>
+                    </form>
+                </iron-form>
             </div>
 
             <div class="buttons">
@@ -242,295 +249,249 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAddCustomer extends Polymer.mixinBehaviors([Appsco.HeadersMixin, Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-add-customer'; }
 
-            is: 'appsco-add-customer',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                customersApi: {
-                    type: String
-                },
-
-                companyConvertToCustomerApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                rolesApi: {
-                    type: String
-                },
-
-                checkIfCustomerExistsApi: {
-                    type: String
-                },
-
-                _rolesApi: {
-                    type: String,
-                    computed: '_computeRolesApi(rolesApi)'
-                },
-
-                _administrators: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _administratorsToDisplay: {
-                    type: Array,
-                    value: function() {
-                        return []
-                    }
-                },
-
-                _selectedAdministrator: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    customersApi: {
+                        type: String
                     },
-                    observer: '_onSelectedAdministratorChanged'
-                },
 
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    companyConvertToCustomerApi: {
+                        type: String
+                    },
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                _error: {
-                    type: String
-                },
+                    rolesApi: {
+                        type: String
+                    },
 
-                _infoShown: {
-                    type: Boolean,
-                    value: false
-                },
+                    checkIfCustomerExistsApi: {
+                        type: String
+                    },
 
-                _customerName: {
-                    type: String,
-                    value: '',
-                    observer: '_onCustomerNameChanged'
-                },
+                    _rolesApi: {
+                        type: String,
+                        computed: '_computeRolesApi(rolesApi)'
+                    },
 
-                _customerToken: {
-                    type: String,
-                    value: ''
-                },
+                    _administrators: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                _formCustomerConvertActive: {
-                    type: Boolean,
-                    value: true
-                },
+                    _administratorsToDisplay: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        }
+                    },
 
-                /**
-                 * Target for iron-a11y-keys component.
-                 * Submit formCustomerNew on enter.
-                 */
-                _formCustomerNew: {
-                    type: Object,
-                    value: function() {
-                        return this.$.formCustomerNew
-                    }
-                },
+                    _selectedAdministrator: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onSelectedAdministratorChanged'
+                    },
 
-                /**
-                 * Target for iron-a11y-keys component.
-                 * Submit formCustomerConvert on enter.
-                 */
-                _formCustomerConvert: {
-                    type: Object,
-                    value: function() {
-                        return this.$.formCustomerConvert
-                    }
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'scale-up-animation',
-                                axis: 'y',
-                                transformOrigin: '0 0',
-                                node: this.$$('#adminListContainer'),
-                                timing: {
-                                    delay: 50,
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this.$$('#adminListContainer'),
-                                timing: {
-                                    duration: 100
-                                }
+                    _error: {
+                        type: String
+                    },
+
+                    _infoShown: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _customerName: {
+                        type: String,
+                        value: '',
+                        observer: '_onCustomerNameChanged'
+                    },
+
+                    _customerToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _formCustomerConvertActive: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    /**
+                     * Target for iron-a11y-keys component.
+                     * Submit formCustomerNew on enter.
+                     */
+                    _formCustomerNew: {
+                        type: Object
+                    },
+
+                    /**
+                     * Target for iron-a11y-keys component.
+                     * Submit formCustomerConvert on enter.
+                     */
+                    _formCustomerConvert: {
+                        type: Object
+                    },
+
+                    animationConfig: {
+                        value: function () {
+                            return {
+
                             }
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+            ready() {
+                super.ready();
 
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinish'
-            },
+                this._formCustomerNew = this.$.formCustomerNew;
+                this._formCustomerConvert = this.$.formCustomerConvert;
 
-            /**
-             * Opens add group dialog.
-             */
-            open: function() {
+                this.animationConfig = {
+                    'entry': {
+                        name: 'scale-up-animation',
+                        axis: 'y',
+                        transformOrigin: '0 0',
+                        node: this.shadowRoot.getElementById('adminListContainer'),
+                        timing: {
+                            delay: 50,
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this.shadowRoot.getElementById('adminListContainer'),
+                        timing: {
+                            duration: 100
+                        }
+                    }
+                };
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+            }
+
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            /**
-             * Closes add group dialog.
-             */
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            /**
-             * Toggles add group dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this._infoShown = true;
-            },
+            }
 
-            _hideInfo: function() {
+            _hideInfo() {
                 this._infoShown = false;
-            },
+            }
 
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
+                for (let i = 0; i < path.length; i++) {
                     if (path[i] == element) {
                         return true;
                     }
                 }
 
                 return false;
-            },
+            }
 
-            _handleDocumentClick: function(event) {
-                var path = Polymer.dom(event).path;
+            _handleDocumentClick(event) {
+                const path = Polymer.dom(event).path;
 
-                if (!this._isInPath(path, this.$$('#searchAdminsContainer'))) {
+                if (!this._isInPath(path, this.shadowRoot.getElementById('searchAdminsContainer'))) {
                     this._hideAdminList();
                 }
+            }
 
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
-
-            _computeRolesApi: function(rolesApi) {
+            _computeRolesApi(rolesApi) {
                 return rolesApi ? (rolesApi + '?limit=100&extended=1') : null;
-            },
+            }
 
-            _loadRoles: function() {
+            _loadRoles() {
                 this.set('_administrators', []);
                 this.$.getRolesApiRequest.generateRequest();
-            },
+            }
 
-            _onFormCustomerConvertFocus: function () {
+            _onFormCustomerConvertFocus() {
                 this._formCustomerConvertActive = true;
 
                 this.$.name.disabled = true;
                 this.$.email.disabled = true;
                 this.$.appscoSearchAdmins.disableAppscoSearchInput();
                 this.$.customerToken.disabled = false;
-            },
+            }
 
-            _onFormCustomerNewFocus: function () {
+            _onFormCustomerNewFocus() {
                 this._formCustomerConvertActive = false;
 
                 this.$.name.disabled = false;
                 this.$.email.disabled = false;
                 this.$.appscoSearchAdmins.disabled = false;
                 this.$.customerToken.disabled = true;
-            },
+            }
 
-            _focusFirstAdmin: function() {
-                this.$$('#adminList').items[0].focus();
-            },
+            _focusFirstAdmin() {
+                this.shadowRoot.getElementById('adminList').items[0].focus();
+            }
 
-            _setAppscoSearchValue: function(value) {
+            _setAppscoSearchValue(value) {
                 this.$.appscoSearchAdmins.setValue(value);
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this._loadRoles();
                 Polymer.Gestures.add(this, 'tap', this._handleDocumentClick.bind(this));
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this._hideInfo();
@@ -544,51 +505,50 @@
                 this._customerName = '';
                 this._enableAllFormFields();
                 Polymer.Gestures.remove(this, 'tap', this._handleDocumentClick.bind(this));
-            },
+            }
 
-            _enableAllFormFields: function () {
+            _enableAllFormFields() {
                 this.$.name.disabled = false;
                 this.$.email.disabled = false;
                 this.$.appscoSearchAdmins.enableAppscoSearchInput();
                 this.$.customerToken.disabled = false;
-            },
+            }
 
-            _onCustomerNameChanged: function(name) {
-
+            _onCustomerNameChanged(name) {
                 if (!name) {
                     this._hideInfo();
                 }
-            },
+            }
 
-            _onNameInputValueChanged: function(event) {
-                var name = event.detail.value;
+            _onNameInputValueChanged(event) {
+                const name = event.detail.value;
 
                 if (name) {
                     this.debounce('checkIfCustomerExists', function() {
                         this._checkIfCustomerExists(name);
                     }.bind(this), 500);
                 }
-            },
+            }
 
-            _onAddAction: function() {
+            _onAddAction() {
                 if (this._formCustomerConvertActive) {
                     this._submitFormCustomerConvert();
                 } else {
                     this._submitFormCustomerNew();
                 }
-            },
+            }
 
             /**
              * Submits form on ENTER key using iron-a11y-keys component.
              *
              * @private
              */
-            _onEnterAction: function() {
+            _onEnterAction() {
                 this._onAddAction();
-            },
+            }
 
-            _checkIfCustomerExists: function(name) {
-                var request = document.createElement('iron-request'),
+            _checkIfCustomerExists(name) {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this.checkIfCustomerExistsApi,
                         method: 'POST',
@@ -605,13 +565,13 @@
 
                 }.bind(this), function() {
 
-                    if (request.response && (1503648194 == request.response.code)) {
+                    if (request.response && (1503648194 === request.response.code)) {
                         this._hideInfo();
                     }
                 }.bind(this));
-            },
+            }
 
-            _submitFormCustomerNew: function() {
+            _submitFormCustomerNew() {
                 this._hideError();
 
                 if (!this._selectedAdministrator.value) {
@@ -624,36 +584,29 @@
                     this._showLoader();
                     this._formCustomerNew.submit();
                 }
+            }
 
-            },
-
-            _submitFormCustomerConvert: function () {
+            _submitFormCustomerConvert() {
                 this._hideError();
 
                 if (this._formCustomerConvert.validate()) {
                     this._showLoader();
                     this._formCustomerConvert.submit();
                 }
-            },
+            }
 
-            _onFormPresubmit: function(event) {
+            _onFormPresubmit(event) {
                 event.target.request.body['company_customer[partnerAdmin]'] = this._selectedAdministrator.value;
-            },
+            }
 
-            _onFormTokenPresubmit: function(event) {
+            _onFormTokenPresubmit(event) {
                 event.target.request.body['customer_convert[token]'] = this.$.customerToken.value;
-            },
+            }
 
-            /**
-             * Called on form error.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
             /**
              * Called after group has been added.
@@ -661,22 +614,25 @@
              * @param {Object} event
              * @private
              */
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 this.close();
 
-                this.fire('customer-added', {
-                    customer: event.detail.response
-                });
+                this.dispatchEvent(new CustomEvent('customer-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        customer: event.detail.response
+                    }
+                }));
+            }
 
-            },
-
-            _onRolesError: function() {
+            _onRolesError() {
                 this.set('_administrators', []);
                 this.set('_administratorsToDisplay', []);
-            },
+            }
 
-            _onRolesResponse: function(event) {
-                var response = event.detail.response;
+            _onRolesResponse(event) {
+                const response = event.detail.response;
 
                 if (!response || (response && response.meta && 0 === response.meta.total)) {
                     this.set('_administrators', []);
@@ -686,40 +642,39 @@
                 }
 
                 this.set('_administratorsToDisplay', this._administrators);
-            },
+            }
 
-            _onListboxClosed: function(event) {
+            _onListboxClosed(event) {
                 event.stopPropagation();
-            },
+            }
 
-            _onSelectedAdministratorChanged: function(admin) {
-
-                for (key in admin) {
+            _onSelectedAdministratorChanged(admin) {
+                for (let key in admin) {
                     this._setAppscoSearchValue(admin.name);
                     return false;
                 }
-            },
+            }
 
-            _onAdminSelected: function(event) {
-                var item,
-                    adminList = this.$$('#adminList');
+            _onAdminSelected(event) {
+                let item,
+                    adminList = this.shadowRoot.getElementById('adminList');
 
                 adminList.select(event.detail.selected);
                 item = adminList.selectedItem;
                 this._hideAdminList();
                 this.set('_administratorsToDisplay', JSON.parse(JSON.stringify(this._administrators)));
                 this.set('_selectedAdministrator', item);
-            },
+            }
 
-            _onAdminSearchFocusAction: function() {
+            _onAdminSearchFocusAction() {
                 this._showAdminList();
-            },
+            }
 
-            _onAdminValueChangedAction: function () {
+            _onAdminValueChangedAction() {
                 this._onFormCustomerNewFocus();
-            },
+            }
 
-            _onAdminSearchKeyupAction: function(event) {
+            _onAdminSearchKeyupAction(event) {
                 this._onFormCustomerNewFocus();
 
                 var keyCode = event.keyCode;
@@ -729,18 +684,18 @@
                     this._focusFirstAdmin();
                     return false;
                 }
-            },
+            }
             
-            _onAdminSearchAction: function(event) {
+            _onAdminSearchAction(event) {
                 this._filterAdminsByTerm(event.detail.term);
-            },
+            }
             
-            _onAdminSearchClearAction: function() {
+            _onAdminSearchClearAction() {
                 this._filterAdminsByTerm('');
-            },
+            }
 
-            _filterAdminsByTerm: function(term) {
-                var termLength = term.length,
+            _filterAdminsByTerm(term) {
+                const termLength = term.length,
                     admins = JSON.parse(JSON.stringify(this._administrators)),
                     length = admins.length;
 
@@ -751,13 +706,12 @@
                     return false;
                 }
 
-                for (var i = 0; i < length; i++) {
-                    var admin = admins[i];
+                for (let i = 0; i < length; i++) {
+                    const admin = admins[i];
 
                     if (admin && 0 <= admin.account.name.toLowerCase().indexOf(term.toLowerCase())) {
                         this.push('_administratorsToDisplay', admin);
                     }
-
                 }
 
                 if (0 === this._administratorsToDisplay.length && 3 <= termLength) {
@@ -768,27 +722,25 @@
                         self: 'no_result'
                     });
                 }
-            },
+            }
 
-            _showAdminList: function() {
+            _showAdminList() {
                 this.animationConfig.entry.node.style.display = 'block';
                 this.playAnimation('entry');
-            },
+            }
 
-            _hideAdminList: function() {
-
+            _hideAdminList() {
                 this.playAnimation('exit', {
                     hideAdminSwitcher: true
                 });
-            },
+            }
 
-            _onNeonAnimationFinish: function(event) {
-
+            _onNeonAnimationFinish(event) {
                 if (event.detail.hideAdminSwitcher) {
                     this.animationConfig.exit.node.style.display = 'none';
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoAddCustomer.is, AppscoAddCustomer);
     </script>
 </dom-module>

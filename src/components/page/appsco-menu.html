@@ -20,35 +20,37 @@ Drawer contains menu.
 
 <dom-module id="appsco-menu">
     <template>
-        <style is="custom-style">
-            :host {
-                display: inline-block;
-                position: relative;
-            }
-            :host span[current-page] {
-                font-size: 16px;
-            }
-            :host app-drawer {
-                top: var(--app-drawer-top);
-                left: var(--app-drawer-left);
-                right: var(--app-drawer-right);
-                bottom: var(--app-drawer-bottom);
-                z-index: 2;
-                --app-drawer-content-container: {
-                    padding: 0;
-                    overflow: auto;
-                };
-            }
-            :host span[text] {
-                padding-left: 10px;
-            }
-            :host paper-menu {
-                padding:0;
-            }
-            :host paper-item {
-                cursor: pointer;
-            }
-        </style>
+        <custom-style>
+            <style>
+                :host {
+                    display: inline-block;
+                    position: relative;
+                }
+                :host span[current-page] {
+                    font-size: 16px;
+                }
+                :host app-drawer {
+                    top: var(--app-drawer-top);
+                    left: var(--app-drawer-left);
+                    right: var(--app-drawer-right);
+                    bottom: var(--app-drawer-bottom);
+                    z-index: 2;
+                    --app-drawer-content-container: {
+                        padding: 0;
+                        overflow: auto;
+                    };
+                }
+                :host span[text] {
+                    padding-left: 10px;
+                }
+                :host paper-menu {
+                    padding:0;
+                }
+                :host paper-item {
+                    cursor: pointer;
+                }
+            </style>
+        </custom-style>
 
         <paper-icon-button id="menuicon" icon="icons:menu" on-tap="_toggleDrawer"></paper-icon-button>
         <span current-page >[[ _page ]]</span>
@@ -97,88 +99,104 @@ Drawer contains menu.
         </app-drawer>
     </template>
     <script>
-        Polymer({
+        class AppscoMenu extends Polymer.Element {
+            static get is() { return 'appsco-menu'; }
 
-            is: 'appsco-menu',
+            static get properties() {
+                return {
+                    topOffset: {
+                        type: Number,
+                        value: 0,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
-                /**
-                 * Top offset from the menu icon for the drawer element.
-                 */
-                topOffset: {
-                    type: Number,
-                    value: 0,
-                    notify: true,
-                    reflectToAttribute: true
-                },
-                /**
-                 * Right offset from the right side of the screen.
-                 */
-                rightOffset: {
-                    type: Number,
-                    value: 0,
-                    notify: true,
-                    reflectToAttribute: true
-                },
-                /**
-                 * Bottom offset from the bottom side of the screen.
-                 */
-                bottomOffset: {
-                    type: Number,
-                    value: 0,
-                    notify: true,
-                    reflectToAttribute: true
-                },
-                /**
-                 * It shows administration menu
-                 */
-                administration: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-                /**
-                 * Current page
-                 */
-                _page: {
-                    type: String,
-                    value: 'Applications'
-                }
-            },
-            attached: function () {
-                this._updateDrawer();
-            },
-            listeners: {
-                'right-offset-changed': '_updateDrawer',
-                'bottom-offset-changed': '_updateDrawer',
-                'top-offset-changed': '_updateDrawer',
-                'iron-select': '_pageChanged'
-            },
-            _updateDrawer: function () {
+                    /**
+                     * Right offset from the right side of the screen.
+                     */
+                    rightOffset: {
+                        type: Number,
+                        value: 0,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+
+                    /**
+                     * Bottom offset from the bottom side of the screen.
+                     */
+                    bottomOffset: {
+                        type: Number,
+                        value: 0,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+
+                    /**
+                     * It shows administration menu
+                     */
+                    administration: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    /**
+                     * Current page
+                     */
+                    _page: {
+                        type: String,
+                        value: 'Applications'
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this._updateDrawer();
+                });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('right-offset-changed', this._updateDrawer);
+                this.addEventListener('bottom-offset-changed', this._updateDrawer);
+                this.addEventListener('top-offset-changed', this._updateDrawer);
+                this.addEventListener('iron-select', this._updateDrawer);
+            }
+
+            _updateDrawer() {
                 const menuPosition = this.$.menuicon.getBoundingClientRect();
-                this.customStyle['--app-drawer-top'] = menuPosition.top + 40 + this.topOffset + 'px';
-                this.customStyle['--app-drawer-left'] = menuPosition.left + 'px';
-                this.customStyle['--app-drawer-right'] = this.rightOffset + 'px';
-                this.customStyle['--app-drawer-bottom'] = this.bottomOffset + 'px';
-                this.updateStyles();
-            },
-            _toggleDrawer: function () {
+                this.updateStyles({
+                    '--app-drawer-top': menuPosition.top + 40 + this.topOffset + 'px',
+                    '--app-drawer-left': menuPosition.left + 'px',
+                    '--app-drawer-right': this.rightOffset + 'px',
+                    '--app-drawer-bottom': this.bottomOffset + 'px'
+                });
+            }
+
+            _toggleDrawer() {
                 this.$.menudrawer.toggle();
-            },
-            _pageChanged: function (e) {
+            }
+
+            _pageChanged(e) {
                 const page = e.detail.item.getAttribute('page');
                 this._page = e.detail.item.querySelector('span').innerHTML;
                 this.$.menudrawer.close();
-                /**
-                 * Fired when page changes.
-                 *
-                 * @event page-changed
-                 * @param {String} page Page that is currently active
-                 */
-                this.fire('page-changed', {
-                    page: page
-                })
+
+                this.dispatchEvent(new CustomEvent('page-changed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        page: page
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoMenu.is, AppscoMenu);
     </script>
 </dom-module>

@@ -6,6 +6,8 @@
 <link rel="import" href="../../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-report-details`
 Component holds details about report.
@@ -118,176 +120,161 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoReportDetails extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-report-details'; }
 
-            is: 'appsco-report-details',
+            static get properties() {
+                return {
+                    report: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    reportApi: {
+                        type: String
+                    },
 
-                report: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    showAuthTypes: {
+                        type: Boolean,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _accessOrComplianceReport: {
+                        type: Boolean,
+                        computed: '_computeAccessOrComplianceReport(report)'
+                    },
+
+                    _policiesReport: {
+                        type: Boolean,
+                        computed: '_computePoliciesReport(report)'
+                    },
+
+                    _report: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _message: {
+                        type: String,
+                        value: ''
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                reportApi: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                showAuthTypes: {
-                    type: Boolean,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _accessOrComplianceReport: {
-                    type: Boolean,
-                    computed: '_computeAccessOrComplianceReport(report)'
-                },
-
-                _policiesReport: {
-                    type: Boolean,
-                    computed: '_computePoliciesReport(report)'
-                },
-
-                _report: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _message: {
-                    type: String,
-                    value: ''
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+            static get observers() {
+                return [
+                    '_onApiReadyForLoad(reportApi, _headers)'
+                ];
+            }
 
-            observers: [
-                '_onApiReadyForLoad(reportApi, _headers)'
-            ],
-
-            reload: function() {
+            reload() {
                 this._generateNewRequest();
-            },
+            }
 
-            setReportApi: function(api) {
+            setReportApi(api) {
                 this.set('reportApi', api);
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _computeAccessOrComplianceReport: function(report) {
+            _computeAccessOrComplianceReport(report) {
                 return (-1 !== ['access-report', 'compliance-report'].indexOf(report.type));
-            },
+            }
 
-            _computePoliciesReport: function(report) {
+            _computePoliciesReport(report) {
                 return (report.type === 'policies-report');
-            },
+            }
 
-            _showMessage: function(message) {
+            _showMessage(message) {
                 this._message = message;
-            },
+            }
 
-            _hideMessage: function() {
+            _hideMessage() {
                 this._message = '';
-            },
+            }
 
-            _abortPreviousRequest: function() {
-                var getReportApiRequest = this.$.getReportApiRequest;
+            _abortPreviousRequest() {
+                const getReportApiRequest = this.$.getReportApiRequest;
 
                 if (getReportApiRequest.lastRequest) {
                     getReportApiRequest.lastRequest.abort();
                 }
-            },
+            }
 
-            _generateNewRequest: function() {
+            _generateNewRequest() {
                 this.set('_report', {});
                 this._abortPreviousRequest();
                 this.$.getReportApiRequest.generateRequest();
-            },
+            }
 
-            _onApiReadyForLoad: function(api, headers) {
-
+            _onApiReadyForLoad(api, headers) {
                 if (api && headers) {
                     this._generateNewRequest();
                 }
-            },
+            }
 
-            _showDetails: function() {
+            _showDetails() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
-            },
+            }
 
-            _fireAfterLoadEvent: function() {
-                this.fire('loaded');
-            },
+            _fireAfterLoadEvent() {
+                this.dispatchEvent(new CustomEvent('loaded', { bubbles: true, composed: true }));
+            }
 
-            _onGetReportError: function(event) {
-
+            _onGetReportError(event) {
                 if (!event.detail.request.aborted) {
                     this._showMessage(this.apiErrors.getError(event.detail.request.response.code));
                 }
 
                 this._fireAfterLoadEvent();
-            },
+            }
 
-            _onGetReportResponse: function(event) {
-                var response = event.detail.response;
+            _onGetReportResponse(event) {
+                const response = event.detail.response;
 
                 if (response) {
-
                     if (this._accessOrComplianceReport) {
-
-                        var authenticationTypes = response.auth_types;
+                        const authenticationTypes = response.auth_types;
 
                         response.authTypes = [
                             {
@@ -322,12 +309,11 @@ Custom property | Description | Default
 
                         this.set('_report', response);
                     } else if (this._policiesReport) {
-                        var report = {
+                        const report = {
                             numberOfEnabled: 0
                         };
 
                         response.policies.forEach(function(policy) {
-
                             if ('active' === policy.status) {
                                 report.numberOfEnabled++;
                             }
@@ -340,6 +326,7 @@ Custom property | Description | Default
                     this._fireAfterLoadEvent();
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoReportDetails.is, AppscoReportDetails);
     </script>
 </dom-module>

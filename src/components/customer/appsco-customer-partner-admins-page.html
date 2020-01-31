@@ -70,88 +70,82 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCustomerPartnerAdminsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-customer-partner-admins-page'; }
 
-            is: 'appsco-customer-partner-admins-page',
-
-            properties: {
-
-                customer: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                partnerAdminsApi: {
-                    type: String
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 600
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            static get properties() {
+                return {
+                    customer: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    partnerAdminsApi: {
+                        type: String
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            loadPage: function() {
-                this.$.appscoCustomerPartnerAdmins.loadPartnerAdmins();
-            },
-
-            reloadPartnerAdmins: function() {
-                this.$.appscoCustomerPartnerAdmins.reloadPartnerAdmins();
-            },
-
-            removePartnerAdmins: function(partnerAdmins) {
-                this.$.appscoCustomerPartnerAdmins.removePartnerAdmins(partnerAdmins);
-            },
-
-            _onClosePageAction: function() {
-                this.fire('back');
+                };
             }
-        });
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 600
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            loadPage() {
+                this.$.appscoCustomerPartnerAdmins.loadPartnerAdmins();
+            }
+
+            reloadPartnerAdmins() {
+                this.$.appscoCustomerPartnerAdmins.reloadPartnerAdmins();
+            }
+
+            removePartnerAdmins(partnerAdmins) {
+                this.$.appscoCustomerPartnerAdmins.removePartnerAdmins(partnerAdmins);
+            }
+
+            _onClosePageAction() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoCustomerPartnerAdminsPage.is, AppscoCustomerPartnerAdminsPage);
     </script>
 </dom-module>
 

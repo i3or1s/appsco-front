@@ -7,10 +7,11 @@
 <link rel="import" href="../components/appsco-list-styles.html">
 <link rel="import" href="appsco-integration-template-item.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-integration-templates">
     <template>
-        <style include="appsco-list-styles"></style>
-        <style>
+        <style include="appsco-list-styles">
             :host appsco-integration-template-item {
                 width: 100%;
                 @apply --appsco-integration-template-item;
@@ -66,40 +67,39 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationTemplates extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-integration-templates'; }
 
-            is: 'appsco-integration-templates',
-
-            properties: {
-
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.AppscoListBehavior
-            ],
-
-            getAvailableTemplatesExist: function() {
-                var items = this._allListItems,
+            getAvailableTemplatesExist() {
+                let items = this._allListItems,
                     length = items.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     if (!items[i].is_existing || (items[i].is_webhook_required && !items[i].is_webhook_enabled)) {
                         return true;
                     }
                 }
-
                 return false;
-            },
+            }
 
-            _isValidTemplate: function(item) {
+            _isValidTemplate(item) {
                 return (!item.is_existing || (item.is_webhook_required && !item.is_webhook_enabled));
             }
-        });
+        }
+        window.customElements.define(AppscoIntegrationTemplates.is, AppscoIntegrationTemplates);
     </script>
 </dom-module>

@@ -15,9 +15,7 @@
 
 <dom-module id="appsco-folders-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 @apply --folder-item-host;
                 --icon-action-border-radius: 16px;
@@ -71,65 +69,68 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoFoldersItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior,
+            Polymer.AppscoDropHTMLElementBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-folders-item'; }
 
-            is: 'appsco-folders-item',
+            static get properties() {
+                return {
+                    requestHeaders: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                requestHeaders: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _loader: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.initializeDropBehavior();
+                    this._addListeners();
+                });
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior,
-                Polymer.AppscoDropHTMLElementBehavior
-            ],
+            _addListeners() {
+                this.addEventListener('item-dropped', this._onItemDropped);
+            }
 
-            listeners: {
-                'item-dropped': '_onItemDropped'
-            },
-
-            attached: function() {
-                this.initializeDropBehavior();
-            },
-
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _onItemDropped: function(event) {
-                var item = event.detail.item;
+            _onItemDropped(event) {
+                const item = event.detail.item;
 
                 this._addResourceToFolder(item);
-            },
+            }
 
-            _getAddResourceToFolderApi: function(resource) {
+            _getAddResourceToFolderApi(resource) {
                 return (this.item.self && resource.alias) ? (this.item.self + '/resource/' + resource.alias) : null;
-            },
+            }
 
-            _addResourceToFolder: function(item) {
-                var request = document.createElement('iron-request'),
+            _addResourceToFolder(item) {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._getAddResourceToFolderApi(item),
                         method: 'POST',
@@ -144,26 +145,33 @@
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('resource-moved-to-folder', {
-                            resource: request.response,
-                            folder: this.item,
-                            sourceFolder: null
-                        });
+                        this.dispatchEvent(new CustomEvent('resource-moved-to-folder', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                resource: request.response,
+                                folder: this.item,
+                                sourceFolder: null
+                            }
+                        }));
 
                         this._hideLoader();
                     }
                 }.bind(this), function() {
-                    this.fire('resource-moved-to-folder-failed', {
-                        resource: request.response,
-                        folder: this.item
-                    });
+                    this.dispatchEvent(new CustomEvent('resource-moved-to-folder-failed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            resource: request.response,
+                            folder: this.item
+                        }
+                    }));
 
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoFoldersItem.is, AppscoFoldersItem);
     </script>
 </dom-module>

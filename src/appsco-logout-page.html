@@ -20,22 +20,23 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-logout-page',
+        class AppscoLogoutPage extends Polymer.Element {
+            static get is() { return 'appsco-logout-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    logoutApi: {
+                        type: String
+                    }
+                };
+            }
 
-                /**
-                 * Logout API link.
-                 */
-                logoutApi: {
-                    type: String
-                }
-            },
+            ready() {
+                super.ready();
 
-            attached: function() {
                 window.location.href = this.logoutApi;
             }
-        });
+        }
+        window.customElements.define(AppscoLogoutPage.is, AppscoLogoutPage);
     </script>
 </dom-module>

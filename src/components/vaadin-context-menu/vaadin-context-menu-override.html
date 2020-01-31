@@ -207,6 +207,8 @@ Custom property | Description | Default
 
         _context: Object,
 
+        _instance: Object,
+
         _contentTemplate: Object,
 
         _instanceProps: {
@@ -277,15 +279,17 @@ Custom property | Description | Default
 
       _openedChanged: function(opened) {
         if (opened) {
-          this._contentTemplate = Polymer.dom(this).children.filter(function(el) {
+          this._contentTemplate = Array.prototype.find.call(Polymer.dom(this).children, function(el) {
             return el.localName === 'template';
-          })[0];
+          });
         }
       },
 
       _contextChanged: function(context, instance) {
-        instance.detail = context.detail;
-        instance.target = context.target;
+        if (instance) {
+          instance.detail = context.detail;
+          instance.target = context.target;
+        }
       },
 
       /**
@@ -299,12 +303,12 @@ Custom property | Description | Default
         if (this.selector) {
           var targets = Polymer.dom(this.listenOn).querySelectorAll(this.selector);
 
-          return targets.filter(function(el) {
+          return Array.prototype.find.call(targets, function(el) {
             return Polymer.dom(e).path.indexOf(el) > -1;
-          })[0];
-        } else {
-          return Polymer.dom(e).localTarget;
+          });
         }
+
+        return Polymer.dom(e).localTarget;
       },
 
       _openMoveToDialog: function() {

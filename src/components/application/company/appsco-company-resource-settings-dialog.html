@@ -11,6 +11,8 @@
 <link rel="import" href="../../../components/components/appsco-loader.html">
 <link rel="import" href="appsco-company-resource-settings.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-company-resource-settings-dialog">
     <template>
         <style>
@@ -80,146 +82,111 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyResourceSettingsDialog extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-resource-settings-dialog'; }
 
-            is: 'appsco-company-resource-settings-dialog',
-
-            properties: {
-
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                domain: {
-                    type: String
-                },
-
-                _applicationSettings: {
-                    type: Boolean,
-                    value: false
-                },
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                companyApplication: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            setApplication: function(application) {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    domain: {
+                        type: String
+                    },
+
+                    _applicationSettings: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    companyApplication: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            setApplication(application) {
                 this._loadCompanyApplication(application);
                 this.application = application;
-            },
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._loader = false;
-            },
+            }
 
-            _onSave: function() {
-                var _self = this;
+            _onSave() {
+                const _self = this;
                 this.$.appscoCompanyResourceSettings.save(function() {
                     _self.toggle();
-                    _self.fire('company-resource-edited', {
-                        resource: this.companyApplication
-                    });
+                    _self.dispatchEvent(new CustomEvent('company-resource-edited', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            resource: this.companyApplication
+                        }
+                    }));
                 });
-            },
+            }
 
-            _onApplicationsSettingsSaved: function() {
+            _onApplicationsSettingsSaved() {
                 this._hideLoader();
                 this.toggle();
-            },
+            }
 
-            _onFormError: function() {
+            _onFormError() {
                 this._hideLoader();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _loadCompanyApplication: function(application) {
-                var applicationSelf = application && application.application
+            _loadCompanyApplication(application) {
+                const applicationSelf = application && application.application
                     ? application.application.meta.company_self
                     : application.self;
 
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: applicationSelf,
-                            method: 'GET',
-                            handleAs: 'json',
-                            headers: this._headers
-                        };
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: applicationSelf,
+                        method: 'GET',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._showLoader();
 
@@ -234,6 +201,7 @@
                     this._showError(this.apiErrors.getError(request.error.code));
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyResourceSettingsDialog.is, AppscoCompanyResourceSettingsDialog);
     </script>
 </dom-module>

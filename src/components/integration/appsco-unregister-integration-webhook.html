@@ -9,6 +9,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-unregister-integration-webhook">
     <template>
         <style>
@@ -67,112 +69,95 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoUnregisterIntegrationWebhook extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-unregister-integration-webhook'; }
 
-            is: 'appsco-unregister-integration-webhook',
-
-            properties: {
-
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                webhook: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _unregisterIntegrationWebhookApi: {
-                    type: String,
-                    computed: '_computeUnregisterIntegrationWebhook(webhook)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            setIntegration: function(integration) {
-                this.set('integration', integration);
-            },
-
-            setIntegrationWebhook: function(webhook) {
-                this.set('webhook', webhook);
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    webhook: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _unregisterIntegrationWebhookApi: {
+                        type: String,
+                        computed: '_computeUnregisterIntegrationWebhook(webhook)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeUnregisterIntegrationWebhook: function(webhook) {
+            setIntegration(integration) {
+                this.set('integration', integration);
+            }
+
+            setIntegrationWebhook(webhook) {
+                this.set('webhook', webhook);
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _computeUnregisterIntegrationWebhook(webhook) {
                 return webhook.removeWatcherApi ? webhook.removeWatcherApi : null;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onConfirmAction: function() {
-                var request = document.createElement('iron-request'),
+            _onConfirmAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._unregisterIntegrationWebhookApi,
                         method: 'DELETE',
@@ -183,13 +168,15 @@
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('integration-webhook-unregistered', {
-                            integration: this.integration,
-                            watcher: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('integration-webhook-unregistered', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                integration: this.integration,
+                                watcher: request.response
+                            }
+                        }));
 
                         this.close();
                     }
@@ -199,6 +186,7 @@
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoUnregisterIntegrationWebhook.is, AppscoUnregisterIntegrationWebhook);
     </script>
 </dom-module>

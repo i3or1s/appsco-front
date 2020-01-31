@@ -85,53 +85,52 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationSettingsDialog extends Polymer.Element {
+            static get is() { return 'appsco-application-settings-dialog'; }
 
-            is: 'appsco-application-settings-dialog',
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    _applicationSettings: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    /**
+                     * Authorization token.
+                     */
+                    authorizationToken: {
+                        type: String
+                    },
+
+                    /**
+                     * Computed headers.
+                     * It contains authorization token.
+                     */
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
                     }
-                },
-
-                _applicationSettings: {
-                    type: Boolean,
-                    value: false
-                },
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
+                };
+            }
 
             /**
              * Computes authorization headers.
@@ -140,58 +139,59 @@
              * @returns {{ Authorization: string }}
              * @private
              */
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            },
+            }
 
-            setApplication: function(application) {
+            setApplication(application) {
                 this.application = application;
-            },
+            }
 
             /**
              * Toggles add applications dialog.
              */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
             /**
              * Called after dialog has been closed.
              *
              * @private
              */
-            _onDialogClosed: function() {
-                this._loader = false;
-            },
-
-            _onEnter: function() {
-                this._onSave();
-            },
-
-            _onSave: function() {
-                this._showLoader();
-                this.$.appscoApplicationSettings.save();
-            },
-
-            _onApplicationsSettingsSaved: function() {
-                this._hideLoader();
-                this.toggle();
-            },
-
-            _onFormError: function() {
-                this._hideLoader();
-            },
-
-            _showLoader: function() {
-                this._loader = true;
-            },
-
-            _hideLoader: function() {
+            _onDialogClosed() {
                 this._loader = false;
             }
-        });
+
+            _onEnter() {
+                this._onSave();
+            }
+
+            _onSave() {
+                this._showLoader();
+                this.$.appscoApplicationSettings.save();
+            }
+
+            _onApplicationsSettingsSaved() {
+                this._hideLoader();
+                this.toggle();
+            }
+
+            _onFormError() {
+                this._hideLoader();
+            }
+
+            _showLoader() {
+                this._loader = true;
+            }
+
+            _hideLoader() {
+                this._loader = false;
+            }
+        }
+        window.customElements.define(AppscoApplicationSettingsDialog.is, AppscoApplicationSettingsDialog);
     </script>
 </dom-module>

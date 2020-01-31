@@ -216,209 +216,205 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAuditLog extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+            static get is() { return 'appsco-audit-log'; }
 
-            is: 'appsco-audit-log',
+            static get properties() {
+                return {
+                    /**
+                     * Authorization token
+                     */
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    /**
+                     * Get audit log link.
+                     */
+                    auditLogApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    size: {
+                        type: Number,
+                        value: 10
+                    },
 
-                /**
-                 * Get audit log link.
-                 */
-                auditLogApi: {
-                    type: String
-                },
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                size: {
-                    type: Number,
-                    value: 10
-                },
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _isPublicList: {
-                    type: Array,
-                    value: function () {
-                        return [
-                            {
-                                name: 'on',
-                                value: true
-                            },
-                            {
-                                name: 'off',
-                                value: false
-                            }
-                        ]
-                    }
-                },
-
-                _loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _auditLogApi: {
-                    type: String,
-                    computed: '_computeAuditLogApi(auditLogApi, size, _headers)',
-                    observer: '_onAuditLogApiChanged'
-                },
-
-                _nextPageAuditLogApi: {
-                    type: String
-                },
-
-                /**
-                 * Log list.
-                 */
-                _logList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _wholeLogList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _totalLogItems: {
-                    type: Number,
-                    value: 0
-                },
-
-                _timezoneListUrl: {
-                    type: String,
-                    value: function() {
-                        return this.resolveUrl('./data/timezone-list.json');
-                    }
-                },
-
-                _countryListUrl: {
-                    type: String,
-                    value: function() {
-                        return this.resolveUrl('./data/country-list.json');
-                    }
-                },
-
-                _timezoneList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _genderList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                name: 'Male',
-                                value: 'm'
-                            },
-                            {
-                                name: 'Female',
-                                value: 'f'
-                            }
-                        ];
-                    }
-                },
-
-                /**
-                 * Country list to get name of country from.
-                 * Country code = account.country.
-                 *
-                 * This is loaded from local data/country-list.json.
-                 */
-                _countryList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _logEmpty: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Message to display instead of log.
-                 */
-                _message: {
-                    type: String
-                },
-
-                language: {
-                    value: 'en',
-                    type: String
-                },
-
-                _dateFormat: {
-                    type: Object,
-                    value: function() {
-                        return {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
+                    _isPublicList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'on',
+                                    value: true
+                                },
+                                {
+                                    name: 'off',
+                                    value: false
+                                }
+                            ]
                         }
+                    },
+
+                    _loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Computed headers.
+                     * It contains authorization token.
+                     */
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    _auditLogApi: {
+                        type: String,
+                        computed: '_computeAuditLogApi(auditLogApi, size, _headers)',
+                        observer: '_onAuditLogApiChanged'
+                    },
+
+                    _nextPageAuditLogApi: {
+                        type: String
+                    },
+
+                    /**
+                     * Log list.
+                     */
+                    _logList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _wholeLogList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _totalLogItems: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _timezoneListUrl: {
+                        type: String
+                    },
+
+                    _countryListUrl: {
+                        type: String
+                    },
+
+                    _timezoneList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _genderList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'Male',
+                                    value: 'm'
+                                },
+                                {
+                                    name: 'Female',
+                                    value: 'f'
+                                }
+                            ];
+                        }
+                    },
+
+                    /**
+                     * Country list to get name of country from.
+                     * Country code = account.country.
+                     *
+                     * This is loaded from local data/country-list.json.
+                     */
+                    _countryList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _logEmpty: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Message to display instead of log.
+                     */
+                    _message: {
+                        type: String
+                    },
+
+                    language: {
+                        value: 'en',
+                        type: String
+                    },
+
+                    _dateFormat: {
+                        type: Object,
+                        value: function () {
+                            return {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }
+                        }
+                    },
+
+                    _itemPushList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _filterTerm: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _placeholder: {
+                        type: String,
+                        value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAACMCAMAAACZHrEMAAAAqFBMVEUAAAAnNEEnNEEnNEEnNEEnNEE8rPcnNEEnNEEnNUI8rPc8rPc8rPcnNEEnNEEnNEEnNEEnNEE8rPc8rPc8rPc8rPcnNEE8rPcnNEE8rPcnNEH///88rPeTmqAoPlDJzNBdZ3Hx8/WBiI+us7g0gLUuWno1QU1OtPjk5+kxbZg9TFtswfprc3w6oebX2ds3lNO8wMShpqxQWmWu3fye1vszeKfU7f6Nz/toHOtWAAAAGnRSTlMAnyC/EO+fYEDPYO26r4+AcFA9IIAQ388wUFlk1w8AAASsSURBVHjazNbdqqtADAXg+XEYvajam1JWkFYLIiIb2/d/uHPgwPam7kmM7p7vCRbJJBmzXR4r6z2w8N5WMTe/7FrbAqsKW1/N73DxFJAUTtGZg7m6AFtRH5gnix5CPmbmCK4M2CCU+5cnt9jM5vtG8VDx+8VxFmp2n2ZlFXZRZUbtfMFOLmdtWU7Y0SlTlSVgV2F7cbISuys3FscVOEDhzAZ5wCFCbsQiDhONkMWB7BFZ+qmZb/TtNjdTr0ijyNJ3M70xd70wjT5L37S0om16SRp9lqmlH7QTP40+y4MSHsI0+izHp4ncLPo00STkSOqIpUNSYhe7gJSxJZZ2REpw5gdZIWmSvlFFZtaVSBqJbURSaVadkfYktifSzqtNCkgbiG1AWlhr1AlpLxJ4Ie20vUnoSKDD1kZlFzDMJDCD4fKuURU4vkjgCxzVm3UHFhIBi+Pfx+PDWNFNWtxJ5I6F4Eb5T4bxzMLow8hLYz8bxrJGSR9GPlDlp8OUzAupDyO7lxFcI4mM4IqcudYvPeF0O3w+zPcTrsEkP5R8tfmnAN+NBG7gK+RdwpMEnhBwiVnS//QEYuLrq100dyyYn+EAvnEigWkEXzB/XcH3IKEH+K6ywe5IrANbvfwetHOtn24r2zIDiQ0ABJsGfLQB+JYPp/oW6C9CbiKA/+PNIJoKfA2JNeCrjAXfRGIT+KzxECCxHnxeFmYmoRkC3iBB16cOEgYiA4m0SFCFaY6bJXmYvhUVpoeIgUyjKIwijP4kDD0StGFef2g1t50GgSCABrSBPhj7aHDcGgPZkk0lFlr+/880PDhpaumc4pwvONnN7ly35ks6VAAiw0c84FiADHjgPI9ZLvOx/LfjMrxnz6sULsMDZnUPGigJu6VxYHnUVrb/meCpDEiu3GUyTTsJb4ZAwHkGCbm7TAFKFXeZEhRx7jKgvHWXWYPCHzXTvipOBloi7k97A5pF7jIv2kZDfDrIrECD0T1QPoHWq7tMAZrSMJ85VJRc2/WId4fkag0GGbB44r/eBox44ACB/3o5GH6xb4a/7Yf71m1D0xoK7l3bhApQ8IFpaI6dSHw1EEW6o1lo9QhHyaHtZCJZZJJMdK36GBfBcqvJROxvu/RRROw+OVg/aGo5Iw7zW69DlDPqhiytlLOHspdLUn/62+TUJ7lkP3s8pXFlJdRyjfgrpCJjlGvUYf5dKyVVUaM0Dj+MKakH1Cln15xUhcN1MsMCmKo46+S3V+O+m7VjFYdhIAigU22x2nCglTE+llRxkYBJlf//tbsikKQ4CVtand4XDCPBNnPdzMV2/f70VRwNrpu52dbP0WBhTnl+mKvHubh7PWVqcSvnlJng+tfyKud1If98qNvdurjfMo/0vN6rdbP+XuvsoP1iHV2yg3ZosI6CIitaRxEFbN0wisg6IWCYNAQMk4aAYdIQMEwaAoZJQ8AwaQg7sblh7BaDuQgRB+hsDmbFIVOy5tKEo5ZgTYUFFSaxhuRZywDlhAXVpvTvv+WdklUjRStRrIpEtBSpopWI1jQFOyAkhYeJxXYSnuBGeceNmFnhTFmCFQVhRR+Rac40QhzRWeREIvZGhFJNjh/wS1HnPv+ePgAAAABJRU5ErkJggg=='
                     }
-                },
+                };
+            }
 
-                _itemPushList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
+            ready() {
+                super.ready();
 
-                _filterTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                _placeholder: {
-                    type: String,
-                    value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAACMCAMAAACZHrEMAAAAqFBMVEUAAAAnNEEnNEEnNEEnNEEnNEE8rPcnNEEnNEEnNUI8rPc8rPc8rPcnNEEnNEEnNEEnNEEnNEE8rPc8rPc8rPc8rPcnNEE8rPcnNEE8rPcnNEH///88rPeTmqAoPlDJzNBdZ3Hx8/WBiI+us7g0gLUuWno1QU1OtPjk5+kxbZg9TFtswfprc3w6oebX2ds3lNO8wMShpqxQWmWu3fye1vszeKfU7f6Nz/toHOtWAAAAGnRSTlMAnyC/EO+fYEDPYO26r4+AcFA9IIAQ388wUFlk1w8AAASsSURBVHjazNbdqqtADAXg+XEYvajam1JWkFYLIiIb2/d/uHPgwPam7kmM7p7vCRbJJBmzXR4r6z2w8N5WMTe/7FrbAqsKW1/N73DxFJAUTtGZg7m6AFtRH5gnix5CPmbmCK4M2CCU+5cnt9jM5vtG8VDx+8VxFmp2n2ZlFXZRZUbtfMFOLmdtWU7Y0SlTlSVgV2F7cbISuys3FscVOEDhzAZ5wCFCbsQiDhONkMWB7BFZ+qmZb/TtNjdTr0ijyNJ3M70xd70wjT5L37S0om16SRp9lqmlH7QTP40+y4MSHsI0+izHp4ncLPo00STkSOqIpUNSYhe7gJSxJZZ2REpw5gdZIWmSvlFFZtaVSBqJbURSaVadkfYktifSzqtNCkgbiG1AWlhr1AlpLxJ4Ie20vUnoSKDD1kZlFzDMJDCD4fKuURU4vkjgCxzVm3UHFhIBi+Pfx+PDWNFNWtxJ5I6F4Eb5T4bxzMLow8hLYz8bxrJGSR9GPlDlp8OUzAupDyO7lxFcI4mM4IqcudYvPeF0O3w+zPcTrsEkP5R8tfmnAN+NBG7gK+RdwpMEnhBwiVnS//QEYuLrq100dyyYn+EAvnEigWkEXzB/XcH3IKEH+K6ywe5IrANbvfwetHOtn24r2zIDiQ0ABJsGfLQB+JYPp/oW6C9CbiKA/+PNIJoKfA2JNeCrjAXfRGIT+KzxECCxHnxeFmYmoRkC3iBB16cOEgYiA4m0SFCFaY6bJXmYvhUVpoeIgUyjKIwijP4kDD0StGFef2g1t50GgSCABrSBPhj7aHDcGgPZkk0lFlr+/880PDhpaumc4pwvONnN7ly35ks6VAAiw0c84FiADHjgPI9ZLvOx/LfjMrxnz6sULsMDZnUPGigJu6VxYHnUVrb/meCpDEiu3GUyTTsJb4ZAwHkGCbm7TAFKFXeZEhRx7jKgvHWXWYPCHzXTvipOBloi7k97A5pF7jIv2kZDfDrIrECD0T1QPoHWq7tMAZrSMJ85VJRc2/WId4fkag0GGbB44r/eBox44ACB/3o5GH6xb4a/7Yf71m1D0xoK7l3bhApQ8IFpaI6dSHw1EEW6o1lo9QhHyaHtZCJZZJJMdK36GBfBcqvJROxvu/RRROw+OVg/aGo5Iw7zW69DlDPqhiytlLOHspdLUn/62+TUJ7lkP3s8pXFlJdRyjfgrpCJjlGvUYf5dKyVVUaM0Dj+MKakH1Cln15xUhcN1MsMCmKo46+S3V+O+m7VjFYdhIAigU22x2nCglTE+llRxkYBJlf//tbsikKQ4CVtand4XDCPBNnPdzMV2/f70VRwNrpu52dbP0WBhTnl+mKvHubh7PWVqcSvnlJng+tfyKud1If98qNvdurjfMo/0vN6rdbP+XuvsoP1iHV2yg3ZosI6CIitaRxEFbN0wisg6IWCYNAQMk4aAYdIQMEwaAoZJQ8AwaQg7sblh7BaDuQgRB+hsDmbFIVOy5tKEo5ZgTYUFFSaxhuRZywDlhAXVpvTvv+WdklUjRStRrIpEtBSpopWI1jQFOyAkhYeJxXYSnuBGeceNmFnhTFmCFQVhRR+Rac40QhzRWeREIvZGhFJNjh/wS1HnPv+ePgAAAABJRU5ErkJggg=='
-                }
-            },
-
-            behaviors: [
-                Polymer.AppLocalizeBehavior
-            ],
-
-            attached: function() {
-                this.loadResources(this.resolveUrl('data/locales.json'));
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.loadResources(this.resolveUrl('data/locales.json'));
+                    this._timezoneListUrl = this.resolveUrl('./data/timezone-list.json');
+                    this._countryListUrl = this.resolveUrl('./data/country-list.json');
+                });
+            }
 
             /**
              * Computes authorization headers.
@@ -427,52 +423,47 @@
              * @returns {{ Authorization: string }}
              * @private
              */
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            },
+            }
 
-            _computeAuditLogApi: function(auditLogApi, size, headers) {
+            _computeAuditLogApi(auditLogApi, size, headers) {
                 return (auditLogApi && size && headers.Authorization) ? (auditLogApi + '?limit=' + size) : null;
-            },
+            }
 
-            _setLoadMoreAction: function() {
+            _setLoadMoreAction() {
                 this._loadMore = (this.loadMore && (this._wholeLogList.length < this._totalLogItems));
-            },
+            }
 
-            _hideLoadMoreAction: function() {
+            _hideLoadMoreAction() {
                 this._loadMore = false;
-            },
+            }
 
-            _showLoadMoreProgressBar: function() {
-                this.$$('#loadMoreProgress').hidden = false;
-            },
+            _showLoadMoreProgressBar() {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+            }
 
-            _hideLoadMoreActionProgressBar: function() {
-
+            _hideLoadMoreActionProgressBar() {
                 setTimeout(function() {
-                    this.$$('#loadMoreProgress').hidden = true;
+                    this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                 }.bind(this), 300);
+            }
 
-            },
-
-            _onAuditLogApiChanged: function(auditLogApi) {
-
+            _onAuditLogApiChanged(auditLogApi) {
                 if (auditLogApi) {
                     this.loadLog();
                 }
-            },
+            }
 
-            _onCountryListResponse: function(event, ironRequest) {
+            _onCountryListResponse(event, ironRequest) {
                 this._countryList = ironRequest.response;
-            },
+            }
 
-            _onTimezoneListResponse: function(event, ironRequest) {
-
+            _onTimezoneListResponse(event, ironRequest) {
                 ironRequest.response.forEach(function(zone, i) {
-
                     if (zone.utc) {
 
                         zone.utc.forEach(function(utc, index) {
@@ -483,14 +474,11 @@
 
                             this.push('_timezoneList', item);
                         }.bind(this));
-
                     }
-
                 }.bind(this));
+            }
 
-            },
-
-            _formatLogAccountUpdateProfile: function(item) {
+            _formatLogAccountUpdateProfile(item) {
                 var data = item.data,
                         logItem = {},
                         message = '';
@@ -504,7 +492,6 @@
                     switch (propertyName) {
                         case 'timezone':
                             this._timezoneList.forEach(function(zone, index) {
-
                                 if (zone.value === from) {
                                     from = zone.text;
                                 }
@@ -512,14 +499,11 @@
                                 if (zone.value === to) {
                                     to = zone.text;
                                 }
-
                             });
-
                             break;
 
                         case 'country':
                             this._countryList.forEach(function(country, index) {
-
                                 if (country.code === from) {
                                     from = country.name;
                                 }
@@ -527,14 +511,11 @@
                                 if (country.code === to) {
                                     to = country.name;
                                 }
-
                             });
-
                             break;
 
                         case 'gender':
                             this._genderList.forEach(function(gender, index) {
-
                                 if (gender.value === from) {
                                     from = gender.name;
                                 }
@@ -542,9 +523,7 @@
                                 if (gender.value === to) {
                                     to = gender.name;
                                 }
-
                             });
-
                             break;
 
                         case 'is_public':
@@ -566,9 +545,9 @@
                 }
 
                 return message;
-            },
+            }
 
-            _formatLogApplicationUpdated: function(item) {
+            _formatLogApplicationUpdated(item) {
                 var data = item.data,
                     message = '';
 
@@ -582,9 +561,9 @@
                 }
 
                 return message;
-            },
+            }
 
-            _formatLogCompanySettingsUpdated: function(item) {
+            _formatLogCompanySettingsUpdated(item) {
                 var data = item.data,
                     message = '';
 
@@ -598,9 +577,9 @@
                 }
 
                 return message == '' ? "Company settings updated with no change" : message;
-            },
+            }
 
-            _formatLogCompanyRoleAccountUpdated: function(item) {
+            _formatLogCompanyRoleAccountUpdated(item) {
                 var data = item.data,
                     message = '';
 
@@ -664,7 +643,7 @@
                 }
 
                 return message;
-            },
+            }
 
             /**
              * Maps log as object dependent on log type.
@@ -672,7 +651,7 @@
              * @param {Object} item
              * @returns {{ item: object }}
              */
-            formatLogItem: function(item) {
+            formatLogItem(item) {
                 var logItem = {
                     account: {
                         picture_url: item.initiatior_image,
@@ -689,10 +668,9 @@
                 };
 
                 return logItem;
+            }
 
-            },
-
-            _formatLogInitiatorRole: function (item) {
+            _formatLogInitiatorRole (item) {
                 var companyRole = '';
                 switch (item.initiator_company_role) {
                     case 'COMPANY_ROLE_PARTNER_ADMIN':
@@ -710,14 +688,14 @@
                 }
 
                 return companyRole;
-            },
+            }
 
-            _formatLogInitiatorCompanies: function (item) {
+            _formatLogInitiatorCompanies (item) {
                 var initiatorCompanies = item.initiator_company_names.toString();
                 return initiatorCompanies ? initiatorCompanies.replace(/,/g, ", ") : '';
-            },
+            }
 
-            _formatLogEvent: function (item) {
+            _formatLogEvent(item) {
                 var event = '';
                 switch (item.type) {
                     case 'account_login_attempt':
@@ -1077,15 +1055,15 @@
                 }
 
                 return event;
-            },
+            }
 
-            _mapToListItem: function(item) {
+            _mapToListItem(item) {
                 return {
                     icon: item.account.image ? item.account.image : this._placeholder,
                     date: item.date,
                     message: item.event
                 };
-            },
+            }
 
             /**
              * Handles error on get log API request.
@@ -1093,14 +1071,14 @@
              *
              * @private
              */
-            _onLogError: function(event) {
+            _onLogError(event) {
                 this._message = 'We could not load log at the moment. Please contact AppsCo support.';
                 this._totalLogItems = 0;
                 this._handleEmptyLog();
                 this._hideProgressBar();
                 this._hideLoadMoreActionProgressBar();
                 this._setLoadMoreAction();
-            },
+            }
 
             /**
              * Handles response on get log API request.
@@ -1108,7 +1086,7 @@
              *
              * @private
              */
-            _onLogResponse: function(event) {
+            _onLogResponse(event) {
                 var response = event.detail.response;
 
                 this.set('_message', '');
@@ -1118,7 +1096,6 @@
                         length = logs.length;
 
                     if (length > 0) {
-
                         this._logEmpty = !!this._filterTerm;
 
                         logs.forEach(function(log, i) {
@@ -1130,7 +1107,7 @@
                                 this.push('_wholeLogList', record);
 
                                 if (i === (length - 1)) {
-                                    this.fire('loaded');
+                                    this.dispatchEvent(new CustomEvent('loaded', { bubbles: true, composed: true }));
                                     this._hideProgressBar();
                                     this._hideLoadMoreActionProgressBar();
                                     this._setLoadMoreAction();
@@ -1143,10 +1120,7 @@
                                     }
                                 }
                             }.bind(this), (i + 1) * 30);
-
                             this._itemPushList.push(pushItem);
-
-
                         }.bind(this));
                     }
                     else {
@@ -1157,34 +1131,32 @@
                     this._totalLogItems = response.meta.total;
                     this._nextPageAuditLogApi = response.meta.next + '&limit=' + this.size;
                 }
-            },
+            }
 
-            _handleEmptyLog: function() {
+            _handleEmptyLog() {
                 this._logEmpty = true;
                 this._hideProgressBar();
                 this._hideLoadMoreActionProgressBar();
-                this.fire('empty-load');
-            },
+                this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
+            }
 
-            _showProgressBar: function() {
+            _showProgressBar() {
                 this.$.progress.hidden = false;
-            },
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
                     this.$.progress.hidden = true;
                 }.bind(this), 500);
+            }
 
-            },
-
-            _onLoadMoreAction: function() {
+            _onLoadMoreAction() {
                 this._showLoadMoreProgressBar();
                 this.$.ironAjaxLog.url = this._nextPageAuditLogApi;
                 this.$.ironAjaxLog.generateRequest();
-            },
+            }
 
-            loadLog: function() {
+            loadLog() {
                 var itemPushList = this._itemPushList,
                     getAuditLogRequest = this.$.ironAjaxLog;
 
@@ -1204,14 +1176,14 @@
                 getAuditLogRequest.url = this._auditLogApi;
                 getAuditLogRequest.headers = this._headers;
                 getAuditLogRequest.generateRequest();
-            },
+            }
 
-            reloadLog: function() {
+            reloadLog() {
                 this.$.ironAjaxLog.body = '';
                 this.loadLog();
-            },
+            }
 
-            filter: function(filterEventType, filterFromDate, filterToDate, filterAccount) {
+            filter(filterEventType, filterFromDate, filterToDate, filterAccount) {
                 var body = '';
 
                 this._showProgressBar();
@@ -1239,9 +1211,9 @@
 
                 this.$.ironAjaxLog.body = body;
                 this.loadLog();
-            },
+            }
 
-            filterLogByTerm: function(term) {
+            filterLogByTerm(term) {
                 var length = this._wholeLogList.length;
 
                 this._filterTerm = term;
@@ -1255,7 +1227,7 @@
                     this._hideProgressBar();
                     this._logEmpty = true;
                     this._message = 'There are no logs to search.';
-                    this.fire('filter-done');
+                    this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                     return false;
                 }
 
@@ -1263,14 +1235,13 @@
                     this.set('_logList', JSON.parse(JSON.stringify(this._wholeLogList)));
                     this._hideProgressBar();
                     this._setLoadMoreAction();
-                    this.fire('filter-done');
+                    this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                     return false;
                 }
 
                 this.set('_logList', []);
 
                 this._wholeLogList.forEach(function(item, index) {
-
                     if (item.account.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
                         var oldElem = JSON.parse(JSON.stringify(item));
 
@@ -1278,18 +1249,17 @@
                     }
 
                     if (index === length - 1) {
-
                         if (0 === this._logList.length) {
                             this._logEmpty = true;
                             this._message = 'There are no logs with asked term.';
                         }
 
                         this._hideProgressBar();
-                        this.fire('filter-done');
+                        this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                     }
-
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAuditLog.is, AppscoAuditLog);
     </script>
 </dom-module>

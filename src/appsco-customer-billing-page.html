@@ -557,245 +557,249 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-customer-billing-page',
+        class AppscoCustomerBillingPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-customer-billing-page'; }
 
-            properties: {
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                companyApi: {
-                    type: String
-                },
-
-                currentCompany: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
                     },
-                    observer: '_onSubscriptionChanged'
-                },
 
-                _invoices: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    _computedHeaders: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    companyApi: {
+                        type: String
+                    },
+
+                    currentCompany: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onSubscriptionChanged'
+                    },
+
+                    _invoices: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _selectedInvoice: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _selectedIndex: {
+                        type: Number,
+                        value: -1
+                    },
+
+                    _creditCardApi: {
+                        type: String,
+                        computed: '_computeCreditCardApi(companyApi)',
+                        observer: '_showCCLoader'
+                    },
+
+                    _subscriptionApi: {
+                        type: String,
+                        computed: '_computeSubscriptionApi(companyApi)',
+                        observer: '_showSubscriptionLoader'
+                    },
+
+                    _upcomingInvoiceApi: {
+                        type: String,
+                        computed: '_computeUpcomingInvoiceApi(companyApi, _subscription)',
+                        observer: '_showUpcomingInvoiceLoader'
+                    },
+
+                    _invoiceListApi: {
+                        type: String,
+                        computed: '_computeInvoiceListApi(companyApi, _subscription)',
+                        observer: '_showInvoiceListLoader'
+                    },
+
+                    _cc: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _ccLoader: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _subscriptionLoader: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _upcomingInvoiceLoader: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _invoiceListLoader: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _paymentMethod: {
+                        type: Boolean,
+                        computed: '_computePaymentMethod(_cc)'
+                    },
+
+                    _paymentMethodInfo: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _computedCCLogo: {
+                        type: String,
+                        computed: '_computeCCLogo(_cc)'
+                    },
+
+                    _isPaidByInvoice: {
+                        type: Boolean,
+                        computed: '_computeIsPaidByInvoice(currentCompany)'
+                    },
+
+                    _isPaidByCC: {
+                        type: Boolean,
+                        computed: '_computeIsPaidByCC(currentCompany)'
+                    },
+
+                    _numberOfDistributedLicences: {
+                        type: String,
+                        computed: '_computeNumberOfDistributedLicences(currentCompany)'
+                    },
+
+                    _numberOfAvailableLicences: {
+                        type: String,
+                        computed: '_computeNumberOfAvailableLicences(_subscription)'
+                    },
+
+                    _numberOfRemainingLicences: {
+                        type: String,
+                        computed: '_computeNumberOfRemainingLicences(currentCompany)'
+                    },
+
+                    _invoicesExists: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _subscriptionCanceled: {
+                        type: Boolean,
+                        computed: '_computeSubscriptionCanceled(_subscription)',
+                        observer: '_toggleCancelSubscriptionAction'
+                    },
+
+                    _cancelSubscription: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    lastInvoice: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    /**
+                     * Animation config.
+                     */
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                _selectedInvoice: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+                ];
+            }
 
-                _selectedIndex: {
-                    type: Number,
-                    value: -1
-                },
+            ready() {
+                super.ready();
 
-                _creditCardApi: {
-                    type: String,
-                    computed: '_computeCreditCardApi(companyApi)',
-                    observer: '_showCCLoader'
-                },
-
-                _subscriptionApi: {
-                    type: String,
-                    computed: '_computeSubscriptionApi(companyApi)',
-                    observer: '_showSubscriptionLoader'
-                },
-
-                _upcomingInvoiceApi: {
-                    type: String,
-                    computed: '_computeUpcomingInvoiceApi(companyApi, _subscription)',
-                    observer: '_showUpcomingInvoiceLoader'
-                },
-
-                _invoiceListApi: {
-                    type: String,
-                    computed: '_computeInvoiceListApi(companyApi, _subscription)',
-                    observer: '_showInvoiceListLoader'
-                },
-
-                _cc: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _ccLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _subscriptionLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _upcomingInvoiceLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _invoiceListLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _paymentMethod: {
-                    type: Boolean,
-                    computed: '_computePaymentMethod(_cc)'
-                },
-
-                _paymentMethodInfo: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _computedCCLogo: {
-                    type: String,
-                    computed: '_computeCCLogo(_cc)'
-                },
-
-                _isPaidByInvoice: {
-                    type: Boolean,
-                    computed: '_computeIsPaidByInvoice(currentCompany)'
-                },
-
-                _isPaidByCC: {
-                    type: Boolean,
-                    computed: '_computeIsPaidByCC(currentCompany)'
-                },
-
-                _numberOfDistributedLicences: {
-                    type: String,
-                    computed: '_computeNumberOfDistributedLicences(currentCompany)'
-                },
-
-                _numberOfAvailableLicences: {
-                    type: String,
-                    computed: '_computeNumberOfAvailableLicences(_subscription)'
-                },
-
-                _numberOfRemainingLicences: {
-                    type: String,
-                    computed: '_computeNumberOfRemainingLicences(currentCompany)'
-                },
-
-                _invoicesExists: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _subscriptionCanceled: {
-                    type: Boolean,
-                    computed: '_computeSubscriptionCanceled(_subscription)',
-                    observer: '_toggleCancelSubscriptionAction'
-                },
-
-                _cancelSubscription: {
-                    type: Boolean,
-                    value: false
-                },
-
-                lastInvoice: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._pageLoaded();
+                });
+            }
 
-            observers: [
-                '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-            ],
-
-            attached: function() {
-                this.pageLoaded = false;
-
-                if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
-
-                this._pageLoaded();
-            },
-
-            pageSelected: function() {
+            pageSelected() {
                 this.$.billingCCRequest.generateRequest();
                 this.reloadSubscription();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.set('_subscription', {});
                 this.set('_cc', {});
                 this.set('_upcomingInvoice', {});
@@ -807,9 +811,9 @@
                 this._numberOfRemainingLicences = '0';
                 this._cancelSubscription = false;
                 this._onCloseInfoAction();
-            },
+            }
 
-            setCreditCard: function(cc) {
+            setCreditCard(cc) {
                 this._paymentMethodInfo = false;
                 this._ccLoader = true;
                 this.set('_cc', cc);
@@ -817,49 +821,44 @@
                 setTimeout(function() {
                     this._ccLoader = false;
                 }.bind(this), 1000);
-            },
+            }
 
-            reloadSubscription: function() {
+            reloadSubscription() {
                 this._subscriptionLoader = true;
                 this.$.billingSubscriptionRequest.generateRequest();
-            },
+            }
 
-            _onSubscriptionChanged: function(subscription) {
-
-                for (key in subscription) {
+            _onSubscriptionChanged(subscription) {
+                for (let key in subscription) {
                     this._loadUpcomingInvoice();
                     this._loadInvoiceList();
                     return false;
                 }
-            },
+            }
 
-            _toggleCancelSubscriptionAction: function() {
-
+            _toggleCancelSubscriptionAction() {
                 if (this._subscription.status && !this._subscriptionCanceled) {
-
                     setTimeout(function() {
                         this._cancelSubscription = true;
                     }.bind(this), 1000);
-
                 }
                 else {
                     this._cancelSubscription = false;
                 }
+            }
 
-            },
-
-            _loadUpcomingInvoice: function() {
+            _loadUpcomingInvoice() {
                 this._upcomingInvoiceLoader = true;
                 this.$.upcomingInvoiceCall.generateRequest();
-            },
+            }
 
-            _loadInvoiceList: function() {
+            _loadInvoiceList() {
                 this._invoicesExists = false;
                 this._invoiceListLoader = true;
                 this.$.invoiceListCall.generateRequest();
-            },
+            }
 
-            _updateScreen: function(medium, tablet, mobile) {
+            _updateScreen(medium, tablet, mobile) {
                 this.updateStyles();
 
                 if (mobile) {
@@ -868,71 +867,71 @@
                 else if(!this.$.appscoContent.resourceActive) {
                     this.$.appscoContent.showSection('resource');
                 }
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken
                 }
-            },
+            }
 
-            _showSubscriptionLoader: function() {
+            _showSubscriptionLoader() {
                 this._subscriptionLoader = true;
-            },
+            }
 
-            _showCCLoader: function() {
+            _showCCLoader() {
                 this._ccLoader = true;
-            },
+            }
 
-            _showUpcomingInvoiceLoader: function() {
+            _showUpcomingInvoiceLoader() {
                 this._upcomingInvoiceLoader = true;
-            },
+            }
 
-            _showInvoiceListLoader: function() {
+            _showInvoiceListLoader() {
                 this._invoiceListLoader = true;
-            },
+            }
 
-            _onManageCreditCard: function() {
-                this.fire('manage-credit-card');
-            },
+            _onManageCreditCard() {
+                this.dispatchEvent(new CustomEvent('manage-credit-card', { bubbles: true, composed: true }));
+            }
 
-            _onChangePlan: function() {
-                this.fire('update-subscription', {subscription: this._subscription});
-            },
+            _onChangePlan() {
+                this.dispatchEvent(new CustomEvent('update-subscription', { bubbles: true, composed: true }));
+            }
 
-            _computeIsPaidByInvoice: function(currentCompany) {
+            _computeIsPaidByInvoice(currentCompany) {
                 return currentCompany && currentCompany.payingForCustomerType === 'invoice';
-            },
+            }
 
-            _computeIsPaidByCC: function(currentCompany) {
+            _computeIsPaidByCC(currentCompany) {
                 return currentCompany && (currentCompany.payingForCustomerType === 'cc' || !currentCompany.payingForCustomerType);
-            },
+            }
 
-            _computeNumberOfDistributedLicences: function(currentCompany) {
+            _computeNumberOfDistributedLicences(currentCompany) {
                 return currentCompany && currentCompany.distributedLicences ? currentCompany.distributedLicences : '0';
-            },
+            }
 
-            _computeNumberOfAvailableLicences: function(subscription) {
+            _computeNumberOfAvailableLicences(subscription) {
                 return subscription && subscription.quantity ? subscription.quantity : '0';
-            },
+            }
 
-            _computeNumberOfRemainingLicences: function(currentCompany) {
+            _computeNumberOfRemainingLicences(currentCompany) {
                 return currentCompany && currentCompany.remainingLicences ? currentCompany.remainingLicences : '0';
-            },
+            }
 
-            _computePaymentMethod: function(cc) {
-                for (var key in cc) {
+            _computePaymentMethod(cc) {
+                for (let key in cc) {
                     return true;
                 }
                 return false;
-            },
+            }
 
-            _computeCCLogo: function(cc) {
+            _computeCCLogo(cc) {
                 var logoUrl = '/images/cc/';
 
                 if (cc.brand) {
@@ -948,29 +947,29 @@
                 }
 
                 return logoUrl;
-            },
+            }
 
-            _computeCreditCardApi: function(companyApi) {
+            _computeCreditCardApi(companyApi) {
                 return companyApi ? companyApi + '/billing/cc' : null;
-            },
+            }
 
-            _computeSubscriptionApi: function(companyApi) {
+            _computeSubscriptionApi(companyApi) {
                 return companyApi ? companyApi + '/billing/subscriptions' : null;
-            },
+            }
 
-            _computeUpcomingInvoiceApi: function(companyApi, subscription) {
+            _computeUpcomingInvoiceApi(companyApi, subscription) {
                 return companyApi && subscription && subscription.id ? companyApi + '/billing/invoice/upcoming/' + subscription.id : null;
-            },
+            }
 
-            _computeInvoiceListApi: function(companyApi, subscription) {
+            _computeInvoiceListApi(companyApi, subscription) {
                 return companyApi && subscription && subscription.id ? companyApi + '/billing/invoice/list/' + subscription.id : null;
-            },
+            }
 
-            _computeSubscriptionCanceled: function(subscription) {
+            _computeSubscriptionCanceled(subscription) {
                 return subscription.status === 'canceled';
-            },
+            }
 
-            _handleCCResponse: function(event) {
+            _handleCCResponse(event) {
                 var response = event.detail.response;
                 this.set('_cc', {});
 
@@ -983,9 +982,9 @@
                 this.set('_cc', response);
                 this._paymentMethodInfo = false;
                 this._ccLoader = false;
-            },
+            }
 
-            _handleSubscriptionResponse: function(e) {
+            _handleSubscriptionResponse(e) {
                 if(null == e.detail.response) {
                     return;
                 }
@@ -1005,18 +1004,18 @@
                 }
 
                 this._subscriptionLoader = false;
-            },
+            }
 
-            _handleUpcomingInvoiceResponse: function(e) {
+            _handleUpcomingInvoiceResponse(e) {
                 if (null == e.detail.response) {
                     return;
                 }
 
                 this._upcomingInvoice = e.detail.response;
                 this._upcomingInvoiceLoader = false;
-            },
+            }
 
-            _handleInvoicesResponse: function(event) {
+            _handleInvoicesResponse(event) {
                 var response = event.detail.response;
 
                 this.set('_invoices', []);
@@ -1027,11 +1026,9 @@
                 }
 
                 if (response.length > 0) {
-
                     this._invoicesExists = true;
 
                     response.forEach(function(el, index) {
-
                         if (0 === index) {
                             this.lastInvoice = el;
                         }
@@ -1045,28 +1042,27 @@
                             }
 
                         }.bind(this), (index + 1) * 30);
-
                     }.bind(this));
                 }
                 else {
                     this._invoiceListLoader = false;
                     this._toggleCancelSubscriptionAction();
                 }
-            },
+            }
 
-            _onInvoiceAction: function(event) {
+            _onInvoiceAction(event) {
                 var selectedInvoice = event.model.item;
 
                 if (selectedInvoice.id != this._selectedInvoice.id) {
                     this._selectedInvoice = selectedInvoice;
 
                     if (this._selectedIndex !== -1) {
-                        this.$$('#invoiceItem_' + this._selectedIndex).deselect();
+                        this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex).deselect();
                     }
 
                     this._selectedIndex = event.model.index;
 
-                    this.$$('#invoiceItem_' + this._selectedIndex).select();
+                    this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex).select();
 
                     if (!this._infoShown) {
                         this._showInfo();
@@ -1075,46 +1071,55 @@
                 else {
                     this._onCloseInfoAction();
                 }
-            },
+            }
 
-            _deselectInvoice: function() {
+            _deselectInvoice() {
                 this._hideInfo();
                 this.set('_selectedInvoice', {});
 
-                if (this.$$('#invoiceItem_' + this._selectedIndex)) {
-                    this.$$('#invoiceItem_' + this._selectedIndex).deselect();
+                if (this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex)) {
+                    this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex).deselect();
                 }
 
                 this._selectedIndex = -1;
-            },
+            }
 
-            _onCloseInfoAction: function() {
+            _onCloseInfoAction() {
                 this._hideInfo();
                 this._deselectInvoice();
-            },
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
                 this._infoShown = true;
-            },
+            }
 
-            _hideInfo: function() {
+            _hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
-            },
-            _onSendInvoice: function() {
-                this.fire('send-invoice', {
-                    invoice: this._selectedInvoice,
-                    subscription: this._subscription
-                });
-            },
+            }
 
-            _onCancelSubscription: function() {
-                this.fire('cancel-subscription', {
-                    'subscription': this._subscription
-                });
-            },
+            _onSendInvoice() {
+                this.dispatchEvent(new CustomEvent('send-invoice', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        invoice: this._selectedInvoice,
+                        subscription: this._subscription
+                    }
+                }));
+            }
 
-        });
+            _onCancelSubscription() {
+                this.dispatchEvent(new CustomEvent('cancel-subscription', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        'subscription': this._subscription
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCustomerBillingPage.is, AppscoCustomerBillingPage);
     </script>
 </dom-module>

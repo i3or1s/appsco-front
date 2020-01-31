@@ -7,6 +7,8 @@
 
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-authorized-app-revoke`
 Shows dialog screen with confirmation for application revoke.
@@ -71,42 +73,32 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountAuthorizedAppRevoke extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-authorized-app-revoke'; }
 
-            is: 'appsco-account-authorized-app-revoke',
-
-            properties: {
-
-                /**
-                 * Application that is to be revoked.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            open: function () {
+            open() {
                 this.$.revokeDialog.open();
-            },
+            }
 
-            _revokeApplication: function() {
-                var appRequest = document.createElement('iron-request');
+            _revokeApplication() {
+                const appRequest = document.createElement('iron-request');
 
                 this._loader = true;
 
@@ -114,26 +106,21 @@ Custom property | Description | Default
                     url: this.application.revoke,
                     method: "DELETE",
                     handleAs: 'json',
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken
-                    }
+                    headers: this._headers
                 }).then(function() {
-
                     this._loader = false;
 
-                    /**
-                     * Fired when applicaiton is revoked
-                     *
-                     * @event application-revoked
-                     * @param {Object} application which is revoked
-                     */
-                    this.fire("application-revoked", {
-                        application: this.application
-                    });
-
+                    this.dispatchEvent(new CustomEvent('application-revoked', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application
+                        }
+                    }));
                     this.$.revokeDialog.close();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountAuthorizedAppRevoke.is, AppscoAccountAuthorizedAppRevoke);
     </script>
 </dom-module>

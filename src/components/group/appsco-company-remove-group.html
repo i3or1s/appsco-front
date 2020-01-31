@@ -9,6 +9,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-remove-group`
 Shows dialog screen with confirmation for group removal.
@@ -74,110 +76,84 @@ Shows dialog screen with confirmation for group removal.
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyRemoveGroup extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-remove-group'; }
 
-            is: 'appsco-company-remove-group',
-
-            properties: {
-
-                /**
-                 * Group to remove.
-                 */
-                group: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _removeGroupApi: {
-                    type: String,
-                    computed: '_computeRemoveGroupApi(group)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            setGroup: function(group) {
-                this.group = group;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    group: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _removeGroupApi: {
+                        type: String,
+                        computed: '_computeRemoveGroupApi(group)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeRemoveGroupApi: function(group) {
+            setGroup(group) {
+                this.group = group;
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle () {
+                this.$.dialog.toggle();
+            }
+
+            _computeRemoveGroupApi(group) {
                 return group.meta ? group.meta.self : null;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onRemoveAction: function() {
-                var request = document.createElement('iron-request'),
+            _onRemoveAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._removeGroupApi,
                         method: 'DELETE',
@@ -188,27 +164,23 @@ Shows dialog screen with confirmation for group removal.
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when group is deleted.
-                         *
-                         * @event group-removed
-                         * @param [Object] group
-                         */
-                        this.fire('group-removed', {
-                            group: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('group-removed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                group: request.response
+                            }
+                        }));
 
                         this.close();
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyRemoveGroup.is, AppscoCompanyRemoveGroup);
     </script>
 </dom-module>

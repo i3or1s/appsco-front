@@ -2,8 +2,9 @@
 <link rel="import" href="../../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../../bower_components/paper-progress/paper-progress.html">
 
-
 <link rel="import" href="appsco-contact-group-item.html">
+
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-contact-groups">
     <template>
@@ -48,7 +49,7 @@
                 url="[[ groupsApi ]]"
                 on-response="_onGroupResponse"
                 on-error="_handleError"
-                headers="{{ _computedHeaders }}"></iron-ajax>
+                headers="{{ _headers }}"></iron-ajax>
 
         <paper-progress id="progress" indeterminate></paper-progress>
 
@@ -77,84 +78,53 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoContactGroups extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-contact-groups'; }
 
-            is: 'appsco-contact-groups',
+            static get properties() {
+                return {
+                    contact: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    groupsApi: {
+                        type: String
+                    },
 
-                /**
-                 * Contact
-                 */
-                contact: {
-                    type: Object,
-                    value: function () {
-                        return {};
+                    _groups: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    /**
+                     * Number of groups to load.
+                     */
+                    size: {
+                        type: Number
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    _message: {
+                        type: String
+                    },
+
+                    _totalGroups: {
+                        type: Number
                     }
-                },
+                };
+            }
 
-                /**
-                 * Get role groups link.
-                 */
-                groupsApi: {
-                    type: String
-                },
-
-                _groups: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Number of groups to load.
-                 */
-                size: {
-                    type: Number
-                },
-
-                /**
-                 * Indicates if group should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Message to display instead of group list.
-                 */
-                _message: {
-                    type: String
-                },
-
-                _totalGroups: {
-                    type: Number
-                },
-
-                /**
-                 * Authorization token
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                }
-            },
-
-            /**
-             * Triggers ajax request in order to get groups.
-             */
-            loadGroups: function() {
+            loadGroups() {
                 this.$.progress.hidden = false;
                 this.set('_groups', []);
                 this._message = '';
@@ -162,14 +132,13 @@
 
                 this.$.ironAjaxGetGroups.url = this._computeUrl(this.groupsApi);
                 this.$.ironAjaxGetGroups.generateRequest();
-            },
+            }
 
-            removeGroup: function(group) {
-                var _groups = JSON.parse(JSON.stringify(this._groups)),
-                        _length = _groups.length;
+            removeGroup(group) {
+                const _groups = JSON.parse(JSON.stringify(this._groups)),
+                    _length = _groups.length;
 
-                for (var j = 0; j < _length; j++) {
-
+                for (let j = 0; j < _length; j++) {
                     if (group.alias === _groups[j].alias) {
                         this.splice('_groups', j, 1);
                         break;
@@ -177,19 +146,14 @@
                 }
 
                 this._totalGroups--;
-            },
+            }
 
-            _computeUrl: function(groupsApi) {
+            _computeUrl(groupsApi) {
                 return this.size ? groupsApi + '&limit=' + this.size : groupsApi;
-            },
+            }
 
-            /**
-             * Handle response event
-             *
-             * @private
-             */
-            _onGroupResponse: function(event) {
-                var response = event.detail.response;
+            _onGroupResponse(event) {
+                const response = event.detail.response;
                 if (!response) {
                     return false;
                 }
@@ -200,31 +164,13 @@
                     this._message = "Contact doesn't belong to any group.";
                 }
                 this.$.progress.hidden = true;
-            },
-
-            /**
-             * Handle response error
-             *
-             * @private
-             */
-            _handleError: function(event) {
-                this._message = 'We couldn\'t load groups at the moment. Please try again in a minute. If error continues contact us.';
-                this.$.progress.hidden = true;
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
             }
 
-        });
+            _handleError(event) {
+                this._message = 'We couldn\'t load groups at the moment. Please try again in a minute. If error continues contact us.';
+                this.$.progress.hidden = true;
+            }
+        }
+        window.customElements.define(AppscoContactGroups.is, AppscoContactGroups);
     </script>
 </dom-module>

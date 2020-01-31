@@ -25,7 +25,6 @@
             var body = '';
 
             Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
-
                 if (item.value) {
                     body += body === '' ? '' : '&';
                     body += encodeURIComponent(item.name) + '=' + encodeURIComponent(item.value);
@@ -47,7 +46,6 @@
         },
 
         reset: function() {
-
             Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
                 var inputContainer = item.$$('#container');
 
@@ -62,7 +60,6 @@
         },
 
         _onKeyUp: function(event) {
-
             if (13 !== event.keyCode) {
                 event.target.invalid = false;
             }

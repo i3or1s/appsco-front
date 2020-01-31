@@ -59,97 +59,89 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyBrandSettingsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-brand-settings-page'; }
 
-            is: 'appsco-company-brand-settings-page',
+            static get properties() {
+                return {
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    authorizationToken: {
+                        type: String
+                    },
 
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    settingsApi: {
+                        type: String
+                    },
+
+                    imageSettingsApi: {
+                        type: String
+                    },
+
+                    dashboardImageSettingsApi: {
+                        type: String
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Save settings link.
-                 */
-                settingsApi: {
-                    type: String
-                },
-
-                imageSettingsApi: {
-                    type: String
-                },
-
-                dashboardImageSettingsApi: {
-                    type: String
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.companyBrandSettings
-                        }
-                    }
-                }
-            },
+                this.sharedElements = {
+                    'hero': this.$.companyBrandSettings
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
+            _onBack() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
 
-            _onBack: function() {
-                this.fire('back');
-            },
-
-            setupPage: function() {
+            setupPage() {
                 this.$.appscoCompanySettings.setup();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.$.appscoCompanySettings.reset();
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyBrandSettingsPage.is, AppscoCompanyBrandSettingsPage);
     </script>
 </dom-module>
 

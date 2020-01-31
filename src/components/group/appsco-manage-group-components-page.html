@@ -79,172 +79,165 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoManageGroupComponentsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-manage-group-components-page'; }
 
-            is: 'appsco-manage-group-components-page',
-
-            properties: {
-
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                groupRolesApi: {
-                    type: String
-                },
-
-                groupContactsApi: {
-                    type: String
-                },
-
-                groupResourcesApi: {
-                    type: String
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'cascaded-animation',
-                                animation: 'fade-in-animation',
-                                nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
-                                nodeDelay: 50,
-                                timing: {
-                                    delay: 200,
-                                    duration: 100
-                                }
-                            }],
-                            'exit': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                fromPage: this
-                            }, {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }]
+            static get properties() {
+                return {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    groupRolesApi: {
+                        type: String
+                    },
+
+                    groupContactsApi: {
+                        type: String
+                    },
+
+                    groupResourcesApi: {
+                        type: String
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
+            static get observers() {
+                return [
+                    '_updateScreen(tabletScreen, mediumScreen)'
+                ];
+            }
 
-            observers: [
-                '_updateScreen(tabletScreen, mediumScreen)'
-            ],
+            ready() {
+                super.ready();
 
-            attached: function() {
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'cascaded-animation',
+                        animation: 'fade-in-animation',
+                        nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
+                        nodeDelay: 50,
+                        timing: {
+                            delay: 200,
+                            duration: 100
+                        }
+                    }],
+                    'exit': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        fromPage: this
+                    }, {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }]
+                };
 
-                if (this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                });
+            }
 
-            loadPage: function() {
+            loadPage() {
                 this._loadRoles();
                 this._loadContacts();
                 this._loadResources();
-            },
+            }
 
-            addGroupRoles: function(roles) {
+            addGroupRoles(roles) {
                 this.$.appscoCompanyGroupRoles.addGroupItems(roles);
-            },
+            }
 
-            addGroupContacts: function(contacts) {
+            addGroupContacts(contacts) {
                 this.$.appscoCompanyGroupContacts.addGroupItems(contacts);
-            },
+            }
 
-            addGroupResources: function(resources) {
+            addGroupResources(resources) {
                 this.$.appscoCompanyGroupResources.addGroupItems(resources);
-            },
+            }
 
-            removeGroupRoles: function(roles) {
+            removeGroupRoles(roles) {
                 this.$.appscoCompanyGroupRoles.removeGroupItems(roles);
-            },
+            }
 
-            removeGroupContacts: function(contacts) {
+            removeGroupContacts(contacts) {
                 this.$.appscoCompanyGroupContacts.removeGroupItems(contacts);
-            },
+            }
 
-            removeGroupResources: function(resources) {
+            removeGroupResources(resources) {
                 this.$.appscoCompanyGroupResources.removeGroupItems(resources);
-            },
+            }
 
-            _loadRoles: function() {
+            _loadRoles() {
                 this.$.appscoCompanyGroupRoles.loadItems();
-            },
+            }
 
-            _loadContacts: function() {
+            _loadContacts() {
                 this.$.appscoCompanyGroupContacts.loadItems();
-            },
+            }
 
-            _loadResources: function() {
+            _loadResources() {
                 this.$.appscoCompanyGroupResources.loadItems();
-            },
+            }
 
-            _updateScreen: function(tablet, medium) {
+            _updateScreen(tablet, medium) {
                 this.updateStyles();
-            },
+            }
 
-            _setSharedElement: function(target) {
-
+            _setSharedElement(target) {
                 while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
                     target = target.parentNode;
                 }
 
-                /**
-                 * Set hero animation element that is to be shared between pages.
-                 *
-                 * @type {{hero: *}}
-                 */
                 this.sharedElements = {
                     'hero': target
                 };
-            },
-
-            _onManageGroupRoles: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-group-roles');
-            },
-
-            _onManageGroupContacts: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-group-contacts');
-            },
-
-            _onManageGroupResources: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-group-resources');
             }
-        });
+
+            _onManageGroupRoles(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('manage-group-roles', { bubbles: true, composed: true }));
+            }
+
+            _onManageGroupContacts(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('manage-group-contacts', { bubbles: true, composed: true }));
+            }
+
+            _onManageGroupResources(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('manage-group-resources', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoManageGroupComponentsPage.is, AppscoManageGroupComponentsPage);
     </script>
 </dom-module>
 

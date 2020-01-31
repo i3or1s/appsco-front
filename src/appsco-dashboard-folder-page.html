@@ -324,219 +324,223 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-dashboard-folder-page',
+        class AppscoDashboardFolderPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppscoDropHTMLElementBehavior,
+            Polymer.AppscoDropHTMLElementBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-dashboard-folder-page'; }
 
-            properties: {
-
-                folder: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                },
-
-                account: {
-                    type: Object,
-                    value: function () {
-                        return {};
-                    }
-                },
-
-                isOnPersonal: {
-                    type: Boolean,
-                    value: false
-                },
-
-                foldersApi: {
-                    type: String,
-                    observer: '_onFoldersApiChanged'
-                },
-
-                pageConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _breadcrumbsDataPage: {
-                    type: String,
-                    computed: '_computeBreadcrumbsDataPage(isOnPersonal)'
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _shared: {
-                    type: Boolean,
-                    computed: '_computeApplicationShared(application)',
-                    notify: true
-                },
-
-                _editClaims: {
-                    type: Boolean,
-                    computed: '_computeEditClaims(application)',
-                    notify: true
-                },
-
-                _infoShown: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _selectedTab: {
-                    type: Number
-                },
-
-                /**
-                 * Get applications from dashboard link.
-                 */
-                _applicationsApi: {
-                    type: String,
-                    computed: '_computeApplicationsApi(folder)'
-                },
-
-                netscalerApi: {
-                    type: String
-                },
-
-                _applications: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletS1024Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletS1280Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                laptopScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            static get properties() {
+                return {
+                    folder: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
+
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    isOnPersonal: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    foldersApi: {
+                        type: String,
+                        observer: '_onFoldersApiChanged'
+                    },
+
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _breadcrumbsDataPage: {
+                        type: String,
+                        computed: '_computeBreadcrumbsDataPage(isOnPersonal)'
+                    },
+
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    _shared: {
+                        type: Boolean,
+                        computed: '_computeApplicationShared(application)',
+                        notify: true
+                    },
+
+                    _editClaims: {
+                        type: Boolean,
+                        computed: '_computeEditClaims(application)',
+                        notify: true
+                    },
+
+                    _infoShown: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _selectedTab: {
+                        type: Number
+                    },
+
+                    /**
+                     * Get applications from dashboard link.
+                     */
+                    _applicationsApi: {
+                        type: String,
+                        computed: '_computeApplicationsApi(folder)'
+                    },
+
+                    netscalerApi: {
+                        type: String
+                    },
+
+                    _applications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletS1024Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletS1280Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    laptopScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)',
+                    '_onPageConfigChanged(pageConfig, _breadcrumbsDataPage)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.AppscoDropHTMLElementBehavior,
-                Polymer.AppscoDropHTMLElementBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)',
-                '_onPageConfigChanged(pageConfig, _breadcrumbsDataPage)'
-            ],
-
-            listeners: {
-                'item-dropped': '_onItemDropped'
-            },
-
-            attached: function() {
+            ready() {
+                super.ready();
 
                 this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-                if (this.mobileScreen || this.tabletScreen || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopScreen) {
-                    this.updateStyles();
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-            _updateScreen: function() {
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('item-dropped', this._onItemDropped);
+            }
+
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken
                 }
-            },
+            }
 
-            _computeApplicationsApi: function(folder) {
+            _computeApplicationsApi(folder) {
                 return folder.meta ? folder.meta.applications : null;
-            },
+            }
 
-            _computeApplicationShared: function(application) {
+            _computeApplicationShared(application) {
                 return application && !application.owner;
-            },
+            }
 
-            _computeEditClaims: function(application) {
+            _computeEditClaims(application) {
                 return application.permisions && application.permisions.edit_claims;
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
                 this._initializeResourcesDragBehavior();
                 this.initializeDropBehavior();
-            },
+            }
 
-            _onPageConfigChanged: function(newValue, breadcrumbsDataPage) {
+            _onPageConfigChanged(newValue, breadcrumbsDataPage) {
                 newValue = newValue[breadcrumbsDataPage];
 
                 if (!newValue) {
@@ -555,14 +559,13 @@
                         ascending: newValue.sort_ascending
                     });
                 }
-            },
+            }
 
-            _onFoldersApiChanged: function() {
+            _onFoldersApiChanged() {
                 this._getFolder();
-            },
+            }
 
-            _getFolder: function() {
-
+            _getFolder() {
                 if (!this.folder.self && this.foldersApi && this._headers) {
                     var folderApi = this.foldersApi + this.route.path,
                         getFolderRequest = this.$.ironAjaxGetFolder;
@@ -574,167 +577,192 @@
                     getFolderRequest.url = folderApi;
                     getFolderRequest.generateRequest();
                 }
-            },
+            }
 
-            _onGetFolderResponse: function(event) {
-
+            _onGetFolderResponse(event) {
                 if (200 === event.detail.status && event.detail.response) {
                     this.setFolder(event.detail.response.dashboardGroup);
                 }
-            },
+            }
 
-            _onGetFolderError: function(event) {
-
+            _onGetFolderError(event) {
                 if (!event.detail.request.aborted) {
-                    this.fire('page-error');
+                    this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
                 }
-            },
+            }
 
-            setFolder: function(folder) {
+            setFolder(folder) {
                 this.pageLoaded = false;
                 this.set('folder', folder);
-            },
+            }
 
-            getFolder: function() {
+            getFolder() {
                 return this.folder;
-            },
+            }
 
-            initializePage: function() {
+            initializePage() {
                 this.setDefaultApplication();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.$.appscoApplications.reset();
                 this._hideInfo();
-            },
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
                 this._infoShown = true;
                 this._selectedTab = 0;
-            },
+            }
 
-            _hideInfo: function() {
+            _hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
-            },
+            }
 
-            toggleInfo: function() {
+            toggleInfo() {
                 this.$.appscoContent.toggleSection('info');
                 this._infoShown = !this._infoShown;
 
                 if (this._infoShown) {
                     this._selectedTab = 0;
                 }
-            },
+            }
 
-            _onViewApplicationInfo: function(event) {
+            _onViewApplicationInfo(event) {
                 this.set('application', event.detail.application);
 
                 if (!this._infoShown) {
                     this._showInfo();
                 }
-            },
+            }
 
-            _onApplicationEdit: function(event) {
+            _onApplicationEdit(event) {
                 var application = event.detail.application;
 
                 this.set('application', application);
                 this.isOnPersonal ?
-                    this.fire('edit-application', {
-                        application: application
-                    }) :
-                    this.fire('edit-resource', {
-                        resource: application
-                    });
-            },
+                    this.dispatchEvent(new CustomEvent('edit-application', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: application
+                        }
+                    })) :
+                    this.dispatchEvent(new CustomEvent('edit-resource', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            resource: application
+                        }
+                    }));
+            }
 
-            _onApplicationInfoEdit: function() {
+            _onApplicationInfoEdit() {
                 this.isOnPersonal ?
-                    this.fire('info-edit-application', {
+                    this.dispatchEvent(new CustomEvent('info-edit-application', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application
+                        }
+                    })) :
+                    this.dispatchEvent(new CustomEvent('info-edit-resource', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            resource: this.application
+                        }
+                    }));
+            }
+
+            _onApplicationEditCredentials() {
+                this.dispatchEvent(new CustomEvent('info-edit-application-credentials', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
                         application: this.application
-                    }) :
-                    this.fire('info-edit-resource', {
-                        resource: this.application
-                    });
-            },
+                    }
+                }));
+            }
 
-            _onApplicationEditCredentials: function() {
-                this.fire('info-edit-application-credentials', {
-                    application: this.application
-                });
-            },
-
-            _onApplication: function(event) {
+            _onApplication(event) {
                 if(['unpw', 'item', 'none', 'saml', 'saml_dropbox', 'saml_office_365'].indexOf(event.detail.application.auth_type) > -1) {
                     window.open(event.detail.application.meta.plugin_go, "_blank");
                 } else {
                     this._onViewApplicationInfo(event);
                 }
-            },
+            }
 
-            _onCitrixResourceAction: function(event) {
+            _onCitrixResourceAction(event) {
                 var application = event.detail.application;
                 var a = document.createElement('a');
                 var blob = new Blob([application.icocontent], {'type':'application/octet-stream'});
                 a.href = window.URL.createObjectURL(blob);
                 a.download = application.title+'.ica';
                 a.click();
-            },
+            }
 
-            _onShareApplication: function() {
-
+            _onShareApplication() {
                 if (this.isOnPersonal) {
-                    this.fire('share-application', {
-                        application: this.application
-                    });
+                    this.dispatchEvent(new CustomEvent('share-application', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application
+                        }
+                    }));
                 }
-            },
+            }
 
-            _onRevokeApplication: function() {
-                this.fire('revoke-application', {
-                    application: this.application
-                });
-            },
+            _onRevokeApplication() {
+                this.dispatchEvent(new CustomEvent('revoke-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            setApplication: function(application) {
+            setApplication(application) {
                 this.set('application', {});
                 this.set('application', application);
                 this.$.appscoApplications.modifyApplications([application]);
                 this._initializeResourcesDragBehavior();
-            },
+            }
 
-            reloadApplications: function() {
+            reloadApplications() {
                 this.$.appscoApplications.reloadApplications();
-            },
+            }
 
-            addApplications: function(applications) {
+            addApplications(applications) {
                 this.$.appscoApplications.addApplications(applications);
                 this._initializeResourcesDragBehavior();
-            },
+            }
 
-            removeApplications: function(applications) {
+            removeApplications(applications) {
                 this.$.appscoApplications.removeApplications(applications);
                 this._initializeResourcesDragBehavior();
-            },
+            }
 
-            _onApplicationRemoved: function() {
+            _onApplicationRemoved() {
                 this.setDefaultApplication();
-            },
+            }
 
-            setDefaultApplication: function() {
+            setDefaultApplication() {
                 this.set('application', this.$.appscoApplications.getFirstApplication());
-            },
+            }
 
-            filterApplicationsByTerm: function(term) {
+            filterApplicationsByTerm(term) {
                 this.$.appscoApplications.filterByTerm(term);
-            },
+            }
 
-            addFolder: function(folder) {
+            addFolder(folder) {
                 this.$.appscoFolders.addItems([folder]);
-            },
+            }
 
-            _onResponseNetscaler: function(e) {
+            _onResponseNetscaler(e) {
                 if (!e.detail.response) {
                     return false;
                 }
@@ -752,29 +780,32 @@
 
                     this.push('_applications', item);
                 }.bind(this));
-            },
+            }
 
-            _initializeResourcesDragBehavior: function() {
+            _initializeResourcesDragBehavior() {
                 this.$.appscoApplications.initializeResourcesDragBehavior();
-            },
+            }
 
-            _onFolderAction: function(event) {
-                this.fire('folder-tapped', {
-                    folder: event.detail.item
-                });
-            },
+            _onFolderAction(event) {
+                this.dispatchEvent(new CustomEvent('folder-tapped', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        folder: event.detail.item
+                    }
+                }));
+            }
 
-            _onItemDropped: function(event) {
+            _onItemDropped(event) {
                 var item = event.detail.item;
-
                 this._removeResourceFromFolder(item);
-            },
+            }
 
-            _getRemoveResourceFromFolderApi: function(resource) {
+            _getRemoveResourceFromFolderApi(resource) {
                 return (this.folder.self && resource.alias) ? (this.folder.self + '/resource/' + resource.alias) : null;
-            },
+            }
 
-            _removeResourceFromFolder: function(item) {
+            _removeResourceFromFolder(item) {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this._getRemoveResourceFromFolderApi(item),
@@ -788,31 +819,42 @@
                 }
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('resource-removed-from-folder', {
-                            resource: request.response,
-                            folder: this.folder
-                        });
+                        this.dispatchEvent(new CustomEvent('resource-removed-from-folder', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                resource: request.response,
+                                folder: this.folder
+                            }
+                        }));
                     }
                 }.bind(this), function() {
-                    this.fire('resource-remove-from-folder-failed', {
-                        resource: request.response,
-                        folder: this.folder
-                    });
+                    this.dispatchEvent(new CustomEvent('resource-remove-from-folder-failed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            resource: request.response,
+                            folder: this.folder
+                        }
+                    }));
                 }.bind(this));
-            },
+            }
 
-            _onBreadcrumbAction: function() {
-                this.fire('show-page', {
-                    page: this._breadcrumbsDataPage
-                });
-            },
+            _onBreadcrumbAction() {
+                this.dispatchEvent(new CustomEvent('show-page', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        page: this._breadcrumbsDataPage
+                    }
+                }));
+            }
 
-            _computeBreadcrumbsDataPage: function(isOnPersonal) {
+            _computeBreadcrumbsDataPage(isOnPersonal) {
                 return isOnPersonal ? 'home' : 'company-home';
             }
-        });
+        }
+        window.customElements.define(AppscoDashboardFolderPage.is, AppscoDashboardFolderPage);
     </script>
 </dom-module>

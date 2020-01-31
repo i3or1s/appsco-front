@@ -68,37 +68,38 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationDetailsUnpw extends Polymer.Element {
+            static get is() { return 'appsco-application-details-unpw'; }
 
-            is: 'appsco-application-details-unpw',
-
-            properties: {
-
-                _showPassword: {
-                    type: Boolean,
-                    computed: '_computeShowPassword(company, claims)'
-                },
-
-                company: {
-                    type: Object,
-                    notify: true
-                },
-
-                claims: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    _showPassword: {
+                        type: Boolean,
+                        computed: '_computeShowPassword(company, claims)'
                     },
-                    notify: true
-                }
-            },
 
-            _computeShowPassword: function(company, claims) {
+                    company: {
+                        type: Object,
+                        notify: true
+                    },
+
+                    claims: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    }
+                };
+            }
+
+            _computeShowPassword(company, claims) {
                 return company && company.disable_resource_copy_button ?
                     false :
                     claims.password
                 ;
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationDetailsUnpw.is, AppscoApplicationDetailsUnpw);
     </script>
 </dom-module>

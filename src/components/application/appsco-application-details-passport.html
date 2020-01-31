@@ -116,34 +116,33 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationDetailsPassport extends Polymer.Element {
+            static get is() { return 'appsco-application-details-passport'; }
 
-            is: 'appsco-application-details-passport',
-
-            properties: {
-
-                claims: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                }
-            },
-
-            _dateFormat: function(value) {
-
-                if (value) {
-
-                    var options = {
-                        year: "numeric", month: "short", day: "numeric"
-                    };
-
-                    return (new Date(value)).toLocaleDateString('en', options);
-                }
-
+            static get properties() {
+                return {
+                    claims: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    }
+                };
             }
 
-        });
+            _dateFormat(value) {
+                if (!value) {
+                    return '';
+                }
+
+                const options = {
+                    year: "numeric", month: "short", day: "numeric"
+                };
+
+                return (new Date(value)).toLocaleDateString('en', options);
+            }
+        }
+        window.customElements.define(AppscoApplicationDetailsPassport.is, AppscoApplicationDetailsPassport);
     </script>
 </dom-module>

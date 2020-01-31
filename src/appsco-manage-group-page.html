@@ -146,145 +146,144 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-manage-group-page',
+        class AppscoManageGroupPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-manage-group-page'; }
 
-            properties: {
-
-                route: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true,
-                    observer: '_onGroupChanged'
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                groupApi: {
-                    type: String,
-                    observer: '_onGroupApiChanged'
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _groupRolesApi: {
-                    type: String,
-                    computed: '_computeGroupRoleApi(group)'
-                },
-
-                _groupContactsApi: {
-                    type: String,
-                    computed: '_computeGroupContactApi(group)'
-                },
-
-                _groupResourcesApi: {
-                    type: String,
-                    computed: '_computeGroupResourcesApi(group)'
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Selected page.
-                 * It has value of component's 'name' attribute.
-                 */
-                _selected: {
-                    type: String,
-                    value: 'appsco-group-components-page',
-                    notify: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            static get properties() {
+                return {
+                    route: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true,
+                        observer: '_onGroupChanged'
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    groupApi: {
+                        type: String,
+                        observer: '_onGroupApiChanged'
+                    },
+
+                    /**
+                     * Computed headers.
+                     * It contains authorization token.
+                     */
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    _groupRolesApi: {
+                        type: String,
+                        computed: '_computeGroupRoleApi(group)'
+                    },
+
+                    _groupContactsApi: {
+                        type: String,
+                        computed: '_computeGroupContactApi(group)'
+                    },
+
+                    _groupResourcesApi: {
+                        type: String,
+                        computed: '_computeGroupResourcesApi(group)'
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    /**
+                     * Selected page.
+                     * It has value of component's 'name' attribute.
+                     */
+                    _selected: {
+                        type: String,
+                        value: 'appsco-group-components-page',
+                        notify: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+            static get observers() {
+                return [
+                    '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-            ],
-
-            attached: function() {
+            ready() {
+                super.ready();
 
                 this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-                if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-                this._getGroup();
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._getGroup();
+                });
+            }
 
-            },
-
-            reloadPage: function() {
+            reloadPage() {
                 this.$.appscoManageGroupComponentsPage.loadPage();
                 this.$.appscoGroupRolesPage.loadPage();
-            },
+            }
 
-            addGroupItems: function(groups, items, resourceType) {
+            addGroupItems(groups, items, resourceType) {
                 var length = groups.length;
 
                 for (var i = 0; i < length; i++) {
@@ -294,24 +293,23 @@
                         break;
                     }
                 }
-            },
+            }
 
-            removeGroupItems: function(group, items, resourceType) {
-
+            removeGroupItems(group, items, resourceType) {
                 if (this.group.alias === group.alias) {
                     this._removeGroupItems(items, resourceType);
                 }
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._showComponentsPage();
-            },
+            }
 
-            _updateScreen: function(medium, tablet, mobile) {
+            _updateScreen(medium, tablet, mobile) {
                 this.updateStyles();
 
                 if (mobile) {
@@ -320,135 +318,125 @@
                 else if (!this.$.appscoContent.resourceActive) {
                     this.$.appscoContent.showSection('resource');
                 }
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders (authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken
                 }
-            },
+            }
 
-            _computeGroupRoleApi: function(group) {
+            _computeGroupRoleApi(group) {
                 return group.meta ? group.meta.company_roles + '?extended=1' : null;
-            },
+            }
 
-            _computeGroupContactApi: function(group) {
+            _computeGroupContactApi(group) {
                 return group.meta ? group.meta.contacts + '?extended=1' : null;
-            },
+            }
 
-            _computeGroupResourcesApi: function(group) {
+            _computeGroupResourcesApi(group) {
                 return group.meta ? group.meta.applications + '?extended=1' : null;
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _showComponentsPage: function() {
+            _showComponentsPage() {
                 this._selected = 'appsco-group-components-page';
-            },
+            }
 
-            _showGroupRolesPage: function() {
+            _showGroupRolesPage() {
                 this._selected = 'appsco-group-roles-page';
-            },
+            }
 
-            _showGroupContactsPage: function() {
+            _showGroupContactsPage() {
                 this._selected = 'appsco-group-contacts-page';
-            },
+            }
 
-            _showGroupResourcesPage: function() {
+            _showGroupResourcesPage() {
                 this._selected = 'appsco-group-resources-page';
-            },
+            }
 
-            _addGroupRoles: function(roles) {
+            _addGroupRoles(roles) {
                 this.$.appscoManageGroupComponentsPage.addGroupRoles(roles);
                 this.$.appscoGroupRolesPage.addGroupItems(roles);
-            },
+            }
 
-            _removeGroupRoles: function(roles) {
+            _removeGroupRoles(roles) {
                 this.$.appscoManageGroupComponentsPage.removeGroupRoles(roles);
                 this.$.appscoGroupRolesPage.removeGroupItems(roles);
-            },
+            }
 
-            _addGroupContacts: function(contacts) {
+            _addGroupContacts(contacts) {
                 this.$.appscoManageGroupComponentsPage.addGroupContacts(contacts);
                 this.$.appscoGroupContactsPage.addGroupItems(contacts);
-            },
+            }
 
-            _addGroupResources: function(resources) {
+            _addGroupResources(resources) {
                 this.$.appscoManageGroupComponentsPage.addGroupResources(resources);
                 this.$.appscoGroupResourcesPage.addGroupItems(resources);
-            },
+            }
 
-            _removeGroupContacts: function(contacts) {
+            _removeGroupContacts(contacts) {
                 this.$.appscoManageGroupComponentsPage.removeGroupContacts(contacts);
                 this.$.appscoGroupContactsPage.removeGroupItems(contacts);
-            },
+            }
 
-            _removeGroupResources: function(resources) {
+            _removeGroupResources(resources) {
                 this.$.appscoManageGroupComponentsPage.removeGroupResources(resources);
                 this.$.appscoGroupResourcesPage.removeGroupItems(resources);
-            },
+            }
 
-            _addGroupItems: function(items, resourceType) {
-
+            _addGroupItems(items, resourceType) {
                 switch (resourceType) {
                     case 'resource':
                         this._addGroupResources(items);
                         break;
-
                     case 'role':
                         this._addGroupRoles(items);
                         break;
-
                     case 'contact':
                         this._addGroupContacts(items);
                         break;
-
                     default:
                         return false;
                 }
-            },
+            }
 
-            _removeGroupItems: function(items, resourceType) {
-
+            _removeGroupItems(items, resourceType) {
                 switch (resourceType) {
                     case 'resource':
                         this._removeGroupResources(items);
                         break;
-
                     case 'role':
                         this._removeGroupRoles(items);
                         break;
-
                     case 'contact':
                         this._removeGroupContacts(items);
                         break;
-
                     default:
                         return false;
                 }
-            },
+            }
 
-            _onResourceBack: function() {
+            _onResourceBack() {
                 this._showComponentsPage();
-            },
+            }
 
-            _onGroupApiChanged: function() {
+            _onGroupApiChanged() {
                 this._getGroup();
-            },
+            }
 
-            _onGroupChanged: function(group) {
-
-                for (key in group) {
+            _onGroupChanged(group) {
+                for (let key in group) {
                     this.reloadPage();
                     break;
                 }
-            },
+            }
 
-            _getGroup: function() {
-
+            _getGroup() {
                 if (!this.group.self && this.groupApi && this._headers) {
                     var groupApi = this.groupApi + this.route.path,
                         getGroupRequest = this.$.ironAjaxGetGroup;
@@ -460,41 +448,42 @@
                     getGroupRequest.url = groupApi;
                     getGroupRequest.generateRequest();
                 }
-            },
+            }
 
-            _onGetGroupResponse: function(event) {
-
+            _onGetGroupResponse(event) {
                 if (200 === event.detail.status && event.detail.response) {
                     this.set('group', event.detail.response);
                 }
-            },
-
-            _onGetGroupError: function(event) {
-
-                if (!event.detail.request.aborted) {
-                    this.fire('page-error');
-                }
-            },
-
-            _onRemoveGroupAction: function() {
-
-                this.fire('remove-group', {
-                    group: this.group
-                });
-            },
-
-            _onManageGroupRoles: function() {
-                this._showGroupRolesPage();
-            },
-
-            _onManageGroupContacts: function() {
-                this._showGroupContactsPage();
-            },
-
-            _onManageGroupResources: function() {
-                this._showGroupResourcesPage();
             }
 
-        });
+            _onGetGroupError(event) {
+                if (!event.detail.request.aborted) {
+                    this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
+                }
+            }
+
+            _onRemoveGroupAction() {
+                this.dispatchEvent(new CustomEvent('remove-group', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        group: this.group
+                    }
+                }));
+            }
+
+            _onManageGroupRoles() {
+                this._showGroupRolesPage();
+            }
+
+            _onManageGroupContacts() {
+                this._showGroupContactsPage();
+            }
+
+            _onManageGroupResources() {
+                this._showGroupResourcesPage();
+            }
+        }
+        window.customElements.define(AppscoManageGroupPage.is, AppscoManageGroupPage);
     </script>
 </dom-module>

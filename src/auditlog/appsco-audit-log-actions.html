@@ -35,19 +35,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAuditLogActions extends Polymer.Element {
+            static get is() { return 'appsco-audit-log-actions'; }
 
-            is: 'appsco-audit-log-actions',
-
-            _onExportAction: function() {
-                /**
-                 * Fired when export action is tapped.
-                 *
-                 * @event export-audit-log
-                 */
-                this.fire('export-audit-log');
+            _onExportAction() {
+                this.dispatchEvent(new CustomEvent('export-audit-log', { bubbles: true, composed: true }));
             }
-
-        });
+        }
+        window.customElements.define(AppscoAuditLogActions.is, AppscoAuditLogActions);
     </script>
 </dom-module>

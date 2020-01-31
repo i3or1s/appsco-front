@@ -36,19 +36,18 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'appsco-application-form-item',
-            
-            properties: {
-                claimsNamePrefix: {
-                    type: String,
-                    value: "claims_item"
-                }
-            },
+        class AppscoApplicationFormItem extends Polymer.mixinBehaviors([Polymer.AppscoApplicationFormBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-form-item'; }
 
-            behaviors: [
-                Polymer.AppscoApplicationFormBehavior
-            ]
-        });
+            static get properties() {
+                return {
+                    claimsNamePrefix: {
+                        type: String,
+                        value: "claims_item"
+                    }
+                };
+            }
+        }
+        window.customElements.define(AppscoApplicationFormItem.is, AppscoApplicationFormItem);
     </script>
 </dom-module>

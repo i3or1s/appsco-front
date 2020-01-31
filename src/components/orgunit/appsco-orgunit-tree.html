@@ -35,70 +35,78 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoOrgUnitTree extends Polymer.Element {
+            static get is() { return 'appsco-orgunit-tree'; }
 
-            is: 'appsco-orgunit-tree',
+            static get properties() {
+                return {
+                    _rootNode: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    _treeNodes: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                _rootNode: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    /**
+                     * [OrgUnit]() that is to be rendered
+                     */
+                    orgUnits: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
                     }
-                },
+                };
+            }
 
-                _treeNodes: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
+            static get observers() {
+                return [
+                    'orgUnitsChanged(orgUnits.*)'
+                ];
+            }
 
-                /**
-                 * [OrgUnit]() that is to be rendered
-                 */
-                orgUnits: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                }
+            ready() {
+                super.ready();
 
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            observers: [
-                'orgUnitsChanged(orgUnits.*)'
-            ],
+            _addListeners() {
+                this.addEventListener('selected', this._onNodeSelected);
+            }
 
-            listeners: {
-                'selected': '_onNodeSelected'
-            },
-
-            orgUnitsChanged: function() {
+            orgUnitsChanged() {
                 var treeNodes = this.unflatten(this.orgUnits);
 
                 this.set('_rootNode', {});
                 this.set('_rootNode', treeNodes[0]);
-            },
+            }
 
-            unflatten: function(arr) {
-                var tree = [],
-                        mappedArr = {},
-                        length = arr.length,
-                        arrElem,
-                        mappedElem;
+            unflatten(arr) {
+                let tree = [],
+                    mappedArr = {},
+                    length = arr.length,
+                    arrElem,
+                    mappedElem;
 
                 // First map the nodes of the array to an object -> create a hash table.
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     arrElem = arr[i];
 
                     mappedArr[arrElem.self] = arrElem;
                     mappedArr[arrElem.self]['children'] = [];
                 }
 
-                for (var id in mappedArr) {
-
+                for (const id in mappedArr) {
                     if (mappedArr.hasOwnProperty(id)) {
                         mappedElem = mappedArr[id];
 
@@ -118,17 +126,17 @@ Custom property | Description | Default
                 }
 
                 return tree;
-            },
+            }
 
-            addOrgunit: function(orgunit) {
-                var orgunits = JSON.parse(JSON.stringify(this.orgUnits));
+            addOrgunit(orgunit) {
+                const orgunits = JSON.parse(JSON.stringify(this.orgUnits));
 
                 orgunit.selected = false;
                 orgunits.push(orgunit);
 
                 this.set('orgUnits', []);
                 this.set('orgUnits', orgunits);
-            },
+            }
 
             /**
              * Finds orgunit in list and modifies it.
@@ -136,12 +144,12 @@ Custom property | Description | Default
              *
              * @param orgunit
              */
-            setOrgunit: function(orgunit) {
-                var orgunits = JSON.parse(JSON.stringify(this.orgUnits)),
-                        length = orgunits.length;
+            setOrgunit(orgunit) {
+                const orgunits = JSON.parse(JSON.stringify(this.orgUnits)),
+                    length = orgunits.length;
 
-                for (var i = 0; i < length; i++) {
-                    var currentOrgunit = orgunits[i];
+                for (let i = 0; i < length; i++) {
+                    const currentOrgunit = orgunits[i];
 
                     if (currentOrgunit.self === orgunit.self) {
                         orgunits[i] = orgunit;
@@ -150,48 +158,47 @@ Custom property | Description | Default
                         break;
                     }
                 }
-            },
+            }
 
-            removeOrgunit: function(orgunit) {
-                var orgunits = JSON.parse(JSON.stringify(this.orgUnits)),
+            removeOrgunit(orgunit) {
+                const orgunits = JSON.parse(JSON.stringify(this.orgUnits)),
                     index = this.orgUnits.indexOf(orgunit);
 
                 orgunits.splice(index, 1);
 
                 this.set('orgUnits', []);
                 this.set('orgUnits', orgunits);
+            }
 
-            },
-
-            reset: function() {
+            reset() {
                 this._deselectAll();
                 this._collapseAll();
-            },
+            }
 
-            _deselectAll: function() {
-                var orgunits = JSON.parse(JSON.stringify(this.orgUnits)),
+            _deselectAll() {
+                const orgunits = JSON.parse(JSON.stringify(this.orgUnits)),
                     length = orgunits.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     orgunits[i].selected = false;
                 }
 
                 this.set('orgUnits', []);
                 this.set('orgUnits', orgunits);
-            },
+            }
 
-            _collapseAll: function() {
+            _collapseAll() {
                 this.$.treeNode.collapseNode();
-            },
+            }
 
-            _onNodeSelected: function(event) {
-                var orgunit = event.detail.orgUnit,
+            _onNodeSelected(event) {
+                const orgunit = event.detail.orgUnit,
                     selected = event.detail.selected,
                     orgunits = JSON.parse(JSON.stringify(this.orgUnits)),
                     length = orgunits.length;
 
-                for (var i = 0; i < length; i++) {
-                    var currentOrgunit = orgunits[i];
+                for (let i = 0; i < length; i++) {
+                    const currentOrgunit = orgunits[i];
 
                     if (currentOrgunit.self === orgunit.self) {
                         orgunits[i].selected = selected;
@@ -204,6 +211,7 @@ Custom property | Description | Default
                 this.set('orgUnits', []);
                 this.set('orgUnits', orgunits);
             }
-        });
+        }
+        window.customElements.define(AppscoOrgUnitTree.is, AppscoOrgUnitTree);
     </script>
 </dom-module>

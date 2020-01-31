@@ -50,24 +50,25 @@
         <iron-a11y-keys keys="enter"></iron-a11y-keys>
     </template>
     <script>
-        Polymer({
-            is: 'appsco-application-form-open-id',
+        class AppscoApplicationFormOpenId extends Polymer.mixinBehaviors([Polymer.AppscoApplicationFormBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-form-open-id'; }
 
-            properties: {
-                claims: {
-                    type: Object,
-                    value: function () { return {}; }
-                },
+            static get properties() {
+                return {
+                    claims: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                claimsNamePrefix: {
-                    type: String,
-                    value: "claims_open_id"
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoApplicationFormBehavior
-            ]
-        });
+                    claimsNamePrefix: {
+                        type: String,
+                        value: "claims_open_id"
+                    }
+                };
+            }
+        }
+        window.customElements.define(AppscoApplicationFormOpenId.is, AppscoApplicationFormOpenId);
     </script>
 </dom-module>

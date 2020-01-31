@@ -71,98 +71,106 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoOAuthApplicationCertificatesPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-oauth-application-certificates-page'; }
 
-            is: 'appsco-oauth-application-certificates-page',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    certificatesApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+            ready() {
+                super.ready();
 
-                certificatesApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
 
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            reloadCertificates: function() {
+            reloadCertificates() {
                 this.$.appscoOAuthApplicationCertificates.reloadItems();
-            },
+            }
 
-            _onClosePageAction: function() {
-                this.fire('back');
-            },
+            _onClosePageAction() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
 
-            _onAddCertificateAction: function() {
-                this.fire('add-oauth-application-certificate', {
-                    application: this.application
-                });
-            },
+            _onAddCertificateAction() {
+                this.dispatchEvent(new CustomEvent('add-oauth-application-certificate', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onRemoveCertificateAction: function(event) {
+            _onRemoveCertificateAction(event) {
                 event.stopPropagation();
 
-                this.fire('remove-oauth-application-certificate', {
-                    certificate: event.detail.item
-                });
+                this.dispatchEvent(new CustomEvent('remove-oauth-application-certificate', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        certificate: event.detail.item
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoOAuthApplicationCertificatesPage.is, AppscoOAuthApplicationCertificatesPage);
     </script>
 </dom-module>
 

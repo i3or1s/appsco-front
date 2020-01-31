@@ -10,6 +10,8 @@
 <link rel="import" href="appsco-application-subscribers.html">
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-application-revoke`
 Shows dialog screen with confirmation for removal o resource instance.
@@ -72,36 +74,37 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationRevoke extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-application-revoke'; }
 
-            is: 'appsco-application-revoke',
+            static get properties() {
+                return {
+                    /**
+                     * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+                     */
+                    applicationInstance: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
 
-            properties: {
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-                /**
-                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-                 */
-                applicationInstance: {
-                    type: Object,
-                    value: function() { return {}; },
-                    notify: true
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-            open: function () {
+            open() {
                 this.$.removeDialog.open();
-            },
-            _revokeAccess: function () {
-                var revokeUri = this.applicationInstance.self;
+            }
 
-                var appRequest = document.createElement('iron-request');
+            _revokeAccess() {
+                const revokeUri = this.applicationInstance.self;
+
+                const appRequest = document.createElement('iron-request');
 
                 this._loader = true;
 
@@ -109,28 +112,22 @@ Custom property | Description | Default
                     url: revokeUri,
                     method: "DELETE",
                     handleAs: 'json',
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken,
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    }
+                    headers: this._headers
                 }).then(function() {
-
                     this._loader = false;
 
-                    /**
-                     * Fired when applicaiton is deleted
-                     *
-                     * @event on-application-instance-removed
-                     * @param {Object} application [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
-                     *                              for which event is fired
-                     */
-                    this.fire("application-instance-removed", {
-                        applicationInstance: this.applicationInstance
-                    });
+                    this.dispatchEvent(new CustomEvent('application-instance-removed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            applicationInstance: this.applicationInstance
+                        }
+                    }));
 
                     this.$.removeDialog.close();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationRevoke.is, AppscoApplicationRevoke);
     </script>
 </dom-module>

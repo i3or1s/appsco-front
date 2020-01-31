@@ -110,149 +110,135 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoHeader extends Polymer.Element {
+            static get is() { return 'appsco-header'; }
 
-            is: 'appsco-header',
+            static get properties() {
+                return {
+                    /**
+                     * Active account from AppsCo dashboard.
+                     */
+                    account: {
+                        type: Object
+                    },
 
-            properties: {
+                    /** Source to image which represents brand logo. */
+                    brandLogo: {
+                        type: String
+                    },
 
-                /**
-                 * Active account from AppsCo dashboard.
-                 */
-                account: {
-                    type: Object
-                },
+                    brandLogoClickable: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /** Source to image which represents brand logo. */
-                brandLogo: {
-                    type: String
-                },
+                    /** Width of brand logo. */
+                    brandLogoWidth: {
+                        type: Number
+                    },
 
-                brandLogoClickable: {
-                    type: Boolean,
-                    value: false
-                },
+                    /** Height of brand logo. */
+                    brandLogoHeight: {
+                        type: Number
+                    },
 
-                /** Width of brand logo. */
-                brandLogoWidth: {
-                    type: Number
-                },
+                    /** Title of a brand to be displayed right to brand logo. */
+                    brandTitle: {
+                        type: String
+                    },
 
-                /** Height of brand logo. */
-                brandLogoHeight: {
-                    type: Number
-                },
+                    /** Indicates if chat is present or not. */
+                    accountChat: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /** Title of a brand to be displayed right to brand logo. */
-                brandTitle: {
-                    type: String
-                },
+                    tutorialActionAvailable: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /** Indicates if chat is present or not. */
-                accountChat: {
-                    type: Boolean,
-                    value: false
-                },
+                    authorizationToken: {
+                        type: String
+                    },
 
-                tutorialActionAvailable: {
-                    type: Boolean,
-                    value: false
-                },
+                    notificationsApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    logoutApi: {
+                        type: String
+                    },
 
-                /**
-                 * Notifications API link.
-                 */
-                notificationsApi: {
-                    type: String
-                },
+                    notificationsSize: {
+                        type: Number,
+                        value: 5
+                    },
 
-                /**
-                 * Logout API link.
-                 */
-                logoutApi: {
-                    type: String
-                },
+                    accountInfo: {
+                        type: String
+                    },
 
-                /**
-                 * Number of notifications to load.
-                 */
-                notificationsSize: {
-                    type: Number,
-                    value: 5
-                },
+                    /**
+                     * If attribute is set account display will contain account display name.
+                     * Otherwise, account display will contain account picture_url only.
+                     */
+                    accountDisplayName: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Info related to active account.
-                 */
-                accountInfo: {
-                    type: String
-                },
+                    /** Indicates if user has access to Appsco Partner product. */
+                    productPartner: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * If attribute is set account display will contain account display name.
-                 * Otherwise, account display will contain account picture_url only.
-                 */
-                accountDisplayName: {
-                    type: Boolean,
-                    value: false
-                },
+                    /** Indicates if user has access to Appsco Business product. */
+                    productBusiness: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                /** Indicates if user has access to Appsco Partner product. */
-                productPartner: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /** Indicates if user has access to Appsco Business product. */
-                productBusiness: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    domain: {
+                        type: String
                     }
-                },
 
-                domain: {
-                    type: String
-                }
+                };
+            }
 
-            },
-
-            _handleAppscoProductChangeAction: function(event) {
-                if('appsco-partner-product' == event.detail.product) {
+            _handleAppscoProductChangeAction(event) {
+                if('appsco-partner-product' === event.detail.product) {
                     window.location.href = this.domain+'/pp/home';
                 }
-            },
+            }
 
-            setProduct: function(product) {
+            setProduct(product) {
                 this.$.appscoProduct.setProduct(product);
-            },
+            }
 
-            removeProduct: function(product) {
+            removeProduct(product) {
                 this.$.appscoProduct.removeProduct(product);
-            },
+            }
 
-            removeProductCompanies: function(companies) {
+            removeProductCompanies(companies) {
                 this.$.appscoProduct.removeProductCompanies(companies);
-            },
+            }
 
-            addPersonalToProducts: function() {
+            addPersonalToProducts() {
                 this.$.appscoProduct.addPersonalToProducts();
-            },
+            }
 
-            notifyNewNotifications: function (newNotifications) {
+            notifyNewNotifications (newNotifications) {
                 this.$.appscoHeaderAccountActions.notifyNewNotifications(newNotifications);
-            },
+            }
 
-            notifyNotificationsSeen: function () {
+            notifyNotificationsSeen () {
                 this.$.appscoHeaderAccountActions.notifyNotificationsSeen();
             }
-        });
+        }
+        window.customElements.define(AppscoHeader.is, AppscoHeader);
     </script>
 </dom-module>

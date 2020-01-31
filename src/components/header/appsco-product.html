@@ -180,119 +180,123 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoProduct extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-product'; }
 
-            is: 'appsco-product',
+            static get properties() {
+                return {
+                    /** Indicates if user has access to Appsco Partner product. */
+                    partner: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        observer: '_onPartnerChanged'
+                    },
 
-            properties: {
+                    /** Indicates if user has access to Appsco Business product. */
+                    business: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true,
+                        observer: '_onBusinessChanged'
+                    },
 
-                /** Indicates if user has access to Appsco Partner product. */
-                partner: {
-                    type: Boolean,
-                    value: false,
-                    notify: true,
-                    observer: '_onPartnerChanged'
-                },
+                    /** Appsco products. */
+                    _products: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                /** Indicates if user has access to Appsco Business product. */
-                business: {
-                    type: Array,
-                    value: function() { return []; },
-                    notify: true,
-                    observer: '_onBusinessChanged'
-                },
+                    _productListDisplay: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        }
+                    },
 
-                /** Appsco products. */
-                _products: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    _clearPanelSearch: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _productToSelect: {
+                        type: String
+                    },
+
+                    _selectedProduct: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _multiProducts: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Indicates if user clicked on element or not.
+                     */
+                    _active: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onFilterActiveChanged'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _productListDisplay: {
-                    type: Array,
-                    value: function() {
-                        return []
-                    }
-                },
+            ready() {
+                super.ready();
 
-                _clearPanelSearch: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _productToSelect: {
-                    type: String
-                },
-
-                _selectedProduct: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _multiProducts: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if user clicked on element or not.
-                 */
-                _active: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onFilterActiveChanged'
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'scale-up-animation',
-                                axis: 'y',
-                                transformOrigin: '0 0',
-                                node: this.$$('#filterPanel'),
-                                timing: {
-                                    delay: 50,
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this.$$('#filterPanel'),
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'scale-up-animation',
+                        axis: 'y',
+                        transformOrigin: '0 0',
+                        node: this.shadowRoot.getElementById('filterPanel'),
+                        timing: {
+                            delay: 50,
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this.shadowRoot.getElementById('filterPanel'),
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.set('_selectedProduct', this._products[0]);
 
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinish'
-            },
+                    if (this.partner || this.business) {
+                        this._multiProducts = true;
+                    }
+                });
 
-            attached: function() {
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
                 Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+            }
 
-                this.set('_selectedProduct', this._products[0]);
-
-                if (this.partner || this.business) {
-                    this._multiProducts = true;
-                }
-            },
-
-            _format: function (value) {
-                var result = '';
+            _format(value) {
+                let result = '';
                 if (value) {
                     result = value;
                     if (value.length > 20) {
@@ -301,61 +305,56 @@ Custom property | Description | Default
 
                 }
                 return result;
-            },
+            }
 
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
+                for (let i = 0; i < path.length; i++) {
                     if (path[i] == element) {
                         return true;
                     }
                 }
 
                 return false;
-            },
+            }
 
-            _handleDocumentClick: function(event) {
-                var path = Polymer.dom(event).path;
+            _handleDocumentClick(event) {
+                const path = Polymer.dom(event).path;
 
-                if (!this._isInPath(path, this.$$('#activeProduct')) &&
-                    !this._isInPath(path, this.$$('#searchPanel')) &&
-                    !this._isInPath(path, this.$$('#filterPanel'))) {
+                if (!this._isInPath(path, this.shadowRoot.getElementById('activeProduct')) &&
+                    !this._isInPath(path, this.shadowRoot.getElementById('searchPanel')) &&
+                    !this._isInPath(path, this.shadowRoot.getElementById('filterPanel'))) {
                     this._clearFilterPanel();
                 }
+            }
 
-            },
-
-            _createPersonalProduct: function() {
+            _createPersonalProduct() {
                 return {
                     label: 'Personal',
                     value: 'appsco-product',
                     name: 'appsco-product',
                     company: null
                 };
-            },
+            }
 
-            setProduct: function(product) {
-                var products = JSON.parse(JSON.stringify(this._products)),
+            setProduct(product) {
+                const products = JSON.parse(JSON.stringify(this._products)),
                     length = products.length;
                 this.set('_productToSelect', product);
 
                 if (length > 0) {
-                    for (var i = 0; i < length; i++) {
-
+                    for (let i = 0; i < length; i++) {
                         if (product === products[i].value) {
-
                             // paper-listbox with id = 'productList'
                             // couldn't set proper selected value when '_selectedProduct' is changed
                             setTimeout(function() {
                                 this.set('_selectedProduct', products[i]);
-                                var productList = this.$$('#productList');
+                                var productList = this.shadowRoot.getElementById('productList');
                                 var selected = productList.selected;
                                 productList.selected = undefined;
                                 productList.selected = selected;
                             }.bind(this), 30);
-
                             break;
                         }
                     }
@@ -367,14 +366,13 @@ Custom property | Description | Default
                     this.set('_productListDisplay',products);
                     this.set('_selectedProduct', products[length]);
                 }
-            },
+            }
 
-            removeProduct: function(product) {
-                var products = JSON.parse(JSON.stringify(this._products)),
+            removeProduct(product) {
+                const products = JSON.parse(JSON.stringify(this._products)),
                     length = products.length;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (products[i].value == product) {
                         products.splice(i, 1);
                         break;
@@ -386,23 +384,22 @@ Custom property | Description | Default
 
                 this.set('_productListDisplay', []);
                 this.set('_productListDisplay', products);
-            },
+            }
 
-            removeProductCompanies: function(companies) {
-                var length = companies.length;
+            removeProductCompanies(companies) {
+                const length = companies.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     this.removeProduct('appsco-business-product' + companies[i].alias);
                 }
-            },
+            }
 
-            addPersonalToProducts: function(product) {
-                var products = JSON.parse(JSON.stringify(this._products)),
+            addPersonalToProducts(product) {
+                let products = JSON.parse(JSON.stringify(this._products)),
                     length = products.length,
                     alreadyExists = false;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if ('appsco-product' === products[i].value) {
                         alreadyExists = true;
                         break;
@@ -415,16 +412,14 @@ Custom property | Description | Default
 
                 this.set('_products', []);
                 this.set('_products', products);
-            },
+            }
 
-            _onPartnerChanged: function(partner) {
-
+            _onPartnerChanged(partner) {
                 if (this._products && partner) {
-                    var products = JSON.parse(JSON.stringify(this._products)),
+                    const products = JSON.parse(JSON.stringify(this._products)),
                         productsLength = products.length;
 
-                    for (var i = 0; i < productsLength; i++) {
-
+                    for (let i = 0; i < productsLength; i++) {
                         if ('appsco-partner-product' === products[i].name) {
                             break;
                         }
@@ -445,29 +440,25 @@ Custom property | Description | Default
                     this._multiProducts = true;
                     this.setProduct(this._productToSelect);
                 }
+            }
 
-            },
-
-            _createNewPartnerProduct: function() {
+            _createNewPartnerProduct() {
                 return {
                     label: 'Partner',
                     value: 'appsco-partner-product',
                     name: 'appsco-partner-product',
                     company: null
                 };
-            },
+            }
 
-            _onBusinessChanged: function(business) {
-
+            _onBusinessChanged(business) {
                 if (this._products && business && business.length > 0) {
-                    var products = JSON.parse(JSON.stringify(this._products)),
+                    const products = JSON.parse(JSON.stringify(this._products)),
                         productsLength = products.length,
                         length = business.length;
 
-                    for (var i = 0; i < length; i++) {
-
-                        for (var j = 0; j < productsLength; j++) {
-
+                    for (let i = 0; i < length; i++) {
+                        for (let j = 0; j < productsLength; j++) {
                             if (products[j].company && (products[j].company.company.alias === business[i].company.alias)) {
                                 products[j] = this._createNewBusinessProduct(business[i]);
                                 break;
@@ -492,10 +483,9 @@ Custom property | Description | Default
                     this._multiProducts = true;
                     this.setProduct(this._productToSelect);
                 }
+            }
 
-            },
-
-            _compareCompaniesByName: function(companyA, companyB) {
+            _compareCompaniesByName(companyA, companyB) {
                 if (!companyA.company) {
                     return -1
                 } else if (!companyB.company) {
@@ -505,16 +495,16 @@ Custom property | Description | Default
                     companyB = companyB.company.company.name.toLowerCase();
                     return companyA < companyB ? -1 : companyA > companyB ? 1 : 0;
                 }
-            },
+            }
 
-            _createNewBusinessProduct: function(company) {
+            _createNewBusinessProduct(company) {
                 return {
                     label: company.company.name,
                     value: 'appsco-business-product' + company.company.alias,
                     name: 'appsco-business-product',
                     company: company
                 };
-            },
+            }
 
             /**
              * Listens to iron-activate event of product list.
@@ -523,9 +513,9 @@ Custom property | Description | Default
              *
              * @private
              */
-            _onItemActivate: function(event) {
-                var item,
-                    productList = this.$$('#productList');
+            _onItemActivate(event) {
+                let item,
+                    productList = this.shadowRoot.getElementById('productList');
 
                 this._clearFilterPanel();
 
@@ -534,26 +524,29 @@ Custom property | Description | Default
                     item = productList.selectedItem;
                     this._selectedProduct = item;
 
-                    this.fire('appsco-product-changed', {
-                        product: item.name,
-                        company: item.company
-                    });
+                    this.dispatchEvent(new CustomEvent('appsco-product-changed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            product: item.name,
+                            company: item.company
+                        }
+                    }));
                 }.bind(this), 200);
-            },
+            }
 
-            _onFilterActiveChanged: function(active) {
-
+            _onFilterActiveChanged(active) {
                 if (active) {
-                    this.$$('#searchPanelInput').focus();
+                    this.shadowRoot.getElementById('searchPanelInput').focus();
                 }
-            },
+            }
 
-            _onFilterPanelFocus: function() {
+            _onFilterPanelFocus() {
                 this._clearPanelSearch = true;
-            },
+            }
 
-            _onFilterPanelKeyup: function(event) {
-                var keyCode = event.keyCode,
+            _onFilterPanelKeyup(event) {
+                const keyCode = event.keyCode,
                     term = event.target.value ? event.target.value : '';
 
                 if (40 === keyCode) {
@@ -563,11 +556,10 @@ Custom property | Description | Default
                 }
 
                 this._filterPanelListByTerm(term);
+            }
 
-            },
-
-            _clearFilterPanel: function() {
-                var input = this.$$('#searchPanelInput');
+            _clearFilterPanel() {
+                const input = this.shadowRoot.getElementById('searchPanelInput');
 
                 this._hidePanelList();
 
@@ -576,14 +568,14 @@ Custom property | Description | Default
                     this._clearPanelSearch = false;
                     this._filterPanelListByTerm('');
                 }.bind(this), 100);
-            },
+            }
 
-            _focusFirstPanel: function() {
-                this.$$('#productList').items[0].focus();
-            },
+            _focusFirstPanel() {
+                this.shadowRoot.getElementById('productList').items[0].focus();
+            }
 
-            _filterPanelListByTerm: function(term) {
-                var termLength = term.length,
+            _filterPanelListByTerm(term) {
+                const termLength = term.length,
                     products = this._products,
                     length = products.length;
 
@@ -594,13 +586,12 @@ Custom property | Description | Default
                     term = '';
                 }
 
-                for (var i = 0; i < length; i++) {
-                    var product = products[i];
+                for (let i = 0; i < length; i++) {
+                    const product = products[i];
 
                     if (product && product.label.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
                         this.push('_productListDisplay', product);
                     }
-
                 }
 
                 if (0 === this._productListDisplay.length && 3 <= termLength) {
@@ -609,32 +600,29 @@ Custom property | Description | Default
                         value: 'no_result'
                     });
                 }
-            },
+            }
 
-            _showPanelList: function() {
+            _showPanelList() {
                 this._active = true;
                 this.animationConfig.entry.node.style.display = 'block';
                 this.playAnimation('entry');
-            },
+            }
 
-            _hidePanelList: function() {
-
+            _hidePanelList() {
                 if (this._active) {
                     this.playAnimation('exit', {
                         hidePanelSwitcher: true
                     });
                 }
-            },
+            }
 
-            _onNeonAnimationFinish: function(event) {
-
+            _onNeonAnimationFinish(event) {
                 if (event.detail.hidePanelSwitcher) {
                     this.animationConfig.exit.node.style.display = 'none';
                     this._active = false;
                 }
-
             }
-
-        });
+        }
+        window.customElements.define(AppscoProduct.is, AppscoProduct);
     </script>
 </dom-module>

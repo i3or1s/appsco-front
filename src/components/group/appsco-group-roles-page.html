@@ -68,66 +68,60 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoGroupRolesPage extends Polymer.mixinBehaviors([Polymer.AppscoGroupItemsPageBehavior, Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-group-roles-page'; }
 
-            is: 'appsco-group-roles-page',
+            static get properties() {
+                return {
+                    groupRolesApi: {
+                        type: String
+                    },
 
-            properties: {
+                    resourceType: {
+                        type: String,
+                        value: 'role'
+                    },
 
-                groupRolesApi: {
-                    type: String
-                },
+                    animationConfig: {
+                        type: Object
+                    },
 
-                resourceType: {
-                    type: String,
-                    value: 'role'
-                },
+                    sharedElements: {
+                        type: Object
+                    }
+                };
+            }
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 600
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 600
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoGroupItemsPageBehavior,
-                Polymer.NeonSharedElementAnimatableBehavior
-            ]
-        });
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+        }
+        window.customElements.define(AppscoGroupRolesPage.is, AppscoGroupRolesPage);
     </script>
 </dom-module>
 

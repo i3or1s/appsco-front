@@ -69,87 +69,83 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoDirectoryRoleApplicationsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-directory-role-applications-page'; }
 
-            is: 'appsco-directory-role-applications-page',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _applicationsEmpty: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                role: {
-                    type: Object,
-                    value: function() { return {}; }
-                },
+                    animationConfig: {
+                        type: Object
+                    },
 
-                _applicationsEmpty: {
-                    type: Boolean,
-                    value: false
-                },
+                    sharedElements: {
+                        type: Object
+                    }
+                };
+            }
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 600
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 600
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
 
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _onApplicationsEmpty: function() {
+            _onApplicationsEmpty() {
                 this._applicationsEmpty = true;
-            },
+            }
 
-            _onApplicationsLoaded: function() {
+            _onApplicationsLoaded() {
                 this._applicationsEmpty = false;
-            },
+            }
 
-            _back: function() {
-                this.fire('back');
-            },
+            _back() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
 
-            reloadApplications: function() {
+            reloadApplications() {
                 this.$.appscoDirectoryRoleApplications.reload();
             }
-        });
+        }
+        window.customElements.define(AppscoDirectoryRoleApplicationsPage.is, AppscoDirectoryRoleApplicationsPage);
     </script>
 </dom-module>
 

@@ -22,60 +22,58 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationSettingsCard extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-settings-card'; }
 
-            is: 'appsco-application-settings-card',
-
-            properties: {
-                
-                /**
-                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    /**
+                     * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._showApplicationDetails();
+                });
+            }
 
-            attached: function() {
-                this._showApplicationDetails();
-            },
-
-            _showApplicationDetails: function() {
+            _showApplicationDetails() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationSettingsCard.is, AppscoApplicationSettingsCard);
     </script>
 </dom-module>

@@ -119,90 +119,79 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationGroupsItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-groups-item'; }
 
-            is: 'appsco-application-groups-item',
+            static get properties() {
+                return {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Group that is to be rendered
-                 */
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                /**
-                 * Application
-                 */
-                application: {
-                    type: Object,
-                    value: function () {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Indicates if applications should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
 
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _onRemoveAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `remove` action is tapped.
-                 *
-                 * @event remove-group-from-application
-                 * @param {Object} group
-                 */
-                this.fire('remove-from-group', {
-                    group: this.group,
-                    application: this.application
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
                 });
             }
 
-        });
+            _onRemoveAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('remove-from-group', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        group: this.group,
+                        application: this.application
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoApplicationGroupsItem.is, AppscoApplicationGroupsItem);
     </script>
 </dom-module>

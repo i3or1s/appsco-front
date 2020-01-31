@@ -17,6 +17,7 @@
 
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-upgrade-action">
     <template>
@@ -25,7 +26,6 @@
                 display: block;
                 position: relative;
                 @apply --appsco-upgrade-action;
-
                 --paper-radio-button-checked-color: var(--app-primary-color-dark);
             }
             :host paper-dialog {
@@ -186,163 +186,129 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoUpgradeAction extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-upgrade-action'; }
 
-            is: 'appsco-upgrade-action',
+            static get properties() {
+                return {
+                    companyApi: {
+                        type: String
+                    },
 
-            properties: {
+                    /**
+                     * Indicates if add application loader should be displayed or not.
+                     */
+                    _purchaseLoader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    _subscriptionYear: {
+                        type: Number,
+                        value: 0
+                    },
 
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                companyApi: {
-                    type: String
-                },
+                    _subscriptionMonth: {
+                        type: Number,
+                        value: 0
+                    },
 
-                /**
-                 * Indicates if add application loader should be displayed or not.
-                 */
-                _purchaseLoader: {
-                    type: Boolean,
-                    value: false
-                },
+                    _subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                _subscriptionYear: {
-                    type: Number,
-                    value: 0
-                },
+                    _plans: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                _subscriptionMonth: {
-                    type: Number,
-                    value: 0
-                },
+                    _currency: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _selectedPlan: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _stripePublicKey: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _publicKeyApi: {
+                        type: String,
+                        computed: '_computePublicKeyApi(companyApi)'
                     }
-                },
+                };
+            }
 
-                _plans: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _currency: {
-                    type: Number,
-                    value: 0
-                },
-
-                _selectedPlan: {
-                    type: String,
-                    value: ''
-                },
-
-                _stripePublicKey: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _publicKeyApi: {
-                    type: String,
-                    computed: '_computePublicKeyApi(companyApi)'
-                }
-
-            },
-
-            _computePublicKeyApi: function(companyApi) {
+            _computePublicKeyApi(companyApi) {
                 return companyApi + '/billing/pk';
-            },
+            }
 
-            _handlePublicKeyResponse: function(event) {
+            _handlePublicKeyResponse(event) {
                 if (!event.detail.response) {
                     return;
                 }
                 this._stripePublicKey = event.detail.response.stripePublicKey;
-            },
+            }
 
-            initializePage: function () {
+            initializePage () {
                 this._preselectPlan();
-            },
+            }
 
-            setSubscription: function (subscription) {
+            setSubscription (subscription) {
                 this._subscription = subscription;
-            },
+            }
 
-            setPlans: function (plans) {
+            setPlans (plans) {
                 this._plans = plans;
-            },
+            }
 
-            _preselectPlan: function () {
+            _preselectPlan () {
                 if (this._subscription && this._subscription.plan) {
                     this.set('_selectedPlan', this._subscription.plan.id);
                 } else {
                     this.set('_selectedPlan', this._getFirstPlan());
                 }
                 this.$.subscriptionPlan.selected = this._selectedPlan;
-            },
+            }
 
-            _getFirstPlan: function() {
+            _getFirstPlan() {
                 return this._plans && this._plans.length > 0 ? this._plans[0].id : '';
-            },
+            }
 
-            _reCalculate: function(plan) {
+            _reCalculate(plan) {
                 return this.$.quantity && this.$.quantity.value ? plan.amount * this.$.quantity.value : plan.amount;
-            },
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.quantity.focus();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._purchaseLoader = false;
                 this._error = '';
                 this.$.quantity.value = '';
                 this.$.quantity.invalid = false;
-            },
+            }
 
-            _onSelectedPlanChanged: function (selectedPlan) {
+            _onSelectedPlanChanged(selectedPlan) {
                 this.$.subscriptionPlan.selected = selectedPlan;
-            },
+            }
 
-            _onPurchaseAction: function() {
+            _onPurchaseAction() {
                 var subscriptionsInput = this.$.quantity;
 
                 if (subscriptionsInput.value.length === 0) {
@@ -414,19 +380,19 @@
                         this._purchaseLoader = false;
                     }.bind(this)
                 );
-            },
+            }
 
-            _reCalculateAllPlans: function() {
+            _reCalculateAllPlans() {
                 var plansList = JSON.parse(JSON.stringify(this._plans));
                 this.set('_plans', []);
                 this.set('_plans', plansList);
-            },
+            }
 
-            _isPlanYearly: function(plan) {
+            _isPlanYearly(plan) {
                 return plan &&  'year' === plan.interval;
-            },
+            }
 
-            _paymentCompleted: function(response) {
+            _paymentCompleted(response) {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: response.on_confirm,
@@ -439,33 +405,17 @@
                     };
                 request.send(options).then(function() {
                     this.$.dialog.close();
-
-                    /**
-                     * Fired when application has been shared.
-                     *
-                     * @event application-shared
-                     */
-                    this.fire('subscription-changed', {
-                        subscription: response
-                    });
-
+                    this.dispatchEvent(new CustomEvent('subscription-changed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            subscription: response
+                        }
+                    }));
                     this._purchaseLoader = false;
                 }.bind(this));
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
             }
-        });
+        }
+        window.customElements.define(AppscoUpgradeAction.is, AppscoUpgradeAction);
     </script>
 </dom-module>

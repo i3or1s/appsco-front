@@ -94,82 +94,78 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationAnalyticsSecurity extends Polymer.Element {
+            static get is() { return 'appsco-application-analytics-security'; }
 
-            is: 'appsco-application-analytics-security',
-
-            properties: {
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onApplicationChanged'
                     },
-                    observer: '_onApplicationChanged'
-                },
 
-                /**
-                 * Object that contains info about security.
-                 */
-                _security: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _security: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onSecurityChanged'
                     },
-                    observer: '_onSecurityChanged'
-                },
 
-                _haveAssignees: {
-                    type: Boolean,
-                    computed: '_computeAssigness(application)'
-                },
+                    _haveAssignees: {
+                        type: Boolean,
+                        computed: '_computeAssigness(application)'
+                    },
 
-                /**
-                 * Indicates if info should be displayed beside security score.
-                 */
-                info: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Indicates if info should be displayed beside security score.
+                     */
+                    info: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _score: {
-                    type: Number,
-                    value: 0
-                },
+                    _score: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _strong: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _strong: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _medium: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _medium: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _weak: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _weak: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _message: {
-                    type: String
-                }
-            },
+                    _message: {
+                        type: String
+                    }
+                };
+            }
 
-            _computeAssigness: function(application) {
+            _computeAssigness(application) {
                 return (application && application.security && (application.security.info.not_configured + application.security.info.configured) != 0);
-            },
+            }
 
-            _onApplicationChanged: function(application) {
+            _onApplicationChanged(application) {
                 this.set('_security', application ? application.security : {});
-            },
+            }
 
-            _onSecurityChanged: function(security) {
-
+            _onSecurityChanged(security) {
                 if (security && !this._haveAssignees) {
                     this._message = 'You haven\'t shared this resource to anyone yet. Go and share it to your employees.';
                     return false;
@@ -182,7 +178,7 @@ Custom property | Description | Default
                 this._strong = false;
 
                 if (security && security.score != 0) {
-                    var score = Math.round(security.score);
+                    const score = Math.round(security.score);
 
                     this._score = score;
 
@@ -202,8 +198,8 @@ Custom property | Description | Default
                     this._score = 0;
                     this._weak = true;
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationAnalyticsSecurity.is, AppscoApplicationAnalyticsSecurity);
     </script>
 </dom-module>

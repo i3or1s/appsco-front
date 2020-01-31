@@ -95,38 +95,43 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-not-found-page',
+        class Appsco404Page extends Polymer.Element {
+            static get is() { return 'appsco-not-found-page'; }
 
-            properties: {
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-
-            },
-
-            observers: [
-                '_updateScreen(tabletScreen)'
-            ],
-
-            attached: function() {
-
-                if (this.tabletScreen) {
-                    this.updateStyles();
-                }
-
-            },
-
-            _updateScreen: function(tablet) {
-                this.updateStyles();
-            },
-
-            _onBackToHomeAction: function() {
-                this.fire('back-to-home-page');
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
             }
-        });
+
+            static get observers() {
+                return [
+                    '_updateScreen(tabletScreen)'
+                ];
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.tabletScreen) {
+                        this.updateStyles();
+                    }
+                });
+            }
+
+            _updateScreen(tablet) {
+                this.updateStyles();
+            }
+
+            _onBackToHomeAction() {
+                this.dispatchEvent(new CustomEvent('back-to-home-page', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(Appsco404Page.is, Appsco404Page);
     </script>
 </dom-module>

@@ -16,6 +16,8 @@
 <link rel="import" href="appsco-company-idp-settings-saml-form.html">
 <link rel="import" href="appsco-company-idp-settings-openid-form.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-company-idp-settings">
     <template>
         <style>
@@ -123,118 +125,106 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyIdpSettings extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-idp-settings'; }
 
-            is: 'appsco-company-idp-settings',
-
-            properties: {
-
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                domain: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     },
-                    observer: '_onDomainChanged'
-                },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                idPIntegrationsApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _settingsApi: {
-                    type: String
-                },
-
-                _idPConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _integrations: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _selectedIntegration: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    domain: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onDomainChanged'
                     },
-                    observer: '_onSelectedIntegrationChanged'
-                },
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
+                    idPIntegrationsApi: {
+                        type: String
+                    },
 
-                /**
-                 * Error message for settings form.
-                 */
-                _error: {
-                    type: String
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                _activeForm: {
-                    type: String,
-                    value: ''
-                },
+                    _settingsApi: {
+                        type: String
+                    },
 
-                _formPrefix: {
-                    type: String,
-                    computed: '_computeFormPrefix(_activeForm)'
-                }
-            },
+                    _idPConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            listeners: {
-                'show-error': '_showError',
-                'hide-error': '_hideError'
-            },
+                    _integrations: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-            attached: function() {
-                this._clearForm();
-            },
+                    _selectedIntegration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onSelectedIntegrationChanged'
+                    },
 
-            setup: function() {
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Error message for settings form.
+                     */
+                    _error: {
+                        type: String
+                    },
+
+                    _activeForm: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _formPrefix: {
+                        type: String,
+                        computed: '_computeFormPrefix(_activeForm)'
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._clearForm();
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('show-error', this._showError);
+                this.addEventListener('hide-error', this._hideError);
+            }
+
+            setup() {
                 this.$.title.focus();
-            },
+            }
 
-            reset: function() {
+            reset() {
                 this._clearForm();
                 this._hideError();
                 this._hideLoader();
@@ -243,57 +233,44 @@
                 this.set('domain', {});
                 this.set('_selectedIntegration', {});
                 this._activeForm = '';
-            },
+            }
 
-            setDomain: function(domain) {
+            setDomain(domain) {
                 this.set('domain', domain);
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
-
-            _computeIdPIntegrationsApi: function(settingsApi) {
+            _computeIdPIntegrationsApi(settingsApi) {
                 return settingsApi ? (settingsApi + '/integrations') : null;
-            },
+            }
 
-            _computeFormPrefix: function(activeForm) {
+            _computeFormPrefix(activeForm) {
+                return 'openid' === activeForm ?
+                    'open_id_config' :
+                    'saml_idp_config'
+                 ;
+            }
 
-                switch (activeForm) {
-
-                    case 'openid':
-                        return 'open_id_config';
-
-                    default:
-                        return 'saml_idp_config';
-                }
-            },
-
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = ('string' === typeof message) ?
                     message :
                     ((message.detail && message.detail.message) ?
                         message.detail.message :
                         this.apiErrors.getError(404));
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _clearForm: function() {
-
+            _clearForm() {
                 Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
                     var inputContainer = item.$$('#container');
 
@@ -305,35 +282,31 @@
                         inputContainer.invalid = false;
                     }
                 }.bind(this));
-            },
+            }
 
-            _onDomainChanged: function(domain) {
-
+            _onDomainChanged(domain) {
                 if (domain && domain.meta && domain.meta.idpConfig) {
                     this.$.getDomainIdPConfig.generateRequest();
                 }
-            },
+            }
 
-            _onKeyUp: function(event) {
-
+            _onKeyUp(event) {
                 if (13 !== event.keyCode) {
                     this._hideError();
                     event.target.invalid = false;
                 }
-            },
+            }
 
-            _onSelectedIntegrationChanged: function(integration) {
-
+            _onSelectedIntegrationChanged(integration) {
                 for (var key in integration) {
                     this._activeForm = integration.kind.toLowerCase();
                     this._settingsApi = integration.meta.create;
                     return false;
                 }
-
                 this._activeForm = '';
-            },
+            }
 
-            _onIntegrationTypeSelect: function(event) {
+            _onIntegrationTypeSelect(event) {
                 var currentTarget = event.currentTarget;
 
                 this._hideError();
@@ -344,52 +317,48 @@
                         integrations = this._integrations;
 
                     integrations.forEach(function(item) {
-
                         if (integrationID === item.id) {
                             this.set('_selectedIntegration', item);
                             return false;
                         }
                     }.bind(this));
                 }.bind(this), 30);
+            }
 
-            },
-
-            _onIdPIntegrationsError: function() {
+            _onIdPIntegrationsError() {
                 this.set('_integrations', []);
-            },
+            }
 
-            _onIdPIntegrationsResponse: function(event) {
+            _onIdPIntegrationsResponse(event) {
                 var response = event.detail.response;
 
                 if (response && response.integrations) {
                     this.set('_integrations', response.integrations);
                 }
+            }
 
-            },
-
-            _onIdPConfigResponse: function(event) {
+            _onIdPConfigResponse(event) {
                 var response = event.detail.response;
 
                 if (response) {
                     this.set('_idPConfig', {});
                     this.set('_idPConfig', response[0]);
                 }
+            }
 
-            },
-
-            _onPageAnimationFinish: function(event) {
+            _onPageAnimationFinish(event) {
                 var fromPage = event.detail.fromPage;
 
                 if (!this.domain.hasIdp && fromPage.$ && ('undefined' !== typeof fromPage.reset)) {
                     fromPage.reset();
                 }
-            },
+            }
 
-            _onEnter: function() {
+            _onEnter() {
                 this._submitForm();
-            },
+            }
 
-            _validateForm: function() {
+            _validateForm() {
                 var valid = true;
 
                 Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
@@ -398,13 +367,12 @@
                 }.bind());
 
                 return valid;
-            },
+            }
 
-            _getEncodedBodyValues: function(form) {
+            _getEncodedBodyValues(form) {
                 var body = '';
 
                 Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
-
                     if (item.value) {
                         body += ('' === body) ? '' : '&';
                         body += encodeURIComponent(item.name) + '=' + encodeURIComponent(item.value);
@@ -415,10 +383,9 @@
                 body += form.getEncodedBodyValues();
 
                 return body;
-            },
+            }
 
-            _submitForm: function() {
-
+            _submitForm() {
                 if (!this._activeForm) {
                     this.$.integrationType.invalid = true;
                     return false;
@@ -445,10 +412,14 @@
                         this.domain.hasIdp = true;
                         this.domain.meta.idpConfig = config.self;
 
-                        this.fire('idp-settings-saved', {
-                            domain: this.domain,
-                            idPConfig: config
-                        });
+                        this.dispatchEvent(new CustomEvent('idp-settings-saved', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                domain: this.domain,
+                                idPConfig: config
+                            }
+                        }));
 
                         this._hideLoader();
                     }.bind(this), function(code) {
@@ -456,9 +427,9 @@
                         this._hideLoader();
                     }.bind(this));
                 }
-            },
+            }
 
-            _save: function(form) {
+            _save(form) {
                 return new Promise(function(resolve, reject) {
                     var request = document.createElement('iron-request'),
                         options = {
@@ -478,16 +449,15 @@
                     }
 
                     request.send(options).then(function() {
-
                         if (200 === request.status) {
                             resolve(request.response);
                         }
-
                     }.bind(this), function() {
                         reject(request.response.code);
                     }.bind(this));
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyIdpSettings.is, AppscoCompanyIdpSettings);
     </script>
 </dom-module>

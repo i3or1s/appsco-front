@@ -83,31 +83,50 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoTutorialCompanySettings extends Polymer.mixinBehaviors([
+            Polymer.AppscoTutorialBehaviour,
+            Polymer.AppscoCoverBehaviour
+        ], Polymer.Element) {
+            static get is() { return 'appsco-tutorial-company-settings'; }
 
-            is: 'appsco-tutorial-company-settings',
+            static get properties() {
+                return {
+                    page: {
+                        type: String
+                    },
 
-            _readMore: function () {
-                window.open(this.readme, '_blank');
-            },
+                    tutorialTitle: {
+                        type: String,
+                        notify: true
+                    }
+                };
+            }
 
-            property: {
-                page: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                tutorialTitle:{
-                    type: String,
-                    notify: true
-                }
-            },
+                this.tutorialId = 'company_profile';
+                this.tutorialTitle = 'Company settings';
+                this.description = 'Populate your company profile';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/208043465-Company-Settings';
+            }
 
-            behaviors: [
-                Polymer.AppscoTutorialBehaviour,
-                Polymer.AppscoCoverBehaviour
-            ],
+            connectedCallback() {
+                super.connectedCallback();
 
-            pageChanged: function() {
+                this.tutorialId = 'company_profile';
+                this.tutorialTitle = 'Company settings';
+                this.description = 'Populate your company profile';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/208043465-Company-Settings';
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.init();
+                });
+            }
+
+            pageChanged() {
                 if(this.page !== 'company' && this.step === 2) {
                     this.reset();
                 }
@@ -116,27 +135,13 @@
                         this.nextStep();
                     }.bind(this), 3000);
                 }
-            },
+            }
 
-            ready: function() {
-                this.tutorialId = 'company_profile';
-                this.tutorialTitle = 'Company settings';
-                this.description = 'Populate your company profile';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/articles/208043465-Company-Settings';
-            },
+            _readMore () {
+                window.open(this.readme, '_blank');
+            }
 
-            attached: function() {
-                this.tutorialId = 'company_profile';
-                this.tutorialTitle = 'Company settings';
-                this.description = 'Populate your company profile';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/articles/208043465-Company-Settings';
-
-                this.init();
-            },
-
-            getPopperConfig: function() {
+            getPopperConfig() {
                 return {
                     step1: {
                         reference: '* /deep/ #menuBurger',
@@ -174,12 +179,12 @@
                         }
                     }
                 };
-            },
+            }
 
-            step3: function(index, item, doneBuildingPopperHandler) {
-                var me = this;
-                var handleFunction = function() {
-                    var element = me._querySelector('* /deep/ #appscoCompanyComponentsPage');
+            step3(index, item, doneBuildingPopperHandler) {
+                const me = this;
+                const handleFunction = function () {
+                    const element = me._querySelector('* /deep/ #appscoCompanyComponentsPage');
                     if (!element || this.page !== 'company') {
                         setTimeout(handleFunction, 200);
                         return;
@@ -188,27 +193,28 @@
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this);
                 setTimeout(handleFunction(), 5000);
-            },
+            }
 
-            step4: function(index, item, doneBuildingPopperHandler) {
+            step4(index, item, doneBuildingPopperHandler) {
                 // wait 400 msec for animation to finish
                 setTimeout(function() {
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 400);
-            },
+            }
 
-            start: function() {
+            start() {
                 this.step = 0;
                 this.nextStep();
-            },
+            }
 
-            _nextStep: function() {
+            _nextStep() {
                 this.currentStep.reference.click();
-            },
+            }
 
-            _nextStep5: function() {
+            _nextStep5() {
                 this.nextStep();
             }
-        });
+        }
+        window.customElements.define(AppscoTutorialCompanySettings.is, AppscoTutorialCompanySettings);
     </script>
 </dom-module>

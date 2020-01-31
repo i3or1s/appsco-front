@@ -78,97 +78,97 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoDirectoryRoleResourceAdminApplicationsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-directory-role-resource-admin-applications-page'; }
 
-            is: 'appsco-directory-role-resource-admin-applications-page',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                role: {
-                    type: Object,
-                    value: function() { return {}; }
-                },
-
-                _applicationsEmpty: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 600
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    _applicationsEmpty: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _onApplicationsEmpty: function() {
-                this._applicationsEmpty = true;
-            },
-
-            _onApplicationsLoaded: function() {
-                this._applicationsEmpty = false;
-            },
-
-            _back: function() {
-                this.fire('back');
-            },
-
-            reloadApplications: function() {
-                this.$.appscoDirectoryRoleApplications.reload();
-            },
-
-            reloadResourceAdmins: function() {
-                this.$.appscoDirectoryRoleResourceAdminApplications.reload();
-            },
-
-            _onAddResourceAction: function() {
-                this.fire('add-resource-admin', {
-                    role: this.role
-                });
+                };
             }
-        });
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 600
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            _onApplicationsEmpty() {
+                this._applicationsEmpty = true;
+            }
+
+            _onApplicationsLoaded() {
+                this._applicationsEmpty = false;
+            }
+
+            _back() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            reloadApplications() {
+                this.$.appscoDirectoryRoleApplications.reload();
+            }
+
+            reloadResourceAdmins() {
+                this.$.appscoDirectoryRoleResourceAdminApplications.reload();
+            }
+
+            _onAddResourceAction() {
+                this.dispatchEvent(new CustomEvent('add-resource-admin', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        role: this.role
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoDirectoryRoleResourceAdminApplicationsPage.is, AppscoDirectoryRoleResourceAdminApplicationsPage);
     </script>
 </dom-module>
 

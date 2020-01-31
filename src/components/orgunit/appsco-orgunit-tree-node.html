@@ -87,71 +87,76 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoOrgUnitTreeNode extends Polymer.mixinBehaviors([ Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-orgunit-tree-node'; }
 
-            is: 'appsco-orgunit-tree-node',
+            static get properties() {
+                return {
+                    node: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    expanded: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                node: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    /**
+                     * Indicates if Remove Org Unit action should be available or not.
+                     */
+                    _removeAction: {
+                        type: Boolean,
+                        computed: '_computeRemoveAction(node)'
+                    },
 
-                expanded: {
-                    type: Boolean,
-                    value: false
-                },
+                    animationConfig: {
+                        value: function () {
+                            return {
 
-                /**
-                 * Indicates if Remove Org Unit action should be available or not.
-                 */
-                _removeAction: {
-                    type: Boolean,
-                    computed: '_computeRemoveAction(node)'
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'scale-up-animation',
-                                node: this.$.nodeChildren,
-                                axis: 'y',
-                                transformOrigin: '0 0',
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'scale-down-animation',
-                                node: this.$.nodeChildren,
-                                axis: 'y',
-                                transformOrigin: '0 0',
-                                timing: {
-                                    duration: 200
-                                }
                             }
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+            ready() {
+                super.ready();
 
-            listeners: {
-                'neon-animation-finish': '_onAnimationFinish'
-            },
+                this.animationConfig = {
+                    'entry': {
+                        name: 'scale-up-animation',
+                        node: this.$.nodeChildren,
+                        axis: 'y',
+                        transformOrigin: '0 0',
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'scale-down-animation',
+                        node: this.$.nodeChildren,
+                        axis: 'y',
+                        transformOrigin: '0 0',
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-            collapseNode: function() {
-                var childNode = this.$$('#treeNode');
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+            }
+
+            collapseNode() {
+                const childNode = this.shadowRoot.getElementById('treeNode');
 
                 this.expanded = false;
                 this._collapse();
@@ -159,32 +164,32 @@ Custom property | Description | Default
                 if (childNode) {
                     childNode.collapseNode();
                 }
-            },
+            }
 
-            _computeRemoveAction: function(node) {
+            _computeRemoveAction(node) {
                 return !this._hasChildren(node) && (node && !!node.parent);
-            },
+            }
 
-            _hasChildren: function(node) {
+            _hasChildren(node) {
                 return node && node.children && node.children.length > 0;
-            },
+            }
 
-            _onToggleNode: function() {
+            _onToggleNode() {
                 this.expanded = !this.expanded;
                 this.expanded ? this._expand() : this._collapse();
-            },
+            }
 
-            _expand: function() {
-                var expandIcon = this.$$('#expandIcon');
+            _expand() {
+                const expandIcon = this.shadowRoot.getElementById('expandIcon');
 
                 expandIcon.className = expandIcon.className + ' toggle-icon-expanded';
 
                 this.animationConfig.exit.node.style.display = 'block';
                 this.playAnimation('entry');
-            },
+            }
 
-            _collapse: function() {
-                var expandIcon = this.$$('#expandIcon');
+            _collapse() {
+                const expandIcon = this.shadowRoot.getElementById('expandIcon');
 
                 if (expandIcon) {
                     expandIcon.className = expandIcon.className.replace(' toggle-icon-expanded', '');
@@ -193,15 +198,16 @@ Custom property | Description | Default
                         node: this.animationConfig.exit.node
                     });
                 }
-            },
+            }
 
-            _onAnimationFinish: function(event) {
-                var node = event.detail.node;
+            _onAnimationFinish(event) {
+                const node = event.detail.node;
 
                 if (node && !this.expanded) {
                     node.style.display = 'none';
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoOrgUnitTreeNode.is, AppscoOrgUnitTreeNode);
     </script>
 </dom-module>

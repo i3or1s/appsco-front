@@ -16,6 +16,8 @@
 <link rel="import" href="../../components/appsco-loader.html">
 <link rel="import" href="../../components/appsco-form-error.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-orgunit`
 Provides functionality of adding accounts to organization units.
@@ -76,7 +78,7 @@ Provides functionality of adding accounts to organization units.
                    url="[[ companyOrgunitsApi ]]"
                    on-response="_handleResponse"
                    on-error="_handleError"
-                   headers="{{ _computedHeaders }}"></iron-ajax>
+                   headers="{{ _headers }}"></iron-ajax>
 
         <paper-dialog id="dialog"
                       with-backdrop
@@ -126,127 +128,82 @@ Provides functionality of adding accounts to organization units.
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountOrgunit extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-orgunit'; }
 
-            is: 'appsco-account-orgunit',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Organization units API link.
-                 */
-                companyOrgunitsApi: {
-                    type: String
-                },
-
-                /**
-                 * Accounts to add to organization units.
-                 */
-                accounts: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                },
-
-                _orgunits: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Message to display if there is no search result.
-                 */
-                _message: {
-                    type: String
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
+                    companyOrgunitsApi: {
+                        type: String
+                    },
+
+                    accounts: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _orgunits: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _message: {
+                        type: String
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
                 };
-            },
+            }
 
-            /**
-             * Toggles dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.orgunitsAjax.generateRequest();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this.$.orgunits.select(0);
                 this._loader = false;
                 this._error = '';
                 this._message = '';
-            },
+            }
 
-            _onOrgunitsDropdownClosed: function(event) {
+            _onOrgunitsDropdownClosed(event) {
                 event.stopPropagation();
-            },
+            }
 
-            _handleResponse: function(event) {
-                var response = event.detail.response
+            _handleResponse(event) {
+                const response = event.detail.response;
 
                 this.set('_orgunits', []);
 
                 if (response && response.orgunits.length > 0) {
-
                     this._message = '';
 
                     response.orgunits.forEach(function(item, index) {
-
                         this.push('_orgunits', item);
-
                     }.bind(this));
-
                 }
                 else {
                     this._message = 'There are no organization units.';
                 }
-            },
+            }
 
-            _handleError: function() {
+            _handleError() {
                 this._message = 'We couldn\'t load organization units at the moment. Please try again in a minute.';
-            },
+            }
 
-            _onAddAction: function() {
-                var orgunit = this.$.orgunits.selectedItem;
+            _onAddAction() {
+                const orgunit = this.$.orgunits.selectedItem;
 
                 this._loader = true;
 
@@ -256,24 +213,21 @@ Provides functionality of adding accounts to organization units.
                     return false;
                 }
 
-                var accounts = this.accounts,
-                        length = accounts.length - 1,
-                        appRequest = document.createElement('iron-request'),
-                        options = {
-                            url: orgunit.value + '/roles',
-                            method: 'POST',
-                            handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        },
-                        body = '';
+                let accounts = this.accounts,
+                    length = accounts.length - 1,
+                    appRequest = document.createElement('iron-request'),
+                    options = {
+                        url: orgunit.value + '/roles',
+                        method: 'POST',
+                        handleAs: 'json',
+                        headers: this._headers
+                    },
+                    body = '';
 
                 this._message = '';
 
-                for (var i = 0; i <= length; i++) {
-                    var next = (i === length) ? '' : '&';
+                for (let i = 0; i <= length; i++) {
+                    const next = (i === length) ? '' : '&';
                     body += 'roles[]=' + encodeURIComponent(accounts[i].self) + next;
                 }
 
@@ -282,22 +236,22 @@ Provides functionality of adding accounts to organization units.
                 appRequest.send(options).then(function(request) {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when accounts have been shared.
-                     *
-                     * @event accounts-shared
-                     */
-                    this.fire('added-to-orgunit', {
-                        accounts: request.response.company_roles,
-                        orgunit: {
-                            name: orgunit.name,
-                            self: orgunit.value
+                    this.dispatchEvent(new CustomEvent('added-to-orgunit', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            accounts: request.response.company_roles,
+                            orgunit: {
+                                name: orgunit.name,
+                                self: orgunit.value
+                            }
                         }
-                    });
+                    }));
 
                     this._loader = false;
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountOrgunit.is, AppscoAccountOrgunit);
     </script>
 </dom-module>

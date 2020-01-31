@@ -19,24 +19,25 @@ Price format
     </template>
 
     <script>
-        Polymer({
+        class AppscoPrice extends Polymer.Element {
+            static get is() { return 'appsco-price'; }
 
-            is: 'appsco-price',
+            static get properties() {
+                return {
+                    price: {
+                        type: Number
+                    },
 
-            properties: {
-                price: {
-                    type: Number
-                },
+                    currency: {
+                        type: String
+                    },
 
-                currency: {
-                    type: String
-                },
-
-                priceFormatted: {
-                    type: String,
-                    computed: '_priceFormat(price, currency)'
-                }
-            },
+                    priceFormatted: {
+                        type: String,
+                        computed: '_priceFormat(price, currency)'
+                    }
+                };
+            }
 
             /**
              * Formats price and currency
@@ -44,14 +45,14 @@ Price format
              * @returns {string}
              * @private
              */
-            _priceFormat: function(price, currrency) {
+            _priceFormat(price, currrency) {
                 if (price) {
                     return (price/100).toFixed(2) + " " + currrency;
                 }
 
                 return "";
-
-            },
-        });
+            }
+        }
+        window.customElements.define(AppscoPrice.is, AppscoPrice);
     </script>
 </dom-module>

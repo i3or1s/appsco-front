@@ -22,12 +22,9 @@ Component that represents composition of components related to appsco account.
     </template>
 
     <script>
-        Polymer({
-
-            is: 'appsco-account',
-
-            properties: {}
-
-        });
+        class AppscoAccount extends Polymer.Element {
+            static get is() { return 'appsco-account'; }
+        }
+        window.customElements.define(AppscoAccount.is, AppscoAccount);
     </script>
 </dom-module>

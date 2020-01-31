@@ -138,136 +138,140 @@ Custom property | Description | Default
         </template>
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationDetails extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-details'; }
 
-            is: 'appsco-application-details',
-
-            properties: {
-                /**
-                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    /**
+                     * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                company: {
-                    type: Boolean,
-                    value: false
-                },
+                    company: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _shouldShowUrl: {
-                    type: Boolean,
-                    computed: '_computeShouldShowUrl(application)'
-                },
+                    _shouldShowUrl: {
+                        type: Boolean,
+                        computed: '_computeShouldShowUrl(application)'
+                    },
 
-                _unPwAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, 'unpw')"
-                },
-                _itemAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, 'item')"
-                },
-                _creditCardAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, 'cc')"
-                },
-                _loginAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, 'login')"
-                },
-                _passportAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, 'passport')"
-                },
-                _secureNoteAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, 'securenote')"
-                },
-                _softwareLicenceAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, 'softwarelicence')"
-                },
+                    _unPwAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, 'unpw')"
+                    },
+                    _itemAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, 'item')"
+                    },
+                    _creditCardAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, 'cc')"
+                    },
+                    _loginAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, 'login')"
+                    },
+                    _passportAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, 'passport')"
+                    },
+                    _secureNoteAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, 'securenote')"
+                    },
+                    _softwareLicenceAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, 'softwarelicence')"
+                    },
 
-                _supportedAuthTypes: {
-                    type: Array,
-                    value: function () {
-                        return [
-                            'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
-                            'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
-                        ]
+                    _supportedAuthTypes: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
+                                'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
+                            ]
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._showApplicationDetails();
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                'application-changed': '_onApplicationChanged',
-                'copied': '_onCopied'
-            },
+            _addListeners() {
+                this.addEventListener('application-changed', this._onApplicationChanged);
+                this.addEventListener('copied', this._onCopied);
+            }
 
-            attached: function() {
-                this._showApplicationDetails();
-            },
-
-            _computeShouldShowUrl: function (applicationIcon) {
+            _computeShouldShowUrl(applicationIcon) {
                 return ['unpw', 'item', 'login', 'none'].indexOf(applicationIcon.auth_type) !== -1;
-            },
+            }
 
-            _computeAuthType: function (applicationIcon, authType) {
+            _computeAuthType(applicationIcon, authType) {
                 return applicationIcon.auth_type === authType;
-            },
+            }
 
-            _onApplicationChanged: function() {
+            _onApplicationChanged() {
                 this._showApplicationDetails();
-            },
+            }
 
-            _showApplicationDetails: function() {
+            _showApplicationDetails() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
-            },
+            }
 
-            _onCopied: function(event) {
+            _onCopied(event) {
                 event.stopPropagation();
 
                 if (event.detail.name) {
-                    this.fire('copied-application-attribute', {
-                        application: this.application,
-                        attribute: event.detail.name
-                    });
+                    this.dispatchEvent(new CustomEvent('copied-application-attribute', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application,
+                            attribute: event.detail.name
+                        }
+                    }));
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationDetails.is, AppscoApplicationDetails);
     </script>
 </dom-module>

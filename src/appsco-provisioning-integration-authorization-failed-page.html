@@ -46,7 +46,7 @@
                     <paper-button class="provisioning-action" on-tap="_onProvisioningAction">Provisioning</paper-button>
 
                     <div>
-                        <img src="../images/provisioning/provisioning-integration-failed.png" class="image">
+                        <img src$="[[rootPath]]images/provisioning/provisioning-integration-failed.png" class="image">
                     </div>
                 </div>
             </div>
@@ -54,30 +54,36 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-provisioning-integration-authorization-failed-page',
+        class AppscoProvisioningIntegrationAuthorizationFailedPage extends Polymer.Element {
+            static get is() { return 'appsco-provisioning-integration-authorization-failed-page'; }
 
-            properties: {
-
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            attached: function() {
-                this.pageLoaded = false;
-                this._pageLoaded();
-            },
-
-            _pageLoaded: function() {
-                this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
-
-            _onProvisioningAction: function() {
-                this.fire('provisioning');
+            static get properties() {
+                return {
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
             }
-        });
+
+            ready() {
+                super.ready();
+
+                this.pageLoaded = false;
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._pageLoaded();
+                });
+            }
+
+            _pageLoaded() {
+                this.pageLoaded = true;
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
+
+            _onProvisioningAction() {
+                this.dispatchEvent(new CustomEvent('provisioning', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoProvisioningIntegrationAuthorizationFailedPage.is, AppscoProvisioningIntegrationAuthorizationFailedPage);
     </script>
 </dom-module>

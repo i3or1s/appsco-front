@@ -9,6 +9,7 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-change-policy-status">
     <template>
@@ -71,140 +72,118 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoChangePolicyStatus extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-change-policy-status'; }
 
-            is: 'appsco-change-policy-status',
-
-            properties: {
-
-                policy: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                action: {
-                    type: String,
-                    value: ''
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _confirmActionApi: {
-                    type: String,
-                    computed: '_computeConfirmActionApi(policy, action)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            setPolicy: function(policy) {
-                this.policy = policy;
-            },
-
-            setAction: function(action) {
-                this.action = action;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                };
-            },
+                    policy: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _computeConfirmActionApi: function(policy, action) {
+                    action: {
+                        type: String,
+                        value: ''
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _confirmActionApi: {
+                        type: String,
+                        computed: '_computeConfirmActionApi(policy, action)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
+                };
+            }
+
+            setPolicy(policy) {
+                this.policy = policy;
+            }
+
+            setAction(action) {
+                this.action = action;
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _computeConfirmActionApi(policy, action) {
                 return policy.meta ?
                     (('enable' === action) ? policy.meta.activate :
                         (('disable' === action) ? policy.meta.deactivate : null)) : null;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onConfirmAction: function() {
-
+            _onConfirmAction() {
                 if (!this._confirmActionApi || !this._headers) {
                     this._showError(this.apiErrors.getError(404));
                     return false;
                 }
 
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this._confirmActionApi,
-                            method: 'PUT',
-                            handleAs: 'json',
-                            headers: this._headers
-                        };
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this._confirmActionApi,
+                        method: 'PUT',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when action is finished.
-                         *
-                         * @event policy-status-changed
-                         * @param [Object] policy
-                         */
-                        this.fire('policy-status-changed', {
-                            policy: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('policy-status-changed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                policy: request.response
+                            }
+                        }));
 
                         this.close();
                     }
@@ -214,6 +193,7 @@
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoChangePolicyStatus.is, AppscoChangePolicyStatus);
     </script>
 </dom-module>

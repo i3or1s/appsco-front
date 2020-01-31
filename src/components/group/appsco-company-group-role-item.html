@@ -182,105 +182,100 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroupRoleItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-group-role-item'; }
 
-            is: 'appsco-company-group-role-item',
+            static get properties() {
+                return {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _orgUnits: {
+                        type: String,
+                        computed: '_computeOrganizationUnits(role)'
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                role: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                _orgUnits: {
-                    type: String,
-                    computed: '_computeOrganizationUnits(role)'
-                },
-
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
 
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
 
-            _computeOrganizationUnits: function(role) {
-
+            _computeOrganizationUnits(role) {
                 if (role.account.org_units) {
-                    var result = '',
+                    let result = '',
                         orgUnits = role.account.org_units,
                         length = orgUnits.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         result += orgUnits[i].name;
                         result += (i === length -1) ? '' : ', ';
                     }
-
                     return result;
                 }
 
                 return '';
-
-            },
-
-            _onRemoveAction: function (event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `remove` action is tapped.
-                 *
-                 * @event remove-company-role-from-group
-                 * @param {Object} role
-                 */
-                this.fire('remove-company-role-from-group', {
-                    group: this.group,
-                    role: this.role
-                });
             }
 
-        });
+            _onRemoveAction (event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('remove-company-role-from-group', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        group: this.group,
+                        role: this.role
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyGroupRoleItem.is, AppscoCompanyGroupRoleItem);
     </script>
 </dom-module>

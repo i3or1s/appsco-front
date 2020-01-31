@@ -68,68 +68,68 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountOrgunitItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-account-orgunit-item'; }
 
-            is: 'appsco-account-orgunit-item',
+            static get properties() {
+                return {
+                    item: {
+                        type: Object
+                    },
 
-            properties: {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Item to display.
-                 *
-                 * @type {Object}
-                 */
-                item: {
-                    type: Object
-                },
-
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'flex';
+                });
 
-            attached: function() {
-                this.style.display = 'flex';
-                this.playAnimation('entry');
-            },
-
-            _onRemoveFromOrgunit: function() {
-                this.fire('remove-from-orgunit', {
-                    orgunit: this.item,
-                    account: this.account
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
                 });
             }
-        });
+
+            _onRemoveFromOrgunit() {
+                this.dispatchEvent(new CustomEvent('remove-from-orgunit', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        orgunit: this.item,
+                        account: this.account
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoAccountOrgunitItem.is, AppscoAccountOrgunitItem);
     </script>
 </dom-module>

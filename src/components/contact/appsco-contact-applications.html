@@ -7,6 +7,7 @@
 
 <link rel="import" href="appsco-contact-application.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-contact-applications">
     <template>
@@ -59,7 +60,7 @@
 
         <iron-ajax id="getApplicationsCall"
                    url="[[ _computedAction ]]"
-                   headers="[[ _computedHeaders ]]"
+                   headers="[[ _headers ]]"
                    method="GET"
                    handle-as="json"
                    on-response="_handleResponse"
@@ -111,212 +112,150 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoContactApplications extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-contact-applications'; }
 
-            is: 'appsco-contact-applications',
-
-            properties: {
-
-                contact: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Number of applications to load.
-                 */
-                size: {
-                    type: Number,
-                    value: 5
-                },
-
-                /**
-                 * Indicates if load more action should be available or not.
-                 */
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if applications should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Next page of applications to load.
-                 */
-                _nextPage: {
-                    type: Number,
-                    value: 1
-                },
-
-                _moreApplications: {
-                    type: Boolean,
-                    value: true
-                },
-
-                /**
-                 * Computed action.
-                 */
-                _computedAction: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                },
-
-                _applications: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
-
-                _totalApplications: {
-                    type: Number,
-                    value: 0
-                },
-
-                _loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Message to display instead of subscribers.
-                 */
-                _message: {
-                    type: String
-                }
-            },
-
-            observers: [
-                '_computeAction(contact, _nextPage, size)',
-                '_onContactChanged(contact)'
-            ],
-
-            attached: function() {
-                this.load();
-            },
-
-            _onContactChanged: function() {
-                this.load();
-            },
-
-            _computeAction: function (contact, nextPage, size) {
-                this._computedAction = contact.meta ? contact.meta.applications + '?page=' + nextPage + '&limit=' + size + '&extended=1' : null;
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    contact: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _clearList: function() {
+                    /**
+                     * Number of applications to load.
+                     */
+                    size: {
+                        type: Number,
+                        value: 5
+                    },
+
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    _nextPage: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    _moreApplications: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _computedAction: {
+                        type: String
+                    },
+
+                    _applications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _totalApplications: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _message: {
+                        type: String
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_computeAction(contact, _nextPage, size)',
+                    '_onContactChanged(contact)'
+                ];
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.load();
+                });
+            };
+
+            _onContactChanged() {
+                this.load();
+            }
+
+            _computeAction(contact, nextPage, size) {
+                this._computedAction = contact.meta ? contact.meta.applications + '?page=' + nextPage + '&limit=' + size + '&extended=1' : null;
+            }
+
+            _clearList() {
                 this.set('_applications', []);
                 this._message = '';
                 this._nextPage = 1;
                 this._totalApplications = 0;
-            },
+            }
 
-            /**
-             * Triggers ajax request in order to get notifications.
-             */
-            load: function() {
+            load() {
                 this.$.progress.hidden = false;
                 this._clearList();
                 this.$.getApplicationsCall.generateRequest();
-            },
+            }
 
-            _loadMore: function() {
+            _loadMore() {
                 this.$.progress.hidden = false;
                 this.$.getApplicationsCall.generateRequest();
-            },
+            }
 
-            /**
-             * Handles error on get applications API request.
-             * @param {Object} event Event from error response.
-             *
-             * @private
-             */
-            _handleError: function(event) {
+            _handleError(event) {
                 this._message = 'We couldn\'t load resources at the moment. Please try again in a minute. If error continues contact us.';
                 this._handleEmpty();
-            },
+            }
 
-            /**
-             * Handles response on get log API request.
-             * @param {Object} event Event from response.
-             *
-             * @private
-             */
-            _handleResponse: function(event) {
-                var response = event.detail.response;
+            _handleResponse(event) {
+                const response = event.detail.response;
 
                 if (!response) {
                     return false;
                 }
 
-                var applications = response.applications,
-                        currentLength = this._applications.length,
-                        total = response.meta.total;
+                const applications = response.applications,
+                    currentLength = this._applications.length,
+                    total = response.meta.total;
 
                 this._totalApplications = total;
 
                 if (applications && applications.length > 0) {
-
                     this._nextPage += 1;
 
                     applications.forEach(function(application, index) {
-
                         setTimeout( function() {
-
                             this.push('_applications', applications[index]);
 
                             if (index === (applications.length - 1)) {
-
-                                this._moreApplications = true;
-
-                                if (this._applications.length === total) {
-                                    this._moreApplications = false;
-                                }
+                                this._moreApplications = this._applications.length !== total;
 
                                 this._hideProgressBar();
-                                this.fire('applications-loaded');
+                                this.dispatchEvent(new CustomEvent('applications-loaded', { bubbles: true, composed: true }));
                             }
-
                         }.bind(this), (index + 1) * 30 );
-
                     }.bind(this));
-
                 }
                 else if (applications && !applications.length) {
-
                     if (!currentLength) {
                         this._message = 'There are no company resources shared with this contact.';
                     }
@@ -329,25 +268,24 @@
                     this._moreApplications = false;
                     this._handleEmpty();
                 }
-            },
+            }
 
-            _handleEmpty: function() {
+            _handleEmpty() {
                 this._hideProgressBar();
-                this.fire('applications-empty');
-            },
+                this.dispatchEvent(new CustomEvent('applications-empty', { bubbles: true, composed: true }));
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
                     this.$.progress.hidden = true;
                 }.bind(this), 500);
+            }
 
-            },
-
-            reload: function() {
+            reload() {
                 this._clearList();
                 this.$.getApplicationsCall.generateRequest();
             }
-        });
+        }
+        window.customElements.define(AppscoContactApplications.is, AppscoContactApplications);
     </script>
-</dom-module>0
+</dom-module>

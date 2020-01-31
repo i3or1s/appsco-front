@@ -16,43 +16,44 @@ Example:
 </dom-module>
 
 <script>
-    Polymer({
-        is: 'appsco-api-errors',
+    class AppscoApiErrors extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+        static get is() { return 'appsco-api-errors'; }
 
-        properties: {
-
-            name: {
-                type: Object,
-                value: function() {
-                    return {};
+        static get properties() {
+            return {
+                name: {
+                    type: Object,
+                    value: function () {
+                        return {};
+                    },
+                    notify: true
                 },
-                notify: true
-            },
 
-            language: {
-                value: 'en',
-                type: String
-            },
+                language: {
+                    value: 'en',
+                    type: String
+                },
 
-            useKeyIfMissing: {
-                type: Boolean,
-                value: true
-            },
+                useKeyIfMissing: {
+                    type: Boolean,
+                    value: true
+                },
 
-            defaultError: {
-                type: Number,
-                value: 404
-            }
-        },
+                defaultError: {
+                    type: Number,
+                    value: 404
+                }
+            };
+        }
 
-        behaviors: [
-            Polymer.AppLocalizeBehavior
-        ],
+        ready() {
+            super.ready();
 
-        attached: function () {
-            this.set('name', this);
-            this.loadResources(this.resolveUrl('data/appsco-api-errors.json'));
-        },
+            Polymer.RenderStatus.afterNextRender(this, function() {
+                this.set('name', this);
+                this.loadResources(this.resolveUrl('data/appsco-api-errors.json'));
+            });
+        }
 
         /**
          * Returns translation for error based on provided error code.
@@ -60,10 +61,11 @@ Example:
          * @param {String} code The code for which to return error message.
          * @returns {string} Translated error message if exists. Otherwise, it returns given code.
          */
-        getError: function(code) {
-            var message = this.localize(code);
+        getError(code) {
+            const message = this.localize(code);
 
             return (!message || code === message) ? this.localize(this.defaultError) : message;
         }
-    });
+    }
+    window.customElements.define(AppscoApiErrors.is, AppscoApiErrors);
 </script>

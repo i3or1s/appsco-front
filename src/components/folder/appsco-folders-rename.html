@@ -12,6 +12,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="appsco-folders-item.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-folders-rename">
     <template>
         <style>
@@ -67,73 +69,65 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoFoldersRename extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-folders-rename'; }
 
-            is: 'appsco-folders-rename',
+            static get properties() {
+                return {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    foldersApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    folderItem: {
+                        type: String,
+                        value: ''
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _company: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                foldersApi: {
-                    type: String
-                },
-
-                folderItem: {
-                    type: String,
-                    value: ''
-                },
-
-                _company: {
-                    type: String,
-                    value: ''
-                },
-
-                _error: {
-                    type: String
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            _renameFolder: function() {
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this.folderItem.self,
-                            body: 'dashboardGroup[title]=' + this.$.title.value,
-                            method: 'PATCH',
-                            handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        };
+            _renameFolder() {
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this.folderItem.self,
+                        body: 'dashboardGroup[title]=' + this.$.title.value,
+                        method: 'PATCH',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._showLoader();
                 this._hideError();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('folder-renamed', {
-                            folder: this.folderItem
-                        });
+                        this.dispatchEvent(new CustomEvent('folder-renamed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                folder: this.folderItem
+                            }
+                        }));
 
                         this._hideLoader();
                         this.$.dialog.close();
@@ -142,35 +136,36 @@
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            setCompany: function(company) {
+            setCompany(company) {
                 this._company = company;
-            },
+            }
 
-            setFolderItem: function(folderItem) {
+            setFolderItem(folderItem) {
                 this.folderItem = folderItem;
-            },
+            }
 
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
             }
-        });
+        }
+        window.customElements.define(AppscoFoldersRename.is, AppscoFoldersRename);
     </script>
 </dom-module>

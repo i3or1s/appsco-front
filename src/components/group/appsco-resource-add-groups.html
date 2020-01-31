@@ -14,6 +14,8 @@
 <link rel="import" href="../components/appsco-search.html">
 <link rel="import" href="appsco-group-card.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-resource-add-groups`
 Provides functionality of adding resource item to groups.
@@ -158,141 +160,115 @@ Provides functionality of adding resource item to groups.
 
     </template>
     <script>
-        Polymer({
+        class AppscoResourceAddGroups extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-resource-add-groups'; }
 
-            is: 'appsco-resource-add-groups',
-
-            properties: {
-
-                /**
-                 * Items to add groups to.
-                 */
-                items: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Groups API link
-                 */
-                groupsApi: {
-                    type: String
-                },
-
-                /**
-                 * Number of groups to load show in search result.
-                 */
-                size: {
-                    type: Number,
-                    value: 8
-                },
-
-                resourceType: {
-                    type: String,
-                    value: ''
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _computedTitle: {
-                    type: String,
-                    computed: '_computeTitle(resourceType)'
-                },
-
-                _computedButtonTitle: {
-                    type: String,
-                    computed: '_computeButtonTitle(resourceType)'
-                },
-
-                /**
-                 * Applications which are shared.
-                 * This array is populated from sharing API response.
-                 */
-                _responseItems: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Groups list from search.
-                 */
-                _searchList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Message to display if there is no search result.
-                 */
-                _message: {
-                    type: String
-                },
-
-                /**
-                 * Indicates if Create New Group action should be displayed.
-                 */
-                _showCreateNewGroupAction: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Selected groups from search list.
-                 */
-                _selectedGroups: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Indicates if search loader should be displayed or not.
-                 */
-                _searchLoader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if dialog loader should be displayed or not.
-                 */
-                _dialogLoader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _requests: {
-                    type: Number,
-                    value: 0
-                }
-            },
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    /**
+                     * Items to add groups to.
+                     */
+                    items: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-            _computeTitle: function (resourceType) {
+                    groupsApi: {
+                        type: String
+                    },
+
+                    /**
+                     * Number of groups to load show in search result.
+                     */
+                    size: {
+                        type: Number,
+                        value: 8
+                    },
+
+                    resourceType: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _computedTitle: {
+                        type: String,
+                        computed: '_computeTitle(resourceType)'
+                    },
+
+                    _computedButtonTitle: {
+                        type: String,
+                        computed: '_computeButtonTitle(resourceType)'
+                    },
+
+                    /**
+                     * Applications which are shared.
+                     * This array is populated from sharing API response.
+                     */
+                    _responseItems: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    /**
+                     * Groups list from search.
+                     */
+                    _searchList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _message: {
+                        type: String
+                    },
+
+                    /**
+                     * Indicates if Create New Group action should be displayed.
+                     */
+                    _showCreateNewGroupAction: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Selected groups from search list.
+                     */
+                    _selectedGroups: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    /**
+                     * Indicates if search loader should be displayed or not.
+                     */
+                    _searchLoader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Indicates if dialog loader should be displayed or not.
+                     */
+                    _dialogLoader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _requests: {
+                        type: Number,
+                        value: 0
+                    }
+                };
+            }
+
+            _computeTitle(resourceType) {
                   switch (resourceType) {
                       case 'resource':
                           return 'Share to group';
@@ -302,9 +278,9 @@ Provides functionality of adding resource item to groups.
                       default:
                           return '';
                   }
-            },
+            }
 
-            _computeButtonTitle: function (resourceType) {
+            _computeButtonTitle(resourceType) {
                 switch (resourceType) {
                     case 'resource':
                         return 'Share';
@@ -314,79 +290,60 @@ Provides functionality of adding resource item to groups.
                     default:
                         return '';
                 }
-            },
+            }
 
-            /**
-             * Toggles dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Opens dialog.
-             */
-            open: function() {
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            /**
-             * Closes dialog.
-             */
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            setItems: function(items) {
+            setItems(items) {
                 this.items = items;
-            },
+            }
 
-            setType: function(type) {
+            setType(type) {
                 this.resourceType = type;
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.appscoSearch.setup();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._reset();
                 this.set('_selectedGroups', []);
-            },
+            }
             
-            _showDialogLoader: function() {
+            _showDialogLoader() {
                 this._dialogLoader = true;
-            },
+            }
             
-            _hideDialogLoader: function() {
+            _hideDialogLoader() {
                 this._dialogLoader = false;
-            },
+            }
 
-            _showSearchLoader: function() {
+            _showSearchLoader() {
                 this._searchLoader = true;
-            },
+            }
 
-            _hideSearchLoader: function() {
+            _hideSearchLoader() {
                 this._searchLoader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
             /**
              * Gets groups by term.
@@ -394,8 +351,8 @@ Provides functionality of adding resource item to groups.
              * @param {Object} event
              * @private
              */
-            _onSearch: function(event) {
-                var searchValue = event.detail.term,
+            _onSearch(event) {
+                const searchValue = event.detail.term,
                     searchLength = searchValue.length;
 
                 this._showSearchLoader();
@@ -418,12 +375,12 @@ Provides functionality of adding resource item to groups.
                     return false;
                 }
 
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     url = this.groupsApi + '?extended=1&limit=' + this.size + '&term=' + searchValue;
 
                 this._message = '';
 
-                var options = {
+                const options = {
                     url: url,
                     method: 'GET',
                     handleAs: 'json',
@@ -431,7 +388,7 @@ Provides functionality of adding resource item to groups.
                 };
 
                 request.send(options).then(function() {
-                    var groups = request.response.company_groups;
+                    const groups = request.response.company_groups;
 
                     if (groups && groups.length > 0) {
                         this.set('_searchList', groups);
@@ -444,14 +401,14 @@ Provides functionality of adding resource item to groups.
 
                     this._hideSearchLoader();
                 }.bind(this));
-            },
+            }
 
-            _onSearchClear: function() {
+            _onSearchClear() {
                 this._reset();
-            },
+            }
 
-            _onCreateGroupAction: function() {
-                var name = this.$.appscoSearch.getValue(),
+            _onCreateGroupAction() {
+                const name = this.$.appscoSearch.getValue(),
                     request = document.createElement('iron-request'),
                     url = this.groupsApi,
                     options = {
@@ -461,11 +418,11 @@ Provides functionality of adding resource item to groups.
                         headers: this._headers,
                         body: 'company_group[name]=' + encodeURIComponent(name)
                     };
-                
+
                 this._showDialogLoader();
 
                 request.send(options).then(function() {
-                    var group = request.response;
+                    const group = request.response;
 
                     if (group && group.alias) {
                         this.push('_selectedGroups', group);
@@ -475,15 +432,18 @@ Provides functionality of adding resource item to groups.
                     this._showCreateNewGroupAction = false;
                     this._hideDialogLoader();
 
-                    this.fire('group-added', {
-                        group: group
-                    });
-                    
+                    this.dispatchEvent(new CustomEvent('group-added', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            group: group
+                        }
+                    }));
                 }.bind(this), function() {
                     this._hideDialogLoader();
                     this._showError('Group with name \'' + name + '\' could not be created.');
                 }.bind(this));
-            },
+            }
 
             /**
              * Called after group has been selected from search list.
@@ -491,21 +451,20 @@ Provides functionality of adding resource item to groups.
              * @param {Object} event
              * @private
              */
-            _onGroupSelected: function(event) {
+            _onGroupSelected(event) {
                 this._hideError();
                 this.push('_selectedGroups', event.model.item);
                 this.splice('_searchList', this._searchList.indexOf(event.model.item), 1);
-            },
+            }
 
-            _onRemoveSelectedGroup: function(event) {
+            _onRemoveSelectedGroup(event) {
                 this.push('_searchList', event.model.item);
                 this.splice('_selectedGroups', this._selectedGroups.indexOf(event.model.item), 1);
-            },
+            }
 
-            _addGroupsToResource: function(item) {
-
+            _addGroupsToResource(item) {
                 return new Promise(function(resolve, reject) {
-                    var groups = this._selectedGroups,
+                    let groups = this._selectedGroups,
                         length = groups.length - 1,
                         request = document.createElement('iron-request'),
                         options = {
@@ -516,17 +475,15 @@ Provides functionality of adding resource item to groups.
                         },
                         body = '';
 
-                    for (var i = 0; i <= length; i++) {
-                        var next = (i === length) ? '' : '&';
+                    for (let i = 0; i <= length; i++) {
+                        let next = (i === length) ? '' : '&';
                         body += 'groups[]=' + encodeURIComponent(groups[i].meta.self) + next;
                     }
 
                     options.body = body;
 
                     request.send(options).then(function() {
-
                         if (200 === request.status) {
-
                             switch (this.resourceType) {
                                 case 'resource':
                                     resolve(request.response.application);
@@ -542,28 +499,24 @@ Provides functionality of adding resource item to groups.
                             }
                         }
                     }.bind(this), function() {
-
                         if (404 === request.status) {
                             reject('There was an error while sharing resources to groups. Not all ' + this.resourceType + 's were shared to groups.');
                         }
                     }.bind(this));
                 }.bind(this));
-            },
+            }
 
-            _onAddActionFinished: function() {
-
+            _onAddActionFinished() {
                 if (this._responseItems.length > 0) {
-
-                    /**
-                     * Fired when groups have been added to items.
-                     *
-                     * @event groups-added-to-resources
-                     */
-                    this.fire('groups-added-to-resources', {
-                        groups: this._selectedGroups,
-                        items: this._responseItems,
-                        resourceType: this.resourceType
-                    });
+                    this.dispatchEvent(new CustomEvent('groups-added-to-resources', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            groups: this._selectedGroups,
+                            items: this._responseItems,
+                            resourceType: this.resourceType
+                        }
+                    }));
 
                     this.close();
                 }
@@ -574,16 +527,15 @@ Provides functionality of adding resource item to groups.
                 this.set('_selectedGroups', []);
                 this.set('_responseItems', []);
                 this._hideDialogLoader();
-            },
+            }
 
-            _onAddGroupsToResourcesAction: function() {
-
+            _onAddGroupsToResourcesAction() {
                 if (0 === this._selectedGroups.length) {
                     this._showError('Please add at least one group to share ' + this.resourceType + 's to.');
                     return false;
                 }
 
-                var items = this.items,
+                const items = this.items,
                     length = items.length;
 
                 this._requests = length;
@@ -591,11 +543,10 @@ Provides functionality of adding resource item to groups.
                 this._hideError();
                 this._showDialogLoader();
 
-                for (var i = 0; i < length; i++) {
-                    var item = items[i];
+                for (let i = 0; i < length; i++) {
+                    const item = items[i];
 
                     (function(me) {
-
                         me._addGroupsToResource(item).then(function(item) {
                             me.push('_responseItems', item);
                             me._requests--;
@@ -614,9 +565,9 @@ Provides functionality of adding resource item to groups.
 
                     })(this);
                 }
-            },
+            }
 
-            _reset: function() {
+            _reset() {
                 this.$.appscoSearch.reset();
                 this.set('_searchList', []);
                 this._hideSearchLoader();
@@ -624,6 +575,7 @@ Provides functionality of adding resource item to groups.
                 this._hideError();
                 this._message = '';
             }
-        });
+        }
+        window.customElements.define(AppscoResourceAddGroups.is, AppscoResourceAddGroups);
     </script>
 </dom-module>

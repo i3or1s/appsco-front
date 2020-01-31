@@ -9,6 +9,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-resource-remove-from-group`
 Shows dialog screen with confirmation for removal company resource from group.
@@ -93,133 +95,109 @@ Shows dialog screen with confirmation for removal company resource from group.
 
     </template>
     <script>
-        Polymer({
+        class AppscoResourceRemoveFromGroup extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-resource-remove-from-group'; }
 
-            is: 'appsco-resource-remove-from-group',
-
-            properties: {
-
-                group: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Item to remove from group.
-                 */
-                item: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                resourceType: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _removeFromGroupsApi: {
-                    type: String,
-                    computed: '_computeRemoveFromGroupApi(group, resourceType)'
-                },
-
-                _responseItems: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _resourceType: {
-                    type: Boolean,
-                    computed: '_computeResourceType(resourceType)'
-                },
-
-                _roleType: {
-                    type: Boolean,
-                    computed: '_computeRoleType(resourceType)'
-                },
-
-                _contactType: {
-                    type: Boolean,
-                    computed: '_computeContactType(resourceType)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                },
-
-                _requests: {
-                    type: Number,
-                    value: 0
-                }
-            },
-
-            setGroup: function(group) {
-                this.group = group;
-            },
-
-            setItem: function(item) {
-                this.item = item;
-            },
-
-            setType: function(type) {
-                this.resourceType = type;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    group: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    /**
+                     * Item to remove from group.
+                     */
+                    item: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    resourceType: {
+                        type: String,
+                        value: ''
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _removeFromGroupsApi: {
+                        type: String,
+                        computed: '_computeRemoveFromGroupApi(group, resourceType)'
+                    },
+
+                    _responseItems: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _resourceType: {
+                        type: Boolean,
+                        computed: '_computeResourceType(resourceType)'
+                    },
+
+                    _roleType: {
+                        type: Boolean,
+                        computed: '_computeRoleType(resourceType)'
+                    },
+
+                    _contactType: {
+                        type: Boolean,
+                        computed: '_computeContactType(resourceType)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _requests: {
+                        type: Number,
+                        value: 0
+                    }
                 };
-            },
+            }
 
-            _computeRemoveFromGroupApi: function(group, resourceType) {
+            setGroup(group) {
+                this.group = group;
+            }
 
-                for (key in group) {
+            setItem(item) {
+                this.item = item;
+            }
+
+            setType(type) {
+                this.resourceType = type;
+            }
+
+            open () {
+                this.$.dialog.open();
+            }
+
+            close () {
+                this.$.dialog.close();
+            }
+
+            toggle () {
+                this.$.dialog.toggle();
+            }
+
+            _computeRemoveFromGroupApi(group, resourceType) {
+                for (const key in group) {
                     return ('resource' === resourceType)
                             ? group.meta.applications
                             : ('role' === resourceType)
@@ -230,43 +208,43 @@ Shows dialog screen with confirmation for removal company resource from group.
                 }
 
                 return '';
-            },
+            }
 
-            _computeResourceType: function(resourceType) {
+            _computeResourceType(resourceType) {
                 return 'resource' === resourceType;
-            },
+            }
 
-            _computeRoleType: function(resourceType) {
+            _computeRoleType(resourceType) {
                 return 'role' === resourceType;
-            },
+            }
 
-            _computeContactType: function(resourceType) {
+            _computeContactType(resourceType) {
                 return 'contact' === resourceType;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onRemoveAction: function() {
-                var request = document.createElement('iron-request'),
+            _onRemoveAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._removeFromGroupsApi + '/' + this.item.alias,
                         method: 'DELETE',
@@ -283,14 +261,16 @@ Shows dialog screen with confirmation for removal company resource from group.
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('resource-removed-from-group', {
-                            group: this.group,
-                            item: request.response,
-                            resourceType: this.resourceType
-                        });
+                        this.dispatchEvent(new CustomEvent('resource-removed-from-group', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                group: this.group,
+                                item: request.response,
+                                resourceType: this.resourceType
+                            }
+                        }));
 
                         this.close();
                     }
@@ -299,6 +279,7 @@ Shows dialog screen with confirmation for removal company resource from group.
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoResourceRemoveFromGroup.is, AppscoResourceRemoveFromGroup);
     </script>
 </dom-module>

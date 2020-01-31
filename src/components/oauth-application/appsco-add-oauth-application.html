@@ -14,6 +14,8 @@
 <link rel="import" href="../../components/components/appsco-loader.html">
 <link rel="import" href="../../components/components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-add-oauth-application">
     <template>
         <style>
@@ -73,67 +75,68 @@
 
                     <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 
-                    <form is="iron-form"
-                          id="form"
-                          method="POST"
-                          action="[[ oauthApplicationsApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
+                              method="POST"
+                              action="[[ oauthApplicationsApi ]]">
+                            <div class="input-container">
+                                <paper-input id="title"
+                                             label="Title"
+                                             name="oauth_application[title]"
+                                             required
+                                             auto-validate
+                                             error-message="Please enter title of the application."></paper-input>
+                            </div>
 
-                        <div class="input-container">
-                            <paper-input id="title"
-                                         label="Title"
-                                         name="oauth_application[title]"
-                                         required
-                                         auto-validate
-                                         error-message="Please enter title of the application."></paper-input>
-                        </div>
+                            <div class="input-container">
+                                <paper-input label="Redirect URL"
+                                             name="oauth_application[redirect_url]"
+                                             pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
+                                             required
+                                             auto-validate
+                                             error-message="Please enter valid URL."></paper-input>
+                            </div>
 
-                        <div class="input-container">
-                            <paper-input label="Redirect URL"
-                                         name="oauth_application[redirect_url]"
-                                         pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
-                                         required
-                                         auto-validate
-                                         error-message="Please enter valid URL."></paper-input>
-                        </div>
+                            <div class="input-container">
+                                <paper-input label="Website URL"
+                                             name="oauth_application[website_url]"
+                                             pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
+                                             required
+                                             auto-validate
+                                             error-message="Please enter valid URL."></paper-input>
+                            </div>
 
-                        <div class="input-container">
-                            <paper-input label="Website URL"
-                                         name="oauth_application[website_url]"
-                                         pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
-                                         required
-                                         auto-validate
-                                         error-message="Please enter valid URL."></paper-input>
-                        </div>
+                            <div class="input-container horizontal-align">
+                                <paper-input label="Icon"
+                                             name="oauth_application[icon_url]"
+                                             value$="[[ _applicationIcon ]]"
+                                             pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
+                                             required
+                                             auto-validate
+                                             error-message="Please enter valid icon URL."
+                                             class="flex"
+                                             on-value-changed="_onIconInputValueChanged"></paper-input>
 
-                        <div class="input-container horizontal-align">
-                            <paper-input label="Icon"
-                                         name="oauth_application[icon_url]"
-                                         value$="[[ _applicationIcon ]]"
-                                         pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
-                                         required
-                                         auto-validate
-                                         error-message="Please enter valid icon URL."
-                                         class="flex"
-                                         on-value-changed="_onIconInputValueChanged"></paper-input>
+                                <iron-image class="application-image no-flex"
+                                            src="[[ _applicationIcon ]]"
+                                            alt="Application image"
+                                            preload fade
+                                            placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII="
+                                            sizing="contain"></iron-image>
+                            </div>
 
-                            <iron-image class="application-image no-flex"
-                                        src="[[ _applicationIcon ]]"
-                                        alt="Application image"
-                                        preload fade
-                                        placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII="
-                                        sizing="contain"></iron-image>
-                        </div>
-
-                        <div class="input-container">
-                            <paper-textarea label="Description"
-                                            name="oauth_application[description]"
-                                            value=""
-                                            rows="3"></paper-textarea>
-                        </div>
-                    </form>
+                            <div class="input-container">
+                                <paper-textarea label="Description"
+                                                name="oauth_application[description]"
+                                                value=""
+                                                rows="3"></paper-textarea>
+                            </div>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -149,135 +152,119 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAddOAuthApplication extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-add-oauth-application'; }
 
-            is: 'appsco-add-oauth-application',
+            static get properties() {
+                return {
+                    oauthApplicationsApi: {
+                        type: String
+                    },
 
-            properties: {
+                    company: {
+                        type: Object,
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                oauthApplicationsApi: {
-                    type: String
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _error: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
+                    },
+
+                    _applicationIcon: {
+                        type: String
                     }
-                },
+                };
+            }
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            static get observers() {
+                return [
+                    '_onCompanyChanged(company)'
+                ];
+            }
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+            ready() {
+                super.ready();
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
+                this._target = this.$.form;
+            }
 
-                _error: {
-                    type: String
-                },
-
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.form
-                    }
-                },
-
-                _applicationIcon: {
-                    type: String
-                }
-            },
-
-            observers: [
-                '_onCompanyChanged(company)'
-            ],
-
-            open: function() {
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _initialize: function() {
+            _initialize() {
                 this._onCompanyChanged(this.company);
                 this.$.title.focus();
-            },
+            }
 
-            _reset: function() {
+            _reset() {
                 this._target.reset();
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                };
-            },
-
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this._initialize();
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this._reset();
-            },
+            }
 
-            _onCompanyChanged: function(company) {
+            _onCompanyChanged(company) {
                 this._applicationIcon = company.image ? company.image : null;
-            },
+            }
 
-            _onIconInputValueChanged: function(event) {
-
+            _onIconInputValueChanged(event) {
                 this.debounce('setIconURL', function() {
                     this._applicationIcon = event.detail.value;
                 }.bind(this), 500);
-            },
+            }
 
-            _onEnterAction: function() {
+            _onEnterAction() {
                 this._onAddAction();
-            },
+            }
 
-            _onAddAction: function() {
+            _onAddAction() {
                 this._hideError();
 
                 if (this._target.validate()) {
@@ -285,20 +272,25 @@
                     this._target.submit();
                 }
 
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 this.close();
 
-                this.fire('oauth-application-added', {
-                    application: event.detail.response
-                });
+                this.dispatchEvent(new CustomEvent('oauth-application-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: event.detail.response
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoAddOAuthApplication.is, AppscoAddOAuthApplication);
     </script>
 </dom-module>

@@ -145,112 +145,103 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroupResourceItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-group-resource-item'; }
 
-            is: 'appsco-company-group-resource-item',
+            static get properties() {
+                return {
+                    resource: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                resource: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _resourceType: {
+                        type: String,
+                        computed: '_computeApplicationType(resource)'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _resourceType: {
-                    type: String,
-                    computed: '_computeApplicationType(resource)'
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
 
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _computeApplicationType: function(resource) {
-
-                switch (resource.auth_type) {
-                    case 'login':
-                        return 'Login';
-
-                    case 'cc':
-                        return 'Credit Card';
-
-                    case 'softwarelicence':
-                        return 'Software Licence';
-
-                    case 'passport':
-                        return 'Passport';
-
-                    case 'securenote':
-                        return 'Secure Note';
-
-                    case 'none':
-                        return 'Link';
-
-                    default:
-                        return 'Application';
-                }
-            },
-
-            _onRemove: function (event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `remove role` action is tapped.
-                 *
-                 * @event remove-group-from-company-role
-                 * @param {Object} role
-                 */
-                this.fire('remove-company-resource-from-group', {
-                    resource: this.resource,
-                    group: this.group
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
                 });
             }
 
-        });
+            _computeApplicationType(resource) {
+                switch (resource.auth_type) {
+                    case 'login':
+                        return 'Login';
+                    case 'cc':
+                        return 'Credit Card';
+                    case 'softwarelicence':
+                        return 'Software Licence';
+                    case 'passport':
+                        return 'Passport';
+                    case 'securenote':
+                        return 'Secure Note';
+                    case 'none':
+                        return 'Link';
+                    default:
+                        return 'Application';
+                }
+            }
+
+            _onRemove (event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('remove-company-resource-from-group', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        resource: this.resource,
+                        group: this.group
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyGroupResourceItem.is, AppscoCompanyGroupResourceItem);
     </script>
 </dom-module>

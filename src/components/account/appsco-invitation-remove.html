@@ -8,6 +8,8 @@
 
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-invitation-remove`
 Shows dialog screen with confirmation for invitation removal.
@@ -74,78 +76,56 @@ Shows dialog screen with confirmation for invitation removal.
 
     </template>
     <script>
-        Polymer({
+        class AppscoInvitationRemove extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-invitation-remove'; }
 
-            is: 'appsco-invitation-remove',
-
-            properties: {
-
-                /**
-                 * Invitation to delete.
-                 */
-                invitation: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _removeApi: {
-                    type: String,
-                    computed: '_computeRemoveApi(invitation)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    invitation: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _removeApi: {
+                        type: String,
+                        computed: '_computeRemoveApi(invitation)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
                 };
-            },
+            }
 
-            _computeRemoveApi: function(invitation) {
+            _computeRemoveApi(invitation) {
                 return invitation && invitation.self ? invitation.self : null;
-            },
+            }
 
-            setInvitation: function(invitation) {
+            setInvitation(invitation) {
                 this.set('invitation', invitation);
-            },
+            }
 
-            open: function () {
+            open () {
                 this.$.dialog.open();
-            },
+            }
 
-            _hide: function() {
+            _hide() {
                 this.$.dialog.close();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _onRemove: function() {
-                var request = document.createElement('iron-request'),
+            _onRemove() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._removeApi,
                         method: 'DELETE',
@@ -156,44 +136,35 @@ Shows dialog screen with confirmation for invitation removal.
                 this._showLoader();
 
                 request.send(options).then(function() {
-                    var status = request.status;
+                    const status = request.status;
 
-                    if (200 == status) {
-
-                        /**
-                         * Fired when invitation is removed.
-                         *
-                         * @event invitation-removed
-                         */
-                        this.fire('invitation-removed', {
-                            invitation: this.invitation
-                        });
+                    if (200 === status) {
+                        this.dispatchEvent(new CustomEvent('invitation-removed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                invitation: this.invitation
+                            }
+                        }));
                     }
 
                     this.set('invitation', {});
                     this._hideLoader();
                     this._hide();
-
                 }.bind(this), function() {
-                    var status = request.status;
+                    const status = request.status;
 
-                    if (404 == status) {
-                        /**
-                         * Fired when invitation is already removed.
-                         *
-                         * @event invitation-already-removed
-                         */
-                        this.fire('invitation-already-removed', {
-                            invitation: this.invitation
-                        });
+                    if (404 === status) {
+                        this.dispatchEvent(new CustomEvent('invitation-already-removed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                invitation: this.invitation
+                            }
+                        }));
                     }
                     else {
-                        /**
-                         * Fired when invitation is not deleted.
-                         *
-                         * @event invitation-remove-failed
-                         */
-                        this.fire('invitation-remove-failed');
+                        this.dispatchEvent(new CustomEvent('invitation-remove-failed', { bubbles: true, composed: true }));
                     }
 
                     this.set('invitation', {});
@@ -201,6 +172,7 @@ Shows dialog screen with confirmation for invitation removal.
                     this._hide();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoInvitationRemove.is, AppscoInvitationRemove);
     </script>
 </dom-module>

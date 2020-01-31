@@ -18,17 +18,18 @@ Is used to hold all appsco independent elements.
     </template>
 
     <script>
-        Polymer({
+        class AppscoComponents extends Polymer.Element {
+            static get is() { return 'appsco-components'; }
 
-            is: 'appsco-components',
-
-            properties: {
-                prop1: {
-                    type: String,
-                    value: 'appsco-components',
-                },
-            },
-
-        });
+            static get properties() {
+                return {
+                    prop1: {
+                        type: String,
+                        value: 'appsco-components',
+                    },
+                };
+            }
+        }
+        window.customElements.define(AppscoComponents.is, AppscoComponents);
     </script>
 </dom-module>

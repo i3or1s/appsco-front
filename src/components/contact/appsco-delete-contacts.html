@@ -8,6 +8,8 @@
 
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-delete-contacts`
 Shows dialog screen with confirmation for contact removal.
@@ -69,72 +71,59 @@ Shows dialog screen with confirmation for contact removal.
 
     </template>
     <script>
-        Polymer({
+        class AppscoDeleteContacts extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-delete-contacts'; }
 
-            is: 'appsco-delete-contacts',
+            static get properties() {
+                return {
+                    /**
+                     * Accounts to delete.
+                     */
+                    contacts: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-            properties: {
+                    _contact: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Accounts to delete.
-                 */
-                contacts: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    companyApi: {
+                        type: String
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                _contact: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Company API link.
-                 */
-                companyApi: {
-                    type: String
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            toggle: function () {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _onDeleteAction: function() {
-                var contacts = this.contacts,
-                        length = contacts.length - 1,
-                        appRequest = document.createElement('iron-request'),
-                        options = {
-                            url: this.companyApi + '/contacts',
-                            method: 'DELETE',
-                            handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        },
-                        body = '';
+            _onDeleteAction() {
+                let contacts = this.contacts,
+                    length = contacts.length - 1,
+                    appRequest = document.createElement('iron-request'),
+                    options = {
+                        url: this.companyApi + '/contacts',
+                        method: 'DELETE',
+                        handleAs: 'json',
+                        headers: this._headers
+                    },
+                    body = '';
 
                 this._loader = true;
 
-                for (var i = 0; i <= length; i++) {
-                    var next = (i === length) ? '' : '&';
+                for (let i = 0; i <= length; i++) {
+                    let next = (i === length) ? '' : '&';
                     body += 'contacts[]=' + encodeURIComponent(contacts[i].self) + next;
                 }
 
@@ -143,24 +132,17 @@ Shows dialog screen with confirmation for contact removal.
                 appRequest.send(options).then(function(request) {
                     this.$.dialog.close();
 
-                    if (200 == request.status) {
-
-                        /**
-                         * Fired when accounts are removed.
-                         *
-                         * @event accounts-removed
-                         */
-                        this.fire('contacts-removed', {
-                            contacts: request.response.contacts
-                        });
+                    if (200 === request.status) {
+                        this.dispatchEvent(new CustomEvent('contacts-removed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                contacts: request.response.contacts
+                            }
+                        }));
                     }
                     else {
-                        /**
-                         * Fired when accounts were not deleted.
-                         *
-                         * @event accounts-remove-failed
-                         */
-                        this.fire('contacts-remove-failed');
+                        this.dispatchEvent(new CustomEvent('contacts-remove-failed', { bubbles: true, composed: true }));
                     }
 
                     this.set('contacts', []);
@@ -168,6 +150,7 @@ Shows dialog screen with confirmation for contact removal.
 
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoDeleteContacts.is, AppscoDeleteContacts);
     </script>
 </dom-module>

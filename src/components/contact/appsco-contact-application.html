@@ -9,6 +9,7 @@
 <link rel="import" href="../../../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-contact-application">
     <template>
@@ -194,17 +195,88 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoContactApplication extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-contact-application'; }
 
-            is: 'appsco-contact-application',
+            static get properties() {
+                return {
+                    assignee: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _computeOrganizationUnits: function(application) {
+                    /**
+                     * Application which is assigned to contact.
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _orgUnits: {
+                        type: String,
+                        computed: '_computeOrganizationUnits(application)'
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _individualClaims: {
+                        type: Boolean,
+                        computed: '_computeIndividualClaims(application)'
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
+                        }
+                    }
+                };
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
+
+            _computeOrganizationUnits(application) {
                 if (application.org_units) {
-                    var result = '',
-                            orgUnits = application.org_units,
-                            length = orgUnits.length;
+                    let result = '',
+                        orgUnits = application.org_units,
+                        length = orgUnits.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         result += orgUnits[i].name;
                         result += (i === length -1) ? '' : ', ';
                     }
@@ -213,128 +285,47 @@
                 }
 
                 return '';
-            },
+            };
 
-            properties: {
-
-                assignee: {
-                    type: Object,
-                    value: function() { return {}; }
-                },
-
-                /**
-                 * Application which is assigned to contact.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _orgUnits: {
-                    type: String,
-                    computed: '_computeOrganizationUnits(application)'
-                },
-
-                /**
-                 * Indicates if assignee should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _individualClaims: {
-                    type: Boolean,
-                    computed: '_computeIndividualClaims(application)'
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _computeIndividualClaims: function(application) {
+            _computeIndividualClaims(application) {
                 return application.claim_type === 'individual';
-            },
+            }
 
-            _onClaimsAction: function(event) {
+            _onClaimsAction(event) {
                 event.stopPropagation();
 
-                /**
-                 * Fired when claims action is tapped.
-                 *
-                 * @event change-assignee-claims
-                 * @param {Object} assignee
-                 */
-                this.fire('change-assignee-claims', {
-                    assignee: this.assignee.account,
-                    application: this.application
-                });
-            },
+                this.dispatchEvent(new CustomEvent('change-assignee-claims', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        assignee: this.assignee.account,
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onRevokeAction: function(event) {
+            _onRevokeAction(event) {
                 event.stopPropagation();
 
-                var appRequest = document.createElement('iron-request');
+                const appRequest = document.createElement('iron-request');
 
                 appRequest.send({
                     url: this.application.meta.subscribers + '?extended=1&term=' + this.assignee.account.email,
                     method: 'GET',
                     handleAs: 'json',
-                    headers: {
-                        'Authorization': 'token ' + this.authorizationToken
-                    }
+                    headers: this._headers
                 }).then(function() {
-
-                    /**
-                     * Fired when revoke action is tapped.
-                     *
-                     * @event revoke-assignee
-                     * @param {Object} assignee
-                     */
-                    this.fire('revoke-assignee', {
-                        assignee: appRequest.response.accounts[0],
-                        application: this.application
-                    });
-
+                    this.dispatchEvent(new CustomEvent('revoke-assignee', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            assignee: appRequest.response.accounts[0],
+                            application: this.application
+                        }
+                    }));
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoContactApplication.is, AppscoContactApplication);
     </script>
 </dom-module>

@@ -55,78 +55,83 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-get-started-page',
+        class AppscoGetStartedPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-get-started-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {}
+                        }
+                    },
 
-                account: {
-                    type: Object,
-                    value: function() { return {} }
-                },
+                    tutorials: {
+                        type: Object,
+                        notify: true,
+                        observer: "_tutorialsChanged"
+                    },
 
-                tutorials: {
-                    type: Object,
-                    notify: true,
-                    observer: "_tutorialsChanged"
-                },
+                    tutorialsArray: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                tutorialsArray: {
-                    type: Array,
-                    value: function() { return []; }
-                },
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    animationConfig: {
+                        type: Object
+                    },
 
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    firstUnfinishedIndex: {
+                        type: Number,
+                        computed: '_computeFirstUnfinishedIndex(tutorials)'
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._pageLoaded();
+                });
+            }
 
-                firstUnfinishedIndex: {
-                    type: Number,
-                    computed: '_computeFirstUnfinishedIndex(tutorials)'
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            attached: function() {
-                this._pageLoaded();
-            },
-
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _computeTutorialsArray: function(tutorials) {
+            _computeTutorialsArray(tutorials) {
                 var tutsArray = [];
                 for(var idx in tutorials) {
                     if (tutorials.hasOwnProperty(idx)) {
@@ -142,14 +147,14 @@
                 }
 
                 return tutsArray;
-            },
+            }
 
-            _tutorialsChanged: function(tutorials) {
+            _tutorialsChanged(tutorials) {
                 this.set('tutorialsArray', []);
                 this.set('tutorialsArray', this._computeTutorialsArray(tutorials));
-            },
+            }
 
-            _computeFirstUnfinishedIndex: function(tutorials) {
+            _computeFirstUnfinishedIndex(tutorials) {
                 var index = 0;
                 for (var idx in this.tutorials) {
                     if (this.tutorials.hasOwnProperty(idx) && !(tutorials[idx].isDone())) {
@@ -160,8 +165,8 @@
 
                 return index;
             }
-
-        });
+        }
+        window.customElements.define(AppscoGetStartedPage.is, AppscoGetStartedPage);
     </script>
 
 </dom-module>

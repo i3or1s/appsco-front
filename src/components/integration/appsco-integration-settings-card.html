@@ -28,49 +28,47 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoIntegrationSettingsCard extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-integration-settings-card'; }
 
-            is: 'appsco-integration-settings-card',
+            static get properties() {
+                return {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-            properties: {
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._showIntegrationDetails();
+                });
+            }
 
-            attached: function() {
-                this._showIntegrationDetails();
-            },
-
-            _showIntegrationDetails: function() {
+            _showIntegrationDetails() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
             }
-        });
+        }
+        window.customElements.define(AppscoIntegrationSettingsCard.is, AppscoIntegrationSettingsCard);
     </script>
 </dom-module>

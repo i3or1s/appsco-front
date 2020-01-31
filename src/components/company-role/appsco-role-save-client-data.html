@@ -1,6 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-request.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-role-save-client-data">
     <template>
         <style>
@@ -9,78 +11,64 @@
                 @apply --appsco-role-save-client-data;
             }
         </style>
-
     </template>
 
     <script type="text/javascript" src="../../../bower_components/clientjs/dist/client.min.js"></script>
 
     <script>
-        Polymer({
+        class AppscoRoleSaveClientData extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior, Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-role-save-client-data'; }
 
-            is: 'appsco-role-save-client-data',
-
-            properties: {
-
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                saveApi: {
-                    type: String
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _device: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _requestReady: {
-                    type: Boolean,
-                    computed: '_computeRequestReadyState(account, saveApi, _headers)',
-                    observer: '_readyStateChanged'
-                }
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    saveApi: {
+                        type: String
+                    },
+
+                    _device: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _deviceInfoSent: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _requestReady: {
+                        type: Boolean,
+                        computed: '_computeRequestReadyState(account, saveApi, _headers)',
+                        observer: '_readyStateChanged'
+                    }
                 };
-            },
+            }
 
-            _computeRequestReadyState: function(account, saveApi, headers) {
-
-                for (var key in account) {
+            _computeRequestReadyState(account, saveApi, headers) {
+                for (const key in account) {
                     return (saveApi && headers);
                 }
 
                 return false;
-            },
+            }
 
-            _readyStateChanged: function(state) {
-
-                if (state) {
-                    this._sendClientData();
+            _readyStateChanged(state) {
+                if (state && !this._deviceInfoSent) {
+                    setTimeout(this._sendClientData.bind(this));
                 }
-            },
+            }
 
-            _sendClientData: function() {
-                var client = new ClientJS(),
+            _sendClientData() {
+                this._deviceInfoSent = true;
+                const client = new ClientJS(),
                     request = document.createElement('iron-request'),
                     options = {
                         url: this.saveApi,
@@ -92,7 +80,7 @@
                     unavailable = 'unavailable'
                 ;
 
-                var fingerprint = client.getFingerprint();
+                let fingerprint = client.getFingerprint();
 
                 options.body = ('byod[name]=' + encodeURIComponent(fingerprint ?
                     (accountName + ' ' + fingerprint) : accountName)) +
@@ -107,13 +95,12 @@
                     '&byod[operating_system_version]=' + (client.getOSVersion() ? encodeURIComponent(client.getOSVersion()) : unavailable);
 
                 request.send(options).then(function() {
-
-                    if (200 == request.status) {
+                    if (200 === request.status) {
                         this.set('_device', request.response);
                     }
                 }.bind(this));
             }
-
-        });
+        }
+        window.customElements.define(AppscoRoleSaveClientData.is, AppscoRoleSaveClientData);
     </script>
 </dom-module>

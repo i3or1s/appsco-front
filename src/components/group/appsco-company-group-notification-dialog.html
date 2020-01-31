@@ -20,6 +20,8 @@
 <link rel="import" href="../account/appsco-contacts.html">
 <link rel="import" href="../components/appsco-list-item-styles.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-company-group-notification-dialog">
     <template>
         <style include="appsco-list-item-styles"></style>
@@ -271,182 +273,154 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyGroupNotificationDialog extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-group-notification-dialog'; }
 
-            is: 'appsco-company-group-notification-dialog',
-
-            properties: {
-
-                authorizationToken: {
-                    type: String
-                },
-
-                companyGroupsApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _groupList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _groupListAll: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _message: {
-                    type: String
-                },
-
-                _selectedGroups: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _createLoader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _componentReady: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _bulkSelect: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _groupsCount: {
-                    type: Number,
-                    value: 0
-                },
-
-                _numberOfSelectedGroups: {
-                    type: Number,
-                    value: 0
-                },
-
-                _filterTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                _notificationMessage: {
-                    type: String,
-                    value: ''
-                },
-
-                _response: {
-                    type: Number,
-                    value: 0
-                },
-
-                companyNotificationsApi: {
-                    type: String
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    companyGroupsApi: {
+                        type: String
+                    },
 
-            toggle: function() {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _groupList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _groupListAll: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _message: {
+                        type: String
+                    },
+
+                    _selectedGroups: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _createLoader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _componentReady: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _bulkSelect: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _groupsCount: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _numberOfSelectedGroups: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _filterTerm: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _notificationMessage: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _response: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    companyNotificationsApi: {
+                        type: String
+                    }
+                };
+            }
+
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._createLoader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._createLoader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _showMessage: function(message) {
+            _showMessage(message) {
                 this._message = message;
-            },
+            }
 
-            _hideMessage: function() {
+            _hideMessage() {
                 this._message = '';
-            },
+            }
 
-            _showgroupListProgress: function() {
+            _showgroupListProgress() {
                 this.$.groupListProgress.hidden = false;
-            },
+            }
 
-            _hidegroupListProgress: function() {
-
+            _hidegroupListProgress() {
                 setTimeout(function() {
                     this.$.groupListProgress.hidden = true;
                 }.bind(this), 500);
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.appscoSearch.setup();
-                this.$$('#appscoGroups').reloadItems();
+                this.shadowRoot.getElementById('appscoGroups').reloadItems();
                 this._componentReady = true;
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._reset();
-            },
+            }
 
-            _onGroupsLoadFinished: function() {
-                var listItems = [];
+            _onGroupsLoadFinished() {
+                const listItems = [];
 
                 this._showgroupListProgress();
 
                 this.set('_groupList', []);
                 this.set('_groupListAll', []);
 
-                var groupsComponent = this.$$('#appscoGroups'),
+                const groupsComponent = this.shadowRoot.getElementById('appscoGroups'),
                     groups = groupsComponent.getAllItems();
 
                 groups.forEach(function(group, index) {
@@ -454,35 +428,31 @@
                     listItems.push(group);
                 }.bind(this));
 
-
-
                 this.set('_groupList', listItems);
                 this.set('_groupListAll', listItems);
                 this._groupsCount = this._groupList.length;
                 this._hidegroupListProgress();
-            },
+            }
 
-            _onBulkSelect: function() {
-
+            _onBulkSelect() {
                 this._hideError();
 
                 if (this._componentReady) {
                     this._bulkSelect = !this._bulkSelect;
                     this._bulkSelect ? this._selectAllGroups() : this._deselectAllGroups();
                 }
-            },
+            }
 
-            _selectAllGroups: function() {
-                var list = JSON.parse(JSON.stringify(this._groupList)),
+            _selectAllGroups() {
+                const list = JSON.parse(JSON.stringify(this._groupList)),
                     length = list.length,
                     listAll = JSON.parse(JSON.stringify(this._groupListAll)),
                     lengthAll = listAll.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     list[i].selected = true;
 
-                    for (var j = 0; j < lengthAll; j++) {
-
+                    for (let j = 0; j < lengthAll; j++) {
                         if (listAll[j].self === list[i].self) {
                             listAll[j].selected = true;
                         }
@@ -496,19 +466,17 @@
                 this.set('_groupListAll', listAll);
 
                 this._recalculateInfo();
-            },
+            }
 
-            _deselectAllGroups: function() {
-                var list = JSON.parse(JSON.stringify(this._groupList)),
+            _deselectAllGroups() {
+                const list = JSON.parse(JSON.stringify(this._groupList)),
                     length = list.length,
                     listAll = JSON.parse(JSON.stringify(this._groupListAll)),
                     lengthAll = listAll.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     list[i].selected = false;
-
-                    for (var j = 0; j < lengthAll; j++) {
-
+                    for (let j = 0; j < lengthAll; j++) {
                         if (listAll[j].self === list[i].self) {
                             listAll[j].selected = false;
                         }
@@ -522,10 +490,10 @@
                 this.set('_groupListAll', listAll);
 
                 this._recalculateInfo();
-            },
+            }
 
-            _onGroupListItemSelectChanged: function(event) {
-                var item = event.detail.item,
+            _onGroupListItemSelectChanged(event) {
+                const item = event.detail.item,
                     listAll = JSON.parse(JSON.stringify(this._groupListAll)),
                     lengthAll = listAll.length;
 
@@ -533,8 +501,7 @@
                     this._bulkSelect = false;
                 }
 
-                for (var j = 0; j < lengthAll; j++) {
-
+                for (let j = 0; j < lengthAll; j++) {
                     if (listAll[j].self === item.self) {
                         listAll[j].selected = item.selected;
                     }
@@ -546,28 +513,27 @@
                 this._recalculateInfo();
                 this._setBulkSelectStatus();
                 this._hideError();
-            },
+            }
 
-            _recalculateInfo: function() {
-                var list = this._groupListAll,
+            _recalculateInfo() {
+                const list = this._groupListAll,
                     length = list.length;
 
                 this._numberOfSelectedGroups = 0;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (list[i].selected) {
                         this._numberOfSelectedGroups++;
                     }
                 }
-            },
+            }
 
-            _setBulkSelectStatus: function() {
+            _setBulkSelectStatus() {
                 this._bulkSelect = (this._numberOfSelectedGroups === this._groupListAll.length);
-            },
+            }
 
-            _onSearchGroups: function(event) {
-                var searchValue = event.detail.term,
+            _onSearchGroups(event) {
+                const searchValue = event.detail.term,
                     searchLength = searchValue.length;
 
                 this._filterTerm = searchValue;
@@ -577,23 +543,23 @@
                 }
 
                 this._filterGroupList();
-            },
+            }
 
-            _onSearchGroupsClear: function() {
+            _onSearchGroupsClear() {
                 this._filterTerm = '';
                 this._filterGroupList();
-            },
+            }
 
-            _filterGroupList: function() {
-                var listAll = JSON.parse(JSON.stringify(this._groupListAll)),
+            _filterGroupList() {
+                const listAll = JSON.parse(JSON.stringify(this._groupListAll)),
                     lengthAll = listAll.length,
                     term = this._filterTerm.toLowerCase();
 
                 this._hideMessage();
                 this.set('_groupList', []);
 
-                for (var i = 0; i < lengthAll; i++) {
-                    if (-1 != listAll[i].name.toLowerCase().indexOf(term.toLowerCase())) {
+                for (let i = 0; i < lengthAll; i++) {
+                    if (-1 !== listAll[i].name.toLowerCase().indexOf(term.toLowerCase())) {
                         this.push('_groupList', listAll[i]);
                     }
                 }
@@ -601,9 +567,9 @@
                 if (0 === this._groupList.length) {
                     this._showMessage('There are no groups available according to selected filters.');
                 }
-            },
+            }
 
-            _reset: function() {
+            _reset() {
                 this.$.appscoSearch.reset() ;
                 this.set('_groupList', []);
                 this.set('_groupListAll', []);
@@ -616,32 +582,28 @@
                 this._hideLoader();
                 this._hideError();
                 this._hideMessage();
-            },
+            }
 
-            _createNotification: function(selectedGroups) {
-                var groupsLength = selectedGroups.length - 1,
-                request = document.createElement('iron-request'),
+            _createNotification(selectedGroups) {
+                let groupsLength = selectedGroups.length - 1,
+                    request = document.createElement('iron-request'),
                     options = {
                         url: this.companyNotificationsApi + '/admin-message',
                         method: 'POST',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     },
                     body = 'admin_message[message]=' + this._notificationMessage;
 
-                for (var n = 0; n <= groupsLength; n++) {
-                    var isFirst = (n === 0) ? '&' : '';
-                    var hasNext = (n === groupsLength) ? '' : '&';
+                for (let n = 0; n <= groupsLength; n++) {
+                    let isFirst = (n === 0) ? '&' : '';
+                    let hasNext = (n === groupsLength) ? '' : '&';
                     body += isFirst + 'admin_message[group][]=' + encodeURIComponent(selectedGroups[n].self) + hasNext;
                 }
 
                 options.body = body;
 
                 request.send(options).then(function() {
-
                     this.set('_response', request.response['notified']);
                     this._notificationsSendFinished();
 
@@ -649,30 +611,29 @@
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
-            },
+            }
 
-            _notificationsSendFinished: function() {
+            _notificationsSendFinished() {
                 this.$.dialog.close();
 
-                /**
-                 * Fired when notifications have been sent.
-                 *
-                 * @event notifications-sent
-                 */
-                this.fire('notification-sent', {
-                    counter: this._response
-                });
+                this.dispatchEvent(new CustomEvent('notification-sent', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        counter: this._response
+                    }
+                }));
 
                 this.set('_response', 0);
                 this._hideLoader();
-            },
+            }
 
-            _onCreateNotificationAction: function() {
-                var list = JSON.parse(JSON.stringify(this._groupListAll)),
+            _onCreateNotificationAction() {
+                const list = JSON.parse(JSON.stringify(this._groupListAll)),
                     message = this._notificationMessage,
                     length = list.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     if (list[i].selected) {
                         this._selectedGroups.push(list[i]);
                     }
@@ -689,11 +650,12 @@
                 }
 
                 this._createNotification(this._selectedGroups);
-            },
+            }
 
-            _onInnerIronOverlay: function(event) {
+            _onInnerIronOverlay(event) {
                 event.stopPropagation();
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyGroupNotificationDialog.is, AppscoCompanyGroupNotificationDialog);
     </script>
 </dom-module>

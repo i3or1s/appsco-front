@@ -2,7 +2,6 @@
 <link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-request.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/gold-email-input/gold-email-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
@@ -10,6 +9,8 @@
 
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
+
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
 
 <!--
 `appsco-company-settings`
@@ -79,77 +80,82 @@ Custom property | Description | Default
             It is used in branding and can be displayed in login screen along with company logo.
         </p>
 
-        <form is="iron-form"
-              id="form"
-              method="POST"
-              action="[[ settingsApi ]]"
-              headers="[[ _computedHeaders ]]"
-              on-iron-form-presubmit="_onFormPresubmit"
-              on-iron-form-error="_onFormError"
-              on-iron-form-response="_onFormResponse"
-              on-keyup="_onKeyUp">
+        <iron-form
+                id="form"
+                headers="[[ _headers ]]"
+                on-iron-form-presubmit="_onFormPresubmit"
+                on-iron-form-error="_onFormError"
+                on-iron-form-response="_onFormResponse"
+                on-keyup="_onKeyUp">
+            <form
+                  method="POST"
+                  action="[[ settingsApi ]]">
+                <paper-input
+                        id="companyName"
+                        label="Company name"
+                        char-counter maxlength="35"
+                        value="[[ _format(company.name) ]]"
+                        name="company_settings[name]"
+                        required
+                        auto-validate
+                        error-message="Please type in company name."
+                ></paper-input>
 
-            <paper-input
-                    id="companyName"
-                    label="Company name"
-                    char-counter maxlength="35"
-                    value="[[ _format(company.name) ]]"
-                    name="company_settings[name]"
-                    required
-                    auto-validate
-                    error-message="Please type in company name."
-            ></paper-input>
+                <p class="info info-between">
+                    Company contact email will be displayed in user profile section and used for contact purposes.
+                </p>
 
-            <p class="info info-between">
-                Company contact email will be displayed in user profile section and used for contact purposes.
-            </p>
+                <paper-input
+                        id="contactEmail"
+                        type="email"
+                        label="Contact email"
+                        value="[[ company.contact_email ]]"
+                        name="company_settings[contactEmail]"
+                        required
+                        auto-validate
+                        error-message="Please type in correct email."
+                ></paper-input>
 
-            <gold-email-input id="contactEmail"
-                              label="Contact email"
-                              value="[[ company.contact_email ]]"
-                              name="company_settings[contactEmail]"
-                              required
-                              auto-validate
-                              error-message="Please type in correct email."
-            ></gold-email-input>
+                <paper-input
+                        id="billingEmail"
+                        type="email"
+                        label="Billing email"
+                        value="[[ company.billing_email ]]"
+                        name="company_settings[billingEmail]"
+                        required
+                        auto-validate
+                        error-message="Please type in correct email."
+                ></paper-input>
 
-            <gold-email-input id="billingEmail"
-                              label="Billing email"
-                              value="[[ company.billing_email ]]"
-                              name="company_settings[billingEmail]"
-                              required
-                              auto-validate
-                              error-message="Please type in correct email."
-            ></gold-email-input>
-
-            <div class="toggle-button-container mt-30">
-                <paper-toggle-button name="company_settings[sendEmailToAdminOnNewDevice]"
-                                     id="newDeviceInfoAdminEmail"
-                                     checked$="[[ company.mail_admin_on_new_device ]]"
-                                     on-change="_mailAdminOnNewDeviceChanged">
-                    Send email notification to system admin when managed users log in from a new device
-                </paper-toggle-button>
-                <paper-toggle-button name="company_settings[disableCopyPassword]"
-                                     id="disableCopyButtonOnResources"
-                                     checked$="[[ company.disable_resource_copy_button ]]"
-                                     on-change="_disableResourceCopyButtonChanged">
-                    Disable copy password option on all company resources.
-                </paper-toggle-button>
-                <paper-toggle-button name="company_settings[sendEmailToAdminOnNewUser]"
-                                     id="newUserInfoAdminEmail"
-                                     checked$="[[ company.mail_admin_on_new_user ]]"
-                                     on-change="_mailAdminOnNewUserChanged">
-                    Send email notification to admins when user/contact invite is accepted.
-                </paper-toggle-button>
-                <template is="dom-if" if="[[ _showAdminEmailField ]]">
-                    <paper-input id="sendEmailToAdminOnNewDevice"
-                                 label="Admin email"
-                                 name="company_settings[newDeviceInfoAdminEmail]"
-                                 value="[[ company.notify_admin_email ]]"
-                                 on-keyup="_onKeyUp"></paper-input>
-                </template>
-            </div>
-        </form>
+                <div class="toggle-button-container mt-30">
+                    <paper-toggle-button name="company_settings[sendEmailToAdminOnNewDevice]"
+                                         id="newDeviceInfoAdminEmail"
+                                         checked$="[[ company.mail_admin_on_new_device ]]"
+                                         on-change="_mailAdminOnNewDeviceChanged">
+                        Send email notification to system admin when managed users log in from a new device
+                    </paper-toggle-button>
+                    <paper-toggle-button name="company_settings[disableCopyPassword]"
+                                         id="disableCopyButtonOnResources"
+                                         checked$="[[ company.disable_resource_copy_button ]]"
+                                         on-change="_disableResourceCopyButtonChanged">
+                        Disable copy password option on all company resources.
+                    </paper-toggle-button>
+                    <paper-toggle-button name="company_settings[sendEmailToAdminOnNewUser]"
+                                         id="newUserInfoAdminEmail"
+                                         checked$="[[ company.mail_admin_on_new_user ]]"
+                                         on-change="_mailAdminOnNewUserChanged">
+                        Send email notification to admins when user/contact invite is accepted.
+                    </paper-toggle-button>
+                    <template is="dom-if" if="[[ _showAdminEmailField ]]">
+                        <paper-input id="sendEmailToAdminOnNewDevice"
+                                     label="Admin email"
+                                     name="company_settings[newDeviceInfoAdminEmail]"
+                                     value="[[ company.notify_admin_email ]]"
+                                     on-keyup="_onKeyUp"></paper-input>
+                    </template>
+                </div>
+            </form>
+        </iron-form>
 
         <div class="toggle-button-container mt-30">
             <p class="info">
@@ -168,219 +174,178 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanySettings extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-settings'; }
 
-            is: 'appsco-company-settings',
-
-            properties: {
-
-                /**
-                 * Company to update.
-                 */
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    observer: '_onCompanyChanged'
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Settings api link.
-                 */
-                settingsApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message for settings form.
-                 */
-                _error: {
-                    type: String
-                },
-
-                /**
-                 * Target for iron-a11y-keys component.
-                 * Submit form on enter.
-                 */
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this;
-                    }
-                },
-
-                _emailAdminOnNewDevice: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _emailAdminOnNewUser: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _disableResourcePasswordCopy: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _showAdminEmailField: {
-                    type: Boolean,
-                    computed: '_computeShowAdminEmailField(_emailAdminOnNewDevice, _emailAdminOnNewUser)'
-                }
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onCompanyChanged'
+                    },
 
-            _format: function (name) {
+                    settingsApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    /**
+                     * Target for iron-a11y-keys component.
+                     * Submit form on enter.
+                     */
+                    _target: {
+                        type: Object
+                    },
+
+                    _emailAdminOnNewDevice: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _emailAdminOnNewUser: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _disableResourcePasswordCopy: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _showAdminEmailField: {
+                        type: Boolean,
+                        computed: '_computeShowAdminEmailField(_emailAdminOnNewDevice, _emailAdminOnNewUser)'
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this._target = this;
+            }
+
+            _format(name) {
                 return name ? name.substring(0, 35) : '';
-            },
+            }
 
-            _onCompanyChanged: function() {
+            _onCompanyChanged() {
                 this.$.contactEmail.invalid = false;
                 this.$.billingEmail.invalid = false;
                 this._emailAdminOnNewDevice = this.company ? this.company.mail_admin_on_new_device : false;
                 this._emailAdminOnNewUser = this.company ? this.company.mail_admin_on_new_user : false;
                 this._disableResourcePasswordCopy = this.company ? this.company.disable_resource_copy_button : false;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _submitSettingsForm: function() {
+            _submitSettingsForm() {
                 this.$.form.submit();
-            },
+            }
 
-            _onEnterAction: function(event) {
+            _onEnterAction(event) {
                 event.stopPropagation();
                 this._onSaveAction();
-            },
+            }
 
-            _onSaveAction: function() {
+            _onSaveAction() {
                 this._submitSettingsForm();
-            },
+            }
 
-            _onFormPresubmit: function() {
+            _onFormPresubmit() {
                 this._showLoader();
                 this.$.form.request.method = 'PUT';
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function(event) {;
-
+            _onFormResponse(event) {;
                 this.$.contactEmail.invalid = false;
                 this.$.billingEmail.invalid = false;
 
                 this._hideLoader();
 
-                this.fire('company-settings-changed', {
-                    company: event.detail.response
-                });
+                this.dispatchEvent(new CustomEvent('company-settings-changed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        company: event.detail.response
+                    }
+                }));
 
                 if (this._2faChangedToEnable) {
                     this._reloadPage();
                 }
-            },
+            }
 
-            _onKeyUp: function(event) {
-
+            _onKeyUp(event) {
                 if (13 !== event.keyCode) {
                     this._hideError();
                     event.target.invalid = false;
                 }
-            },
+            }
 
-            _reloadPage: function() {
+            _reloadPage() {
                 window.location.reload(true);
-            },
+            }
 
-            _mailAdminOnNewUserChanged: function() {
+            _mailAdminOnNewUserChanged() {
                 this._emailAdminOnNewUser = this.$.newUserInfoAdminEmail.checked;
-            },
+            }
 
-            _mailAdminOnNewDeviceChanged: function() {
+            _mailAdminOnNewDeviceChanged() {
                 this._emailAdminOnNewDevice = this.$.newDeviceInfoAdminEmail.checked;
-            },
+            }
 
-            _disableResourceCopyButtonChanged: function() {
+            _disableResourceCopyButtonChanged() {
                 this._disableResourcePasswordCopy = this.$.disableCopyButtonOnResources.checked;
-            },
+            }
 
-            _computeShowAdminEmailField: function(_emailAdminOnNewDevice, _emailAdminOnNewUser) {
+            _computeShowAdminEmailField(_emailAdminOnNewDevice, _emailAdminOnNewUser) {
                 return _emailAdminOnNewDevice || _emailAdminOnNewUser;
-            },
+            }
 
-            /**
-             * Sets up component.
-             */
-            setup: function() {
+            setup() {
                 this.$.companyName.focus();
-            },
+            }
 
-            /**
-             * Resets component.
-             */
-            reset: function() {
-                var company = JSON.parse(JSON.stringify(this.company));
+            reset() {
+                const company = JSON.parse(JSON.stringify(this.company));
 
                 this.company = {};
                 this.company = company;
@@ -389,6 +354,7 @@ Custom property | Description | Default
                 this.$.contactEmail.invalid = false;
                 this.$.billingEmail.invalid = false;
             }
-        });
+        }
+        window.customElements.define(AppscoCompanySettings.is, AppscoCompanySettings);
     </script>
 </dom-module>

@@ -123,85 +123,74 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationAnalyticsInfo extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-analytics-info'; }
 
-            is: 'appsco-application-analytics-info',
-
-            properties: {
-
-                /**
-                 * Application for which to retrieve analytics.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onApplicationChanged'
                     },
-                    observer: '_onApplicationChanged'
-                },
 
-                _totalInstances: {
-                    type: Number,
-                    computed: '_computeTotalInstances(application)'
-                },
+                    _totalInstances: {
+                        type: Number,
+                        computed: '_computeTotalInstances(application)'
+                    },
 
-                _setByInfo: {
-                    type: String,
-                    value: 'Resource is set to be configured by admin for all users.'
-                },
+                    _setByInfo: {
+                        type: String,
+                        value: 'Resource is set to be configured by admin for all users.'
+                    },
 
-                _lastEditedDate: {
-                    type: String,
-                    computed: '_computeLastEditedDate(application)'
-                },
+                    _lastEditedDate: {
+                        type: String,
+                        computed: '_computeLastEditedDate(application)'
+                    },
 
-                _dailyUsage: {
-                    type: String,
-                    computed: '_computeDailyUsage(application)'
-                },
+                    _dailyUsage: {
+                        type: String,
+                        computed: '_computeDailyUsage(application)'
+                    },
 
-                /**
-                 * Message to display instead of analytics info.
-                 */
-                _message: {
-                    type: String
-                },
+                    _message: {
+                        type: String
+                    },
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            _onApplicationChanged: function(application) {
-
+            _onApplicationChanged(application) {
                 this._message = null;
 
                 if (application) {
-
                     if (application.security && (0 == this._totalInstances)) {
                         this._message = 'Resource is not assigned to anyone yet.';
                     }
@@ -217,52 +206,42 @@ Custom property | Description | Default
                         this._showAnalytics();
                     }
                 }
+            }
 
-            },
-
-            _computeTotalInstances: function(application) {
+            _computeTotalInstances(application) {
                 return (application && application.security) ? application.security.info.configured + application.security.info.not_configured : 0;
-            },
+            }
 
-            _computeLastEditedDate: function(application) {
+            _computeLastEditedDate(application) {
                 return (application && application.last_modified) ? this._dateFormat(application.last_modified.date.date) : '';
-            },
+            }
 
-            _computeDailyUsage: function(application) {
-
+            _computeDailyUsage(application) {
                 if (application && application.security) {
-                    var usage = Math.round(application.daily_usage / this._totalInstances * 100);
+                    const usage = Math.round(application.daily_usage / this._totalInstances * 100);
 
                     return (0 === usage) ? 'There is no activity today' : usage + '%';
                 }
 
                 return '';
-            },
+            }
 
-            _showAnalytics: function() {
+            _showAnalytics() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
-            },
+            }
 
-            /**
-             * Formats date and returns formatted date as string.
-             *
-             * @param {String} value
-             * @returns {string}
-             * @private
-             */
-            _dateFormat: function(value) {
-
+            _dateFormat(value) {
                 if (value) {
-                    var options = {
+                    const options = {
                         year: 'numeric', month: 'short', day: 'numeric',
                         hour: 'numeric', minute: 'numeric', second: 'numeric'
                     };
 
                     return (new Date(value)).toLocaleDateString('en', options);
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationAnalyticsInfo.is, AppscoApplicationAnalyticsInfo);
     </script>
 </dom-module>

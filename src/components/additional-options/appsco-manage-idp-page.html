@@ -84,99 +84,99 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoManageIdpPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-manage-idp-page'; }
 
-            is: 'appsco-manage-idp-page',
+            static get properties() {
+                return {
+                    idp: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                idp: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _getAvailableResourcesApi: {
+                        type: String,
+                        computed: '_computeGetAvailableResourcesApi(idp, company)'
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+            ready() {
+                super.ready();
 
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _getAvailableResourcesApi: {
-                    type: String,
-                    computed: '_computeGetAvailableResourcesApi(idp, company)'
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
+                this.sharedElements = {
+                    'hero': this.$.pageCard
+                };
+            }
 
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.pageCard
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            modifyAddedResource: function(resource) {
+            modifyAddedResource(resource) {
                 resource.exists = true;
                 this.$.appscoIntegrationResources.modifyItems([resource]);
-            },
+            }
 
-            _computeGetAvailableResourcesApi: function(idp, company) {
+            _computeGetAvailableResourcesApi(idp, company) {
                 return (idp.alias && company.self) ?
                     (company.self + '/applications/idp-available/' + idp.alias) :
                     null;
-            },
-
-            _onBack: function() {
-                this.fire('back');
             }
-        });
+
+            _onBack() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoManageIdpPage.is, AppscoManageIdpPage);
     </script>
 </dom-module>
 

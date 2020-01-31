@@ -74,64 +74,62 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyAccountPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-account-page-actions'; }
 
-            is: 'appsco-company-account-page-actions',
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            disableAdvancedSettings: function() {
-                this.$.appscoAccountActions.disableAdvancedSettings();
-            },
-
-            enableAdvancedSettings: function() {
-                this.$.appscoAccountActions.enableAdvancedSettings();
-            },
-
-            _backToHome: function() {
-                this.fire('back');
-            },
-
-            _onResourceAction: function() {
-                this.fire('resource-section');
+                };
             }
-        });
+
+            disableAdvancedSettings() {
+                this.$.appscoAccountActions.disableAdvancedSettings();
+            }
+
+            enableAdvancedSettings() {
+                this.$.appscoAccountActions.enableAdvancedSettings();
+            }
+
+            _backToHome() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            _onResourceAction() {
+                this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoCompanyAccountPageActions.is, AppscoCompanyAccountPageActions);
     </script>
 </dom-module>
 

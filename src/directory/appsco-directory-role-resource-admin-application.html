@@ -208,15 +208,81 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoDirectoryRoleResourceAdminApplication extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-directory-role-resource-admin-application'; }
 
-            is: 'appsco-directory-role-resource-admin-application',
+            static get properties() {
+                return {
+                    companyRole: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _computeOrganizationUnits: function(application) {
+                    /**
+                     * Application which is assigned to account.
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    /**
+                     * Indicates if companyRole should be in preview mode rather then full detailed view.
+                     */
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
+                        }
+                    }
+                };
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
+
+            _computeOrganizationUnits(application) {
                 if (application.org_units) {
                     var result = '',
-                            orgUnits = application.org_units,
-                            length = orgUnits.length;
+                        orgUnits = application.org_units,
+                        length = orgUnits.length;
 
                     for (var i = 0; i < length; i++) {
                         result += orgUnits[i].name;
@@ -227,78 +293,19 @@ Example:
                 }
 
                 return '';
-            },
-
-            properties: {
-
-                companyRole: {
-                    type: Object,
-                    value: function() { return {}; }
-                },
-
-                /**
-                 * Application which is assigned to account.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Indicates if companyRole should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _onRevokeAction: function(event) {
-                this.fire('revoke-resource-admin', {
-                    assignee: this.companyRole.account,
-                    application: this.application
-                });
             }
-        });
+
+            _onRevokeAction(event) {
+                this.dispatchEvent(new CustomEvent('revoke-resource-admin', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        assignee: this.companyRole.account,
+                        application: this.application
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoDirectoryRoleResourceAdminApplication.is, AppscoDirectoryRoleResourceAdminApplication);
     </script>
 </dom-module>

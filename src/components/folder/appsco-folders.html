@@ -18,9 +18,7 @@
 
 <dom-module id="appsco-folders">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host {
                 --folder-item-host: {
                     width: calc(20% - 10px);
@@ -118,49 +116,56 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoFolders extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-folders'; }
 
-            is: 'appsco-folders',
+            static get properties() {
+                return {
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            properties: {
+                    selectable: {
+                        type: Boolean,
+                        value: true
+                    }
+                };
+            }
 
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                selectable: {
-                    type: Boolean,
-                    value: true
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            _openRenameDialog: function(event) {
-                var menuItem = event.target,
-                        folderItem = menuItem.listItem;
+            _openRenameDialog(event) {
+                const menuItem = event.target,
+                    folderItem = menuItem.listItem;
 
                 if (folderItem && folderItem.item) {
-                    this.fire('open-rename-folder-dialog', {
-                        folderItem: folderItem.item
-                    });
-                }
-            },
-
-            _openRemoveDialog: function(event) {
-                var menuItem = event.target,
-                        folderItem = menuItem.listItem;
-
-                if (folderItem && folderItem.item) {
-                    this.fire('open-remove-folder-dialog', {
-                        folderItem: folderItem.item
-                    });
+                    this.dispatchEvent(new CustomEvent('open-rename-folder-dialog', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            folderItem: folderItem.item
+                        }
+                    }));
                 }
             }
-        });
+
+            _openRemoveDialog(event) {
+                const menuItem = event.target,
+                    folderItem = menuItem.listItem;
+
+                if (folderItem && folderItem.item) {
+                    this.dispatchEvent(new CustomEvent('open-remove-folder-dialog', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            folderItem: folderItem.item
+                        }
+                    }));
+                }
+            }
+        }
+        window.customElements.define(AppscoFolders.is, AppscoFolders);
     </script>
 </dom-module>

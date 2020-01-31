@@ -15,9 +15,7 @@
 
 <dom-module id="appsco-integration-rule-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host .item {
                 cursor: default;
             }
@@ -111,88 +109,88 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationRuleItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-integration-rule-item'; }
 
-            is: 'appsco-integration-rule-item',
+            static get properties() {
+                return {
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    _isFromMethodLookup: {
+                        type: Boolean,
+                        computed: '_computeIsFromMethodLookup(item)'
+                    },
 
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
                     }
-                },
+                };
+            }
 
-                _isFromMethodLookup: {
-                    type: Boolean,
-                    computed: '_computeIsFromMethodLookup(item)'
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen)'
+                ];
+            }
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen)'
-            ],
-
-            attached: function() {
-
-                if (this.mobileScreen || this.tabletScreen) {
-                    this._updateScreen();
-                }
-            },
-
-            _computeIsFromMethodLookup: function(rule) {
-                return ('from_lookup' === rule.fromMethod);
-            },
-
-            _updateScreen: function() {
-                this.updateStyles();
-            },
-
-            _onRunItemAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `run` is tapped.
-                 *
-                 * @event run-item
-                 * @param {Object} item
-                 */
-                this.fire('run-item', {
-                    item: this.item
-                });
-            },
-
-            _onRemoveItemAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `remove` is tapped.
-                 *
-                 * @event remove-item
-                 * @param {Object} item
-                 */
-                this.fire('remove-item', {
-                    item: this.item
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen) {
+                        this._updateScreen();
+                    }
                 });
             }
-        });
+
+            _computeIsFromMethodLookup(rule) {
+                return ('from_lookup' === rule.fromMethod);
+            }
+
+            _updateScreen() {
+                this.updateStyles();
+            }
+
+            _onRunItemAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('run-item', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        item: this.item
+                    }
+                }));
+            }
+
+            _onRemoveItemAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('remove-item', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        item: this.item
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoIntegrationRuleItem.is, AppscoIntegrationRuleItem);
     </script>
 </dom-module>

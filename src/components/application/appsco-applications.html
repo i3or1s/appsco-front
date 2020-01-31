@@ -2,7 +2,6 @@
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-progress/paper-progress.html">
-<link rel="import" href="../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/transform-animation.html">
 <link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
@@ -13,6 +12,8 @@
 <link rel="import" href="appsco-application-item.html">
 <link rel="import" href="../components/appsco-drag-html-element-behavior.html">
 <link rel="import" href="../components/appsco-list-styles.html">
+
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <!--
 `appsco-applications`
@@ -40,9 +41,7 @@ Custom property | Description | Default
 
 <dom-module id="appsco-applications">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host([display-grid]) appsco-application-item {
                 width: auto;
                 margin: 0 10px 10px 0;
@@ -68,7 +67,7 @@ Custom property | Description | Default
                     url="[[ _currentUrl ]]"
                     on-error="_onError"
                     on-response="_onResponse"
-                    headers="{{ _computedHeaders }}"
+                    headers="{{ _headers }}"
                     debounce-duration="300"
             ></iron-ajax>
 
@@ -95,8 +94,7 @@ Custom property | Description | Default
 
                     <div class="list" company$="[[ company ]]">
                         <template is="dom-repeat"
-                                  items="{{ _applications }}"
-                                  on-dom-change="_onItemsDomChange">
+                                  items="{{ _applications }}">
                             <appsco-application-item id="appscoApplicationItem_[[ index ]]"
                                                      class="application-item drag-item"
                                                      application="{{ item }}"
@@ -122,344 +120,289 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplications extends Polymer.mixinBehaviors([
+            Polymer.AppscoDragHTMLElementBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-applications'; }
 
-            is: 'appsco-applications',
-
-            properties: {
-
-                /**
-                 * Indicates if user manages company applications or not.
-                 */
-                company: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                account: {
-                    type: Object,
-                    value: function () {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-                /**
-                 * Route to retrieve applications for current user
-                 */
-                applicationsApi: {
-                    type: String,
-                    notify: true,
-                    observer: '_onApplicationsApiChanged'
-                },
-
-                currentFolder: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                displayStyle: {
-                    type: String,
-                    value: '',
-                    observer: '_onDisplayStyleChanged'
-                },
-
-                displayGrid: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                _searchApplicationsApi: {
-                    type: String
-                },
-
-                /**
-                 * Number of application items to load and present
-                 */
-                size: {
-                    type: Number,
-                    value: 10
-                },
-                /**
-                 * Show load more button
-                 */
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                isOnCompany: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _applications: {
-                    type: Array,
-                    value: function () {
-                        return [];
+            static get properties() {
+                return {
+                    /**
+                     * Indicates if user manages company applications or not.
+                     */
+                    company: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
                     },
-                    notify: true
-                },
 
-                _allApplications: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
-
-                _searchedApplications: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
-
-                _applicationsEmpty: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _message: {
-                    type: String,
-                    value: ''
-                },
-
-                _currentUrl: {
-                    type: String,
-                    notify: true
-                },
-
-                _next: {
-                    type: String
-                },
-
-                _totalApplications: {
-                    type: Number,
-                    value: 0
-                },
-
-                _renderedIndex: {
-                    type: Number,
-                    value: -1
-                },
-
-                /**
-                 * Search term.
-                 */
-                _filterTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Term length to start search
-                 */
-                minSearchTermLength: {
-                    type: Number,
-                    value: 2
-                },
-
-                _loaders: {
-                    type: Array,
-                    value: function() { return []; }
-                },
-
-                _personalDashboardAllowed: {
-                    type: Boolean,
-                    value: true,
-                    computed: '_computePersonalDashboardAllowed(account)'
-                },
-                
-                /**
-                 * Search term.
-                 */
-                _filterOrgunit: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _sort: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'transform-animation',
-                                transformOrigin: '1 1',
-                                transformFrom: 'scale(1)',
-                                transformTo: 'scale(1.08)',
-                                node: {},
-                                timing: {
-                                    delay: 200,
-                                    duration: 500
-                                }
-                            }
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
-                    }
-                }
-            },
+                    },
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoDragHTMLElementBehavior
-            ],
+                    applicationsApi: {
+                        type: String,
+                        notify: true,
+                        observer: '_onApplicationsApiChanged'
+                    },
 
-            observers: [
-                '_setSearchApplicationsApi(applicationsApi, _sort)'
-            ],
+                    currentFolder: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            ready: function () {
-                this._clearApplications();
+                    displayStyle: {
+                        type: String,
+                        value: '',
+                        observer: '_onDisplayStyleChanged'
+                    },
 
-                if (this.applicationsApi && this.applicationsApi != '' &&
+                    displayGrid: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    _searchApplicationsApi: {
+                        type: String
+                    },
+
+                    /**
+                     * Number of application items to load and present
+                     */
+                    size: {
+                        type: Number,
+                        value: 10
+                    },
+
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    isOnCompany: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _applications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
+                    },
+
+                    _allApplications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _searchedApplications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _applicationsEmpty: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _message: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _currentUrl: {
+                        type: String,
+                        notify: true
+                    },
+
+                    _next: {
+                        type: String
+                    },
+
+                    _totalApplications: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _renderedIndex: {
+                        type: Number,
+                        value: -1
+                    },
+
+                    /**
+                     * Search term.
+                     */
+                    _filterTerm: {
+                        type: String,
+                        value: ''
+                    },
+
+                    /**
+                     * Term length to start search
+                     */
+                    minSearchTermLength: {
+                        type: Number,
+                        value: 2
+                    },
+
+                    _loaders: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _personalDashboardAllowed: {
+                        type: Boolean,
+                        value: true,
+                        computed: '_computePersonalDashboardAllowed(account)'
+                    },
+
+                    /**
+                     * Search term.
+                     */
+                    _filterOrgunit: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _sort: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_setSearchApplicationsApi(applicationsApi, _sort)'
+                ];
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this._clearApplications();
+
+                    if (this.applicationsApi && this.applicationsApi !== '' &&
                         (this._personalDashboardAllowed || this.isOnCompany == true)) {
-                    this._currentUrl = this._computeListApi(this.applicationsApi, this.size, this._sort);
-                }
+                        this._currentUrl = this._computeListApi(this.applicationsApi, this.size, this._sort);
+                    }
+                });
+            }
 
-                if (this.company) {
-
-                    this.animationConfig.entry = {
-                        name: 'cascaded-animation',
-                        animation: 'slide-from-left-animation',
-                        nodes: [],
-                        nodeDelay: 50,
-                        timing: {
-                            duration: 300
-                        }
-                    };
-
-                }
-            },
-
-            initializeResourcesDragBehavior: function() {
+            initializeResourcesDragBehavior() {
                 setTimeout(function() {
                     this.initializeDragBehavior();
                 }.bind(this), 500);
-            },
+            }
 
-            setDisplayStyle: function(displayStyle) {
+            setDisplayStyle(displayStyle) {
                 this.set('displayStyle', displayStyle);
-            },
+            }
 
-            setSort: function(sort) {
-
-                for (var key in sort) {
-
+            setSort(sort) {
+                for (let key in sort) {
                     if (sort[key] !== this._sort[key]) {
                         this.set('_sort', sort);
                         this._loadApplications();
                         break;
                     }
                 }
-            },
+            }
 
-            _computePersonalDashboardAllowed: function(account) {
+            _computePersonalDashboardAllowed(account) {
                 return account && account.native_company 
                     ? account.native_company.personal_dashboards_allowed
                     : true;
-            },
+            }
 
-            _setSearchApplicationsApi: function(api, sort) {
+            _setSearchApplicationsApi(api, sort) {
                 this._searchApplicationsApi = this._computeSearchListApi(api, sort);
-            },
+            }
 
-            _onDisplayStyleChanged: function(newValue) {
+            _onDisplayStyleChanged(newValue) {
                 this.displayGrid = ('grid' === newValue);
-            },
+            }
 
-            _onApplicationsApiChanged: function(api) {
+            _onApplicationsApiChanged(api) {
                 this._clearApplications();
                 this._loadApplications();
-            },
+            }
 
-            _loadApplications: function() {
+            _loadApplications() {
                 if (this._personalDashboardAllowed || this.isOnCompany == true) {
                     this._clearApplications();
 
-                    this.$$('#paperProgress').hidden = false;
+                    this.shadowRoot.getElementById('paperProgress').hidden = false;
                     this._loadMore = false;
 
                     this._currentUrl = this._computeListApi(this.applicationsApi, this.size, this._sort);
                     this._clearApplications();
-                    this.fire('show-page-progress-bar');
+                    this.dispatchEvent(new CustomEvent('show-page-progress-bar', { bubbles: true, composed: true }));
                 }
-            },
+            }
 
-            _loadMoreApps: function () {
+            _loadMoreApps () {
                 if (this._personalDashboardAllowed || this.isOnCompany == true) {
-                    this.$$('#loadMoreProgress').hidden = false;
+                    this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
                     this._currentUrl = this._next;
                 }
-            },
+            }
 
-            _onError: function() {
+            _onError() {
                 this._message = 'We couldn\'t load applications at the moment. Please try again in a minute.';
                 this._handleEmptyLoad();
-            },
+            }
 
-            _handleEmptyLoad: function() {
+            _handleEmptyLoad() {
                 this._applicationsEmpty = true;
-
-                /**
-                 * Fired when there are no applications.
-                 *
-                 * @event empty-load
-                 */
-                this.fire('empty-load');
-
+                this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
                 this._hideProgressBar();
-            },
+            }
 
-            _clearApplications: function() {
+            _clearApplications() {
                 this._clearLoaders();
                 this.set('_allApplications', []);
                 this.set('_applications', []);
-            },
+            }
 
-            _clearLoaders: function() {
-                for (var idx in this._loaders) {
+            _clearLoaders() {
+                for (let idx in this._loaders) {
                     clearTimeout(this._loaders[idx]);
                 }
                 this.set('_loaders', []);
-            },
+            }
 
-            _onResponse: function(e) {
+            _onResponse(e) {
                 if (!e.detail.response) {
                     return false;
                 }
 
-                var response = e.detail.response,
+                let response = e.detail.response,
                     icons = response.icons ? response.icons : response.applications,
                     icon = null,
                     meta = response.meta,
@@ -491,17 +434,20 @@ Custom property | Description | Default
                 this._applicationsEmpty = false;
                 this._message = '';
 
-                for (var idx in icons) {
+                for (let idx in icons) {
                     if (!icons.hasOwnProperty(idx)) {
                         continue;
                     }
                     icon = icons[idx];
                     this._loaders.push(setTimeout(createAdderFunction(icon), (iconTimeout + 30)));
                 }
-
-                this.fire('loaded', {
-                    applications: e.detail.response.icons
-                });
+                this.dispatchEvent(new CustomEvent('loaded', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        applications: e.detail.response.icons
+                    }
+                }));
 
                 this._hideLoadMoreProgressBar();
                 this._hideProgressBar();
@@ -509,34 +455,27 @@ Custom property | Description | Default
                 if (this._filterOrgunit.selected) {
                     this._filterByOrgunit();
                 }
+            }
 
-            },
-
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _computeListApi: function(listApi, size, sort) {
+            _computeListApi(listApi, size, sort) {
                 return (listApi && size) ?
                     ((listApi + '?page=1&extended=1&limit=' + size) +
                     ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
                         ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                         '')) :
                     null;
-            },
+            }
 
-            _computeNextPageListApi: function(nextPageApi, size, sort) {
+            _computeNextPageListApi(nextPageApi, size, sort) {
                 return (nextPageApi && size) ?
                     ((nextPageApi + '&limit=' + size) +
                     ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
                         ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                         '')) :
                     null;
-            },
+            }
 
-            _computeSearchListApi: function(listApi, sort) {
+            _computeSearchListApi(listApi, sort) {
                 return listApi ?
                     ((listApi + '?page=1&limit=100&extended=1') +
                     ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
@@ -544,23 +483,23 @@ Custom property | Description | Default
                         '') +
                     '&term=') :
                     null;
-            },
+            }
 
-            _onApplicationAction: function(event) {
-                var _applications = JSON.parse(JSON.stringify(this._applications)),
+            _onApplicationAction(event) {
+                const _applications = JSON.parse(JSON.stringify(this._applications)),
                     _length = _applications.length,
                     allApplications = JSON.parse(JSON.stringify(this._allApplications)),
                     allLength = allApplications.length,
                     selectedApplication = event.detail.application;
 
-                for (var j = 0; j < _length; j++) {
+                for (let j = 0; j < _length; j++) {
                     if (selectedApplication.self === _applications[j].self) {
                         _applications[j].selected = selectedApplication.selected;
                         break;
                     }
                 }
 
-                for (var k = 0; k < allLength; k++) {
+                for (let k = 0; k < allLength; k++) {
                     if (selectedApplication.self === allApplications[k].self) {
                         allApplications[k].selected = selectedApplication.selected;
                         break;
@@ -572,37 +511,37 @@ Custom property | Description | Default
 
                 this.set('_allApplications', []);
                 this.set('_allApplications', allApplications);
-            },
+            }
 
-            getFirstSelectedApplication: function() {
-                var _applications = JSON.parse(JSON.stringify(this._applications)),
+            getFirstSelectedApplication() {
+                const _applications = JSON.parse(JSON.stringify(this._applications)),
                     _length = _applications.length;
 
-                for (var j = 0; j < _length; j++) {
+                for (let j = 0; j < _length; j++) {
                     if (_applications[j].selected) {
                         return _applications[j];
                     }
                 }
 
                 return false;
-            },
+            }
 
-            getSelectedApplications: function() {
-                var allApplications = JSON.parse(JSON.stringify(this._allApplications)),
+            getSelectedApplications() {
+                const allApplications = JSON.parse(JSON.stringify(this._allApplications)),
                     allLength = allApplications.length,
                     selectedApplications = [];
 
-                for (var i = 0; i < allLength; i++) {
+                for (let i = 0; i < allLength; i++) {
                     if (allApplications[i].selected) {
                         selectedApplications.push(allApplications[i]);
                     }
                 }
 
                 return selectedApplications;
-            },
+            }
 
-            addApplications: function(applications) {
-                var length = applications.length,
+            addApplications(applications) {
+                const length = applications.length,
                     currentApplications = JSON.parse(JSON.stringify(this._applications)) || [],
                     allApplications = JSON.parse(JSON.stringify(this._allApplications)),
                     allLength = allApplications.length;
@@ -611,11 +550,10 @@ Custom property | Description | Default
                 this._message = '';
                 this._renderedIndex = length - 1;
 
-                for (var i = 0; i < length; i++) {
-                    var application = applications[i];
+                for (let i = 0; i < length; i++) {
+                    const application = applications[i];
 
                     if (0 === allLength) {
-
                         if (this.company) {
                             application.selected = false;
                         }
@@ -625,14 +563,11 @@ Custom property | Description | Default
                         this._totalApplications++;
                     }
                     else {
-
-                        for (var j = 0; j < allLength; j++) {
-
+                        for (let j = 0; j < allLength; j++) {
                             if (allApplications[j].self === application.self) {
                                 break;
                             }
                             else if (j === allLength - 1) {
-
                                 if (this.company) {
                                     application.selected = false;
                                 }
@@ -642,62 +577,60 @@ Custom property | Description | Default
 
                                 this._totalApplications++;
                             }
-
                         }
                     }
                 }
                 this.set('_applications', currentApplications);
                 this.set('_allApplications', allApplications);
-            },
+            }
 
-            modifyApplications: function(applications) {
-                var _applications = JSON.parse(JSON.stringify(this._applications)),
+            modifyApplications(applications) {
+                const _applications = JSON.parse(JSON.stringify(this._applications)),
                     _length = _applications.length,
                     allApplications = JSON.parse(JSON.stringify(this._allApplications)),
                     allLength = allApplications.length,
                     lengthModify = applications.length;
 
-                for (var i = 0; i < lengthModify; i++) {
-                    var application = applications[i];
+                for (let i = 0; i < lengthModify; i++) {
+                    const application = applications[i];
 
-                    for (var j = 0; j < _length; j++) {
+                    for (let j = 0; j < _length; j++) {
                         if (application.self === _applications[j].self) {
                             _applications[j] = application;
                             break;
                         }
                     }
 
-                    for (var k = 0; k < allLength; k++) {
+                    for (let k = 0; k < allLength; k++) {
                         if (application.self === allApplications[k].self) {
                             application.selected = allApplications[k].selected;
                             allApplications[k] = application;
                             break;
                         }
                     }
-
                 }
 
                 this._clearApplications();
                 this.set('_applications', _applications);
                 this.set('_allApplications', allApplications);
-            },
+            }
 
-            reloadApplications: function() {
+            reloadApplications() {
                 this.set('_currentUrl', null);
                 this._loadApplications();
-            },
+            }
 
-            removeApplications: function(applications) {
-                var _applications = JSON.parse(JSON.stringify(this._applications)),
+            removeApplications(applications) {
+                const _applications = JSON.parse(JSON.stringify(this._applications)),
                     _length = _applications.length,
                     allApplications = JSON.parse(JSON.stringify(this._allApplications)),
                     allLength = allApplications.length,
                     lengthModify = applications.length;
 
-                for (var i = 0; i < lengthModify; i++) {
-                    var application = applications[i];
+                for (let i = 0; i < lengthModify; i++) {
+                    const application = applications[i];
 
-                    for (var j = 0; j < _length; j++) {
+                    for (let j = 0; j < _length; j++) {
                         if (application.self === _applications[j].self) {
                             _applications.splice(j, 1);
                             j--;
@@ -705,7 +638,7 @@ Custom property | Description | Default
                         }
                     }
 
-                    for (var k = 0; k < allLength; k++) {
+                    for (let k = 0; k < allLength; k++) {
                         if (application.self === allApplications[k].self) {
                             allApplications.splice(k, 1);
                             k--;
@@ -714,9 +647,7 @@ Custom property | Description | Default
                     }
 
                     this._totalApplications--;
-
                 }
-
 
                 this.set('_applications', []);
                 this.set('_applications', _applications);
@@ -724,50 +655,54 @@ Custom property | Description | Default
                 this.set('_allApplications', []);
                 this.set('_allApplications', allApplications);
 
-                this.fire('applications-removed', {
-                    applications: applications
-                });
+                this.dispatchEvent(new CustomEvent('applications-removed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        applications: applications
+                    }
+                }));
 
                 if (0 === this._applications.length) {
                     this._message = 'You have removed all applications. Please add new ones.';
                     this._handleEmptyLoad();
                 }
-            },
+            }
 
-            getFirstApplication: function() {
+            getFirstApplication() {
                 return (this._applications.length > 0) ? this._applications[0] : {};
-            },
+            }
 
-            getAllApplications: function() {
+            getAllApplications() {
                 return this._applications;
-            },
+            }
 
-            selectAllApplications: function(select) {
-                var allApplications = JSON.parse(JSON.stringify(this._allApplications)),
+            selectAllApplications(select) {
+                const allApplications = JSON.parse(JSON.stringify(this._allApplications)),
                     allLength = allApplications.length;
 
-                for (var j = 0; j < allLength; j++) {
-                    var application = allApplications[j];
+                for (let j = 0; j < allLength; j++) {
+                    const application = allApplications[j];
 
                     application.selected = select;
 
                     allApplications[j] = {};
                     allApplications[j] = application;
                 }
-            },
+            }
 
-            setOrgunit: function(orgunit) {
-                var _applications = JSON.parse(JSON.stringify(this._applications)),
+            setOrgunit(orgunit) {
+                const _applications = JSON.parse(JSON.stringify(this._applications)),
                     _length = _applications.length,
                     allApplications = JSON.parse(JSON.stringify(this._allApplications)),
                     allLength = allApplications.length;
 
-                for (var i = 0; i < _length; i++) {
-                    var application = _applications[i],
+                for (let i = 0; i < _length; i++) {
+                    let application = _applications[i],
                         orgunits = application.org_units,
                         length = orgunits.length;
 
-                    for (var j = 0; j < length; j++) {
+                    for (let j = 0; j < length; j++) {
 
                         if (orgunit.alias === orgunits[j].alias) {
                             _applications[i].org_units[j].name = orgunit.name;
@@ -776,12 +711,12 @@ Custom property | Description | Default
                     }
                 }
 
-                for (var j = 0; j < allLength; j++) {
-                    var application = allApplications[j],
+                for (let j = 0; j < allLength; j++) {
+                    let application = allApplications[j],
                         orgunits = application.org_units,
                         length = orgunits.length;
 
-                    for (var k = 0; k < length; k++) {
+                    for (let k = 0; k < length; k++) {
                         if (orgunit.alias === orgunits[k].alias) {
                             allApplications[j].org_units[k].name = orgunit.name;
                             break;
@@ -794,9 +729,9 @@ Custom property | Description | Default
 
                 this.set('_allApplications', []);
                 this.set('_allApplications', allApplications);
-            },
+            }
 
-            _setSearchApplicationsResult: function() {
+            _setSearchApplicationsResult() {
                 this._applicationsEmpty = (0 === this._searchedApplications.length);
 
                 if (this._applicationsEmpty) {
@@ -807,12 +742,11 @@ Custom property | Description | Default
                     this._hideLoadMoreAction();
                     this._message = '';
                 }
-            },
+            }
 
-            filterByStatus: function(api, status) {
-
+            filterByStatus(api, status) {
                 this._getApplications(this._computeListApi(api, 100, this._sort)).then(function(applications) {
-                    var applicationsLength = applications.length;
+                    const applicationsLength = applications.length;
 
                     this._clearLoaders();
                     this._clearApplications();
@@ -837,51 +771,48 @@ Custom property | Description | Default
                     this._message = '';
 
                     applications.forEach(function(el, index) {
-
                         this._loaders.push(setTimeout( function() {
-
                             if (this.company) {
                                 el.selected = false;
                             }
 
                             this.push('_applications', el);
 
-                            if (index == applicationsLength - 1) {
-
-                                this.fire('loaded', {
-                                    applications: applications
-                                });
+                            if (index === applicationsLength - 1) {
+                                this.dispatchEvent(new CustomEvent('loaded', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        applications: applications
+                                    }
+                                }));
                             }
-
                         }.bind(this), (index + 1) * 30 ));
-
                     }.bind(this));
                 }.bind(this));
-            },
+            }
 
-            filterByTerm: function(term) {
+            filterByTerm(term) {
                 this._filterTerm = term;
                 this._filterByTerm();
-            },
+            }
 
-            filterByOrgunit: function(orgunitData) {
+            filterByOrgunit(orgunitData) {
                 this._filterOrgunit = orgunitData;
                 this._filterByOrgunit();
-            },
+            }
 
-            _getApplications: function(api) {
-
+            _getApplications(api) {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         options = {
                             url: api,
                             method: 'GET',
                             handleAs: 'json',
-                            headers: this._computedHeaders
+                            headers: this._headers
                         };
 
                     request.send(options).then(function() {
-
                         if (request.response) {
                             resolve(this.company ? request.response.applications : request.response.icons);
                         }
@@ -890,10 +821,10 @@ Custom property | Description | Default
                         reject(request.response.message);
                     });
                 }.bind(this));
-            },
+            }
 
-            _filterByTerm: function() {
-                var term = this._filterTerm,
+            _filterByTerm() {
+                const term = this._filterTerm,
                     length = this._allApplications.length,
                     filterOrgunit = this._filterOrgunit;
 
@@ -909,8 +840,7 @@ Custom property | Description | Default
                         this.set('_applications', JSON.parse(JSON.stringify(this._allApplications)));
                         this._setLoadMoreAction();
                     }
-
-                    this.fire('filter-done');
+                    this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                     return false;
                 }
 
@@ -918,14 +848,14 @@ Custom property | Description | Default
                 this._hideLoadMoreAction();
 
                 this._getApplications(this._searchApplicationsApi + term).then(function(applications) {
-                    var applicationsLength = applications.length;
+                    const applicationsLength = applications.length;
 
                     this.set('_searchedApplications', applications);
                     this._setSearchApplicationsResult();
 
                     if (this._applicationsEmpty) {
                         this.set('_searchedApplications', []);
-                        this.fire('filter-done');
+                        this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                         return false;
                     }
 
@@ -936,16 +866,14 @@ Custom property | Description | Default
                         this.set('_applications', []);
 
                         applications.forEach(function(elem, index) {
-
-                            for (var i = 0; i < length; i++) {
-                                var application = this._allApplications[i];
+                            for (let i = 0; i < length; i++) {
+                                const application = this._allApplications[i];
 
                                 if (elem.self === application.self) {
                                     this.push('_applications', application);
                                     break;
                                 }
                                 else {
-
                                     if (i === length - 1) {
                                         this.push('_applications', elem);
                                     }
@@ -954,17 +882,15 @@ Custom property | Description | Default
 
                             if (index === applicationsLength - 1) {
                                 this._hideProgressBar();
-                                this.fire('filter-done');
+                                this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                             }
-
                         }.bind(this));
                     }
-
                 }.bind(this));
-            },
+            }
 
-            _filterByOrgunit: function() {
-                var filterOrgunit = this._filterOrgunit,
+            _filterByOrgunit() {
+                const filterOrgunit = this._filterOrgunit,
                     orgunit = filterOrgunit.orgUnit,
                     selected = filterOrgunit.selected,
                     filterTerm = this._filterTerm,
@@ -986,25 +912,24 @@ Custom property | Description | Default
                     this.set('_applications', []);
 
                     if (this._searchedApplications.length > 0) {
-                        var searchedApplications = this._searchedApplications,
+                        let searchedApplications = this._searchedApplications,
                             searchedApplicationsLength = searchedApplications.length,
                             responseApplications = [],
                             responseApplicationsLength;
 
-                        for (var i = 0; i < searchedApplicationsLength; i++) {
-                            var application = searchedApplications[i],
+                        for (let i = 0; i < searchedApplicationsLength; i++) {
+                            let application = searchedApplications[i],
                                 orgunits = application.org_units,
                                 orgunitsLength = orgunits.length;
 
-                            for (var j = 0; j < allLength; j++) {
-                                var app = this._allApplications[j];
+                            for (let j = 0; j < allLength; j++) {
+                                const app = this._allApplications[j];
 
                                 if (application.self === app.self) {
                                     responseApplications.push(app);
                                     break;
                                 }
                                 else {
-
                                     if (j === allLength - 1) {
                                         responseApplications.push(application);
                                     }
@@ -1014,39 +939,33 @@ Custom property | Description | Default
 
                         responseApplicationsLength = responseApplications.length;
 
-                        for (var k = 0; k < responseApplicationsLength; k++) {
-                            var application = responseApplications[k],
+                        for (let k = 0; k < responseApplicationsLength; k++) {
+                            let application = responseApplications[k],
                                 orgunits = application.org_units,
                                 orgunitsLength = orgunits.length;
 
-                            for (var j = 0; j < orgunitsLength; j++) {
-
+                            for (let j = 0; j < orgunitsLength; j++) {
                                 if (orgunits[j].alias === orgunit.alias) {
                                     this.push('_applications', application);
                                     break;
                                 }
-
                             }
-
                             if (k === responseApplicationsLength -1) {
                                 this._hideProgressBar();
                             }
                         }
                     }
                     else {
-
-                        for (var i = 0; i < allLength; i++) {
-                            var application = this._allApplications[i],
+                        for (let i = 0; i < allLength; i++) {
+                            let application = this._allApplications[i],
                                 orgunits = application.org_units,
                                 orgunitsLength = orgunits.length;
 
-                            for (var j = 0; j < orgunitsLength; j++) {
-
+                            for (let j = 0; j < orgunitsLength; j++) {
                                 if (orgunits[j].alias === orgunit.alias) {
                                     this.push('_applications', application);
                                     break;
                                 }
-
                             }
 
                             if (i === allLength -1) {
@@ -1054,103 +973,75 @@ Custom property | Description | Default
                             }
                         }
                     }
-
                     if (this._applications.length === 0) {
                         this._message = 'There are no applications within ' + orgunit.name +' organization unit.';
                         this._handleEmptyLoad();
                     }
-
                 }
-            },
+            }
 
-            loadResourcesForGroup: function(group) {
+            loadResourcesForGroup(group) {
                 this._showProgressBar();
                 this._loadMore = false;
                 this._clearApplications();
                 this.set('_searchedApplications', []);
 
                 this._currentUrl = this._computeListApi(group.meta.applications, this.size, this._sort);
-            },
+            }
 
-            _setLoadMoreAction: function() {
+            _setLoadMoreAction() {
+                this._loadMore = this._allApplications.length < this._totalApplications;
+            }
 
-                if (this._allApplications.length < this._totalApplications) {
-                    this._loadMore = true;
-                }
-                else {
-                    this._loadMore = false;
-                }
-
-            },
-
-            _hideLoadMoreAction: function() {
+            _hideLoadMoreAction() {
                 this._loadMore = false;
-            },
+            }
 
-            _showProgressBar: function() {
-                this.$$('#paperProgress').hidden = false;
-            },
+            _showProgressBar() {
+                this.shadowRoot.getElementById('paperProgress').hidden = false;
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
-                    this.$$('#paperProgress').hidden = true;
+                    this.shadowRoot.getElementById('paperProgress').hidden = true;
                 }.bind(this), 300);
+            }
 
-            },
+            _showLoadMoreProgressBar() {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+            }
 
-            _showLoadMoreProgressBar: function() {
-                this.$$('#loadMoreProgress').hidden = false;
-            },
-
-            _hideLoadMoreProgressBar: function() {
-
+            _hideLoadMoreProgressBar() {
                 setTimeout(function() {
-                    this.$$('#loadMoreProgress').hidden = true;
+                    this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                 }.bind(this), 300);
+            }
 
-            },
-
-            _onItemsDomChange: function() {
-                var index = this._renderedIndex;
-
-                if (-1 != index && this.company) {
-
-                    this.animationConfig.entry.nodes = [];
-
-                    for (var i = 0; i <= index; i++) {
-                        var addedItem = this.$$('#appscoApplicationItem_' + i);
-                        this.animationConfig.entry.nodes.push(addedItem);
-                    }
-
-                    this.playAnimation('entry');
-
-                    this._renderedIndex = -1;
-                }
-
-            },
-
-            _openMoveToDialog: function(event) {
-                var menuItem = event.target,
-                        applicationItem = menuItem.listItem;
+            _openMoveToDialog(event) {
+                const menuItem = event.target,
+                    applicationItem = menuItem.listItem;
 
                 if (applicationItem && applicationItem.application) {
-                    this.fire('open-move-to-folder-dialog', {
-                        applicationIcon: applicationItem.application,
-                        currentFolder: this.currentFolder
-                    });
+                    this.dispatchEvent(new CustomEvent('open-move-to-folder-dialog', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            applicationIcon: applicationItem.application,
+                            currentFolder: this.currentFolder
+                        }
+                    }));
                 }
-            },
+            }
 
-            initialize: function() {
+            initialize() {
                 this._applicationsEmpty = (0 === this._totalApplications);
 
                 if (this._applicationsEmpty) {
                     this._message = 'There are no applications.';
                 }
-            },
+            }
 
-            reset: function() {
+            reset() {
                 this._message = '';
                 this._applicationsEmpty = false;
                 this.set('_applications', JSON.parse(JSON.stringify(this._allApplications)));
@@ -1162,6 +1053,7 @@ Custom property | Description | Default
                     this.selectAllApplications(false);
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoApplications.is, AppscoApplications);
     </script>
 </dom-module>

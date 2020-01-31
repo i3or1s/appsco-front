@@ -85,60 +85,54 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyDetails extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-details'; }
 
-            is: 'appsco-company-details',
-
-            properties: {
-
-                /**
-                 * Company which details should to be rendered.
-                 */
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onCompanyChanged'
                     },
-                    observer: '_onCompanyChanged'
-                },
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            _onCompanyChanged: function() {
+            _onCompanyChanged() {
                 this._showDetails();
-            },
+            }
 
-            _showDetails: function() {
+            _showDetails() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
             }
-        });
+        }
     </script>
 </dom-module>

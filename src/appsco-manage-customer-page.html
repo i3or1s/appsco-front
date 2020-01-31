@@ -124,191 +124,190 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-manage-customer-page',
+        class AppscoManageCustomerPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-manage-customer-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    route: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                route: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    customer: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    customersApi: {
+                        type: String,
+                        observer: '_onCustomersApiChanged'
+                    },
+
+                    partnerAdminsApi: {
+                        type: String,
+                        computed: '_computePartnerAdminsApi(customer)'
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    /**
+                     * Computed headers.
+                     * It contains authorization token.
+                     */
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    /**
+                     * Selected page.
+                     * It has value of component's 'name' attribute.
+                     */
+                    _selected: {
+                        type: String,
+                        value: 'appsco-customer-components-page',
+                        notify: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                customer: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+                ];
+            }
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+            ready() {
+                super.ready();
 
-                customersApi: {
-                    type: String,
-                    observer: '_onCustomersApiChanged'
-                },
-
-                partnerAdminsApi: {
-                    type: String,
-                    computed: '_computePartnerAdminsApi(customer)'
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Selected page.
-                 * It has value of component's 'name' attribute.
-                 */
-                _selected: {
-                    type: String,
-                    value: 'appsco-customer-components-page',
-                    notify: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._getCustomer();
+                });
+            }
 
-            observers: [
-                '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-            ],
-
-            attached: function() {
-                this.pageLoaded = false;
-
-                if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
-
-                this._getCustomer();
-
-            },
-
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            setCustomer: function(customer) {
+            setCustomer(customer) {
                 this.set('customer', customer);
-            },
+            }
 
-            resetCustomer: function() {
+            resetCustomer() {
                 var customer = JSON.parse(JSON.stringify(this.customer));
 
                 this.set('customer', {});
                 this.set('customer', customer);
-            },
+            }
 
-            reloadCustomer: function(customer) {
+            reloadCustomer(customer) {
                 this.set('customer', {});
                 this.set('customer', customer);
 
                 this.$.appscoManageCustomerComponentsPage.reloadCustomer(customer);
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._showCustomerComponentsPage();
-            },
+            }
 
-            removePartnerAdmins: function(customer, partnerAdmins) {
-                if (customer.alias == this.customer.alias) {
+            removePartnerAdmins(customer, partnerAdmins) {
+                if (customer.alias === this.customer.alias) {
                     this._removePartnerAdmins(partnerAdmins);
                 }
-            },
+            }
 
-            reloadPartnerAdmins: function(customers) {
-
-                for (var idx in customers) {
+            reloadPartnerAdmins(customers) {
+                for (let idx in customers) {
                     if (this.customer.alias === customers[idx].alias) {
                         this._reloadPartnerAdmins();
                         break;
                     }
                 }
-            },
+            }
 
-            _removePartnerAdmins: function(partnerAdmins) {
+            _removePartnerAdmins(partnerAdmins) {
                 this.$.appscoManageCustomerComponentsPage.removePartnerAdmins(partnerAdmins);
                 this.$.appscoCustomerPartnerAdminsPage.removePartnerAdmins(partnerAdmins);
-            },
+            }
 
-            _reloadPartnerAdmins: function() {
+            _reloadPartnerAdmins() {
                 this.$.appscoManageCustomerComponentsPage.reloadPartnerAdmins();
                 this.$.appscoCustomerPartnerAdminsPage.reloadPartnerAdmins();
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _updateScreen: function(medium, tablet, mobile) {
+            _updateScreen(medium, tablet, mobile) {
                 this.updateStyles();
 
                 if (mobile) {
@@ -317,28 +316,28 @@
                 else if (!this.$.appscoContent.resourceActive) {
                     this.$.appscoContent.showSection('resource');
                 }
-            },
+            }
 
-            _computePartnerAdminsApi: function(customer) {
+            _computePartnerAdminsApi(customer) {
                 return (customer && customer.meta) ? customer.meta.list_partner_admins : null;
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders (authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken
                 }
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _onCustomersApiChanged: function() {
+            _onCustomersApiChanged() {
                 this._getCustomer();
-            },
+            }
 
-            _getCustomer: function() {
+            _getCustomer() {
                 if (!this.customer.self && this.customersApi && this._headers) {
                     var customerApi = this.customersApi + this.route.path,
                         getCustomerRequest = this.$.ironAjaxGetCustomer;
@@ -350,53 +349,57 @@
                     getCustomerRequest.url = customerApi;
                     getCustomerRequest.generateRequest();
                 }
-            },
+            }
 
-            _onGetCustomerResponse: function(event) {
+            _onGetCustomerResponse(event) {
                 if (200 === event.detail.status && event.detail.response) {
                     this.set('customer', event.detail.response);
                 }
 
                 this._onPageLoaded();
-            },
-
-            _onGetCustomerError: function(event) {
-                if (!event.detail.request.aborted) {
-                    this.fire('page-error');
-                }
-            },
-
-            _onDeleteCustomerAction: function() {
-                this.fire('delete-customer', {
-                    customer: this.customer
-                });
-            },
-
-            _showCustomerComponentsPage: function() {
-                this._selected = 'appsco-customer-components-page';
-            },
-
-            reload: function() {
-                this.$.appscoManageGroupComponentsPage.loadPage();
-                this.$.appscoGroupRolesPage.loadPage();
-            },
-
-            _onManageCustomerRoles: function() {
-                this._showCustomerRolesPage();
-            },
-
-            _showCustomerRolesPage: function() {
-                this._selected = 'appsco-customer-partner-admins-page';
-            },
-
-            _showAccountComponentsPage: function() {
-                this._selected = 'appsco-customer-components-page';
-            },
-
-            _onResourceBack: function() {
-                this._showAccountComponentsPage();
             }
 
-        });
+            _onGetCustomerError(event) {
+                if (!event.detail.request.aborted) {
+                    this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
+                }
+            }
+
+            _onDeleteCustomerAction() {
+                this.dispatchEvent(new CustomEvent('delete-customer', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        customer: this.customer
+                    }
+                }));
+            }
+
+            _showCustomerComponentsPage() {
+                this._selected = 'appsco-customer-components-page';
+            }
+
+            reload() {
+                this.$.appscoManageGroupComponentsPage.loadPage();
+                this.$.appscoGroupRolesPage.loadPage();
+            }
+
+            _onManageCustomerRoles() {
+                this._showCustomerRolesPage();
+            }
+
+            _showCustomerRolesPage() {
+                this._selected = 'appsco-customer-partner-admins-page';
+            }
+
+            _showAccountComponentsPage() {
+                this._selected = 'appsco-customer-components-page';
+            }
+
+            _onResourceBack() {
+                this._showAccountComponentsPage();
+            }
+        }
+        window.customElements.define(AppscoManageCustomerPage.is, AppscoManageCustomerPage);
     </script>
 </dom-module>

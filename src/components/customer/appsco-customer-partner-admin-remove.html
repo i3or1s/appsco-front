@@ -9,6 +9,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-customer-partner-admin-remove`
 Shows dialog screen with confirmation for removal company resource from group.
@@ -82,133 +84,110 @@ Shows dialog screen with confirmation for removal company resource from group.
 
     </template>
     <script>
-        Polymer({
+        class AppscoCustomerPartnerAdminRemove extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-customer-partner-admin-remove'; }
 
-            is: 'appsco-customer-partner-admin-remove',
-
-            properties: {
-
-                customer: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Item to remove from customer.
-                 */
-                partnerAdminRole: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _removePartnerAdminApi: {
-                    type: String,
-                    computed: '_computeRemovePartnerAdminApi(partnerAdminRole)'
-                },
-
-                _responseItems: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                },
-
-                _requests: {
-                    type: Number,
-                    value: 0
-                }
-            },
-
-            setCustomer: function(customer) {
-                this.customer = customer;
-            },
-
-            setPartnerAdminRole: function(partnerAdminRole) {
-                this.partnerAdminRole = partnerAdminRole;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    customer: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    /**
+                     * Item to remove from customer.
+                     */
+                    partnerAdminRole: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _removePartnerAdminApi: {
+                        type: String,
+                        computed: '_computeRemovePartnerAdminApi(partnerAdminRole)'
+                    },
+
+                    _responseItems: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _requests: {
+                        type: Number,
+                        value: 0
+                    }
                 };
-            },
+            }
 
-            _showLoader: function() {
+            setCustomer(customer) {
+                this.customer = customer;
+            }
+
+            setPartnerAdminRole(partnerAdminRole) {
+                this.partnerAdminRole = partnerAdminRole;
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _computeRemovePartnerAdminApi: function(partnerAdminRole) {
+            _computeRemovePartnerAdminApi(partnerAdminRole) {
                 return (partnerAdminRole && partnerAdminRole.self) ? partnerAdminRole.self : null;
-            },
+            }
 
-            _onRevokeAction: function() {
-                var request = document.createElement('iron-request'),
+            _onRevokeAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._removePartnerAdminApi,
                         method: 'DELETE',
@@ -225,13 +204,15 @@ Shows dialog screen with confirmation for removal company resource from group.
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('partner-admin-removed-from-customer', {
-                            customer: this.customer,
-                            partnerAdmin: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('partner-admin-removed-from-customer', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                customer: this.customer,
+                                partnerAdmin: request.response
+                            }
+                        }));
 
                         this.close();
                     }
@@ -240,6 +221,7 @@ Shows dialog screen with confirmation for removal company resource from group.
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoCustomerPartnerAdminRemove.is, AppscoCustomerPartnerAdminRemove);
     </script>
 </dom-module>

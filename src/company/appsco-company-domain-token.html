@@ -111,45 +111,43 @@ Shows dialog screen with confirmation for account removal from organization unit
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyDomainToken extends Polymer.Element {
+            static get is() { return 'appsco-company-domain-token'; }
 
-            is: 'appsco-company-domain-token',
+            static get properties() {
+                return {
+                    domain: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
-
-                /**
-                 * Account to remove from organization unit.
-                 */
-                domain: {
-                    type: Array,
-                    value: function() {
-                        return {};
+                    token: {
+                        type: String,
+                        value: 'DVH4KHonhRQtsksUx4UPbm4JgvqoGLD3AVS8RQVgG3eT_W6NhXb1yB92OnmWREqWp66e7KGMwGT_a4E'
                     }
-                },
+                };
+            }
 
-                token: {
-                    type: String,
-                    value: 'DVH4KHonhRQtsksUx4UPbm4JgvqoGLD3AVS8RQVgG3eT_W6NhXb1yB92OnmWREqWp66e7KGMwGT_a4E'
-                }
-            },
-
-            setDomain: function(domain) {
+            setDomain(domain) {
                 this.domain = domain;
-            },
+            }
 
-            open: function () {
+            open () {
                 this.$.dialog.open();
-            },
+            }
 
-            close: function () {
+            close () {
                 this.$.dialog.close();
-            },
+            }
 
-            toggle: function () {
+            toggle () {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _onDialogClosed: function() {}
-        });
+            _onDialogClosed() {}
+        }
+        window.customElements.define(AppscoCompanyDomainToken.is, AppscoCompanyDomainToken);
     </script>
 </dom-module>

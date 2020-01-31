@@ -39,67 +39,68 @@
                 <p class="info">
                     To get started, prepare your organization’s business customer data so it’s in the proper format
                     for importing to AppsCo. Allowed format is csv.
-                <ul>
-                    <li>
-                        If you are importing more then 500 customers at a time, split them into multiple
-                        CSVs before you import them.
-                    </li>
-                    <li>
-                        Make sure your symbols are ASCII or Unicode Latin-based.
-                    </li>
-                    <li>
-                        Download example import for reference.
-                        <paper-button class="download-action" on-tap="_onDownloadExampleImportFile">
-                            <iron-icon class="download-icon" icon="icons:attachment"></iron-icon> Download
-                        </paper-button>
-                    </li>
-                    <li>
-                        If your list is in Excel or Google Sheet you can save it as CSV.
-                    </li>
-                </ul>
+                    <ul>
+                        <li>
+                            If you are importing more then 500 customers at a time, split them into multiple
+                            CSVs before you import them.
+                        </li>
+                        <li>
+                            Make sure your symbols are ASCII or Unicode Latin-based.
+                        </li>
+                        <li>
+                            Download example import for reference.
+                            <paper-button class="download-action" on-tap="_onDownloadExampleImportFile">
+                                <iron-icon class="download-icon" icon="icons:attachment"></iron-icon> Download
+                            </paper-button>
+                        </li>
+                        <li>
+                            If your list is in Excel or Google Sheet you can save it as CSV.
+                        </li>
+                    </ul>
                 </p>
             </div>
         </appsco-import-resource>
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportCustomers extends Polymer.Element {
+            static get is() { return 'appsco-import-customers'; }
 
-            is: 'appsco-import-customers',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    importApi: {
+                        type: String
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    domain: {
+                        type: String,
+                        value: ''
+                    }
+                };
+            }
 
-                importApi: {
-                    type: String
-                },
-
-                domain: {
-                    type: String,
-                    value: ''
-                }
-            },
-
-            toggle: function() {
+            toggle() {
                 this.$.appscoImportResource.toggle();
-            },
+            }
 
-            open: function() {
+            open() {
                 this.$.appscoImportResource.open();
-            },
+            }
 
-            close: function() {
+            close() {
                 this.$.appscoImportResource.close();
-            },
+            }
 
-            _onDownloadExampleImportFile: function(event) {
+            _onDownloadExampleImportFile(event) {
                 event.stopPropagation();
                 window.location.href = this.domain + '/example_import_customers.csv';
             }
-        });
+        }
+        window.customElements.define(AppscoImportCustomers.is, AppscoImportCustomers);
     </script>
 </dom-module>

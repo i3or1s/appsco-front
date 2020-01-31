@@ -6,10 +6,11 @@
 <link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
 
-
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 <link rel="import" href="appsco-customer-subscription-toggle.html">
+
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-manage-customer-subscription">
     <template>
@@ -87,111 +88,95 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoManageCustomerSubscription extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-manage-customer-subscription'; }
 
-            is: 'appsco-manage-customer-subscription',
+            static get properties() {
+                return {
+                    customer: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    partner: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Customer for manage
-                 */
-                customer: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    apiErrors: {
+                        type: String
+                    },
+
+                    _isPaidExternally: {
+                        type: Boolean,
+                        computed: "_computeIsPaidExternally(customer)"
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _updateNumberOfLicencesApi: {
+                        type: String,
+                        computed: '_computeUpdateNumberOfLicencesApi(customer)'
                     }
-                },
+                };
+            }
 
-                partner: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Error message.
-                 */
-                apiErrors: {
-                    type: String
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                _isPaidExternally: {
-                    type: Boolean,
-                    computed: "_computeIsPaidExternally(customer)"
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                },
-
-                _updateNumberOfLicencesApi: {
-                    type: String,
-                    computed: '_computeUpdateNumberOfLicencesApi(customer)'
-                }
-            },
-
-            toggle: function () {
+            toggle() {
                 this.$.dialog.open();
-            },
+            }
 
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            setCustomer: function(customer) {
+            setCustomer(customer) {
                 this.customer = customer;
-            },
+            }
 
-            _setPartner: function(partner) {
+            _setPartner(partner) {
                 this.set('partner', {});
                 this.set('partner', partner);
-            },
+            }
 
-            _setCustomer: function(customer) {
+            _setCustomer(customer) {
                 this.set('customer', {});
                 this.set('customer', customer);
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._loader = false;
                 this._error = '';
-            },
+            }
 
-            _computeUpdateNumberOfLicencesApi: function(customer) {
+            _computeUpdateNumberOfLicencesApi(customer) {
                 return customer ? (customer.self + '/update-number-of-licences') : null;
-            },
+            }
 
-            _computeIsPaidExternally: function(customer) {
+            _computeIsPaidExternally(customer) {
                 return customer && customer.subscription_paid_externally == true;
-            },
+            }
 
-            _onManageCustomerState: function(event) {
-                var customer = event.detail.customer,
-                        partner = event.detail.partner;
+            _onManageCustomerState(event) {
+                const customer = event.detail.customer,
+                    partner = event.detail.partner;
 
                 this._setCustomer(customer);
                 this._setPartner(partner);
-            },
+            }
 
-            _assign: function() {
-                var numberOfLicences = this.$$('#numOfLicences');
+            _assign() {
+                const numberOfLicences = this.shadowRoot.getElementById('numOfLicences');
 
                 if (numberOfLicences.value.length === 0) {
                     numberOfLicences.invalid = true;
@@ -199,17 +184,14 @@
                     return false;
                 }
 
-                var appRequest = document.createElement('iron-request'),
-                        options = {
-                            url: this._updateNumberOfLicencesApi,
-                            method: 'PUT',
-                            handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: 'form[number_of_licences]=' + numberOfLicences.value
-                        };
+                const appRequest = document.createElement('iron-request'),
+                    options = {
+                        url: this._updateNumberOfLicencesApi,
+                        method: 'PUT',
+                        handleAs: 'json',
+                        headers: this._headers,
+                        body: 'form[number_of_licences]=' + numberOfLicences.value
+                    };
 
                 this._loader = true;
 
@@ -217,24 +199,21 @@
                     this.$.dialog.close();
                     this._setPartner(appRequest.response.partner);
 
-                    /**
-                     * Fired when licences has been assigned to customer.
-                     *
-                     * @event customer-licences-managed
-                     * @param {Object} customer
-                     */
-                    this.fire('customer-licences-managed', {
-                        'customer' : appRequest.response.customer
-                    });
-
+                    this.dispatchEvent(new CustomEvent('customer-licences-managed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            'customer' : appRequest.response.customer
+                        }
+                    }));
                 }.bind(this), function() {
-                    if (appRequest.status != 200) {
+                    if (appRequest.status !== 200) {
                         this._error = this.apiErrors.getError(appRequest.response.code);
                     }
                     this._loader = false;
                 }.bind(this));
             }
-
-        });
+        }
+        window.customElements.define(AppscoManageCustomerSubscription.is, AppscoManageCustomerSubscription);
     </script>
 </dom-module>

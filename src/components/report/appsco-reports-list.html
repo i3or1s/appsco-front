@@ -40,24 +40,23 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoReportsList extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-reports-list'; }
 
-            is: 'appsco-reports-list',
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_observeItems(_listItems)'
-            ],
-
-            _observeItems: function(items) {
+            _observeItems(items) {
                 this.setObservableType('reports');
                 this.populateItems(items);
             }
-
-        });
+        }
+        window.customElements.define(AppscoReportsList.is, AppscoReportsList);
     </script>
 </dom-module>

@@ -34,30 +34,31 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoResourceAuthType extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+            static get is() { return 'appsco-resource-auth-type'; }
 
-            is: 'appsco-resource-auth-type',
+            static get properties() {
+                return {
+                    authType: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
-
-                authType: {
-                    type: String,
-                    value: ''
-                },
-
-                language: {
-                    value: 'en',
-                    type: String
-                }
-            },
-
-            behaviors: [
-                Polymer.AppLocalizeBehavior
-            ],
-
-            attached: function() {
-                this.loadResources(this.resolveUrl('data/appsco-auth-type-translations.json'));
+                    language: {
+                        value: 'en',
+                        type: String
+                    }
+                };
             }
-        });
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.loadResources(this.resolveUrl('data/appsco-auth-type-translations.json'));
+                });
+            }
+        }
+        window.customElements.define(AppscoResourceAuthType.is, AppscoResourceAuthType);
     </script>
 </dom-module>

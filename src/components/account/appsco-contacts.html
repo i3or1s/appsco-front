@@ -10,9 +10,7 @@
 
 <dom-module id="appsco-contacts">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host appsco-contact-item {
                 width: 100%;
                 margin: 0 0 10px 0;
@@ -64,22 +62,23 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-contacts',
+        class AppscoContacts extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-contacts'; }
 
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-            observers: [
-                '_observeItems(_listItems)'
-            ],
-
-            _observeItems: function(items) {
+            _observeItems(items) {
                 this.setObservableType('contacts');
                 this.populateItems(items);
             }
-        });
+        }
+        window.customElements.define(AppscoContacts.is, AppscoContacts);
     </script>
 </dom-module>

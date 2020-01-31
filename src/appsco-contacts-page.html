@@ -207,188 +207,182 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-contacts-page',
+        class AppscoContactsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppscoPageBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-contacts-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    screen992: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                screen992: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    animationConfig: {
+                        type: Object
+                    },
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                    contact: {
+                        type: Object,
+                        value: function () {
+                            return {}
+                        },
+                        observer: '_onContactChanged'
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    companyInvitationsApi: {
+                        type: String
+                    },
+
+                    companyContactsApi: {
+                        type: String
+                    },
+
+                    groupsApi: {
+                        type: String
+                    },
+
+                    _account: {
+                        type: Object,
+                        computed: '_computeAccount(contact)'
+                    },
+
+                    _contactExists: {
+                        type: Boolean,
+                        computed: '_computeContactExistence(contact)'
+                    },
+
+                    _contactsLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _invitationsLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _pageReady: {
+                        type: Boolean,
+                        computed: '_computePageReadyState(_contactsLoaded, _invitationsLoaded)',
+                        observer: '_onPageReadyChanged'
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _page: {
+                        type: String,
+                        value: 'contacts'
+                    },
+
+                    _infoShown: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _selectedTab: {
+                        type: Number
+                    },
+
+                    _contactSelectAction: {
+                        type: Number,
+                        value: 0
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen, screen992)',
+                    '_hideFilters(mobileScreen)'
+                ];
+            }
+
+            ready() {
+                super.ready();
+
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                contact: {
-                    type: Object,
-                    value: function() {
-                        return {}
-                    },
-                    observer: '_onContactChanged'
-                },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.set('_itemsComponent', this.$.appscoContacts);
+                });
+            }
 
-                /**
-                 * Get company invitations.
-                 */
-                companyInvitationsApi: {
-                    type: String
-                },
-
-                /**
-                 * Get company accounts.
-                 */
-                companyContactsApi: {
-                    type: String
-                },
-
-                /**
-                 * Get groups.
-                 */
-                groupsApi: {
-                    type: String
-                },
-
-                _account: {
-                    type: Object,
-                    computed: '_computeAccount(contact)'
-                },
-
-                _contactExists: {
-                    type: Boolean,
-                    computed: '_computeContactExistence(contact)'
-                },
-
-                _contactsLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _invitationsLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _pageReady: {
-                    type: Boolean,
-                    computed: '_computePageReadyState(_contactsLoaded, _invitationsLoaded)',
-                    observer: '_onPageReadyChanged'
-                },
-
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _page: {
-                    type: String,
-                    value: 'contacts'
-                },
-
-                _infoShown: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _selectedTab: {
-                    type: Number
-                },
-
-                _contactSelectAction: {
-                    type: Number,
-                    value: 0
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.AppscoPageBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, screen992)',
-                '_hideFilters(mobileScreen)'
-            ],
-
-            pageSelected: function () {
+            pageSelected() {
                 this._showContacts();
                 this.reloadInvitations();
                 this.reloadContacts();
-            },
+            }
 
-            attached: function() {
-                this.pageLoaded = false;
-                this.set('_itemsComponent', this.$.appscoContacts);
-
-                if (this.mobileScreen) {
-                    this.updateStyles();
-                }
-            },
-
-            _onObservableItemListChange: function(event, data) {
+             _onObservableItemListChange(event, data) {
                 if(data.type === this._page) {
                     this.setObservableType('contact-page');
                     this.populateItems(data.items);
                 }
                 event.stopPropagation();
-            },
+            }
 
-            _hideFilters: function(mobile) {
+            _hideFilters(mobile) {
                 if (mobile) {
                     this.hideResource();
                 }
-            },
+            }
 
-            hideResource: function() {
+            hideResource() {
                 this.$.appscoContent.hideSection('resource');
-            },
+            }
 
-            showPage: function(page) {
+            showPage(page) {
                 this._page = page;
-            },
+            }
 
-            toggleInfo: function() {
-
+            toggleInfo() {
                 if (this._contactExists) {
                     this.$.appscoContent.toggleSection('info');
                     this._infoShown = !this._infoShown;
@@ -401,53 +395,53 @@
                         this._setDefaultContact();
                     }
                 }
-            },
+            }
 
-            hideInfo: function() {
+            hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            _setDefaultContact: function() {
+            _setDefaultContact() {
                 this.set('contact', this.$.appscoContacts.getFirstItem());
-            },
+            }
 
-            addContacts: function(contacts) {
+            addContacts(contacts) {
                 this.$.appscoContacts.addItems(contacts);
-            },
+            }
 
-            modifyContacts: function(contacts) {
+            modifyContacts(contacts) {
                 this.$.appscoContacts.modifyItems(contacts);
-            },
+            }
 
-            removeContacts: function(contacts) {
+            removeContacts(contacts) {
                 this.$.appscoContacts.removeItems(contacts);
                 this._setDefaultContact();
-            },
+            }
 
-            reloadContactsAndActions: function() {
+            reloadContactsAndActions() {
                 this._resetPageActions();
                 this._reloadContacts();
-            },
+            }
 
-            addInvitations: function(invitations) {
+            addInvitations(invitations) {
                 this.$.appscoInvitations.addInvitations(invitations);
-            },
+            }
 
-            removeInvitations: function(invitations) {
+            removeInvitations(invitations) {
                 this.$.appscoInvitations.removeInvitations(invitations);
-            },
+            }
 
-            reloadInvitations: function() {
+            reloadInvitations() {
                 this._resetPageActions();
                 this.$.appscoInvitations.reloadInvitations();
-            },
+            }
 
-            filterByTerm: function(term, page) {
+            filterByTerm(term, page) {
                 page = page ? page : this._page;
 
                 switch (page) {
@@ -462,157 +456,158 @@
                     default:
                         return false;
                 }
-            },
+            }
 
-            getSelectedContacts: function() {
+            getSelectedContacts() {
                 return this.$.appscoContacts.getSelectedItems();
-            },
+            }
 
-            addGroup: function(group) {
+            addGroup(group) {
                 this.$.appscoCompanyGroups.addItems([group]);
-            },
+            }
 
-            removeGroup: function(group) {
+            removeGroup(group) {
                 this.$.appscoCompanyGroups.removeItems([group]);
-            },
+            }
 
-            resetGroupSelection: function() {
+            resetGroupSelection() {
                 this.$.appscoCompanyGroups.reset();
-            },
+            }
 
-            hideBulkActions: function() {
+            hideBulkActions() {
                 this._hideBulkActions();
-            },
+            }
 
-            initializePage: function() {
+            initializePage() {
                 this._setDefaultContact();
-            },
+            }
 
-            reloadContacts: function() {
+            reloadContacts() {
                 this._reloadContacts();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._resetPageLists();
                 this._resetFilter();
                 this._resetPageActions();
                 this._showContacts();
                 this.hideInfo();
-            },
+            }
 
-            _resetFilter: function () {
+            _resetFilter () {
                 this._onSearchGroupsClear();
                 this.$.appscoCompanyGroups.reset();
-            },
+            }
 
-            _resetPageActions: function() {
-                this.fire('reset-page-actions');
-            },
+            _resetPageActions() {
+                this.dispatchEvent(new CustomEvent('reset-page-actions', { bubbles: true, composed: true }));
+            }
 
-            _resetPageLists: function() {
+            _resetPageLists() {
                 this._deselectAllItems();
                 this.$.appscoContacts.reset();
                 this.$.appscoInvitations.reset();
-            },
+            }
 
-            _computeAccount: function(contact) {
+            _computeAccount(contact) {
                 return contact.account ? contact.account : {};
-            },
+            }
 
-            _computeContactExistence: function(contact) {
-
-                for (key in contact) {
+            _computeContactExistence(contact) {
+                for (const key in contact) {
                     return true;
                 }
 
                 return false;
-            },
+            }
 
-            _computePageReadyState: function(contacts, invitations) {
+            _computePageReadyState(contacts, invitations) {
                 return contacts && invitations;
-            },
+            }
 
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _loadLog: function() {
+            _loadLog() {
                 this.$.accountLog.loadLog();
-            },
+            }
 
-            _onContactChanged: function(contact) {
+            _onContactChanged(contact) {
 
                 if (contact.meta && contact.meta.log) {
                     this._loadLog();
                 }
-            },
+            }
 
-            _reloadContacts: function() {
+            _reloadContacts() {
                 this.$.appscoContacts.reloadItems();
-            },
+            }
 
-            _onInvitationsLoaded: function() {
+            _onInvitationsLoaded() {
                 this._invitationsLoaded = true;
-            },
+            }
 
-            _onInvitationsEmptyLoad: function() {
+            _onInvitationsEmptyLoad() {
                 this._invitationsLoaded = true;
-            },
+            }
 
-            _onRemoveInvitationAction: function(event) {
+            _onRemoveInvitationAction(event) {
+                this.dispatchEvent(new CustomEvent('remove-invitation', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        invitation: event.detail.invitation
+                    }
+                }));
+            }
 
-                this.fire('remove-invitation', {
-                    invitation: event.detail.invitation
-                });
-            },
-
-            _onContactsLoaded: function() {
+            _onContactsLoaded() {
                 this._contactsLoaded = true;
                 this._setDefaultContact();
-            },
+            }
 
-            _onContactsEmptyLoad: function() {
+            _onContactsEmptyLoad() {
                 this._contactsLoaded = true;
-            },
+            }
 
-            _onPageReadyChanged: function(pageReady) {
-
+            _onPageReadyChanged(pageReady) {
                 if (pageReady) {
                     this._onPageLoaded();
                 }
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _showContacts: function() {
+            _showContacts() {
                 this._page = 'contacts';
-            },
+            }
 
-            _searchGroups: function(term) {
+            _searchGroups(term) {
                 this.$.appscoCompanyGroups.filterByTerm(term);
-            },
+            }
 
-            _onSearchGroups: function(event) {
+            _onSearchGroups(event) {
                 this._searchGroups(event.detail.term);
-            },
+            }
 
-            _onSearchGroupsClear: function() {
+            _onSearchGroupsClear() {
                 this.$.appscoSearch.reset();
                 this._searchGroups('');
-            },
+            }
 
-            _loadContactsForGroup: function(group) {
+            _loadContactsForGroup(group) {
                 this.$.appscoContacts.filterByGroup(group);
-            },
+            }
 
-            _onGroupSelected: function(event) {
+            _onGroupSelected(event) {
                 this._loadContactsForGroup(event.detail.item);
-            },
+            }
 
-            _onContactAction: function(event) {
+            _onContactAction(event) {
 
                 if (event.detail.item.activated) {
                     this._onViewInfo(event);
@@ -621,22 +616,20 @@
                     this.hideInfo();
                     this._setDefaultContact();
                 }
-            },
+            }
 
-            _onSelectContactAction: function(event) {
+            _onSelectContactAction(event) {
                 var contact = event.detail.item;
 
                 clearTimeout(this._contactSelectAction);
 
                 this._contactSelectAction = setTimeout(function() {
-
                     if (contact.selected) {
                         this._showBulkActions();
                     }
                     else {
-                        var selectedContact = this.$.appscoContacts.getFirstSelectedItem();
-
-                        for (key in selectedContact) {
+                        const selectedContact = this.$.appscoContacts.getFirstSelectedItem();
+                        for (const key in selectedContact) {
                             return false;
                         }
 
@@ -644,51 +637,52 @@
                     }
 
                 }.bind(this), 10);
-
                 this._handleItemsSelectedState();
-            },
+            }
 
-            _onEditContactAction: function(event) {
+            _onEditContactAction(event) {
+                this.dispatchEvent(new CustomEvent('edit-contact', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        contact: event.detail.item
+                    }
+                }));
+            }
 
-                this.fire('edit-contact', {
-                    contact: event.detail.item
-                });
-            },
+            _showBulkActions() {
+                this.dispatchEvent(new CustomEvent('show-bulk-actions', { bubbles: true, composed: true }));
+            }
 
-            _showBulkActions: function() {
-                this.fire('show-bulk-actions');
-            },
+            _hideBulkActions() {
+                this.dispatchEvent(new CustomEvent('hide-bulk-actions', { bubbles: true, composed: true }));
+            }
 
-            _hideBulkActions: function() {
-                this.fire('hide-bulk-actions');
-            },
-
-            _showInfo: function() {
-
+            _showInfo() {
                 if (this._contactExists) {
                     this.$.appscoContent.showSection('info');
                     this._infoShown = true;
                     this._selectedTab = 0;
                 }
-            },
+            }
 
-            _handleInfo: function(contact) {
+            _handleInfo(contact) {
                 this.set('contact', contact);
 
                 if (!this._infoShown) {
                     this._showInfo();
                 }
-            },
+            }
 
-            _onViewInfo: function(event) {
+            _onViewInfo(event) {
                 this._handleInfo(event.detail.item);
-            },
+            }
 
-            _onPageAnimationFinished: function() {
+            _onPageAnimationFinished() {
                 this._resetPageActions();
                 this._resetPageLists();
             }
-        });
-
+        }
+        window.customElements.define(AppscoContactsPage.is, AppscoContactsPage);
     </script>
 </dom-module>

@@ -7,6 +7,8 @@
 
 <link rel="import" href="../../components/appsco-loader.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-application-assignee-revoke`
 Shows dialog screen with application assignees and confirmation for assignee revoking.
@@ -61,54 +63,43 @@ Shows dialog screen with application assignees and confirmation for assignee rev
 
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationAssigneeRevoke extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-application-assignee-revoke'; }
 
-            is: 'appsco-application-assignee-revoke',
+            static get properties() {
+                return {
+                    /**
+                     * Assignee to revoke access for.
+                     */
+                    assignee: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
-
-                /**
-                 * Assignee to revoke access for.
-                 */
-                assignee: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _loader: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            toggle: function () {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            setAssignee: function(assignee) {
+            setAssignee(assignee) {
                 this.set('assignee', assignee);
-            },
+            }
 
-            _onRevokeAccessAction: function () {
-                var request = document.createElement('iron-request'),
+            _onRevokeAccessAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this.assignee.meta.revoke,
                         method: 'DELETE',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     };
 
                 this._loader = true;
@@ -116,21 +107,19 @@ Shows dialog screen with application assignees and confirmation for assignee rev
                 request.send(options).then(function() {
                     this._loader = false;
 
-                    /**
-                     * Fired when access for assignee is revoked.
-                     *
-                     * @event access-revoked
-                     * @param {Object} assignee
-                     * @param {Object} application
-                     */
-                    this.fire('access-revoked', {
-                        assignee: this.assignee,
-                        application: request.response
-                    });
+                    this.dispatchEvent(new CustomEvent('access-revoked', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            assignee: this.assignee,
+                            application: request.response
+                        }
+                    }));
 
                     this.$.dialog.close();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationAssigneeRevoke.is, AppscoApplicationAssigneeRevoke);
     </script>
 </dom-module>

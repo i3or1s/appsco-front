@@ -45,84 +45,87 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-provisioning-page',
+        class AppscoProvisioningPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-provisioning-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    activeIntegrationsApi: {
+                        type: String
+                    },
 
-                activeIntegrationsApi: {
-                    type: String
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            ready() {
+                super.ready();
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            attached: function() {
                 this.pageLoaded = false;
-            },
-
-            reloadIntegrations: function() {
-                this.$.appscoActiveIntegrations.reloadIntegrations();
-            },
-
-            setIntegration: function(integration) {
-                this.$.appscoActiveIntegrations.modifyItems([integration]);
-            },
-
-            _pageLoaded: function() {
-                this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
-
-            _onIntegrationsLoadFinished: function() {
-                this._pageLoaded();
-            },
-
-            _onIntegrationEditAction: function(event) {
-                this.fire('edit-integration', {
-                    integration: event.detail.item
-                });
             }
-        });
+
+            reloadIntegrations() {
+                this.$.appscoActiveIntegrations.reloadIntegrations();
+            }
+
+            setIntegration(integration) {
+                this.$.appscoActiveIntegrations.modifyItems([integration]);
+            }
+
+            _pageLoaded() {
+                this.pageLoaded = true;
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
+
+            _onIntegrationsLoadFinished() {
+                this._pageLoaded();
+            }
+
+            _onIntegrationEditAction(event) {
+                this.dispatchEvent(new CustomEvent('edit-integration', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        integration: event.detail.item
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoProvisioningPage.is, AppscoProvisioningPage);
     </script>
 </dom-module>

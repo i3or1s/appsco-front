@@ -12,7 +12,6 @@
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
-<link rel="import" href="../../bower_components/gold-email-input/gold-email-input.html">
 <link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 
 <link rel="import" href="../components/components/appsco-loader.html">
@@ -101,70 +100,75 @@
 
                     <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 
-                    <form is="iron-form"
-                          id="form"
-                          method="POST"
-                          action="[[ addCompanyRoleApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-presubmit="_onFormPresubmit"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
-                        <div>
-                            <p class="info">
-                                First name and last name are important since they associate degree of confidence.
-                                They will be used for log purposes, statistics and other reporting activities.
-                                Beside usage in AppsCo they can also be used for integration with other tools.
-                            </p>
-                            <div class="flex-horizontal">
-                                <div class="flex">
-                                    <paper-input
-                                            id="accountFirstName"
-                                            label="First name"
-                                            name="register_account[firstName]"
-                                            required
-                                            auto-validate
-                                            error-message="Please provide first name."
-                                    ></paper-input>
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-presubmit="_onFormPresubmit"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
+
+                              method="POST"
+                              action="[[ addCompanyRoleApi ]]">
+                            <div>
+                                <p class="info">
+                                    First name and last name are important since they associate degree of confidence.
+                                    They will be used for log purposes, statistics and other reporting activities.
+                                    Beside usage in AppsCo they can also be used for integration with other tools.
+                                </p>
+                                <div class="flex-horizontal">
+                                    <div class="flex">
+                                        <paper-input
+                                                id="accountFirstName"
+                                                label="First name"
+                                                name="register_account[firstName]"
+                                                required
+                                                auto-validate
+                                                error-message="Please provide first name."
+                                        ></paper-input>
+                                    </div>
+                                    <div class="flex">
+                                        <paper-input
+                                                id="accountLastName"
+                                                label="Last name"
+                                                name="register_account[lastName]"
+                                                required
+                                                auto-validate
+                                                error-message="Please provide last name."
+                                        ></paper-input>
+                                    </div>
                                 </div>
-                                <div class="flex">
-                                    <paper-input
-                                            id="accountLastName"
-                                            label="Last name"
-                                            name="register_account[lastName]"
-                                            required
-                                            auto-validate
-                                            error-message="Please provide last name."
-                                    ></paper-input>
+                                <p class="info mt">
+                                    Email is used as part of credentials for accessing the system.
+                                    Email can be used for log purposes, statistics and other reporting activities.
+                                </p>
+                                <div class="flex-horizontal">
+                                    <div class="flex">
+                                        <paper-input
+                                                id="accountEmail"
+                                                type="email"
+                                                label="Email"
+                                                value=""
+                                                name="register_account[email]"
+                                                required
+                                                auto-validate
+                                                error-message="Please provide valid email."></paper-input>
+                                    </div>
+                                    <div class="baseline">
+                                        <paper-toggle-button id="sendActivationEmail"
+                                                             name="register_account[notify]"
+                                                             checked>
+                                            Send Activation Email</paper-toggle-button>
+                                    </div>
                                 </div>
+                                <p class="info mt">
+                                    Accounts which already exist on AppsCo will be added to the directory.
+                                    If the account does not exist an invitation will be created.
+                                    You can find all invitations in the directory drop-down.
+                                </p>
                             </div>
-                            <p class="info mt">
-                                Email is used as part of credentials for accessing the system.
-                                Email can be used for log purposes, statistics and other reporting activities.
-                            </p>
-                            <div class="flex-horizontal">
-                                <div class="flex">
-                                    <gold-email-input id="accountEmail"
-                                                      label="Email"
-                                                      value=""
-                                                      name="register_account[email]"
-                                                      required
-                                                      auto-validate
-                                                      error-message="Please provide valid email."></gold-email-input>
-                                </div>
-                                <div class="baseline">
-                                    <paper-toggle-button id="sendActivationEmail"
-                                                         name="register_account[notify]"
-                                                         checked>
-                                        Send Activation Email</paper-toggle-button>
-                                </div>
-                            </div>
-                            <p class="info mt">
-                                Accounts which already exist on AppsCo will be added to the directory.
-                                If the account does not exist an invitation will be created.
-                                You can find all invitations in the directory drop-down.
-                            </p>
-                        </div>
-                    </form>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -179,152 +183,116 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoDirectoryAddAccount extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-directory-add-account'; }
 
-            is: 'appsco-directory-add-account',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                addCompanyRoleApi: {
-                    type: String
-                },
-
-                addInvitationApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                /**
-                 * Indicates if add application loader should be displayed or not.
-                 */
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-
-            },
-
-            /**
-             * Toggles the dialog.
-             */
-            toggle: function() {
-                this.$.addAccountDialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    addCompanyRoleApi: {
+                        type: String
+                    },
+
+                    addInvitationApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    /**
+                     * Indicates if add application loader should be displayed or not.
+                     */
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _showLoader: function() {
+            toggle() {
+                this.$.addAccountDialog.toggle();
+            }
+
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.accountFirstName.focus();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this.$.form.reset();
-            },
+            }
 
-            _onEnter: function() {
+            _onEnter() {
                 this._submitForm();
-            },
+            }
 
-            _submitForm: function() {
+            _submitForm() {
                 var form = this.$.form;
 
                 if (form.validate()) {
                     this._showLoader();
                     form.submit();
                 }
-            },
+            }
 
-            _onFormPresubmit: function(event) {
+            _onFormPresubmit(event) {
                 event.target.request.body['register_account[companyRoles][COMPANY_ROLE_EMPLOYEE]'] = 'COMPANY_ROLE_EMPLOYEE';
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 var code = event.detail.request.response.code;
 
-                if (1499245162 == code) {
+                if (1499245162 === code) {
                     this._createInvitation(event.target);
                     return false;
                 }
 
-
                 this._showError(this.apiErrors.getError(code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 var response = event.detail.response;
 
                 if (200 === event.detail.status && response) {
                     this.$.addAccountDialog.close();
 
-                    /**
-                     * Fired when company role is created.
-                     *
-                     * @event company-role-created
-                     * @param {object} role Created company role.
-                     */
-                    this.fire('company-role-created', {
-                        role: response
-                    });
+                    this.dispatchEvent(new CustomEvent('company-role-created', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            role: response
+                        }
+                    }));
                 }
-            },
+            }
 
-            _createInvitation: function(form) {
+            _createInvitation(form) {
                 var formData = form.serialize(),
                     request = document.createElement('iron-request'),
                     options = {
@@ -337,34 +305,30 @@
 
                 body += 'invitation[type]=user';
 
-                for (var key in formData) {
+                for (const key in formData) {
                     body += '&' + key.replace('register_account', 'invitation') + '=' + encodeURIComponent(formData[key]);
                 }
 
                 options.body = body;
 
                 request.send(options).then(function() {
-
-                    if (200 == request.status) {
+                    if (200 === request.status) {
                         this.$.addAccountDialog.close();
 
-                        /**
-                         * Fired when new invitation of type 'user' is created.
-                         *
-                         * @event invitation-created
-                         * @param {object} invitation Created invitation.
-                         */
-                        this.fire('invitation-created', {
-                            invitation: request.response
-                        });
-
+                        this.dispatchEvent(new CustomEvent('invitation-created', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                invitation: request.response
+                            }
+                        }));
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoDirectoryAddAccount.is, AppscoDirectoryAddAccount);
     </script>
 </dom-module>

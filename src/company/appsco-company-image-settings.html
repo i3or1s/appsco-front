@@ -45,41 +45,40 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyImageSettings extends Polymer.mixinBehaviors([Polymer.AppscoUploadImageBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-image-settings'; }
 
-            is: 'appsco-company-image-settings',
+            static get properties() {
+                return {
+                    properties: {
+                        company: {
+                            type: Object,
+                            value: function () {
+                                return {}
+                            },
+                            notify: true
+                        },
 
-            properties: {
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {}
-                    },
-                    notify: true
-                },
+                        _imagePreview: {
+                            type: String,
+                            computed: '_computeImagePreviewClass(company)'
+                        }
+                    }
+                };
+            }
 
-                _imagePreview: {
-                    type: String,
-                    computed: '_computeImagePreviewClass(company)'
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoUploadImageBehavior
-            ],
-
-            reset: function() {
+            reset() {
                 var company = JSON.parse(JSON.stringify(this.company));
 
                 this.set('company', {});
                 this.set('company', company);
-            },
+            }
 
-            _computeImagePreviewClass: function(company) {
+            _computeImagePreviewClass(company) {
                 return (company && company.image) ? 'has-image' : 'no-image';
-            },
+            }
 
-            _setNewImage: function(file) {
+            _setNewImage(file) {
                 var reader = new FileReader();
 
                 reader.onload = function(e) {
@@ -87,19 +86,24 @@
                 }.bind(this);
 
                 reader.readAsDataURL(file);
-            },
+            }
 
-            _fireChangeEvent: function(response) {
-                this.fire('company-logo-changed', {
-                    company: JSON.parse(response)
-                });
-            },
+            _fireChangeEvent(response) {
+                this.dispatchEvent(new CustomEvent('company-logo-changed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        company: JSON.parse(response)
+                    }
+                }));
+            }
 
-            _setStateAfterImageIsRemoved: function(response) {
+            _setStateAfterImageIsRemoved(response) {
                 this.set('company', response);
                 this._fireChangeEvent(JSON.stringify(response));
                 this._hideLoader();
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyImageSettings.is, AppscoCompanyImageSettings);
     </script>
 </dom-module>

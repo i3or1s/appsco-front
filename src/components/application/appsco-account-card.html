@@ -95,84 +95,82 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountCard extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-account-card'; }
 
-            is: 'appsco-account-card',
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    removeAction: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Item that is to be rendered.
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                removeAction: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'flex';
+                });
 
-            listeners: {
-                'tap': '_onTap',
-                'neon-animation-finish': '_onAnimationFinish'
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                    this.playAnimation('entry');
+                });
+            }
 
-            attached: function() {
-                this.style.display = 'flex';
-                this.playAnimation('entry');
-            },
+            _addListeners() {
+                this.addEventListener('tap', this._onTap);
+                this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+            }
 
-            _onTap: function() {
-
+            _onTap() {
                 this.playAnimation('exit', {
                     exit: true
                 });
-
-            },
-
-            _onAnimationFinish: function(event) {
-
-                if (event.detail.exit) {
-                    this.fire('selected', {
-                        account: this.account
-                    });
-                }
-
             }
 
-        });
+            _onAnimationFinish(event) {
+                if (event.detail.exit) {
+                    this.dispatchEvent(new CustomEvent('selected', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            account: this.account
+                        }
+                    }));
+                }
+            }
+        }
+        window.customElements.define(AppscoAccountCard.is, AppscoAccountCard);
     </script>
 </dom-module>

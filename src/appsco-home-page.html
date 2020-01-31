@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
@@ -21,7 +22,6 @@
     <template>
         <style include="appsco-page-styles">
             :host {
-
                 --appsco-application-item: {
                      color: var(--primary-text-color);
                  };
@@ -283,257 +283,273 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-home-page',
+        class AppscoHomePage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppscoDropHTMLElementBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-home-page'; }
 
-            properties: {
-
-                application: {
-                    type: Object,
-                    value: function () {
-                        return {};
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                account: {
-                    type: Object,
-                    value: function () {
-                        return {};
-                    }
-                },
-
-                foldersApi: {
-                    type: String
-                },
-
-                pageConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    observer: '_onPageConfigChanged'
-                },
-
-                _foldersEmpty: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _shared: {
-                    type: Boolean,
-                    computed: '_computeApplicationShared(application)'
-                },
-
-                _editClaims: {
-                    type: Boolean,
-                    computed: '_computeEditClaims(application)'
-                },
-
-                _infoShown: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _selectedTab: {
-                    type: Number
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Get applications from dashboard link.
-                 */
-                applicationsApi: {
-                    type: String
-                },
-
-                _applications: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletS1024Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletS1280Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                laptopScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    foldersApi: {
+                        type: String
+                    },
+
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onPageConfigChanged'
+                    },
+
+                    _foldersEmpty: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _shared: {
+                        type: Boolean,
+                        computed: '_computeApplicationShared(application)'
+                    },
+
+                    _editClaims: {
+                        type: Boolean,
+                        computed: '_computeEditClaims(application)'
+                    },
+
+                    _infoShown: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _selectedTab: {
+                        type: Number
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    applicationsApi: {
+                        type: String
+                    },
+
+                    _applications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletS1024Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletS1280Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    laptopScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
-
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
                 }
-            },
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.AppscoDropHTMLElementBehavior
-            ],
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)'
+                ];
+            }
 
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)'
-            ],
-
-            attached: function() {
+            ready() {
+                super.ready();
 
                 this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-                if (this.mobileScreen || this.tabletScreen || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopScreen) {
-                    this.updateStyles();
-                }
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopScreen) {
+                        this.updateStyles();
+                    }
+                });
+            }
 
-            },
-
-            _updateScreen: function(mobile, tablet, tabletS1024Screen, tabletS1280Screen, laptop) {
+            _updateScreen(mobile, tablet, tabletS1024Screen, tabletS1280Screen, laptop) {
                 this.updateStyles();
-            },
+            }
 
-            _computeApplicationShared: function(application) {
+            _computeApplicationShared(application) {
                 return application && !application.owner;
-            },
+            }
 
-            _computeEditClaims: function(application) {
+            _computeEditClaims(application) {
                 return application.permisions && application.permisions.edit_claims;
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
                 this._initializeResourcesDragBehavior();
-            },
+            }
 
-            initializePage: function() {
+            initializePage() {
                 this.setDefaultApplication();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.$.appscoApplications.reset();
                 this.$.appscoApplications.reloadApplications();
                 this.$.appscoFolders.resetAllItems();
                 this._hideInfo();
-            },
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
                 this._infoShown = true;
                 this._selectedTab = 0;
-            },
+            }
 
-            _hideInfo: function() {
+            _hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
-            },
+            }
 
-            toggleInfo: function() {
+            toggleInfo() {
                 this.$.appscoContent.toggleSection('info');
                 this._infoShown = !this._infoShown;
 
                 if (this._infoShown) {
                     this._selectedTab = 0;
                 }
-            },
+            }
 
-            _onViewApplicationInfo: function(event) {
+            _onViewApplicationInfo(event) {
                 this.set('application', event.detail.application);
 
                 if (!this._infoShown) {
                     this._showInfo();
                 }
-            },
+            }
 
-            _onApplicationEdit: function(event) {
+            _onApplicationEdit(event) {
                 this.set('application', event.detail.application);
-                this.fire('edit-application', {
-                    application: event.detail.application
-                });
-            },
+                this.dispatchEvent(new CustomEvent('edit-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: event.detail.application
+                    }
+                }));
+            }
 
-            _onApplicationInfoEdit: function() {
-                this.fire('info-edit-application', {
-                    application: this.application
-                });
-            },
+            _onApplicationInfoEdit() {
+                this.dispatchEvent(new CustomEvent('info-edit-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onApplicationEditCredentials: function() {
-                this.fire('info-edit-application-credentials', {
-                    application: this.application
-                });
-            },
+            _onApplicationEditCredentials() {
+                this.dispatchEvent(new CustomEvent('info-edit-application-credentials', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onApplication: function(event) {
+            _onApplication(event) {
                 if(['unpw', 'item', 'none', 'saml', 'saml_dropbox', 'saml_office_365', 'open_id'].indexOf(event.detail.application.auth_type) > -1) {
                     window.open(event.detail.application.meta.plugin_go, "_blank");
                 } else {
                     this._onViewApplicationInfo(event);
                 }
-            },
+            }
 
-            _onShareApplication: function() {
-                this.fire('share-application', {
-                    application: this.application
-                });
-            },
+            _onShareApplication() {
+                this.dispatchEvent(new CustomEvent('share-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onRevokeApplication: function() {
-                this.fire('revoke-application', {
-                    application: this.application
-                });
-            },
+            _onRevokeApplication() {
+                this.dispatchEvent(new CustomEvent('revoke-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onPageConfigChanged: function(newValue) {
+            _onPageConfigChanged(newValue) {
                 newValue = newValue[this.getAttribute('name')];
 
                 if (!newValue) {
@@ -552,46 +568,46 @@
                         ascending: newValue.sort_ascending
                     });
                 }
-            },
+            }
 
-            reloadApplications: function() {
+            reloadApplications() {
                 this.$.appscoApplications.reloadApplications();
-            },
+            }
 
-            setApplication: function(application) {
+            setApplication(application) {
                 this.$.appscoApplications.modifyApplications([application]);
-            },
+            }
 
-            addApplications: function(applications) {
+            addApplications(applications) {
                 this.$.appscoApplications.addApplications(applications);
-            },
+            }
 
-            removeApplications: function(applications) {
+            removeApplications(applications) {
                 this.$.appscoApplications.removeApplications(applications);
-            },
+            }
 
-            _onApplicationRemoved: function() {
+            _onApplicationRemoved() {
                 this.setDefaultApplication();
-            },
+            }
 
-            setDefaultApplication: function() {
+            setDefaultApplication() {
                 this.set('application', this.$.appscoApplications.getFirstApplication());
-            },
+            }
 
-            filterApplicationsByTerm: function(term) {
+            filterApplicationsByTerm(term) {
                 this.$.appscoApplications.filterByTerm(term);
-            },
+            }
 
-            filterApplicationsByStatus: function(api) {
+            filterApplicationsByStatus(api) {
                 this.$.appscoApplications.filterByStatus(api);
-            },
+            }
 
-            addFolder: function(folder) {
+            addFolder(folder) {
                 this._showFolders();
                 this.$.appscoFolders.addItems([folder]);
-            },
+            }
 
-            removeFolder: function() {
+            removeFolder() {
                 this.$.appscoFolders.reloadItems();
 
                 if (this.$.appscoFolders.getCurrentCount() > 0) {
@@ -599,31 +615,36 @@
                 } else {
                     this._hideFolders();
                 }
-            },
+            }
 
-            renameFolder: function() {
+            renameFolder() {
                 this._showFolders();
                 this.$.appscoFolders.reloadItems();
-            },
-
-            _showFolders: function() {
-                this._foldersEmpty = false;
-            },
-
-            _hideFolders: function() {
-                this._foldersEmpty = true;
-            },
-
-            _initializeResourcesDragBehavior: function() {
-                this.$.appscoApplications.initializeResourcesDragBehavior();
-            },
-
-            _onFolderAction: function(event) {
-                this.fire('folder-tapped', {
-                    folder: event.detail.item,
-                    personal: true
-                });
             }
-        });
+
+            _showFolders() {
+                this._foldersEmpty = false;
+            }
+
+            _hideFolders() {
+                this._foldersEmpty = true;
+            }
+
+            _initializeResourcesDragBehavior() {
+                this.$.appscoApplications.initializeResourcesDragBehavior();
+            }
+
+            _onFolderAction(event) {
+                this.dispatchEvent(new CustomEvent('folder-tapped', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        folder: event.detail.item,
+                        personal: true
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoHomePage.is, AppscoHomePage);
     </script>
 </dom-module>

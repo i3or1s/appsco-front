@@ -30,39 +30,40 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoReportsPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-reports-page-actions'; }
 
-            is: 'appsco-reports-page-actions',
+            static get properties() {
+                return {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-            properties: {
+            ready() {
+                super.ready();
 
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 200,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 200,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ]
-        });
+                };
+            }
+        }
+        window.customElements.define(AppscoReportsPageActions.is, AppscoReportsPageActions);
     </script>
 </dom-module>
 

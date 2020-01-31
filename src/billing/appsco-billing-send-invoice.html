@@ -69,104 +69,77 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoBillingSendInvoice extends Polymer.Element {
+            static get is() { return 'appsco-billing-send-invoice'; }
 
-            is: 'appsco-billing-send-invoice',
+            static get properties() {
+                return {
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    invoice: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    authorizationToken: {
+                        type: String
+                    },
+
+                    companyApi: {
+                        type: String
+                    },
+
+                    _sendInvoiceApi: {
+                        type: String,
+                        computed: '_computeSendInvoiceApi(companyApi, invoice, subscription)'
+                    },
+
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                invoice: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                companyApi: {
-                    type: String
-                },
-
-                _sendInvoiceApi: {
-                    type: String,
-                    computed: '_computeSendInvoiceApi(companyApi, invoice, subscription)'
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            },
+            }
 
-            _computeSendInvoiceApi: function(companyApi, invoice, subscription) {
+            _computeSendInvoiceApi(companyApi, invoice, subscription) {
                 return companyApi + '/billing/' + subscription.id + '/invoice/' + invoice.id + '/send';
-            },
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._loader = false;
-            },
+            }
 
-            _onSend: function() {
+            _onSend() {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this._sendInvoiceApi,
@@ -180,25 +153,25 @@
                 request.send(options).then(function(request) {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when invoice has been sent.
-                     *
-                     * @event invoice-sent
-                     */
-                    this.fire('invoice-sent', {
-                        sentTo: this.company.company.billing_email
-                    });
+                    this.dispatchEvent(new CustomEvent('invoice-sent', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            sentTo: this.company.company.billing_email
+                        }
+                    }));
                 }.bind(this));
-            },
+            }
 
-            setInvoice: function(invoice) {
+            setInvoice(invoice) {
                 this.set('invoice', invoice);
-            },
+            }
 
-            setSubscription: function(subscription) {
+            setSubscription(subscription) {
                 this.set('subscription', subscription);
             }
 
-        });
+        }
+        window.customElements.define(AppscoBillingSendInvoice.is, AppscoBillingSendInvoice);
     </script>
 </dom-module>

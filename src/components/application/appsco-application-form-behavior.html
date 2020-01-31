@@ -17,7 +17,7 @@
         },
 
         isValid: function() {
-            var valid = true;
+            let valid = true;
             Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item, key) {
                 item.validate();
                 valid = valid && !item.invalid;
@@ -27,12 +27,11 @@
         },
 
         encodedBodyValues: function () {
-            var body = '';
+            let body = '';
 
             Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item, key) {
-
                 if ('choice' === item.getAttribute('data-field') && item.selectedItem) {
-                    var value = item.selectedItem.value;
+                    const value = item.selectedItem.value;
                     body += body === '' ? '' : '&';
                     body += encodeURIComponent(item.getAttribute('name')) + '=' + encodeURIComponent(value)
                 }
@@ -46,13 +45,12 @@
         },
 
         didFieldsChanged: function() {
-            var fieldChanged = false;
+            let fieldChanged = false;
 
-            for (var prop in this.claims) {
-
+            for (let prop in this.claims) {
                 Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item, key) {
-                    var value = ('choice' === item.getAttribute('data-field')) ?
-                                (item.selectedItem ? item.selectedItem.value : '') : item.value;
+                    const value = ('choice' === item.getAttribute('data-field')) ?
+                        (item.selectedItem ? item.selectedItem.value : '') : item.value;
 
                     fieldChanged = fieldChanged || this.claims[item.getAttribute('id')] !== value;
                 }.bind(this));
@@ -61,8 +59,8 @@
             }
 
             Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item, key) {
-                var value = ('choice' === item.getAttribute('data-field')) ?
-                        (item.selectedItem ? item.selectedItem.value : '') : item.value;
+                const value = ('choice' === item.getAttribute('data-field')) ?
+                    (item.selectedItem ? item.selectedItem.value : '') : item.value;
 
                 fieldChanged = fieldChanged || value;
             }.bind(this));
@@ -71,9 +69,8 @@
         },
 
         reset: function() {
-
             Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item, key) {
-                var inputContainer = item.$$('#container');
+                const inputContainer = item.$$('#container');
 
                 item.value = this.claims[item.getAttribute('id')] ? this.claims[item.getAttribute('id')] : '';
                 item.invalid = false;

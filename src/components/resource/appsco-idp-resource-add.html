@@ -10,6 +10,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-idp-resource-add">
     <template>
         <style>
@@ -59,16 +61,18 @@
                 <div class="dialog-container">
                     <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 
-                    <form is="iron-form"
-                          hidden
-                          id="addResourceForm"
-                          method="POST"
-                          action="[[ addResourceApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
-                        <paper-input type="text" name="application_templates[]" value="[[ link.self ]]"></paper-input>
-                    </form>
+                    <iron-form
+                            id="addResourceForm"
+                            hidden
+                            headers="[[ _headers ]]"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
+                                method="POST"
+                                action="[[ addResourceApi ]]">
+                            <paper-input type="text" name="application_templates[]" value="[[ link.self ]]"></paper-input>
+                        </form>
+                    </iron-form>
 
                     <form is="iron-form"
                           id="saveResourceForm">
@@ -114,130 +118,116 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIdpResourceAdd extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-idp-resource-add'; }
 
-            is: 'appsco-idp-resource-add',
-
-            properties: {
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                addResourceApi: {
-                    type: String
-                },
-
-                resource: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                link: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.addResourceForm
-                    }
-                }
-            },
-
-            open: function() {
-                this._openDialog();
-            },
-
-            setResource: function(resource) {
-                this.set('resource', resource);
-            },
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    addResourceApi: {
+                        type: String
+                    },
 
-            _showLoader: function() {
+                    resource: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    link: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this._target = this.$.addResourceForm;
+            }
+
+            open() {
+                this._openDialog();
+            }
+
+            setResource(resource) {
+                this.set('resource', resource);
+            }
+
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _openDialog: function() {
+            _openDialog() {
                 this.$.addResourceDialog.open();
-            },
+            }
 
-            _closeDialog: function() {
+            _closeDialog() {
                 this.$.addResourceDialog.close();
-            },
+            }
 
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.title.focus();
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this.set('resource', {});
-            },
+            }
 
-            _onEnter: function() {
+            _onEnter() {
                 this._onAddResourceAction();
-            },
+            }
 
-            _onAddResourceAction: function() {
+            _onAddResourceAction() {
                 this._hideError();
 
                 if (this.$.saveResourceForm.validate()) {
                     this._showLoader();
                     this._target.submit();
                 }
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
             /**
              * Called after resource is added as icon.
@@ -246,8 +236,8 @@
              * @param {Object} event
              * @private
              */
-            _onFormResponse: function(event) {
-                var resources = event.detail.response.applications;
+            _onFormResponse(event) {
+                const resources = event.detail.response.applications;
 
                 if (resources && 0 < resources.length) {
                     this._updateResourceSettings(resources[0]);
@@ -256,13 +246,13 @@
                     this._showError(this.apiErrors.getError(404));
                     this._hideLoader();
                 }
-            },
+            }
 
-            _updateResourceSettings: function(resource) {
-                var title = this.$.title.value,
+            _updateResourceSettings(resource) {
+                const title = this.$.title.value,
                     url = this.$.url.value;
 
-                if (resource.title !== title || resource.url != url) {
+                if (resource.title !== title || resource.url !== url) {
                     this._submitResourceConfigure(resource).then(function(resource) {
                         this._onResourceAdded(resource);
                     }.bind(this), function(message) {
@@ -273,30 +263,28 @@
                 else {
                     this._onResourceAdded(resource);
                 }
-            },
+            }
 
-            _submitResourceConfigure: function(resource) {
-                var titleInput = this.$.title,
+            _submitResourceConfigure(resource) {
+                const titleInput = this.$.title,
                     urlInput = this.$.url;
 
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         options = {
                             url: resource.self,
                             method: 'PATCH',
                             handleAs: 'json',
                             headers: this._headers
-                        },
-                        body;
+                        };
 
-                    body = encodeURIComponent(titleInput.name) + '=' + encodeURIComponent(titleInput.value);
-                    body += body == '' ? '' : '&';
+                    let body = encodeURIComponent(titleInput.name) + '=' + encodeURIComponent(titleInput.value);
+                    body += '&';
                     body += encodeURIComponent(urlInput.name) + '=' + encodeURIComponent(urlInput.value);
 
                     options.body = body;
 
                     request.send(options).then(function() {
-
                         if (request.succeeded) {
                             resolve(request.response);
                         }
@@ -304,21 +292,21 @@
                         reject(this.apiErrors.getError(request.response.code));
                     });
                 }.bind(this));
-            },
+            }
 
-            _onResourceAdded: function(resource) {
-                /**
-                 * Fired after resource has been added.
-                 *
-                 * @event resource-added
-                 */
-                this.fire('resource-added', {
-                    template: this.resource,
-                    resource: resource
-                });
+            _onResourceAdded(resource) {
+                this.dispatchEvent(new CustomEvent('resource-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        template: this.resource,
+                        resource: resource
+                    }
+                }));
 
                 this._closeDialog();
             }
-        });
+        }
+        window.customElements.define(AppscoIdpResourceAdd.is, AppscoIdpResourceAdd);
     </script>
 </dom-module>

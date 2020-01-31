@@ -72,17 +72,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoActiveIntegrations extends Polymer.mixinBehaviors([Polymer.AppscoListBehavior], Polymer.Element) {
+            static get is() { return 'appsco-active-integrations'; }
 
-            is: 'appsco-active-integrations',
-
-            behaviors: [
-                Polymer.AppscoListBehavior
-            ],
-
-            reloadIntegrations: function() {
+            reloadIntegrations() {
                 this.reloadItems();
             }
-        });
+        }
+        window.customElements.define(AppscoActiveIntegrations.is, AppscoActiveIntegrations);
     </script>
 </dom-module>

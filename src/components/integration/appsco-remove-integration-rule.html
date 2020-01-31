@@ -9,6 +9,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-remove-integration-rule">
     <template>
         <style>
@@ -67,111 +69,95 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoRemoveIntegrationRule extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-remove-integration-rule'; }
 
-            is: 'appsco-remove-integration-rule',
-
-            properties: {
-
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                rule: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _removeIntegrationRuleApi: {
-                    type: String,
-                    computed: '_computeRemoveIntegrationRuleApi(rule)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            setIntegration: function(integration) {
-                this.set('integration', integration);
-            },
-
-            setIntegrationRule: function(rule) {
-                this.set('rule', rule);
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    rule: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _removeIntegrationRuleApi: {
+                        type: String,
+                        computed: '_computeRemoveIntegrationRuleApi(rule)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeRemoveIntegrationRuleApi: function(rule) {
+            setIntegration(integration) {
+                this.set('integration', integration);
+            }
+
+            setIntegrationRule(rule) {
+                this.set('rule', rule);
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _computeRemoveIntegrationRuleApi(rule) {
                 return rule ? rule.self : null;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onRemoveAction: function() {
-                var request = document.createElement('iron-request'),
+            _onRemoveAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._removeIntegrationRuleApi,
                         method: 'DELETE',
@@ -182,19 +168,15 @@
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when rule is deleted.
-                         *
-                         * @event integration-rule-removed
-                         * @param {Object} integration, {Object} rule
-                         */
-                        this.fire('integration-rule-removed', {
-                            integration: this.integration,
-                            rule: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('integration-rule-removed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                integration: this.integration,
+                                rule: request.response
+                            }
+                        }));
 
                         this.close();
                     }
@@ -204,6 +186,7 @@
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoRemoveIntegrationRule.is, AppscoRemoveIntegrationRule);
     </script>
 </dom-module>

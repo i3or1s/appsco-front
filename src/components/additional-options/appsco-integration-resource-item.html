@@ -38,34 +38,37 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationResourceItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-integration-resource-item'; }
 
-            is: 'appsco-integration-resource-item',
+            static get properties() {
+                return {
+                    _resourceIcon: {
+                        type: String,
+                        computed: '_computeResourceIcon(item)'
+                    }
+                };
+            }
 
-            properties: {
-
-                _resourceIcon: {
-                    type: String,
-                    computed: '_computeResourceIcon(item)'
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            _computeResourceIcon: function(resource) {
+            _computeResourceIcon(resource) {
                 return resource.application_url ? resource.application_url : (resource.icon_url ? resource.icon_url : null);
-            },
+            }
 
-            _onAddItemAction: function(event) {
+            _onAddItemAction(event) {
                 event.preventDefault();
 
-                this.fire('add-item', {
-                    item: this.item
-                });
+                this.dispatchEvent(new CustomEvent('add-item', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        item: this.item
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoIntegrationResourceItem.is, AppscoIntegrationResourceItem);
     </script>
 </dom-module>

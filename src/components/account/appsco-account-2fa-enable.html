@@ -19,6 +19,8 @@
 <link rel="import" href="../components/appsco-form-error.html">
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-2fa-enable`
 It informs user on how to download google authenticator app and how to set it up on appsco account.
@@ -320,31 +322,31 @@ Example:
                 <div name="verify" class="tab-content flex-vertical-center">
                     <h2 class="subtitle">Enter 6-digit code</h2>
 
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-presubmit="_onFormPresubmit"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
+                                method="POST"
+                                action="[[ twoFaApi ]]">
+                            <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+
+                            <paper-input class="verification-code-input"
+                                         label="Verification code"
+                                         name="two_factor[key]"
+                                         char-counter
+                                         maxlength="6"
+                                         pattern="[0-9]*"
+                                         required
+                                         auto-validate
+                                         error-message="Please enter valid code. Only digits are allowed."></paper-input>
+                        </form>
+                    </iron-form>
                     <appsco-loader active="[[ _loader ]]"
                                    loader-alt="Appsco is processing request"
                                    multi-color></appsco-loader>
-
-                    <form is="iron-form"
-                          id="form"
-                          method="POST"
-                          action="[[ twoFaApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-presubmit="_onFormPresubmit"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
-
-                        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
-
-                        <paper-input class="verification-code-input"
-                                     label="Verification code"
-                                     name="two_factor[key]"
-                                     char-counter
-                                     maxlength="6"
-                                     pattern="[0-9]*"
-                                     required
-                                     auto-validate
-                                     error-message="Please enter valid code. Only digits are allowed."></paper-input>
-                    </form>
                     <div class="verification-info">
                         <iron-icon icon="icons:info"
                                    class="info-icon"></iron-icon>
@@ -383,199 +385,176 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccount2faEnable extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior, Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-2fa-enable'; }
 
-            is: 'appsco-account-2fa-enable',
+            static get properties() {
+                return {
+                    twoFaApi: {
+                        type: String
+                    },
 
-            properties: {
+                    twoFaQrApi: {
+                        type: String
+                    },
 
-                twoFaApi: {
-                    type: String
-                },
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                twoFaQrApi: {
-                    type: String
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    errored: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _selectedStep: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _progress: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    _activePreviousAction: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _activeNextAction: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _qrCode: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _qrSecret: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                errored: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                this._target = this.$.form;
 
-                _selectedStep: {
-                    type: String,
-                    value: ''
-                },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this._selectSetupStep();
+                    this._getTwoFaQr();
+                });
+            }
 
-                _progress: {
-                    type: Number,
-                    value: 1
-                },
-
-                _activePreviousAction: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _activeNextAction: {
-                    type: Boolean,
-                    value: true
-                },
-
-                /**
-                 * QR code for authenticator.
-                 */
-                _qrCode: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * QR secret for authenticator.
-                 */
-                _qrSecret: {
-                    type: String,
-                    value: ''
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.form
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            attached: function() {
-                this._selectSetupStep();
-                this._getTwoFaQr();
-            },
-
-            reset: function() {
+            reset() {
                 this._selectSetupStep();
                 this._resetSteps();
                 this._hideLoader();
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
-
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
                 this.errored = true;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
                 this.errored = false;
-            },
+            }
 
-            _getTwoFaQr: function() {
-                var request = document.createElement('iron-request'),
+            _getTwoFaQr() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this.twoFaQrApi,
                         method: 'GET',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken
-                        }
+                        headers: this._headers
                     };
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
                         this._qrCode = request.response.qr;
                         this._qrSecret = request.response.secret;
                     }
                 }.bind(this));
-            },
+            }
 
-            _resetSteps: function() {
+            _resetSteps() {
                 this.$.scan.classList.remove('iron-selected');
                 this.$.verify.classList.remove('iron-selected');
                 this._activePreviousAction = false;
                 this._activeNextAction = true;
                 this._disableVerifyStep();
                 this._resetVerificationForm();
-            },
+            }
 
-            _selectSetupStep: function() {
+            _selectSetupStep() {
                 this.$.steps.select('setup');
-            },
+            }
 
-            _showSetupStep: function() {
+            _showSetupStep() {
                 this.$.setup.classList.add('iron-selected');
                 this._progress = 1;
-            },
+            }
 
-            _showScanStep: function() {
+            _showScanStep() {
                 this.$.scan.classList.add('iron-selected');
                 this.$.verify.classList.remove('iron-selected');
                 this._progress = 2;
                 this._activePreviousAction = true;
                 this._activeNextAction = true;
                 this._resetVerificationForm();
-            },
+            }
 
-            _showVerifyStep: function() {
+            _showVerifyStep() {
                 this.$.verify.classList.add('iron-selected');
                 this._progress = 3;
                 this._activeNextAction = false;
-            },
+            }
 
-            _enableVerifyStep: function() {
+            _enableVerifyStep() {
                 this.$.verify.disabled = false;
-            },
+            }
 
-            _disableVerifyStep: function() {
+            _disableVerifyStep() {
                 this.$.verify.disabled = true;
-            },
+            }
 
-            _activateStep: function(step) {
-
+            _activateStep(step) {
                 this._selectedStep = step;
 
                 switch (step) {
@@ -583,97 +562,87 @@ Example:
                         this._showSetupStep();
                         this._resetSteps();
                         break;
-
                     case 'scan':
                         this._showSetupStep();
                         this._showScanStep();
                         this._enableVerifyStep();
                         break;
-
                     case 'verify':
                         this._showSetupStep();
                         this._showScanStep();
                         this._showVerifyStep();
                         break;
-
                     default:
                         return false;
                 }
-            },
+            }
 
-            _onStepSelected: function(event) {
+            _onStepSelected(event) {
                 this._activateStep(event.detail.item.getAttribute('name'));
-            },
+            }
 
-            _onPreviousAction: function() {
-
+            _onPreviousAction() {
                 switch (this._selectedStep) {
                     case 'scan':
                         this._activateStep('setup');
                         break;
-
                     case 'verify':
                         this._activateStep('scan');
                         break;
-
                     default:
                         return false;
                 }
-            },
+            }
 
-            _onNextAction: function() {
-
+            _onNextAction() {
                 switch (this._selectedStep) {
                     case 'setup':
                         this._activateStep('scan');
                         break;
-
                     case 'scan':
                         this._activateStep('verify');
                         break;
-
                     default:
                         return false;
                 }
-            },
+            }
 
-            _onEnter: function() {
+            _onEnter() {
                 this._submitForm();
-            },
+            }
 
-            _submitForm: function() {
-
+            _submitForm() {
                 this._hideError();
 
                 if (this._target.validate()) {
                     this._showLoader();
                     this._target.submit();
                 }
+            }
 
-            },
-
-            _onSaveAction: function() {
+            _onSaveAction() {
                 this._submitForm();
-            },
+            }
 
-            _onFormPresubmit: function(event) {
+            _onFormPresubmit(event) {
                 event.target.request.body['two_factor[googleAuthenticatorSecret]'] = this._qrSecret;
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function(event) {
-                this.fire('twofa-enabled');
+            _onFormResponse(event) {
+                this.dispatchEvent(new CustomEvent('twofa-enabled', { bubbles: true, composed: true }));
                 this.reset();
-            },
+            }
 
-            _resetVerificationForm: function() {
+            _resetVerificationForm() {
                 this._target.reset();
                 this._hideError();
             }
-        });
+        }
+        window.customElements.define(AppscoAccount2faEnable.is, AppscoAccount2faEnable);
     </script>
 </dom-module>

@@ -16,6 +16,8 @@
 <link rel="import" href="appsco-application-info.html">
 <link rel="import" href="appsco-application-settings.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-application-add-settings`
 Is used to present application settings.
@@ -63,15 +65,17 @@ Custom property | Description | Default
 
             <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 
-            <form is="iron-form"
-                  hidden
-                  id="addApplicationForm"
-                  method="POST"
-                  action$="[[ _computedAction ]]"
-                  headers="[[ _computedHeaders ]]"
-                  on-iron-form-response="_onFormResponse">
-                <input type="text" name="application[resource]" value$="[[ applicationTemplate.self ]]">
-            </form>
+            <iron-form
+                    id="addApplicationForm"
+                    hidden
+                    headers="[[ _headers ]]"
+                    on-iron-form-response="_onFormResponse">
+                <form
+                      method="POST"
+                      action$="[[ _computedAction ]]">
+                    <input type="text" name="application[resource]" value$="[[ applicationTemplate.self ]]">
+                </form>
+            </iron-form>
 
             <appsco-application-settings
                     id="applicationSettings"
@@ -87,128 +91,99 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationAddSettings extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-application-add-settings'; }
 
-            is: 'appsco-application-add-settings',
+            static get properties() {
+                return {
+                    _saveButton: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            properties: {
-
-                _saveButton: {
-                    type: Boolean,
-                    value: false
-                },
-
-                applicationTemplate: {
-                    type: Object,
-                    value: function () { return {}; }
-                },
-
-                /**
-                 * Application to add.
-                 */
-                application: {
-                    type: Object,
-                    notify: true,
-                    value: function () { return {}; }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Dashboard API link.
-                 * API on which dashboard to save new application.
-                 */
-                dashboardApi: {
-                    type: String
-                },
-
-                /**
-                 * Computed action to call in order to save application as icon.
-                 */
-                _computedAction: {
-                    type: String,
-                    computed: "_computeAction(dashboardApi)"
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                /**
-                 * Indicates if appsco loader should be displayed.
-                 */
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message for settings form.
-                 */
-                _error: {
-                    type: String
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 600
-                                }
-                            }],
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this
-                            }
+                    applicationTemplate: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
-                    }
-                },
+                    },
 
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.appscoApplicationSettings
+                    application: {
+                        type: Object,
+                        notify: true,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    dashboardApi: {
+                        type: String
+                    },
+
+                    /**
+                     * Computed action to call in order to save application as icon.
+                     */
+                    _computedAction: {
+                        type: String,
+                        computed: "_computeAction(dashboardApi)"
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
+            ready() {
+                super.ready();
 
-            _fireNoChangesInSettings: function (e) {
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 600
+                        }
+                    }],
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this
+                    }
+                };
+                this.sharedElements = {
+                    'hero': this.shadowRoot.getElementById('appscoApplicationSettings')
+                };
+            }
+
+            _fireNoChangesInSettings(e) {
                 this.application = e.detail.application;
                 this._onApplicationAdded();
-            },
+            }
 
-            _fireSettingsChanged: function (e) {
+            _fireSettingsChanged(e) {
                 this.application = e.detail.application;
                 this._onApplicationAdded();
-            },
+            }
 
             /**
              * Computes action for saving application as icon.
@@ -217,22 +192,9 @@ Custom property | Description | Default
              * @returns {string}
              * @private
              */
-            _computeAction: function (dashboardApi) {
+            _computeAction(dashboardApi) {
                 return dashboardApi + '/icons';
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+            }
 
             /**
              * Called on form error when trying to add new application as icon.
@@ -240,10 +202,10 @@ Custom property | Description | Default
              * @param {Object} event
              * @private
              */
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._error = event.detail.error.message;
                 this._hideLoader();
-            },
+            }
 
             /**
              * Called after application is added as icon.
@@ -252,22 +214,20 @@ Custom property | Description | Default
              * @param {Object} event
              * @private
              */
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 this.$.applicationSettings.save(event.detail.response.icon);
-            },
+            }
 
             /**
              * Submits form which adds application as item.
              */
-            addApplication: function() {
-
+            addApplication() {
                 if (this.$.applicationSettings.isValid()) {
                     this.$.addApplicationForm.submit();
                 } else {
-                    this.fire('form-error');
+                    this.dispatchEvent(new CustomEvent('form-error', { bubbles: true, composed: true }));
                 }
-
-            },
+            }
 
             /**
              * Called after application has been added.
@@ -275,37 +235,34 @@ Custom property | Description | Default
              *
              * @private
              */
-            _onApplicationAdded: function() {
+            _onApplicationAdded() {
                 this._hideLoader();
 
-                /**
-                 * Fired after application has been added.
-                 *
-                 * @event application-added
-                 */
-                this.fire('application-added', {
-                    application: this.application
-                });
-            },
+                this.dispatchEvent(new CustomEvent('application-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            /**
-             * Resets component.
-             */
-            reset: function() {
+            reset() {
                 this.$.addApplicationForm.reset();
                 this.set('application', {});
                 this.set('applicationTemplate', {});
                 this.$.applicationSettings.reset();
                 this._hideLoader();
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationAddSettings.is, AppscoApplicationAddSettings);
     </script>
 </dom-module>

@@ -9,6 +9,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-remove-domain`
 Shows dialog screen with confirmation for account removal from organization unit.
@@ -78,102 +80,76 @@ Shows dialog screen with confirmation for account removal from organization unit
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyRemoveDomain extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior, Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-remove-domain'; }
 
-            is: 'appsco-company-remove-domain',
-
-            properties: {
-
-                /**
-                 * Domain to remove.
-                 */
-                domain: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _removeDomainApi: {
-                    type: String,
-                    computed: '_computeRemoveDomainApi(domain)'
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            setDomain: function(domain) {
-                this.domain = domain;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    domain: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _removeDomainApi: {
+                        type: String,
+                        computed: '_computeRemoveDomainApi(domain)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeRemoveDomainApi: function(domain) {
+            setDomain(domain) {
+                this.domain = domain;
+            }
+
+            open () {
+                this.$.dialog.open();
+            }
+
+            close () {
+                this.$.dialog.close();
+            }
+
+            toggle () {
+                this.$.dialog.toggle();
+            }
+
+            _computeRemoveDomainApi(domain) {
                 return domain.self ? domain.self : '';
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _remove: function() {
+            _remove() {
                 var request = document.createElement('iron-request'),
                         options = {
                             url: this._removeDomainApi,
@@ -187,18 +163,14 @@ Shows dialog screen with confirmation for account removal from organization unit
                 request.send(options).then(function() {
                     this.close();
 
-                    /**
-                     * Fired when domain is deleted.
-                     *
-                     * @event domain-removed
-                     * @param [Object] domain
-                     */
-                    this.fire('domain-removed', {
-                        domain: this.domain
-                    });
-
+                    this.dispatchEvent(new CustomEvent('domain-removed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            domain: this.domain
+                        }
+                    }));
                 }.bind(this), function() {
-
                     if (request.status === 404) {
                         this._showError('We couldn\'t remove domain from company. Please try again in a minute.');
                     }
@@ -206,6 +178,7 @@ Shows dialog screen with confirmation for account removal from organization unit
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyRemoveDomain.is, AppscoCompanyRemoveDomain);
     </script>
 </dom-module>

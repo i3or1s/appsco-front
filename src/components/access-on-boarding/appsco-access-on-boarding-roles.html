@@ -90,67 +90,74 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessOnBoardingRoles extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-access-on-boarding-roles'; }
 
-            is: 'appsco-access-on-boarding-roles',
+            static get properties() {
+                return {
+                    _accountsCount: {
+                        type: Number,
+                        value: 0
+                    },
 
-            properties: {
+                    _eventTypesListUrl: {
+                        type: String,
+                        value: function () {
+                            return this.resolveUrl('./data/event-types.json');
+                        }
+                    },
 
-                _accountsCount: {
-                    type: Number,
-                    value: 0
-                },
+                    _eventTypesList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                _eventTypesListUrl: {
-                    type: String,
-                    value: function() {
-                        return this.resolveUrl('./data/event-types.json');
+                    _request: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     }
-                },
+                };
+            }
 
-                _eventTypesList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-                _request: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                }
-            },
+            ready() {
+                super.ready();
 
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
-            observers: [
-                '_observeItems(_listItems)'
-            ],
+            _addListeners() {
+                this.addEventListener('filter-done', this._getResultTotal);
+                this.addEventListener('list-loaded', this._getResultTotal);
+                this.addEventListener('list-empty', this._getResultTotal);
+                this.addEventListener('remove-item', this._onRemoveItemAction);
+            }
 
-            listeners: {
-                'filter-done': '_getResultTotal',
-                'list-loaded': '_getResultTotal',
-                'list-empty': '_getResultTotal',
-                'remove-item': '_onRemoveItemAction'
-            },
-
-            _observeItems: function(items) {
+            _observeItems(items) {
                 this.setObservableType('accounts');
                 this.populateItems(items);
-            },
+            }
 
-            _getAccessOnBoarding: function(term, group) {
-
+            _getAccessOnBoarding(term, group) {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         url = (this.listApi + '?extended=1&limit=1000' +
-                        (group.alias ? ('&group=' + group.alias) : '') +
-                        (term ? ('&term=' + term) : '')),
+                            (group.alias ? ('&group=' + group.alias) : '') +
+                            (term ? ('&term=' + term) : '')),
                         options = {
                             url: url,
                             method: 'GET',
@@ -161,29 +168,27 @@
                     this._request = request;
 
                     request.send(options).then(function() {
-
-                        if (200 == request.status) {
+                        if (200 === request.status) {
                             resolve(request.response.items);
                         }
-
                     }.bind(this), function() {
                         reject(this.apiErrors.getError(404));
                     }.bind(this));
                 }.bind(this));
-            },
+            }
 
-            filterRoles: function(filters) {
-                var filterTerm = (filters.term && (2 <= filters.term.length)) ? filters.term : '',
-                    filterGroup = (filters.group && ('all' != filters.group.alias)) ? filters.group : {},
+            filterRoles(filters) {
+                const filterTerm = (filters.term && (2 <= filters.term.length)) ? filters.term : '',
+                    filterGroup = (filters.group && ('all' !== filters.group.alias)) ? filters.group : {},
                     allListItems = JSON.parse(JSON.stringify(this._allListItems)),
                     allLength = allListItems.length;
 
-                for (var key in this._request) {
+                for (const key in this._request) {
                     this._request.abort();
                 }
 
                 this._getAccessOnBoarding(filterTerm, filterGroup).then(function(roles) {
-                    var itemsLength = roles.length;
+                    const itemsLength = roles.length;
 
                     if (0 === itemsLength) {
                         this._showMessage('There are no accounts with asked filters.');
@@ -199,9 +204,8 @@
                     this._listEmpty = false;
 
                     roles.forEach(function(role, index) {
-
-                        for (var i = 0; i < allLength; i++) {
-                            var currentListItem = allListItems[i];
+                        for (let i = 0; i < allLength; i++) {
+                            const currentListItem = allListItems[i];
 
                             if (role.user_info.id === currentListItem.user_info.id) {
                                 this.push('_listItems', currentListItem);
@@ -220,21 +224,21 @@
                         return false;
                     }
 
-                    this.fire('filter-done');
+                    this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                 }.bind(this), function(message) {}.bind(this));
-            },
+            }
 
-            removeItems: function(items) {
-                var currentItems = JSON.parse(JSON.stringify(this._listItems)),
+            removeItems(items) {
+                const currentItems = JSON.parse(JSON.stringify(this._listItems)),
                     length = currentItems.length,
                     allListItems = JSON.parse(JSON.stringify(this._allListItems)),
                     allLength = allListItems.length,
                     lengthModify = items.length;
 
-                for (var i = 0; i < lengthModify; i++) {
-                    var item = items[i];
+                for (let i = 0; i < lengthModify; i++) {
+                    const item = items[i];
 
-                    for (var j = 0; j < length; j++) {
+                    for (let j = 0; j < length; j++) {
                         if (item.user_info.self === currentItems[j].user_info.self) {
                             currentItems.splice(j, 1);
                             j--;
@@ -242,7 +246,7 @@
                         }
                     }
 
-                    for (var k = 0; k < allLength; k++) {
+                    for (let k = 0; k < allLength; k++) {
                         if (item.user_info.self === allListItems[k].user_info.self) {
                             allListItems.splice(k, 1);
                             k--;
@@ -251,9 +255,7 @@
                     }
 
                     this._totalItems--;
-
                 }
-
 
                 this.set('_listItems', []);
                 this.set('_listItems', currentItems);
@@ -261,27 +263,32 @@
                 this.set('_allListItems', []);
                 this.set('_allListItems', allListItems);
 
-                this.fire('items-removed', {
-                    items: items
-                });
+                this.dispatchEvent(new CustomEvent('items-removed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        items: items
+                    }
+                }));
 
                 if (0 === this._listItems.length) {
                     this._showMessage('You have removed all ' + this._typeDisplay + 's in company.');
                     this._handleEmptyLoad();
                 }
-            },
+            }
 
-            _onEventTypesListResponse: function(event, ironRequest) {
+            _onEventTypesListResponse(event, ironRequest) {
                 this.set('_eventTypesList', ironRequest.response);
-            },
+            }
 
-            _getResultTotal: function() {
+            _getResultTotal() {
                 this._accountsCount = this.getCurrentCount();
-            },
+            }
 
-            _onRemoveItemAction: function(event) {
+            _onRemoveItemAction(event) {
                 this.removeItems([event.detail.item]);
             }
-        });
+        }
+        window.customElements.define(AppscoAccessOnBoardingRoles.is, AppscoAccessOnBoardingRoles);
     </script>
 </dom-module>

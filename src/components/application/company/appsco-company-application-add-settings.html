@@ -86,40 +86,42 @@ Custom property | Description | Default
 
             <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 
-            <form is="iron-form"
-                  hidden
-                  id="applicationForm"
-                  method="POST"
-                  action$="[[ addApplicationApi ]]"
-                  headers="[[ _headers ]]"
-                  on-iron-form-response="_onFormResponse">
-                <paper-input type="text" name="application_templates[]" value="[[ application.self ]]"></paper-input>
-            </form>
+            <iron-form
+                    hidden
+                    id="applicationForm"
+                    headers="[[ _headers ]]"
+                    on-iron-form-response="_onFormResponse">
+                <form
+                      method="POST"
+                      action$="[[ addApplicationApi ]]">
+                    <paper-input type="text" name="application_templates[]" value="[[ application.self ]]"></paper-input>
+                </form>
+            </iron-form>
 
-            <form is="iron-form"
-                  id="applicationConfigurationForm">
-                <paper-input
-                        id="title"
-                        label="title"
-                        value="[[ application.title ]]"
-                        name="configure_application[title]"
-                        required
-                        auto-validate
-                        error-message="Please enter application title."
-                        ></paper-input>
-                <paper-input
-                        id="url"
-                        label="url"
-                        value="[[ application.url ]]"
-                        pattern="[[ _urlValidationPattern ]]"
-                        error-message="Url is invalid."
-                        required
-                        auto-validate
-                        name="configure_application[url]"
-                        hidden$="[[ !_shouldShowUrl ]]"
-                        ></paper-input>
-            </form>
-
+            <iron-form id="applicationConfigurationForm">
+                <form>
+                    <paper-input
+                            id="title"
+                            label="title"
+                            value="[[ application.title ]]"
+                            name="configure_application[title]"
+                            required
+                            auto-validate
+                            error-message="Please enter application title."
+                            ></paper-input>
+                    <paper-input
+                            id="url"
+                            label="url"
+                            value="[[ application.url ]]"
+                            pattern="[[ _urlValidationPattern ]]"
+                            error-message="Url is invalid."
+                            required
+                            auto-validate
+                            name="configure_application[url]"
+                            hidden$="[[ !_shouldShowUrl ]]"
+                            ></paper-input>
+                </form>
+            </iron-form>
         </div>
         <div class="claims-container">
             <template is="dom-if" if="[[ _claimsAvailable ]]">
@@ -258,336 +260,299 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyApplicationAddSettings extends Polymer.mixinBehaviors([
+            Appsco.HeadersMixin,
+            Polymer.NeonSharedElementAnimatableBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-application-add-settings'; }
 
-            is: 'appsco-company-application-add-settings',
-
-            properties: {
-
-                _action: {
-                    type: String,
-                    value: function () { return ''; },
-                    observer: '_onActionChanged'
-                },
-
-                /**
-                 * Application to add.
-                 */
-                application: {
-                    type: Object,
-                    value: function () {
-                        return {};
+            static get properties() {
+                return {
+                    _action: {
+                        type: String,
+                        value: function () {
+                            return '';
+                        },
+                        observer: '_onActionChanged'
                     },
-                    notify: true
-                },
 
-                _claimTypeIndividual: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onClaimTypeChanged'
-                },
+                    /**
+                     * Application to add.
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
 
-                _claimsAvailable: {
-                    type: Boolean
-                },
+                    _claimTypeIndividual: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onClaimTypeChanged'
+                    },
 
-                _claimsFormActive: {
-                    type: Boolean,
-                    value: true
-                },
+                    _claimsAvailable: {
+                        type: Boolean
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    _claimsFormActive: {
+                        type: Boolean,
+                        value: true
+                    },
 
-                /**
-                 * Dashboard API link.
-                 * API on which dashboard to save new application.
-                 */
-                addApplicationApi: {
-                    type: String
-                },
+                    addApplicationApi: {
+                        type: String
+                    },
 
-                _shouldShowUrl: {
-                    type: Boolean,
-                    computed: '_computeShouldShowUrl(application)'
-                },
+                    _shouldShowUrl: {
+                        type: Boolean,
+                        computed: '_computeShouldShowUrl(application)'
+                    },
 
-                _urlValidationPattern: {
-                    type: String,
-                    computed: '_computeUrlValidationPattern(application)'
-                },
+                    _urlValidationPattern: {
+                        type: String,
+                        computed: '_computeUrlValidationPattern(application)'
+                    },
 
-                _saveClaimsUri: {
-                    type: String
-                },
+                    _saveClaimsUri: {
+                        type: String
+                    },
 
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _error: {
+                        type: String
+                    },
 
-                /**
-                 * Error message for settings form.
-                 */
-                _error: {
-                    type: String
-                },
-
-                _supportedAuthTypes: {
-                    type: Array,
-                    value: function () {
-                        return [
-                            'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
-                            'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
-                        ]
-                    }
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 600
-                                }
-                            }],
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this
-                            }
+                    _supportedAuthTypes: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
+                                'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
+                            ]
                         }
-                    }
-                },
+                    },
 
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.applicationHeader
+                    _itemAuthType: {
+                        type: Boolean,
+                        computed: '_computeAuthType(_action, "catalogue-application")'
+                    },
+
+                    _creditCardAuthType: {
+                        type: Boolean,
+                        computed: '_computeAuthType(_action, "credit-card")'
+                    },
+
+                    _loginAuthType: {
+                        type: Boolean,
+                        computed: '_computeAuthType(_action, "login")'
+                    },
+
+                    _passportAuthType: {
+                        type: Boolean,
+                        computed: '_computeAuthType(_action, "passport")'
+                    },
+
+                    _secureNoteAuthType: {
+                        type: Boolean,
+                        computed: '_computeAuthType(_action, "secure-note")'
+                    },
+
+                    _softwareLicenceAuthType: {
+                        type: Boolean,
+                        computed: '_computeAuthType(_action, "software-licence")'
+                    },
+
+                    _samlAuthType: {
+                        type: Boolean,
+                        computed: '_computeSAMLAuthType(application, _action, "saml")'
+                    },
+
+                    _openIDAuthType: {
+                        type: Boolean,
+                        computed: "_computeOpenIDAuthType(application, _action, 'open_id')"
+                    },
+
+                    _samlDropBoxAuthType: {
+                        type: Boolean,
+                        computed: "_computeSAMLAuthType(application, _action, 'saml_dropbox')"
+                    },
+
+                    _samlOffice365AuthType: {
+                        type: Boolean,
+                        computed: "_computeSAMLAuthType(application, _action, 'saml_office_365')"
+                    },
+
+                    _isSSOApplication: {
+                        type: Boolean,
+                        computed: '_computeIsSSOApplication(_samlAuthType, _samlDropBoxAuthType, _samlOffice365AuthType)'
+                    },
+
+                    _applicationForm: {
+                        type: Object
+                    },
+
+                    _applicationConfigurationForm: {
+                        type: Object
+                    },
+
+                    _applicationClaimsForm: {
+                        type: Object
+                    },
+
+                    _applicationClaimsActiveForm: {
+                        type: Object
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 600
                         }
+                    }],
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this
                     }
-                },
+                };
+                this.sharedElements = {
+                    'hero': this.$.applicationHeader
+                };
 
-                _itemAuthType: {
-                    type: Boolean,
-                    computed: '_computeAuthType(_action, "catalogue-application")'
-                },
-
-                _creditCardAuthType: {
-                    type: Boolean,
-                    computed: '_computeAuthType(_action, "credit-card")'
-                },
-
-                _loginAuthType: {
-                    type: Boolean,
-                    computed: '_computeAuthType(_action, "login")'
-                },
-
-                _passportAuthType: {
-                    type: Boolean,
-                    computed: '_computeAuthType(_action, "passport")'
-                },
-
-                _secureNoteAuthType: {
-                    type: Boolean,
-                    computed: '_computeAuthType(_action, "secure-note")'
-                },
-
-                _softwareLicenceAuthType: {
-                    type: Boolean,
-                    computed: '_computeAuthType(_action, "software-licence")'
-                },
-
-                _samlAuthType: {
-                    type: Boolean,
-                    computed: '_computeSAMLAuthType(application, _action, "saml")'
-                },
-
-                _openIDAuthType: {
-                    type: Boolean,
-                    computed: "_computeOpenIDAuthType(application, _action, 'open_id')"
-                },
-
-                _samlDropBoxAuthType: {
-                    type: Boolean,
-                    computed: "_computeSAMLAuthType(application, _action, 'saml_dropbox')"
-                },
-
-                _samlOffice365AuthType: {
-                    type: Boolean,
-                    computed: "_computeSAMLAuthType(application, _action, 'saml_office_365')"
-                },
-
-                _isSSOApplication: {
-                    type: Boolean,
-                    computed: '_computeIsSSOApplication(_samlAuthType, _samlDropBoxAuthType, _samlOffice365AuthType)'
-                },
-
-                _applicationForm: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _applicationConfigurationForm: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _applicationClaimsForm: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _applicationClaimsActiveForm: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            listeners: {
-                'application-changed': '_onApplicationChanged'
-            },
-
-            attached: function() {
                 this._applicationForm = this.$.applicationForm;
                 this._applicationConfigurationForm = this.$.applicationConfigurationForm;
                 this._applicationClaimsForm = this.$.applicationClaimsForm;
-            },
 
-            _onAuthTypeChanged: function() {
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('application-changed', this._onApplicationChanged);
+            }
+
+            _onAuthTypeChanged() {
                 this.set('_applicationClaimsActiveForm', Polymer.dom(this.root).querySelector('[data-claims]'));
-            },
+            }
 
-            _computeAuthType: function (action, authType) {
+            _computeAuthType(action, authType) {
                 return action === authType;
-            },
+            }
 
-            _computeSAMLAuthType: function (application, _action, authType) {
+            _computeSAMLAuthType(application, _action, authType) {
                 if(_action !== 'sso-application') {
                     return false;
                 }
 
-                for(type in application.auth_types) {
+                for(const type in application.auth_types) {
                     if (type === authType) {
                         return true;
                     }
                 }
 
                 return false;
-            },
+            }
 
-            _computeOpenIDAuthType: function(application, _action, authType) {
+            _computeOpenIDAuthType(application, _action, authType) {
                 if(_action !== 'sso-application') {
                     return false;
                 }
 
-                for(type in application.auth_types) {
+                for(const type in application.auth_types) {
                     if (type === authType) {
                         return true;
                     }
                 }
 
                 return false;
-            },
+            }
 
-            _computeIsSSOApplication: function(samlAuthType, samlDropBoxAuthType, samlOffice365AuthType) {
+            _computeIsSSOApplication(samlAuthType, samlDropBoxAuthType, samlOffice365AuthType) {
                 return (samlAuthType || samlDropBoxAuthType || samlOffice365AuthType);
-            },
+            }
 
-            _claimsAvailableCompute: function (action) {
+            _claimsAvailableCompute(action) {
                 this._claimsAvailable = (action !== 'sso-application' && action !== 'link');
-            },
+            }
 
-            setAction: function (action) {
+            setAction(action) {
                 this._action = action;
-            },
+            }
 
-            _onActionChanged: function () {
+            _onActionChanged() {
                 this._claimsAvailableCompute(this._action)
-            },
+            }
 
-            _onClaimTypeChanged: function(individual) {
+            _onClaimTypeChanged(individual) {
                 individual ? this._hideClaimsForm() : this._showClaimsForm();
-            },
+            }
 
-            _showClaimsForm: function() {
-
+            _showClaimsForm() {
                 if (this._applicationClaimsForm) {
                     this._claimsFormActive = true;
-                    this._applicationClaimsForm.style.display = 'block';
+                    this._applicationClaimsForm.updateStyles({ 'display': 'block'});
                 }
-            },
+            }
 
-            _hideClaimsForm: function() {
+            _hideClaimsForm() {
                 this._claimsFormActive = false;
                 this._resetClaimsForm();
-            },
+            }
 
-            _resetClaimsForm: function() {
+            _resetClaimsForm() {
                 if (this._applicationClaimsForm) {
                     this._applicationClaimsForm.reset();
                 }
-            },
+            }
 
-            _onChangeClaimType: function() {
+            _onChangeClaimType() {
                 this._claimTypeIndividual = !this._claimTypeIndividual;
-            },
+            }
 
-            _computeShouldShowUrl: function (application) {
+            _computeShouldShowUrl(application) {
                 if (!(application && application.self)) {
                     return false;
                 }
 
-                var auth = this._supportedAuthTypeByPriority(application.auth_types);
+                const auth = this._supportedAuthTypeByPriority(application.auth_types);
                 return application.url_editable &&
                     ['unpw', 'item', 'login', 'none', 'open_id'].indexOf(auth) !== -1;
-            },
+            }
 
-            _computeUrlValidationPattern: function (application) {
-                var defaultPattern = '^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-zA-Z0-9]+([\\-\\.]{1}[a-zA-Z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
+            _computeUrlValidationPattern(application) {
+                const defaultPattern = '^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-zA-Z0-9]+([\\-\\.]{1}[a-zA-Z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
                     allowFtpPattern = '^(http:\\/\\/|https:\\/\\/|ftp:\\/\\/|ftps:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/|https:\\/\\/|ftp:\\/\\/|ftps:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$';
 
-                var auth = this._supportedAuthTypeByPriority(application.auth_types);
+                const auth = this._supportedAuthTypeByPriority(application.auth_types);
                 return (['login', 'none'].indexOf(auth) !== -1) ? allowFtpPattern : defaultPattern;
-            },
+            }
 
-            _supportedAuthTypeByPriority: function(authTypes) {
-                var authType = null,
+            _supportedAuthTypeByPriority(authTypes) {
+                let authType = null,
                     priority = 100;
-                for (var prop in authTypes) {
-
-                    currentPriority = this._supportedAuthTypes.indexOf(authTypes[prop]);
+                for (let prop in authTypes) {
+                    const currentPriority = this._supportedAuthTypes.indexOf(authTypes[prop]);
                     if(priority > currentPriority) {
                         authType = authTypes[prop];
                         priority = currentPriority;
@@ -599,59 +564,34 @@ Custom property | Description | Default
                 }
 
                 return authType.substring('icon_'.length);
-            },
+            }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
-
-            /**
-             * Called after application has been changed.
-             * It sets focus to title input field.
-             *
-             * @private
-             */
-            _onApplicationChanged: function() {
-
+            _onApplicationChanged() {
                 setTimeout(function() {
                     this.$.title.focus();
                     this.$.url.invalid = false;
                 }.bind(this), 100);
-
-            },
+            }
 
             /**
              * Saves application configuration.
              *
              * @private
              */
-            _updateApplicationSettings: function(application) {
-                var title = this.$.title.value,
+            _updateApplicationSettings(application) {
+                const title = this.$.title.value,
                     url = this.$.url.value;
 
-                if (application.title !== title || application.url != url) {
+                if (application.title !== title || application.url !== url) {
                     this._submitApplicationConfigure(application).then(function(application) {
-
                         this.application = application;
                         this._onApplicationAdded();
 
                         this._saveClaims(application.meta.update_claims).then(function (applicationUpdated) {
                             this.application = applicationUpdated;
                             this._onClaimsUpdated();
-
-                        }.bind(this), function () { this.fire('form-error'); }.bind(this));
-
-                    }.bind(this), function() { this.fire('form-error'); }.bind(this));
+                        }.bind(this), function () { this.dispatchEvent(new CustomEvent('form-error', { bubbles: true, composed: true })); }.bind(this));
+                    }.bind(this), function() { this.dispatchEvent(new CustomEvent('form-error', { bubbles: true, composed: true })); }.bind(this));
                 }
                 else {
                     this.application = application;
@@ -660,10 +600,9 @@ Custom property | Description | Default
                     this._saveClaims(application.meta.update_claims).then(function (applicationUpdated) {
                         this.application = applicationUpdated;
                         this._onClaimsUpdated();
-
-                    }.bind(this), function () { this.fire('form-error'); }.bind(this));
+                    }.bind(this), function () { this.dispatchEvent(new CustomEvent('form-error', { bubbles: true, composed: true })); }.bind(this));
                 }
-            },
+            }
 
             /**
              * Configures application with given title and url.
@@ -671,19 +610,17 @@ Custom property | Description | Default
              * @returns {*}
              * @private
              */
-            _submitApplicationConfigure: function(application) {
+            _submitApplicationConfigure(application) {
                 var titleInput = this.$.title,
                     urlInput = this.$.url;
 
                 return new Promise(function(resolve, reject) {
-                    var body = '';
-
-                    body = encodeURIComponent(titleInput.name) + '=' + encodeURIComponent(titleInput.value);
-                    body += body == "" ? '' : '&';
+                    let body = encodeURIComponent(titleInput.name) + '=' + encodeURIComponent(titleInput.value);
+                    body += '&';
                     body += encodeURIComponent(urlInput.name) + '=' + encodeURIComponent(urlInput.value);
 
-                    if('' != body) {
-                        var options = {
+                    if('' !== body) {
+                        const options = {
                             url: application.self,
                             method: 'PATCH',
                             body: body,
@@ -691,38 +628,28 @@ Custom property | Description | Default
                             headers: this._headers
                         };
 
-                        var request = document.createElement('iron-request');
+                        const request = document.createElement('iron-request');
                         request.send(options).then(function() {
-
                             if (request.succeeded) {
                                 resolve(request.response);
                             }
-
                         });
                     } else {
                         reject(false);
                     }
                 }.bind(this));
-            },
+            }
 
-            /**
-             * Saves claims configuration.
-             *
-             * @private
-             */
-            _saveClaims: function(claimsUri) {
-
+            _saveClaims(claimsUri) {
                 return new Promise(function(resolve, reject) {
-
-                    var body = '';
-                    body += encodeURIComponent('application_claims[claim_type]') + '=' + encodeURIComponent(this._claimTypeIndividual);
+                    let body = encodeURIComponent('application_claims[claim_type]') + '=' + encodeURIComponent(this._claimTypeIndividual);
                     if (!this._claimTypeIndividual) {
                         body += body === '' ? '' : '&';
                         body += this._applicationClaimsActiveForm.encodedBodyValues();
                     }
 
-                    if('' !== body) {
-                        var options = {
+                    if ('' !== body) {
+                        const options = {
                             url: claimsUri,
                             method: 'PATCH',
                             body: body,
@@ -730,20 +657,18 @@ Custom property | Description | Default
                             headers: this._headers
                         };
 
-                        var request = document.createElement('iron-request');
+                        const request = document.createElement('iron-request');
                         request.send(options).then(function () {
-
-                            if (request.succeeded) {
-                                resolve(request.response);
+                                if (request.succeeded) {
+                                    resolve(request.response);
+                                }
                             }
-                        }
                         );
-                } else {
-                    reject(false);
-                }
-
+                    } else {
+                        reject(false);
+                    }
                 }.bind(this));
-            },
+            }
 
             /**
              * Called on form error when trying to add new application as icon.
@@ -751,10 +676,10 @@ Custom property | Description | Default
              * @param {Object} event
              * @private
              */
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._error = event.detail.error.message;
-                this.fire('form-error');
-            },
+                this.dispatchEvent(new CustomEvent('form-error', { bubbles: true, composed: true }));
+            }
 
             /**
              * Called after application is added as icon.
@@ -763,72 +688,51 @@ Custom property | Description | Default
              * @param {Object} event
              * @private
              */
-            _onFormResponse: function(event) {
-                var applications = event.detail.response.applications;
+            _onFormResponse(event) {
+                const applications = event.detail.response.applications;
 
                 if (applications && applications.length > 0) {
                     this._updateApplicationSettings(applications[0]);
                 }
-            },
+            }
 
-            /**
-             * Submits form which adds application as item.
-             */
-            addApplication: function() {
+            addApplication() {
                 if (this._claimsFormActive
                     && this._applicationClaimsActiveForm
                     && false === this._applicationClaimsActiveForm.isValid()
                 ) {
-                    this.fire('form-error');
+                    this.dispatchEvent(new CustomEvent('form-error', { bubbles: true, composed: true }));
                     return;
                 }
 
                 if (this._applicationConfigurationForm.validate()) {
                     this._applicationForm.submit();
                 } else {
-                    this.fire('form-error');
+                    this.dispatchEvent(new CustomEvent('form-error', { bubbles: true, composed: true }));
                 }
+            }
 
-            },
+            _onApplicationAdded() {
+                this.dispatchEvent(new CustomEvent('application-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            /**
-             * Called after application has been added.
-             * It fires event.
-             *
-             * @private
-             */
-            _onApplicationAdded: function() {
-                /**
-                 * Fired after application has been added.
-                 *
-                 * @event application-added
-                 */
-                this.fire('application-added', {
-                    application: this.application
-                });
-            },
+            _onClaimsUpdated() {
+                this.dispatchEvent(new CustomEvent('application-claims-updated', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            /**
-             * Called after applications claims has been updated.
-             * It fires event.
-             *
-             * @private
-             */
-            _onClaimsUpdated: function() {
-                /**
-                 * Fired after application claims has been updated.
-                 *
-                 * @event application-claims-updated
-                 */
-                this.fire('application-claims-updated', {
-                    application: this.application
-                });
-            },
-
-            /**
-             * Resets component.
-             */
-            reset: function() {
+            reset() {
                 this._claimTypeIndividual = false;
                 if (this._applicationClaimsActiveForm && this._applicationClaimsActiveForm.$) {
                     this._applicationClaimsActiveForm.reset();
@@ -836,6 +740,7 @@ Custom property | Description | Default
                 this._applicationConfigurationForm.reset();
                 this._applicationClaimsForm.reset();
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyApplicationAddSettings.is, AppscoCompanyApplicationAddSettings);
     </script>
 </dom-module>

@@ -67,50 +67,38 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportAccounts extends Polymer.Element {
+            static get is() { return 'appsco-import-accounts'; }
 
-            is: 'appsco-import-accounts',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    importApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    domain: {
+                        type: String
+                    }
+                };
+            }
 
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                importApi: {
-                    type: String
-                },
-
-                domain: {
-                    type: String
-                }
-            },
-
-            /**
-             * Toggles import.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.appscoImportResource.toggle();
-            },
+            }
 
-            /**
-             * Closes import.
-             */
-            close: function() {
+            close() {
                 this.$.appscoImportResource.close();
-            },
+            }
 
-            _onDownloadExampleImportFile: function(event) {
+            _onDownloadExampleImportFile(event) {
                 event.stopPropagation();
                 window.location.href = this.domain + '/example_import.csv';
             }
-        });
+        }
+        window.customElements.define(AppscoImportAccounts.is, AppscoImportAccounts);
     </script>
 </dom-module>

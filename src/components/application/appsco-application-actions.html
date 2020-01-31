@@ -108,14 +108,13 @@ Custom property | Description | Default
             :host paper-item:hover {
                 @apply --paper-item-hover;
             }
-            .add-item-action, .import-action {
-                min-width: 100px;
-            }
             :host .add-item-action {
                 @apply --add-item-action;
+                min-width: 100px;
             }
             :host .import-action {
                 @apply --import-item-action;
+                min-width: 100px;
             }
             .add-item-icon-button {
                 display: none;
@@ -302,226 +301,221 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationActions extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-actions'; }
 
-            is: 'appsco-application-actions',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    pageConfigApi: {
+                        type: String
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                pageConfigApi: {
-                    type: String
-                },
+                    page: {
+                        type: String,
+                        value: ''
+                    },
 
-                pageConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    pageConfigOptionHideResourceSection: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                page: {
-                    type: String,
-                    value: ''
-                },
+                    pageConfigOptionDisplayList: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                pageConfigOptionHideResourceSection: {
-                    type: Boolean,
-                    value: false
-                },
+                    pageConfigOptionSort: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                pageConfigOptionDisplayList: {
-                    type: Boolean,
-                    value: false
-                },
+                    _filterItems: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'All items',
+                                    value: 0
+                                },
+                                {
+                                    name: 'My items',
+                                    value: 1
+                                },
+                                {
+                                    name: 'Shared with me',
+                                    value: 2
+                                }];
+                        }
+                    },
 
-                pageConfigOptionSort: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Indicates if appsco-company actions should be available or not.
+                     * Currently, company actions are bulk action and Add application action.
+                     */
+                    company: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _filterItems: {
-                    type: Array,
-                    value: function () {
-                        return [
-                            {
-                                name: 'All items',
-                                value: 0
-                            },
-                            {
-                                name: 'My items',
-                                value: 1
-                            },
-                            {
-                                name: 'Shared with me',
-                                value: 2
-                            }];
-                    }
-                },
+                    addingResourceAllowed: {
+                        type: Boolean,
+                        value: true
+                    },
 
-                /**
-                 * Indicates if appsco-company actions should be available or not.
-                 * Currently, company actions are bulk action and Add application action.
-                 */
-                company: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Indicates if bulk actions for applications are visible or not.
+                     * Used to show / hide bulk actions.
+                     */
+                    bulkActions: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onBulkActionsChanged'
+                    },
 
-                addingResourceAllowed: {
-                    type: Boolean,
-                    value: true
-                },
+                    _bulkSelectAll: {
+                        type: Boolean,
+                        value: true,
+                        observer: '_onBulkSelectAllChanged'
+                    },
 
-                /**
-                 * Indicates if bulk actions for applications are visible or not.
-                 * Used to show / hide bulk actions.
-                 */
-                bulkActions: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onBulkActionsChanged'
-                },
+                    _showOptions: {
+                        type: Boolean,
+                        computed: '_computeShowOptions(resourceAdmin, company)'
+                    },
 
-                _bulkSelectAll: {
-                    type: Boolean,
-                    value: true,
-                    observer: '_onBulkSelectAllChanged'
-                },
+                    resourceAdmin: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _showOptions: {
-                    type: Boolean,
-                    computed: '_computeShowOptions(resourceAdmin, company)'
-                },
-
-                resourceAdmin: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _actionList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                value: 'catalogue-application',
-                                name: 'Application',
-                                icon: 'icons:list',
-                                tpl: ''
-                            },
-                            {
-                                value: 'link',
-                                name: 'Link',
-                                icon: 'icons:link',
-                                tpl: '/api/v2/applications/28'
-                            },
-                            {
-                                value: 'login',
-                                name: 'Login',
-                                icon: 'icons:input',
-                                tpl: '/api/v2/applications/1493886244'
-                            },
-                            {
-                                value: 'credit-card',
-                                name: 'Credit Card',
-                                icon: 'icons:credit-card',
-                                tpl: '/api/v2/applications/1493886242'
-                            },
-                            {
-                                value: 'software-licence',
-                                name: 'Software Licence',
-                                icon: 'communication:vpn-key',
-                                tpl: '/api/v2/applications/1493886247'
-                            },
-                            {
-                                value: 'passport',
-                                name: 'Passport',
-                                icon: 'icons:flight-takeoff',
-                                tpl: '/api/v2/applications/1493886245'
-                            },
-                            {
-                                value: 'secure-note',
-                                name: 'Secure Note',
-                                icon: 'editor:insert-drive-file',
-                                tpl: '/api/v2/applications/1493886246'
-                            }
-                        ]
-                    }
-                },
-
-                _addItemActionsVisible: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                _searchDebounce: {
-                    type: Number,
-                    value: 0
-                },
-
-                /**
-                 * Animation config for bulk actions.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-in-animation',
-                                nodes: [],
-                                nodeDelay: 50,
-                                timing: {
-                                    duration: 300
+                    _actionList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    value: 'catalogue-application',
+                                    name: 'Application',
+                                    icon: 'icons:list',
+                                    tpl: ''
+                                },
+                                {
+                                    value: 'link',
+                                    name: 'Link',
+                                    icon: 'icons:link',
+                                    tpl: '/api/v2/applications/28'
+                                },
+                                {
+                                    value: 'login',
+                                    name: 'Login',
+                                    icon: 'icons:input',
+                                    tpl: '/api/v2/applications/1493886244'
+                                },
+                                {
+                                    value: 'credit-card',
+                                    name: 'Credit Card',
+                                    icon: 'icons:credit-card',
+                                    tpl: '/api/v2/applications/1493886242'
+                                },
+                                {
+                                    value: 'software-licence',
+                                    name: 'Software Licence',
+                                    icon: 'communication:vpn-key',
+                                    tpl: '/api/v2/applications/1493886247'
+                                },
+                                {
+                                    value: 'passport',
+                                    name: 'Passport',
+                                    icon: 'icons:flight-takeoff',
+                                    tpl: '/api/v2/applications/1493886245'
+                                },
+                                {
+                                    value: 'secure-note',
+                                    name: 'Secure Note',
+                                    icon: 'editor:insert-drive-file',
+                                    tpl: '/api/v2/applications/1493886246'
                                 }
-                            },
-                            'exit': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-out-animation',
-                                nodes: [],
-                                nodeDelay: 0,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                            ]
+                        }
+                    },
+
+                    _addItemActionsVisible: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    _searchDebounce: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-in-animation',
+                        nodes: [],
+                        nodeDelay: 50,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-out-animation',
+                        nodes: [],
+                        nodeDelay: 0,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            attached: function () {
-                if(this.company) {
-                    this.unshift('_actionList', {
-                        value: 'sso-application',
-                        name: 'SSO Application',
-                        icon: 'icons:apps',
-                        tpl: ''
-                    });
-                }
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    if (this.company) {
+                        this.unshift('_actionList', {
+                            value: 'sso-application',
+                            name: 'SSO Application',
+                            icon: 'icons:apps',
+                            tpl: ''
+                        });
+                    }
+                    Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+                    this._addListeners();
+                });
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinish'
-            },
-
-            ready: function() {
-                Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-            },
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+            }
 
             /**
              * Evaluates if item is in given path.
@@ -532,145 +526,95 @@ Custom property | Description | Default
              *
              * @private
              */
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
+                for (let i = 0; i < path.length; i++) {
                     if (path[i] == element) {
                         return true;
-
-                        break;
                     }
                 }
 
                 return false;
-            },
+            }
 
-            _computeShowOptions: function(resourceAdmin, company) {
+            _computeShowOptions(resourceAdmin, company) {
                 return !resourceAdmin || !company;
-            },
+            }
 
             /**
              * Listens for click outside.
              * @private
              */
-            _handleDocumentClick: function(event) {
+            _handleDocumentClick(event) {
                 var path = Polymer.dom(event).path;
 
-                if (!this._isInPath(path, this.$$('#addItemAction')) && !this._isInPath(path, this.$$('#addItemActionIconButton'))
-                        && !this._isInPath(path, this.$$('#addItemActionIconButton')))
+                if (!this._isInPath(path, this.shadowRoot.getElementById('addItemAction')) && !this._isInPath(path, this.shadowRoot.getElementById('addItemActionIconButton'))
+                        && !this._isInPath(path, this.shadowRoot.getElementById('addItemActionIconButton')))
                 {
                     this._addItemActionsVisible = false;
                 }
 
                 if (!this._isInPath(path, this)) {
-                    this.fire('close-search');
+                    this.dispatchEvent(new CustomEvent('close-search', { bubbles: true, composed: true }));
                 }
+            }
 
-
-            },
-
-            _toggleActionList: function() {
+            _toggleActionList() {
                 this._addItemActionsVisible = !this._addItemActionsVisible;
-            },
+            }
 
-            _onAddItemActionSelect: function(event) {
-                this.fire('add-item-action', {
-                    action: event.detail.item.value,
-                    applicationTemplate: event.detail.item.tpl
-                });
-
+            _onAddItemActionSelect(event) {
+                this.dispatchEvent(new CustomEvent('add-item-action', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        action: event.detail.item.value,
+                        applicationTemplate: event.detail.item.tpl
+                    }
+                }));
                 this._addItemActionsVisible = false;
+                this.shadowRoot.getElementById('resourcesActionList').selected = -1;
+            }
 
-                this.$$('#resourcesActionList').selected = -1;
-            },
-
-            _onAddItemAction: function() {
+            _onAddItemAction() {
                 this._toggleActionList();
-            },
+            }
 
-            _onImportAction: function() {
+            _onImportAction() {
+                this.dispatchEvent(new CustomEvent('import-resources', { bubbles: true, composed: true }));
+            }
 
-                /**
-                 * Fired when import action is triggered.
-                 *
-                 * @event import-resources
-                 */
-                this.fire('import-resources');
-            },
+            _onShareAction() {
+                this.dispatchEvent(new CustomEvent('share', { bubbles: true, composed: true }));
+            }
 
-            /**
-             * Called on share action tap.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onShareAction: function() {
+            _onRemoveAction() {
+                this.dispatchEvent(new CustomEvent('remove', { bubbles: true, composed: true }));
+            }
 
-                /**
-                 * Fired when share action is triggered.
-                 *
-                 * @event share
-                 */
-                this.fire('share');
-            },
+            _onSelectAllAction() {
+                this.dispatchEvent(new CustomEvent('select-all-resources', { bubbles: true, composed: true }));
+            }
 
-            /**
-             * Called on remove action tap.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onRemoveAction: function() {
-
-                /**
-                 * Fired when remove action is triggered.
-                 *
-                 * @event remove
-                 */
-                this.fire('remove');
-            },
-
-            /**
-             * Called on select all action.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onSelectAllAction: function() {
-
-                /**
-                 * Fired when select all action is called.
-                 *
-                 * @event select-all-resources
-                 */
-                this.fire('select-all-resources');
-            },
-
-            _onFilterItemsAction: function(event) {
+            _onFilterItemsAction(event) {
                 event.stopPropagation();
 
-                /**
-                 * Fired when filter items is selected
-                 *
-                 * @event filter-items
-                 * @param {Object} filter {id: filter_id, name: filter_name}
-                 */
-                this.fire('filter-items', {
-                    id: event.detail.item.getAttribute('value'),
-                    name: event.detail.item.getAttribute('name')
-                });
-            },
+                this.dispatchEvent(new CustomEvent('filter-items', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        id: event.detail.item.getAttribute('value'),
+                        name: event.detail.item.getAttribute('name')
+                    }
+                }));
+            }
 
-            /**
-             * Sets focus on search input field.
-             */
-            focusSearch: function() {
-                this.$$('#appscoSearch').setup();
-            },
+            focusSearch() {
+                this.shadowRoot.getElementById('appscoSearch').setup();
+            }
 
-            _onBulkActionsChanged: function() {
+            _onBulkActionsChanged() {
                 var bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action');
 
                 if (this.animationConfig) {
@@ -681,27 +625,25 @@ Custom property | Description | Default
                 if (this.bulkActions) {
                     var length = bulkActions.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         bulkActions[i].style.display = 'flex';
                     }
-
                     this.playAnimation('entry');
                 }
                 else {
                     this.playAnimation('exit');
                 }
+            }
 
-            },
-
-            showBulkSelectAll: function() {
+            showBulkSelectAll() {
                 this._bulkSelectAll = !this.resourceAdmin;
-            },
+            }
 
-            hideBulkSelectAll: function() {
+            hideBulkSelectAll() {
                 this._bulkSelectAll = false;
-            },
+            }
 
-            _onBulkSelectAllChanged: function () {
+            _onBulkSelectAllChanged () {
                 var bulkSelectAll = Polymer.dom(this.root).querySelectorAll('.bulk-select-all');
                 if (bulkSelectAll.length > 0) {
                     if (this._bulkSelectAll) {
@@ -710,24 +652,17 @@ Custom property | Description | Default
                         bulkSelectAll[0].style.display = 'none';
                     }
                 }
-            },
+            }
 
-            /**
-             * Shows bulk actions.
-             */
-            showBulkActions: function() {
+            showBulkActions() {
                 this.bulkActions = true;
-            },
+            }
 
-            /**
-             * Hides bulk actions.
-             */
-            hideBulkActions: function() {
+            hideBulkActions() {
                 this.bulkActions = false;
-            },
+            }
 
-            _onNeonAnimationFinish: function() {
-
+            _onNeonAnimationFinish() {
                 if (!this.bulkActions) {
                     var bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action'),
                         length = bulkActions.length;
@@ -736,26 +671,25 @@ Custom property | Description | Default
                         bulkActions[i].style.display = 'none';
                     }
                 }
+            }
 
-            },
-
-            reset: function() {
-
-                if (this.$$('#appscoSearch')) {
-                    this.$$('#appscoSearch').reset();
+            reset() {
+                if (this.shadowRoot.getElementById('appscoSearch')) {
+                    this.shadowRoot.getElementById('appscoSearch').reset();
                 }
-                if (this.$$('#filterItemsList')) {
-                    this.$$('#filterItemsList').selected = 0;
+                if (this.shadowRoot.getElementById('filterItemsList')) {
+                    this.shadowRoot.getElementById('filterItemsList').selected = 0;
                 }
 
                 if (this.company) {
                     this.hideBulkActions();
                 }
-            },
-
-            _onShowPageSettings: function(event) {
-                this.$$('#resourcePageConfigDropdown').toggle(event.target);
             }
-        });
+
+            _onShowPageSettings(event) {
+                this.shadowRoot.getElementById('resourcePageConfigDropdown').toggle(event.target);
+            }
+        }
+        window.customElements.define(AppscoApplicationActions.is, AppscoApplicationActions);
     </script>
 </dom-module>

@@ -14,9 +14,7 @@
 
 <dom-module id="appsco-available-integration-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 --icon-action-border-radius: 16px;
             }
@@ -49,24 +47,22 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAvailableIntegrationItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-available-integration-item'; }
 
-            is: 'appsco-available-integration-item',
-
-            properties: {
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ]
-
-        });
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
+        }
+        window.customElements.define(AppscoAvailableIntegrationItem.is, AppscoAvailableIntegrationItem);
     </script>
 </dom-module>

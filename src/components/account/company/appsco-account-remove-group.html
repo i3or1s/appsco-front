@@ -9,6 +9,7 @@
 <link rel="import" href="../../components/appsco-loader.html">
 <link rel="import" href="../../components/appsco-form-error.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-account-remove-group">
     <template>
@@ -66,99 +67,76 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountRemoveGroup extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-remove-group'; }
 
-            is: 'appsco-account-remove-group',
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Account to remove from group.
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
                     }
-                },
+                };
+            }
 
-                /**
-                 * Group to remove from.
-                 */
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            toggle: function () {
+            toggle() {
                 this.$.dialog.open();
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._error = '';
                 this._loader = false;
-            },
+            }
 
-            _remove: function() {
-                var appRequest = document.createElement('iron-request'),
-                        options = {
-                            url: this.group.meta.self + '/company-roles/' + this.account.alias,
-                            method: 'DELETE',
-                            handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        };
+            _remove() {
+                const appRequest = document.createElement('iron-request'),
+                    options = {
+                        url: this.group.meta.self + '/company-roles/' + this.account.alias,
+                        method: 'DELETE',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._loader = true;
 
                 appRequest.send(options).then(function(request) {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when account is detached from group
-                     *
-                     * @event application-removed-from-group
-                     * @param [Object] account
-                     * @param [Object] group
-                     */
-                    this.fire('account-removed-from-group', {
-                        account: request.response,
-                        group: this.group
-                    });
-
+                    this.dispatchEvent(new CustomEvent('account-removed-from-group', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            account: request.response,
+                            group: this.group
+                        }
+                    }));
                 }.bind(this), function() {
-
-                    if (appRequest.status != 200) {
+                    if (appRequest.status !== 200) {
                         this._error = this.apiErrors.getError(request.response.code);
                     }
 
                     this._loader = false;
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountRemoveGroup.is, AppscoAccountRemoveGroup);
     </script>
 </dom-module>

@@ -91,10 +91,11 @@
         },
 
         attached: function() {
-
-            if (!this.noAutoDisplay) {
-                this._showItem();
-            }
+            Polymer.RenderStatus.afterNextRender(this, function() {
+                if (!this.noAutoDisplay) {
+                    this._showItem();
+                }
+            });
         },
 
         _showItem: function() {
@@ -187,15 +188,13 @@
             this.activated = !this.activated;
             this.item.activated = this.activated;
 
-            /**
-             * Fired when whole item is tapped.
-             *
-             * @event item
-             * @param {Object} item
-             */
-            this.fire('item', {
-                item: this.item
-            });
+            this.dispatchEvent(new CustomEvent('item', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    item: this.item
+                }
+            }));
         },
 
         _onSelectItemAction: function(event) {
@@ -209,29 +208,25 @@
                 this._enableSelectActionHover();
             }
 
-            /**
-             * Fired when item icon is tapped.
-             *
-             * @event select
-             * @param {Object} item
-             */
-            this.fire('select-item', {
-                item: this.item
-            });
+            this.dispatchEvent(new CustomEvent('select-item', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    item: this.item
+                }
+            }));
         },
 
         _onEditItemAction: function(event) {
             event.stopPropagation();
 
-            /**
-             * Fired when `edit` is tapped.
-             *
-             * @event edit
-             * @param {Object} item
-             */
-            this.fire('edit-item', {
-                item: this.item
-            });
+            this.dispatchEvent(new CustomEvent('edit-item', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    item: this.item
+                }
+            }));
         }
     }
 </script>

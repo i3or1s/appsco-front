@@ -66,23 +66,22 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoContactItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-contact-item'; }
 
-            is: 'appsco-contact-item',
-
-            properties: {
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ]
-        });
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
+        }
+        window.customElements.define(AppscoContactItem.is, AppscoContactItem);
     </script>
 </dom-module>

@@ -50,68 +50,70 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroupsPage extends Polymer.Element {
+            static get is() { return 'appsco-company-groups-page'; }
 
-            is: 'appsco-company-groups-page',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    groupsApi: {
+                        type: String
+                    }
+                };
+            }
 
-                authorizationToken: {
-                    type: String
-                },
+            _onBack() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
 
-                /**
-                 * Get groups link.
-                 */
-                groupsApi: {
-                    type: String
-                }
-            },
-
-            _onBack: function() {
-                this.fire('back');
-            },
-
-            searchGroups: function(term) {
+            searchGroups(term) {
                 this.$.apspcoCompanyGroups.search(term);
-            },
+            }
 
-            addGroup: function(group) {
+            addGroup(group) {
                 this.$.apspcoCompanyGroups.addGroup(group);
-            },
+            }
 
-            modifyGroup: function(group) {
+            modifyGroup(group) {
                 this.$.apspcoCompanyGroups.modifyGroup(group);
-            },
+            }
 
-            removeGroup: function(group) {
+            removeGroup(group) {
                 this.$.apspcoCompanyGroups.removeGroup(group);
-            },
+            }
 
-            addGroupsCompanyRoles: function(groups, items) {
+            addGroupsCompanyRoles(groups, items) {
                 this.$.apspcoCompanyGroups.addGroupsCompanyRoles(groups, items);
-            },
+            }
 
-            removeGroupsCompanyRoles: function(group, items) {
+            removeGroupsCompanyRoles(group, items) {
                 this.$.apspcoCompanyGroups.removeGroupCompanyRoles(group, items);
-            },
+            }
 
-            setupPage: function() {
-                this.fire('show-groups-page-actions');
-            },
+            setupPage() {
+                this.dispatchEvent(new CustomEvent('show-groups-page-actions', { bubbles: true, composed: true }));
+            }
 
-            resetPage: function() {
-                this.fire('hide-groups-page-actions');
-            },
+            resetPage() {
+                this.dispatchEvent(new CustomEvent('hide-groups-page-actions', { bubbles: true, composed: true }));
+            }
 
-            _onRemoveGroup: function(event) {
+            _onRemoveGroup(event) {
                 event.stopPropagation();
 
-                this.fire('remove-group', {
-                    group: event.detail.group
-                })
+                this.dispatchEvent(new CustomEvent('remove-group', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        group: event.detail.group
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyGroupsPage.is, AppscoCompanyGroupsPage);
     </script>
 </dom-module>
 

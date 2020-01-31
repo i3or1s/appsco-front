@@ -7,6 +7,8 @@
 
 <link rel="import" href="appsco-account-authorized-app.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-authorized-apps`
 Is used to present account's authorized apps.
@@ -82,7 +84,7 @@ Example:
                 id="ironAjaxAuthorizedApps"
                 url="{{ _computedUrl }}"
                 method="GET"
-                headers="{{ _computedHeaders }}"
+                headers="{{ _headers }}"
                 handle-as="json"
                 on-error="_handleError"
                 on-response="_handleResponse">
@@ -114,180 +116,100 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountAuthorizedApps extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-authorized-apps'; }
 
-            is: 'appsco-account-authorized-apps',
-
-            properties: {
-
-                /**
-                 * [Account](https://developers.appsco.com/api/accounts/id)
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {}
-                    },
-                    notify: true
-                },
-
-                /**
-                 * Authorization token
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Connected apps API link.
-                 */
-                authorizedAppsApi: {
-                    type: String
-                },
-
-                /**
-                 * Next authorized apps page to load through use of API link.
-                 */
-                _nextPage: {
-                    type: Number,
-                    value: 1
-                },
-
-                /**
-                 * Number of authorized apps to load.
-                 */
-                size: {
-                    type: Number,
-                    value: 5
-                },
-
-                /**
-                 * Indicates if load more action should be available or not.
-                 */
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if short view should be displayed.
-                 */
-                shortView: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Computed url.
-                 */
-                _computedUrl: {
-                    type: String,
-                    computed: "_computeUrl(authorizedAppsApi)"
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                },
-
-                /**
-                 * Connected apps of account.
-                 * Get from Appsco API within iron-ajax.
-                 *
-                 * @type OAuthAuthorization[]
-                 */
-                _authorizedApps: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    },
-                    notify: true
-                },
-
-                /**
-                 * Message to display instead of authorized apps.
-                 */
-                _message: {
-                    type: String
-                }
-            },
-
-            /**
-             * Computes iron-ajax url.
-             *
-             * @param {String} authorizedAppsApi
-             * @private
-             */
-            _computeUrl: function (authorizedAppsApi) {
-                return authorizedAppsApi + '?page=' + this._nextPage + '&limit=' + this.size;
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {}
+                        },
+                        notify: true
+                    },
 
-            /**
-             * Triggers ajax request in order to get authorized apps.
-             */
-            loadAuthorizedApps: function() {
+                    authorizedAppsApi: {
+                        type: String
+                    },
+
+                    _nextPage: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    /**
+                     * Number of authorized apps to load.
+                     */
+                    size: {
+                        type: Number,
+                        value: 5
+                    },
+
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    shortView: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _computedUrl: {
+                        type: String,
+                        computed: "_computeUrl(authorizedAppsApi)"
+                    },
+
+                    _authorizedApps: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
+                    },
+
+                    _message: {
+                        type: String
+                    }
+                };
+            }
+
+            _computeUrl(authorizedAppsApi) {
+                return authorizedAppsApi + '?page=' + this._nextPage + '&limit=' + this.size;
+            }
+
+            loadAuthorizedApps() {
                 this.$.progress.hidden = false;
                 this._authorizedApps = [];
                 this._nextPage = 1;
 
                 this.$.ironAjaxAuthorizedApps.url = this._computeUrl(this.authorizedAppsApi);
                 this.$.ironAjaxAuthorizedApps.generateRequest();
-            },
+            }
 
-            _loadMore: function() {
+            _loadMore() {
                 this.$.progress.hidden = false;
 
                 this.$.ironAjaxAuthorizedApps.url = this._computeUrl(this.authorizedAppsApi);
                 this.$.ironAjaxAuthorizedApps.generateRequest();
-            },
+            }
 
-            /**
-             * Handles error on get notifications API request.
-             * @param {Object} event Event from error response.
-             *
-             * @private
-             */
-            _handleError: function(event) {
+            _handleError(event) {
                 this._message = 'We couldn\'t load applications at the moment. Please try again in a minute. If error continues contact us.';
                 this._hideProgressBar();
-            },
+            }
 
-            /**
-             * Handles response on get notifications API request.
-             * @param {Object} event Event from response.
-             *
-             * @private
-             */
-            _handleResponse: function(event) {
-                var response = event.detail.response,
-                        applications = response.authorizations,
-                        currentLength = this._authorizedApps.length;
+            _handleResponse(event) {
+                const response = event.detail.response,
+                    applications = response.authorizations,
+                    currentLength = this._authorizedApps.length;
 
                 if (applications && applications.length > 0) {
-
                     this._nextPage += 1;
 
                     applications.forEach(function(application, i) {
-
                         setTimeout( function() {
-
                             this.push('_authorizedApps', applications[i]);
 
                             if (i === (applications.length - 1)) {
@@ -297,14 +219,10 @@ Example:
                                     this.$.loadMore.disabled = true;
                                 }
                             }
-
                         }.bind(this), (i + 1) * 30 );
-
                     }.bind(this));
-
                 }
                 else if (applications && !applications.length) {
-
                     if (!currentLength) {
                         this._message = 'You don\'t have authorized applications.';
                     }
@@ -318,16 +236,14 @@ Example:
                     this._message = 'We couldn\'t load applications at the moment.';
                     this._hideProgressBar();
                 }
-            },
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
                     this.$.progress.hidden = true;
                 }.bind(this), 500);
-
             }
-
-        });
+        }
+        window.customElements.define(AppscoAccountAuthorizedApps.is, AppscoAccountAuthorizedApps);
     </script>
 </dom-module>

@@ -37,25 +37,27 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoOAuthApplicationsActions extends Polymer.Element {
+            static get is() { return 'appsco-oauth-applications-actions'; }
 
-            is: 'appsco-oauth-applications-actions',
+            ready() {
+                super.ready();
 
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinish'
-            },
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
-            _onAddAction: function() {
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+            }
 
-                /**
-                 * Fired when add action is tapped.
-                 *
-                 * @event add-oauth-application
-                 */
-                this.fire('add-oauth-application');
-            },
+            _onAddAction() {
+                this.dispatchEvent(new CustomEvent('add-oauth-application', { bubbles: true, composed: true }));
+            }
 
-            reset: function() {}
-        });
+            reset() {}
+        }
+        window.customElements.define(AppscoOAuthApplicationsActions.is, AppscoOAuthApplicationsActions);
     </script>
 </dom-module>

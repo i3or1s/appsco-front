@@ -3,6 +3,8 @@
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-upload-oauth-application-icon">
     <template>
         <style>
@@ -90,67 +92,55 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoUploadOAuthApplicationIcon extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-upload-oauth-application-icon'; }
 
-            is: 'appsco-upload-oauth-application-icon',
+            static get properties() {
+                return {
+                    item: {
+                        type: Object,
+                        value: function () {
+                            return {}
+                        }
+                    },
 
-            properties: {
-                
-                item: {
-                    type: Object,
-                    value: function() {
-                        return {}
+                    uploadApi: {
+                        type: String
+                    },
+
+                    _iconClass: {
+                        type: String,
+                        computed: '_computeIconClass(item)'
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                uploadApi: {
-                    type: String
-                },
-                
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _iconClass: {
-                    type: String,
-                    computed: '_computeIconClass(item)'
-                }
-            },
-
-            reset: function() {
-                var item = JSON.parse(JSON.stringify(this.item));
+            reset() {
+                const item = JSON.parse(JSON.stringify(this.item));
 
                 this.set('item', {});
                 this.set('item', item);
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return 'token ' + authorizationToken;
-            },
-
-            _computeIconClass: function(item) {
+            _computeIconClass(item) {
                 return (item && item.icon_url) ? 'has-image' : 'no-image';
-            },
+            }
 
-            _validateImageFile: function(file) {
-                var validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'],
+            _validateImageFile(file) {
+                let validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'],
                     fileType = file.type,
                     valid = true;
 
                 if (1048576 < file.size) {
-                    this.fire('image-upload-error', 'Image size must be less than 1MB.');
+                    this.dispatchEvent(new CustomEvent('image-upload-error', {
+                        bubbles: true,
+                        composed: true,
+                        detail: 'Image size must be less than 1MB.'
+                    }));
                     valid = false;
                 }
                 else {
-
-                    for (var i = 0; i < validFileTypes.length; i++) {
-
+                    for (let i = 0; i < validFileTypes.length; i++) {
                         if (validFileTypes[i] === fileType) {
                             valid = true;
                             break;
@@ -160,21 +150,24 @@
                         }
 
                         if (i === (validFileTypes.length - 1) && !valid) {
-                            this.fire('image-upload-error', 'Allowed file types are: jpg, jpeg and png.');
+                            this.dispatchEvent(new CustomEvent('image-upload-error', {
+                                bubbles: true,
+                                composed: true,
+                                detail: 'Allowed file types are: jpg, jpeg and png.'
+                            }));
                         }
                     }
 
                 }
 
                 return valid;
+            }
 
-            },
-
-            _setNewImage: function(file) {
-                var reader = new FileReader();
+            _setNewImage(file) {
+                const reader = new FileReader();
 
                 reader.onload = function(event) {
-                    var item = JSON.parse(JSON.stringify(this.item));
+                    const item = JSON.parse(JSON.stringify(this.item));
 
                     this.item.icon_url = event.target.result;
                     this.set('item', {});
@@ -183,19 +176,19 @@
 
                 reader.readAsDataURL(file);
 
-                this.fire('item-icon-changed');
-            },
+                this.dispatchEvent(new CustomEvent('item-icon-changed', { bubbles: true, composed: true }));
+            }
 
-            _onUploadAction: function(event) {
-                var input = event.target;
+            _onUploadAction(event) {
+                const input = event.target;
 
                 if (input.files && input.files[0]) {
-                    var file = input.files[0],
+                    const file = input.files[0],
                         formData = new FormData(),
                         request = new XMLHttpRequest();
 
                     /** To ensure that on-change event will be triggered even if user tries to upload same image again */
-                    this.$$('#icon').value = null;
+                    this.shadowRoot.getElementById('icon').value = null;
 
                     if (!this._validateImageFile(file)) {
                         return false;
@@ -211,10 +204,11 @@
                     }.bind(this);
 
                     request.open('POST', this.uploadApi, true);
-                    request.setRequestHeader('Authorization', this._headers);
+                    request.setRequestHeader('Authorization', this._headers.Authorization);
                     request.send(formData);
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoUploadOAuthApplicationIcon.is, AppscoUploadOAuthApplicationIcon);
     </script>
 </dom-module>

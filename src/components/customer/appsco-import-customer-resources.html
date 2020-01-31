@@ -63,46 +63,38 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportCustomerResources extends Polymer.Element {
+            static get is() { return 'appsco-import-customer-resources'; }
 
-            is: 'appsco-import-customer-resources',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    importApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    domain: {
+                        type: String
+                    }
+                };
+            }
 
-                importApi: {
-                    type: String
-                },
-
-                domain: {
-                    type: String
-                }
-            },
-
-            /**
-             * Toggles import.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.appscoImportResource.toggle();
-            },
+            }
 
-            /**
-             * Closes import.
-             */
-            close: function() {
+            close() {
                 this.$.appscoImportResource.close();
-            },
+            }
 
-            _onDownloadExampleImportFile: function(event) {
+            _onDownloadExampleImportFile(event) {
                 event.stopPropagation();
                 window.location.href = this.domain + '/example_customer_resource_import.csv';
             }
-        });
+        }
+        window.customElements.define(AppscoImportCustomerResources.is, AppscoImportCustomerResources);
     </script>
 </dom-module>

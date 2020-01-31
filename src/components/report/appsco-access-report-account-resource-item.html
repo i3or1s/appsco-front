@@ -12,9 +12,7 @@
 
 <dom-module id="appsco-access-report-account-resource-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 @apply --appsco-access-report-account-resource;
             }
@@ -53,14 +51,12 @@
     </template>
 
     <script>
-        Polymer({
-
-            is: 'appsco-access-report-account-resource-item',
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ]
-        });
+        class AppscoAccessReportAccountResourceItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-access-report-account-resource-item'; }
+        }
+        window.customElements.define(AppscoAccessReportAccountResourceItem.is, AppscoAccessReportAccountResourceItem);
     </script>
 </dom-module>

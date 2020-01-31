@@ -35,9 +35,7 @@ Custom property | Description | Default
 
 <dom-module id="appsco-accounts">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host appsco-account-item {
                 width: 100%;
                 margin: 0 0 10px 0;
@@ -89,33 +87,32 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccounts extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-accounts'; }
 
-            is: 'appsco-accounts',
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_observeItems(_listItems)'
-            ],
-
-            updateAccount: function(account) {
-                var currentItems = JSON.parse(JSON.stringify(this._listItems)),
+            updateAccount(account) {
+                const currentItems = JSON.parse(JSON.stringify(this._listItems)),
                     length = currentItems.length,
                     allListItems = JSON.parse(JSON.stringify(this._allListItems)),
                     allLength = allListItems.length;
 
-                for (var j = 0; j < length; j++) {
+                for (let j = 0; j < length; j++) {
                     if (account.self === currentItems[j].account.self) {
                         currentItems[j].account = account;
                         break;
                     }
                 }
 
-                for (var k = 0; k < allLength; k++) {
+                for (let k = 0; k < allLength; k++) {
                     if (account.self === allListItems[k].account.self) {
                         allListItems[k].account = account;
                         break;
@@ -127,20 +124,20 @@ Custom property | Description | Default
 
                 this.set('_allListItems', []);
                 this.set('_allListItems', allListItems);
-            },
+            }
 
-            _observeItems: function(items) {
+            _observeItems(items) {
                 this.setObservableType('accounts');
                 this.populateItems(items);
-            },
+            }
 
-            filterByType: function(filter) {
+            filterByType(filter) {
                 this._filterType = filter;
                 this._filterByType();
-            },
+            }
 
-            _filterByType: function() {
-                var filterApi = this.listApi + '?page=1&limit=100&extended=1',
+            _filterByType() {
+                let filterApi = this.listApi + '?page=1&limit=100&extended=1',
                     filterTerm = this._filterTerm,
                     filterTermPresent = (filterTerm && 3 <= filterTerm.length),
                     filterType = this._filterType;
@@ -160,27 +157,25 @@ Custom property | Description | Default
                 }
 
                 this._getItems(filterApi).then(function(items) {
-                    var itemsLength = items.length,
+                    const itemsLength = items.length,
                         allListItems = JSON.parse(JSON.stringify(this._allListItems)),
                         allLength = allListItems.length;
 
                     if (0 === itemsLength) {
-                        var termMessage = filterTermPresent ? 'with asked term' : '';
+                        const termMessage = filterTermPresent ? 'with asked term' : '';
 
                         filterType = ('all' === filterType) ? '' : filterType;
                         this._showMessage('There are no ' + filterType + ' ' + this.type + 's ' + termMessage + '.');
                         this._handleEmptyLoad();
-                        this.fire('filter-done');
+                        this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                         return false;
                     }
 
                     this._listEmpty = false;
 
                     items.forEach(function(elem, index) {
-
-
-                        for (var i = 0; i < allLength; i++) {
-                            var currentListItem = allListItems[i];
+                        for (let i = 0; i < allLength; i++) {
+                            const currentListItem = allListItems[i];
 
                             if (elem.self === currentListItem.self) {
                                 this.push('_listItems', currentListItem);
@@ -188,7 +183,6 @@ Custom property | Description | Default
                                 break;
                             }
                             else {
-
                                 if (i === allLength - 1) {
                                     this.push('_listItems', elem);
                                     this._listItems = JSON.parse(JSON.stringify(this._listItems));
@@ -198,13 +192,12 @@ Custom property | Description | Default
 
                         if (index === itemsLength - 1) {
                             this._hideProgressBar();
-                            this.fire('filter-done');
+                            this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                         }
-
                     }.bind(this));
-
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccounts.is, AppscoAccounts);
     </script>
 </dom-module>

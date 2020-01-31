@@ -60,70 +60,65 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationLogPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-log-page'; }
 
-            is: 'appsco-application-log-page',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    company: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    animationConfig: {
+                        type: Object
+                    },
 
-                company: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 600
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
-                        }
+                    sharedElements: {
+                        type: Object
                     }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _back: function() {
-                this.fire('back');
+                };
             }
-        });
+
+            ready(){
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 600
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            _back() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoApplicationLogPage.is, AppscoApplicationLogPage);
     </script>
 </dom-module>
 

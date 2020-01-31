@@ -2,30 +2,37 @@
 
 <dom-module id="appsco-country-list">
     <script>
-        Polymer({
+        class AppscoCountryList extends Polymer.Element {
+            static get is() { return 'appsco-country-list'; }
 
-            is: 'appsco-country-list',
+            static get properties() {
+                return {
+                    types: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
+                    }
+                };
+            }
 
-            properties: {
-                types: {
-                    type: Array,
-                    value: function() { return []; },
-                    notify: true
-                }
-            },
+            ready() {
+                super.ready();
 
-            attached: function () {
-                this.set('types', this.ccTypes().sort(this._compareCountryByName));
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.set('types', this.ccTypes().sort(this._compareCountryByName));
+                });
+            }
 
-            _compareCountryByName: function(countryA, countryB) {
+            _compareCountryByName(countryA, countryB) {
                 countryA = countryA.name.toLowerCase();
                 countryB = countryB.name.toLowerCase();
 
                 return countryA < countryB ? -1 : countryA > countryB ? 1 : 0;
-            },
+            }
 
-            ccTypes: function () {
+            ccTypes() {
                 return [
                     { "code": "BD", "name": "Bangladesh" },
                     { "code": "BE", "name": "Belgium" },
@@ -279,8 +286,7 @@
                     { "code": "MZ", "name": "Mozambique" }
                 ]
             }
-
-
-        });
+        }
+        window.customElements.define(AppscoCountryList.is, AppscoCountryList);
     </script>
 </dom-module>

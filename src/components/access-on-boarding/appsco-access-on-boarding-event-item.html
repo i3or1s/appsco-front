@@ -104,34 +104,31 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessOnBoardingEventItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-access-on-boarding-event-item'; }
 
-            is: 'appsco-access-on-boarding-event-item',
-
-            properties: {
-
-                eventTypesList: {
-                    type: Array,
-                    value: function() {
-                        return [];
+            static get properties() {
+                return {
+                    eventTypesList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            _getParameter: function(item, parameter) {
-
+            _getParameter(item, parameter) {
                 if (this.eventTypesList) {
-                    var eventTypes = this.eventTypesList;
+                    const eventTypes = this.eventTypesList;
 
-                    for (var i = 0; i < eventTypes.length; i++) {
-                        var eventType = eventTypes[i];
+                    for (let i = 0; i < eventTypes.length; i++) {
+                        const eventType = eventTypes[i];
 
-                        if (eventType.name == item.event_type) {
+                        if (eventType.name === item.event_type) {
                             return eventType[parameter];
                         }
                     }
@@ -139,6 +136,7 @@
 
                 return '';
             }
-        });
+        }
+        window.customElements.define(AppscoAccessOnBoardingEventItem.is, AppscoAccessOnBoardingEventItem);
     </script>
 </dom-module>

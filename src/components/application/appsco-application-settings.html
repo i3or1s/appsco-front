@@ -17,6 +17,8 @@
 <link rel="import" href="appsco-application-form-softwarelicence.html">
 <link rel="import" href="appsco-application-form-saml.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-application-settings`
 Application settings is used update application.
@@ -78,10 +80,6 @@ Custom property | Description | Default
                     error-message="Please enter application title."
             ></paper-input>
         </template>
-        <!--<template is="dom-if" if="[[ !_canChangeTitle ]]" >-->
-            <!--<p class="label">Title</p>-->
-            <!--<p class="info">[[ _applicationComputed.title ]]</p>-->
-        <!--</template>-->
 
         <template is="dom-if" if="[[ _canChangeUrl ]]" >
             <paper-input
@@ -95,10 +93,6 @@ Custom property | Description | Default
                     name="configure_application[url]"
             ></paper-input>
         </template>
-        <!--<template is="dom-if" if="[[ _shouldShowUrl ]]" >-->
-            <!--<p class="label">Url</p>-->
-            <!--<p class="info">[[ _applicationComputed.url ]]</p>-->
-        <!--</template>-->
 
         <template is="dom-if" if="[[ _unPwAuth ]]" restamp>
             <appsco-application-form-unpw data-claims claims="[[ _claims ]]"></appsco-application-form-unpw>
@@ -131,158 +125,164 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationSettings extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-application-settings'; }
 
-            is: 'appsco-application-settings',
+            static get properties() {
+                return {
+                    formSubmitAction: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    /**
+                     * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
 
-                formSubmitAction: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    applicationTpl: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
 
-                /**
-                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-                 */
-                application: {
-                    type: Object,
-                    value: function() { return {}; },
-                    notify: true
-                },
+                    _applicationComputed: {
+                        type: Object,
+                        computed: '_computeApplicationFromAppAndTpl(application, applicationTpl)'
+                    },
 
-                applicationTpl: {
-                    type: Object,
-                    value: function() { return {}; },
-                    notify: true
-                },
+                    _claims: {
+                        type: Object,
+                        computed: '_computeClaims(application)'
+                    },
 
-                _applicationComputed: {
-                    type: Object,
-                    computed: '_computeApplicationFromAppAndTpl(application, applicationTpl)'
-                },
+                    applicationSettings: {
+                        type: Boolean,
+                        value: true,
+                        notify: true
+                    },
 
-                _claims: {
-                    type: Object,
-                    computed: '_computeClaims(application)'
-                },
+                    _canChangeTitle: {
+                        type: Boolean,
+                        computed: '_computeCanChangeTitle(applicationSettings)'
+                    },
 
-                applicationSettings: {
-                    type: Boolean,
-                    value: true,
-                    notify: true
-                },
+                    _canChangeUrl: {
+                        type: Boolean,
+                        computed: '_computeCanChangeUrl(applicationSettings, _applicationComputed)'
+                    },
 
-                _canChangeTitle: {
-                    type: Boolean,
-                    computed: '_computeCanChangeTitle(applicationSettings)'
-                },
+                    _shouldShowUrl: {
+                        type: Boolean,
+                        computed: '_computeShouldShowUrl(applicationSettings, application, applicationTpl)'
+                    },
 
-                _canChangeUrl: {
-                    type: Boolean,
-                    computed: '_computeCanChangeUrl(applicationSettings, _applicationComputed)'
-                },
+                    _urlValidationPattern: {
+                        type: String,
+                        computed: '_computeUrlValidationPattern(applicationSettings, application, applicationTpl)'
+                    },
 
-                _shouldShowUrl: {
-                    type: Boolean,
-                    computed: '_computeShouldShowUrl(applicationSettings, application, applicationTpl)'
-                },
+                    company: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _urlValidationPattern: {
-                    type: String,
-                    computed: '_computeUrlValidationPattern(applicationSettings, application, applicationTpl)'
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _unPwAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, company, 'unpw', applicationTpl)"
+                    },
+                    _itemAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, company, 'item', applicationTpl)"
+                    },
+                    _creditCardAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, company, 'cc', applicationTpl)"
+                    },
+                    _loginAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, company, 'login', applicationTpl)"
+                    },
+                    _passportAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, company, 'passport', applicationTpl)"
+                    },
+                    _secureNoteAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, company, 'securenote', applicationTpl)"
+                    },
+                    _softwareLicenceAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, company, 'softwarelicence', applicationTpl)"
+                    },
+                    _samlAuth: {
+                        type: Boolean,
+                        computed: "_computeAuthType(application, company, 'saml', applicationTpl)"
+                    },
 
-                company: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _unPwAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, company, 'unpw', applicationTpl)"
-                },
-                _itemAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, company, 'item', applicationTpl)"
-                },
-                _creditCardAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, company, 'cc', applicationTpl)"
-                },
-                _loginAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, company, 'login', applicationTpl)"
-                },
-                _passportAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, company, 'passport', applicationTpl)"
-                },
-                _secureNoteAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, company, 'securenote', applicationTpl)"
-                },
-                _softwareLicenceAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, company, 'softwarelicence', applicationTpl)"
-                },
-                _samlAuth: {
-                    type: Boolean,
-                    computed: "_computeAuthType(application, company, 'saml', applicationTpl)"
-                },
-
-                _supportedAuthTypes: {
-                    type: Array,
-                    value: function () {
-                        return [
-                            'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
-                            'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
-                        ]
+                    _supportedAuthTypes: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
+                                'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
+                            ]
+                        }
                     }
-                }
-            },
+                };
+            }
 
-            listeners: {
-                'iron-overlay-closed': '_stopPropagation'
-            },
+            ready() {
+                super.ready();
 
-            _stopPropagation: function (e) {
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('iron-overlay-closed', this._stopPropagation);
+            }
+
+            _stopPropagation(e) {
                 e.stopPropagation();
-            },
+            }
 
-            _computeApplicationFromAppAndTpl: function (application, applicationTpl) {
+            _computeApplicationFromAppAndTpl(application, applicationTpl) {
                 if (!application.self && !applicationTpl.self) {
                     return {};
                 }
 
                 return application.self ? application : applicationTpl;
-            },
+            }
 
-            _computeClaims: function (application) {
+            _computeClaims(application) {
                 if(!application.self) {
                     return {};
                 }
 
                 return application.claims;
-            },
+            }
 
-            _supportedAuthTypeByPriority: function(authTypes) {
-                var authType = null,
+            _supportedAuthTypeByPriority(authTypes) {
+                let authType = null,
                     priority = 100;
-                for (var prop in authTypes) {
-
-                    currentPriority = this._supportedAuthTypes.indexOf(authTypes[prop]);
+                for (let prop in authTypes) {
+                    const currentPriority = this._supportedAuthTypes.indexOf(authTypes[prop]);
                     if(priority > currentPriority) {
                         authType = authTypes[prop];
                         priority = currentPriority;
@@ -290,70 +290,77 @@ Custom property | Description | Default
                 }
 
                 return authType.substring('icon_'.length);
-            },
+            }
 
-            _computeAuthType: function (applicationIcon, company, authType, applicationTpl) {
+            _computeAuthType(applicationIcon, company, authType, applicationTpl) {
                 if (!applicationIcon.auth_type && !applicationTpl.auth_types) {
                     return false;
                 }
-                var auth = applicationIcon.auth_type ? applicationIcon.auth_type : this._supportedAuthTypeByPriority(applicationTpl.auth_types);
+                const auth = applicationIcon.auth_type ? applicationIcon.auth_type : this._supportedAuthTypeByPriority(applicationTpl.auth_types);
 
                 return !company && auth === authType;
-            },
+            }
 
-            _computeCanChangeTitle: function (applicationSettings) {
+            _computeCanChangeTitle(applicationSettings) {
                 return applicationSettings;
-            },
+            }
 
-            _computeCanChangeUrl: function (applicationSettings, applicationComputed) {
+            _computeCanChangeUrl(applicationSettings, applicationComputed) {
                 return applicationSettings && applicationComputed.url_editable;
-            },
+            }
 
-            _computeShouldShowUrl: function (applicationSettings, applicationIcon, applicationTpl) {
+            _computeShouldShowUrl(applicationSettings, applicationIcon, applicationTpl) {
                 if (!applicationIcon.auth_type && !applicationTpl.auth_types) {
                     return false;
                 }
-                var auth = applicationIcon.auth_type ? applicationIcon.auth_type : this._supportedAuthTypeByPriority(applicationTpl.auth_types),
+                const auth = applicationIcon.auth_type ? applicationIcon.auth_type : this._supportedAuthTypeByPriority(applicationTpl.auth_types),
                     tpl = applicationIcon.application ? applicationIcon.application : applicationTpl
                 ;
                 return !(applicationSettings && tpl.url_editable) &&
                     ['unpw', 'item', 'login'].indexOf(auth) !== -1;
-            },
+            }
 
-            _computeUrlValidationPattern: function (applicationSettings, applicationIcon, applicationTpl) {
-                var defaultPattern = '^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
+            _computeUrlValidationPattern(applicationSettings, applicationIcon, applicationTpl) {
+                const defaultPattern = '^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
                     allowFtpPattern = '^(http:\\/\\/|https:\\/\\/|ftp:\\/\\/|ftps:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/|https:\\/\\/|ftp:\\/\\/|ftps:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$';
 
                 if (!applicationIcon.auth_type && !applicationTpl.auth_types) {
                     return defaultPattern;
                 }
-                var auth = applicationIcon.auth_type ? applicationIcon.auth_type : this._supportedAuthTypeByPriority(applicationTpl.auth_types);
+                const auth = applicationIcon.auth_type ? applicationIcon.auth_type : this._supportedAuthTypeByPriority(applicationTpl.auth_types);
                 return (['login', 'none'].indexOf(auth) !== -1) ? allowFtpPattern : defaultPattern;
-            },
+            }
 
-            save: function(application) {
+            save(application) {
                 this._submit(application);
-            },
+            }
 
-            _applicationSaved: function(app) {
+            _applicationSaved(app) {
                 this._loader = false;
 
                 if (!app) {
-                    this.fire('application-settings-no-changes', {
-                        application: this.application
-                    });
+                    this.dispatchEvent(new CustomEvent('application-settings-no-changes', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application
+                        }
+                    }));
                 }
                 else {
                     this.application = app;
 
-                    this.fire('application-settings-saved', {
-                        application: app
-                    });
+                    this.dispatchEvent(new CustomEvent('application-settings-saved', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: app
+                        }
+                    }));
                 }
-            },
+            }
 
-            _submit: function (application) {
-
+            _submit(application) {
                 application = (application && application.self) ?
                     application :
                     this._computeApplicationFromAppAndTpl(
@@ -363,44 +370,40 @@ Custom property | Description | Default
                 ;
                 this._loader = true;
                 this.message = "";
-                var me = this;
+                const me = this;
                 this._submitApplicationConfigure(application).then(function(app) {
-                        me._submitNewClaims(app).then(function(app) {
-                            me._applicationSaved(app);
-                        }, function() {
-                            me._applicationSaved(app);
-                        });
+                    me._submitNewClaims(app).then(function(app) {
+                        me._applicationSaved(app);
+                    }, function() {
+                        me._applicationSaved(app);
+                    });
                 });
-            },
+            }
 
-            _submitApplicationConfigure: function (application) {
-                var me = this;
+            _submitApplicationConfigure(application) {
+                const me = this;
                 if(!this.applicationSettings) {
                     return new Promise(function(resolve, reject){ resolve(me.application)});
                 }
                 return new Promise(function (resolve, reject) {
-                    var body = "";
-                    if (application.title != me.$$('#title').value) {
-                        body = encodeURIComponent(me.$$('#title').name) + "=" + encodeURIComponent(me.$$('#title').value);
+                    let body = "";
+                    if (application.title !== me.shadowRoot.querySelector('#title').value) {
+                        body = encodeURIComponent(me.shadowRoot.querySelector('#title').name) + "=" + encodeURIComponent(me.shadowRoot.querySelector('#title').value);
                     }
-                    if (me.$$('#url') && application.url != me.$$('#url').value) {
-                        body += body == "" ? '' : '&';
-                        body += encodeURIComponent(me.$$('#url').name) + "=" + encodeURIComponent(me.$$('#url').value);
+                    if (me.shadowRoot.querySelector('#url') && application.url !== me.shadowRoot.querySelector('#url').value) {
+                        body += body === "" ? '' : '&';
+                        body += encodeURIComponent(me.shadowRoot.querySelector('#url').name) + "=" + encodeURIComponent(me.shadowRoot.querySelector('#url').value);
                     }
-                    if ('' != body) {
-                        var options = {
+                    if ('' !== body) {
+                        const options = {
                             url: application.self + (me.company ? '' : '/application'),
                             method: 'PATCH',
                             body: body,
                             handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + me.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
+                            headers: me._headers
                         };
 
-
-                        var request = document.createElement('iron-request');
+                        const request = document.createElement('iron-request');
                         request.send(options).then(function() {
                             if (request.succeeded) {
                                 me.company ? resolve(request.response) : resolve(request.response.icon);
@@ -410,28 +413,24 @@ Custom property | Description | Default
                         resolve(application);
                     }
                 });
-            },
+            }
 
-            _submitNewClaims: function (application) {
-                var me = this,
+            _submitNewClaims(application) {
+                const me = this,
                     form = Polymer.dom(me.root).querySelector('[data-claims]');
 
                 return new Promise(function(resolve, reject){
                     if(form.didFieldsChanged()) {
-                        var options = {
+                        const options = {
                             url: application.self,
                             method: 'PATCH',
                             body: form.encodedBodyValues(),
                             handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + me.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
+                            headers: me._headers
                         };
 
-                        var request = document.createElement('iron-request');
+                        const request = document.createElement('iron-request');
                         request.send(options).then(function() {
-
                             if (request.succeeded) {
                                 resolve(request.response.icon);
                             }
@@ -439,17 +438,16 @@ Custom property | Description | Default
                         });
                     } else {
                         me._loader = false;
-                        me.fire('form-error');
-//                        resolve(false);
+                        me.dispatchEvent(new CustomEvent('form-error', { bubbles: true, composed: true }));
                         resolve(application)
                     }
                 });
-            },
+            }
 
-            isValid: function () {
-                var form = Polymer.dom(this.root).querySelector('[data-claims]'),
-                    title = this.$$('#title'),
-                    url = this.$$('#url'),
+            isValid() {
+                let form = Polymer.dom(this.root).querySelector('[data-claims]'),
+                    title = this.shadowRoot.getElementById('title'),
+                    url = this.shadowRoot.getElementById('url'),
                     valid = false;
 
                 if (title && url) {
@@ -466,22 +464,20 @@ Custom property | Description | Default
                 }
 
                 return valid && (form ? form.isValid() : true);
-            },
+            }
 
-            setUp: function() {},
+            setUp() {}
 
-            /**
-             * Resets component.
-             */
-            reset: function() {
-                var application = JSON.parse(JSON.stringify(this.application));
-                var applicationTemplate = JSON.parse(JSON.stringify(this.applicationTpl));
+            reset() {
+                const application = JSON.parse(JSON.stringify(this.application));
+                const applicationTemplate = JSON.parse(JSON.stringify(this.applicationTpl));
 
                 this.application = {};
                 this.applicationTemplate = {};
                 this.application = application;
                 this.applicationTpl = applicationTemplate;
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationSettings.is, AppscoApplicationSettings);
     </script>
 </dom-module>

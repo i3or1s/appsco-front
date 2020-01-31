@@ -18,6 +18,8 @@
 <link rel="import" href="../components/components/appsco-image-upload.html">
 <link rel="import" href="appsco-company-image-settings.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-company-branded-login-page">
     <template>
         <style include="webkit-scrollbar-style">
@@ -66,7 +68,7 @@
                 auto
                 id="brandedLogin"
                 url="[[ company.meta.branded_login ]]"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_onResponse"
                 debounce-duration="300"></iron-ajax>
 
@@ -99,134 +101,134 @@
                     ></appsco-image-upload>
                 </div>
 
-                <form is="iron-form"
-                      id="form"
-                      method="POST"
-                      action="[[ company.meta.branded_login ]]"
-                      headers="[[ _computedHeaders ]]"
-                      on-iron-form-presubmit="_onFormPresubmit"
-                      on-iron-form-error="_onFormError"
-                      on-iron-form-response="_onFormResponse"
-                      on-keyup="_onKeyUp"
-                >
+                <iron-form
+                        id="form"
+                        headers="[[ _headers ]]"
+                        on-iron-form-presubmit="_onFormPresubmit"
+                        on-iron-form-error="_onFormError"
+                        on-iron-form-response="_onFormResponse"
+                        on-keyup="_onKeyUp">
+                    <form
+                          method="POST"
+                          action="[[ company.meta.branded_login ]]">
 
-                    <div class="form-input-container">
-                        <div class="form-input form-input-text">
-                            <label for="loginPageTitle" class="label">Login page title</label>
-                            <paper-input id="loginPageTitle"
-                                         label="Login page title"
-                                         name="branded_login[title]"
-                                         value="[[ brandedLogin.title ]]"
-                            ></paper-input>
-                        </div>
-                        <div class="form-input form-input-text">
-                            <label for="loginPagePasswordDisabled" class="label">Password field</label>
-                            <paper-toggle-button id="loginPagePasswordDisabled"
-                                                 name="branded_login[password_disabled]"
-                                                 checked$="[[ brandedLogin.passwordDisabled ]]">
-                                Turn on or off the password field on login form.
-                            </paper-toggle-button>
-                        </div>
-                        <div class="form-input form-input-text">
-                            <label for="loginPageResetPasswordDisabled" class="label">Reset password</label>
-                            <p class="info">
-                                Turning this option off will remove the Forgot password link on login page
-                                and disable the users to reset their password by themselves.
-                            </p>
+                        <div class="form-input-container">
+                            <div class="form-input form-input-text">
+                                <label for="loginPageTitle" class="label">Login page title</label>
+                                <paper-input id="loginPageTitle"
+                                             label="Login page title"
+                                             name="branded_login[title]"
+                                             value="[[ brandedLogin.title ]]"
+                                ></paper-input>
+                            </div>
+                            <div class="form-input form-input-text">
+                                <label for="loginPagePasswordDisabled" class="label">Password field</label>
+                                <paper-toggle-button id="loginPagePasswordDisabled"
+                                                     name="branded_login[password_disabled]"
+                                                     checked$="[[ brandedLogin.passwordDisabled ]]">
+                                    Turn on or off the password field on login form.
+                                </paper-toggle-button>
+                            </div>
+                            <div class="form-input form-input-text">
+                                <label for="loginPageResetPasswordDisabled" class="label">Reset password</label>
+                                <p class="info">
+                                    Turning this option off will remove the Forgot password link on login page
+                                    and disable the users to reset their password by themselves.
+                                </p>
 
-                            <paper-toggle-button id="loginPageResetPasswordDisabled"
-                                                 name="branded_login[reset_password_disabled]"
-                                                 checked$="[[ brandedLogin.resetPasswordDisabled ]]">
-                                Turn on or off the forgot password field on login form.
-                            </paper-toggle-button>
-                        </div>
-                        <div class="form-input form-input-text">
-                            <label for="loginPageOauthLoginDisabled" class="label">OAuth login</label>
+                                <paper-toggle-button id="loginPageResetPasswordDisabled"
+                                                     name="branded_login[reset_password_disabled]"
+                                                     checked$="[[ brandedLogin.resetPasswordDisabled ]]">
+                                    Turn on or off the forgot password field on login form.
+                                </paper-toggle-button>
+                            </div>
+                            <div class="form-input form-input-text">
+                                <label for="loginPageOauthLoginDisabled" class="label">OAuth login</label>
 
-                            <paper-toggle-button id="loginPageOauthLoginDisabled"
-                                                 name="branded_login[oauth_login_disabled]"
-                                                 checked$="[[ brandedLogin.oauthLoginDisabled ]]">
-                                Turn on or off login through Facebook or Google.
-                            </paper-toggle-button>
-                        </div>
-                        <div class="form-input form-input-text">
-                            <label for="loginPageCreateAccountDisabled" class="label">Create account</label>
+                                <paper-toggle-button id="loginPageOauthLoginDisabled"
+                                                     name="branded_login[oauth_login_disabled]"
+                                                     checked$="[[ brandedLogin.oauthLoginDisabled ]]">
+                                    Turn on or off login through Facebook or Google.
+                                </paper-toggle-button>
+                            </div>
+                            <div class="form-input form-input-text">
+                                <label for="loginPageCreateAccountDisabled" class="label">Create account</label>
 
-                            <paper-toggle-button id="loginPageCreateAccountDisabled"
-                                                 name="branded_login[create_account_disabled]"
-                                                 checked$="[[ brandedLogin.createAccountDisabled ]]">
-                                Turn on or off the "Create account in 10 seconds" button.
-                            </paper-toggle-button>
+                                <paper-toggle-button id="loginPageCreateAccountDisabled"
+                                                     name="branded_login[create_account_disabled]"
+                                                     checked$="[[ brandedLogin.createAccountDisabled ]]">
+                                    Turn on or off the "Create account in 10 seconds" button.
+                                </paper-toggle-button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-input-container">
-                        <div class="form-input form-input-picker">
-                            <label for="brandBackgroundColorPicker" class="label">Pick a brand color</label>
-                            <paper-swatch-picker id="brandBackgroundColorPicker"
-                                                 color="{{ brandedLogin.backgroundColor }}"></paper-swatch-picker>
-                        </div>
+                        <div class="form-input-container">
+                            <div class="form-input form-input-picker">
+                                <label for="brandBackgroundColorPicker" class="label">Pick a brand color</label>
+                                <paper-swatch-picker id="brandBackgroundColorPicker"
+                                                     color="{{ brandedLogin.backgroundColor }}"></paper-swatch-picker>
+                            </div>
 
-                        <label for="brandColorInput" class="label or-label">or</label>
+                            <label for="brandColorInput" class="label or-label">or</label>
 
-                        <div class="form-input form-input-text">
-                            <label for="brandBackgroundColorPicker" class="label">Enter hex code</label>
-                            <paper-input id="brandColorInput"
-                                         label="Brand color"
-                                         name="branded_login[background_color]"
-                                         value="{{ brandedLogin.backgroundColor }}"
-                                         no-label-float
-                                         pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
-                                         auto-validate
-                                         error-message="Please enter valid hex code."></paper-input>
+                            <div class="form-input form-input-text">
+                                <label for="brandBackgroundColorPicker" class="label">Enter hex code</label>
+                                <paper-input id="brandColorInput"
+                                             label="Brand color"
+                                             name="branded_login[background_color]"
+                                             value="{{ brandedLogin.backgroundColor }}"
+                                             no-label-float
+                                             pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                                             auto-validate
+                                             error-message="Please enter valid hex code."></paper-input>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-input-container">
-                        <div class="logo-upload">
-                            <label for="appscoCompanyBackgroundSettings" class="label">Background image</label>
-                            <appsco-image-upload
-                                    id="appscoCompanyBackgroundSettings"
-                                    image="[[ brandedLogin.backgroundImage ]]"
-                                    authorization-token="[[ authorizationToken ]]"
-                                    image-settings-api="[[ _companyBackgroundApi ]]"
-                                    image-alt="Company background image"
-                                    loader-alt="AppsCo is saving background image"
-                                    remove-action-text="Remove image"
-                            ></appsco-image-upload>
+                        <div class="form-input-container">
+                            <div class="logo-upload">
+                                <label for="appscoCompanyBackgroundSettings" class="label">Background image</label>
+                                <appsco-image-upload
+                                        id="appscoCompanyBackgroundSettings"
+                                        image="[[ brandedLogin.backgroundImage ]]"
+                                        authorization-token="[[ authorizationToken ]]"
+                                        image-settings-api="[[ _companyBackgroundApi ]]"
+                                        image-alt="Company background image"
+                                        loader-alt="AppsCo is saving background image"
+                                        remove-action-text="Remove image"
+                                ></appsco-image-upload>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-input-container">
-                        <div class="form-input form-input-text">
-                            <label for="loginPageAdminLoginLinkCaption" class="label">Admin force login link</label>
-                            <p class="info">
-                                This login link is only visible to your company admins when your company has set up
-                                an external identity provider and has single sign-on login enabled.
-                                You can modify the text showing on the link and add your company's name.
-                            </p>
-                            <paper-input id="loginPageAdminLoginLinkCaption"
-                                         label="Admin force login link"
-                                         name="branded_login[admin_login_link_caption]"
-                                         value="[[ brandedLogin.adminLoginLinkCaption ]]"
-                            ></paper-input>
+                        <div class="form-input-container">
+                            <div class="form-input form-input-text">
+                                <label for="loginPageAdminLoginLinkCaption" class="label">Admin force login link</label>
+                                <p class="info">
+                                    This login link is only visible to your company admins when your company has set up
+                                    an external identity provider and has single sign-on login enabled.
+                                    You can modify the text showing on the link and add your company's name.
+                                </p>
+                                <paper-input id="loginPageAdminLoginLinkCaption"
+                                             label="Admin force login link"
+                                             name="branded_login[admin_login_link_caption]"
+                                             value="[[ brandedLogin.adminLoginLinkCaption ]]"
+                                ></paper-input>
+                            </div>
+                            <div class="form-input form-input-text">
+                                <label for="loginPageUsernameFieldCaption" class="label">Username field title</label>
+                                <paper-input id="loginPageUsernameFieldCaption"
+                                             label="Username field title"
+                                             name="branded_login[username_field_caption]"
+                                             value="[[ brandedLogin.usernameFieldCaption ]]"
+                                ></paper-input>
+                            </div>
+                            <div class="form-input form-input-text">
+                                <label for="loginPagePasswordFieldCaption" class="label">Password field title</label>
+                                <paper-input id="loginPagePasswordFieldCaption"
+                                             label="Password field title"
+                                             name="branded_login[password_field_caption]"
+                                             value="[[ brandedLogin.passwordFieldCaption ]]"
+                                ></paper-input>
+                            </div>
                         </div>
-                        <div class="form-input form-input-text">
-                            <label for="loginPageUsernameFieldCaption" class="label">Username field title</label>
-                            <paper-input id="loginPageUsernameFieldCaption"
-                                         label="Username field title"
-                                         name="branded_login[username_field_caption]"
-                                         value="[[ brandedLogin.usernameFieldCaption ]]"
-                            ></paper-input>
-                        </div>
-                        <div class="form-input form-input-text">
-                            <label for="loginPagePasswordFieldCaption" class="label">Password field title</label>
-                            <paper-input id="loginPagePasswordFieldCaption"
-                                         label="Password field title"
-                                         name="branded_login[password_field_caption]"
-                                         value="[[ brandedLogin.passwordFieldCaption ]]"
-                            ></paper-input>
-                        </div>
-                    </div>
-
-                </form>
+                    </form>
+                </iron-form>
 
                 <paper-button id="submitBrandedLoginForm"
                               class="submit-button"
@@ -236,198 +238,155 @@
                               class="reset-button"
                               on-tap="_resetForm">Reset</paper-button>
 
-                <iron-a11y-keys target="[[ _target ]]"
-                                keys="enter"
-                                on-keys-pressed="_onEnter">
-                </iron-a11y-keys>
+                <iron-a11y-keys
+                        keys="enter"
+                        on-keys-pressed="_onEnter"></iron-a11y-keys>
             </div>
         </paper-card>
 
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyBrandedLoginPage extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-branded-login-page'; }
 
-            is: 'appsco-company-branded-login-page',
-
-            properties: {
-
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                brandedLogin: {
-                    type: Object,
-                    value: function() {
-                        return {
-                            adminLoginLinkCaption: null,
-                            alias: "",
-                            backgroundColor: null,
-                            backgroundImage: null,
-                            createAccountDisabled: false,
-                            logo: "",
-                            oauthLoginDisabled: false,
-                            passwordDisabled: false,
-                            passwordFieldCaption: null,
-                            resetPasswordDisabled: false,
-                            title: "",
-                            usernameFieldCaption: null
-                        };
-                    }
-                },
-
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Save settings link.
-                 */
-                settingsApi: {
-                    type: String
-                },
-
-                _companyLogoApi: {
-                    type: String,
-                    computed: '_computeCompanyLogoApi(company)'
-                },
-
-                _companyBackgroundApi: {
-                    type: String,
-                    computed: '_computeCompanyBackgroundApi(company)'
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
-                        }
-                    }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.brandedLoginCard
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            setupPage: function() {
-                this.$.appscoCompanySettings.setup();
-            },
-
-            resetPage: function() {
-                this.$.appscoCompanySettings.reset();
-            },
-
-            _computeCompanyLogoApi: function(company) {
-                return (company.meta && company.meta.branded_login) ? company.meta.branded_login + '/logo' : null;
-            },
-
-            _computeCompanyBackgroundApi: function(company) {
-                return (company.meta && company.meta.branded_login) ? company.meta.branded_login + '/background' : null;
-            },
-
-            _showLoader: function() {
-                this._loader = true;
-            },
-
-            _hideLoader: function() {
-                this._loader = false;
-            },
-
-            _onBack: function() {
-                this.fire('back');
-            },
-
-            _onResponse: function(event) {
-                this.brandedLogin = event.detail.response;
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            /**
-             * Submits form on ENTER key using iron-a11y-keys component.
-             *
-             * @private
-             */
-            _onEnter: function() {
+                    brandedLogin: {
+                        type: Object,
+                        value: function () {
+                            return {
+                                adminLoginLinkCaption: null,
+                                alias: "",
+                                backgroundColor: null,
+                                backgroundImage: null,
+                                createAccountDisabled: false,
+                                logo: "",
+                                oauthLoginDisabled: false,
+                                passwordDisabled: false,
+                                passwordFieldCaption: null,
+                                resetPasswordDisabled: false,
+                                title: "",
+                                usernameFieldCaption: null
+                            };
+                        }
+                    },
+
+                    settingsApi: {
+                        type: String
+                    },
+
+                    _companyLogoApi: {
+                        type: String,
+                        computed: '_computeCompanyLogoApi(company)'
+                    },
+
+                    _companyBackgroundApi: {
+                        type: String,
+                        computed: '_computeCompanyBackgroundApi(company)'
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+                this.sharedElements = {
+                    'hero': this.$.brandedLoginCard
+                };
+            }
+
+            setupPage() {
+                this.$.appscoCompanySettings.setup();
+            }
+
+            resetPage() {
+                this.$.appscoCompanySettings.reset();
+            }
+
+            _computeCompanyLogoApi(company) {
+                return (company.meta && company.meta.branded_login) ? company.meta.branded_login + '/logo' : null;
+            }
+
+            _computeCompanyBackgroundApi(company) {
+                return (company.meta && company.meta.branded_login) ? company.meta.branded_login + '/background' : null;
+            }
+
+            _showLoader() {
+                this._loader = true;
+            }
+
+            _hideLoader() {
+                this._loader = false;
+            }
+
+            _onBack() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            _onResponse(event) {
+                this.brandedLogin = event.detail.response;
+            }
+
+            _onEnter() {
                 this._submitForm();
-            },
+            }
 
-            _submitForm: function() {
+            _submitForm() {
                 this.$.form.submit();
-            },
+            }
 
-            _resetForm: function() {
+            _resetForm() {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this.company.meta.branded_login,
                         method: 'DELETE',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken
-                        }
+                        headers: this._headers
                     };
 
                 request.send(options).then(function() {
-
                     if (200 === parseInt(request.status)) {
                         this.brandedLogin = {
                             adminLoginLinkCaption: null,
@@ -444,11 +403,10 @@
                             usernameFieldCaption: null
                         };
                     }
-
                 }.bind(this));
-            },
+            }
 
-            _onFormPresubmit: function() {
+            _onFormPresubmit() {
                 this._showLoader();
                 this.$.form.request.method = 'PUT';
                 var body = this.$.form.request.body;
@@ -456,28 +414,32 @@
                 body['branded_login[reset_password_disabled]'] = body['branded_login[reset_password_disabled]'] ? 1: 0;
                 body['branded_login[oauth_login_disabled]'] = body['branded_login[oauth_login_disabled]'] ? 1: 0;
                 body['branded_login[create_account_disabled]'] = body['branded_login[create_account_disabled]'] ? 1: 0;
-            },
-
-            _onFormError: function(event) {
-                this._error = event.detail.error.message;
-                this._hideLoader();
-            },
-
-            _onFormResponse: function(event) {
-                this.set('brandedLogin', event.detail.response);
-
-                this.fire('company-branded-login-changed', {
-                    brandedLogin: this.brandedLogin
-                });
-
-                this._hideLoader();
-            },
-
-            _onKeyUp: function() {
-                this._error = '';
             }
 
-        });
+            _onFormError(event) {
+                this._error = event.detail.error.message;
+                this._hideLoader();
+            }
+
+            _onFormResponse(event) {
+                this.set('brandedLogin', event.detail.response);
+
+                this.dispatchEvent(new CustomEvent('company-branded-login-changed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        brandedLogin: this.brandedLogin
+                    }
+                }));
+
+                this._hideLoader();
+            }
+
+            _onKeyUp() {
+                this._error = '';
+            }
+        }
+        window.customElements.define(AppscoCompanyBrandedLoginPage.is, AppscoCompanyBrandedLoginPage);
     </script>
 </dom-module>
 

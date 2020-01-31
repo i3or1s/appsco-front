@@ -152,95 +152,92 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationSubscriber extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-subscriber'; }
 
-            is: 'appsco-application-subscriber',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    subscriber: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _owner: {
+                        type: Boolean,
+                        computed: '_computeOwner(subscriber, account)'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                /**
-                 * Item to display.
-                 *
-                 * @type {Object}
-                 */
-                subscriber: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Indicates if subscriber should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _owner: {
-                    type: Boolean,
-                    computed: '_computeOwner(subscriber, account)'
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
 
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _computeOwner: function(subscriber, account) {
-                return account && subscriber.email == account.email;
-            },
-
-            _onRevokeAccessAction: function() {
-                this.fire('subscription-revoke', {
-                    application: this.application,
-                    account: this.subscriber
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
                 });
             }
-        });
+
+            _computeOwner(subscriber, account) {
+                return account && subscriber.email === account.email;
+            }
+
+            _onRevokeAccessAction() {
+                this.dispatchEvent(new CustomEvent('subscription-revoke', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application,
+                        account: this.subscriber
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoApplicationSubscriber.is, AppscoApplicationSubscriber);
     </script>
 </dom-module>

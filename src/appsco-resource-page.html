@@ -235,176 +235,160 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-resource-page',
+        class AppscoResourcePage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-resource-page'; }
 
-            properties: {
-
-                route: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                },
-
-                iconsApi: {
-                    type: String
-                },
-
-                company: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Selected page.
-                 * It has value of component's 'name' attribute.
-                 */
-                _selected: {
-                    type: String,
-                    value: 'appsco-application-components-page',
-                    notify: true
-                },
-
-                /**
-                 * Authorization token for logged account.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                /**
-                 * Get accounts link.
-                 */
-                accountsApi: {
-                    type: String
-                },
-
-                /**
-                 * Get accounts link.
-                 */
-                applicationsApi: {
-                    type: String,
-                    notify: true,
-                    observer: '_onApplicationsApiChanged'
-                },
-
-                /**
-                 * Get accounts link.
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _subscribers: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _resourceImageSettingsApi: {
-                    type: String,
-                    computed: '_computeResourceImageSettingsApi(application)'
-                },
-
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            static get properties() {
+                return {
+                    route: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
+
+                    iconsApi: {
+                        type: String
+                    },
+
+                    company: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Selected page.
+                     * It has value of component's 'name' attribute.
+                     */
+                    _selected: {
+                        type: String,
+                        value: 'appsco-application-components-page',
+                        notify: true
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    /**
+                     * Computed headers.
+                     * It contains authorization token.
+                     */
+                    _computedHeaders: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    accountsApi: {
+                        type: String
+                    },
+
+                    applicationsApi: {
+                        type: String,
+                        notify: true,
+                        observer: '_onApplicationsApiChanged'
+                    },
+
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _subscribers: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _resourceImageSettingsApi: {
+                        type: String,
+                        computed: '_computeResourceImageSettingsApi(application)'
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+            static get observers() {
+                return [
+                    '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-            ],
-
-            attached: function() {
+            ready() {
+                super.ready();
 
                 this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-                if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                });
 
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._getApplication();
+                });
+            }
+
+            _onApplicationsApiChanged() {
                 this._getApplication();
-            },
+            }
 
-            _onApplicationsApiChanged: function() {
-                this._getApplication();
-            },
-
-            _updateScreen: function(medium, tablet, mobile) {
+            _updateScreen(medium, tablet, mobile) {
                 this.updateStyles();
 
                 if (mobile) {
@@ -413,7 +397,7 @@
                 else if(!this.$.appscoContent.resourceActive) {
                     this.$.appscoContent.showSection('resource');
                 }
-            },
+            }
 
             /**
              * Computes authorization headers.
@@ -422,31 +406,30 @@
              * @returns {{ Authorization: string }}
              * @private
              */
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken
                 }
-            },
+            }
 
-            _computeResourceImageSettingsApi: function (resource) {
+            _computeResourceImageSettingsApi(resource) {
                 return resource.application && resource.application.meta ? resource.application.meta.change_application_image : null;
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _getApplication: function() {
-
+            _getApplication() {
                 if (!this.application.self && this.applicationsApi && this._computedHeaders) {
                     this.$.ironAjaxGetApplication.url = this.iconsApi + this.route.path;
                     this.$.ironAjaxGetApplication.generateRequest();
                 }
 
-            },
+            }
 
-            _onApplicationResponse: function(event) {
+            _onApplicationResponse(event) {
                 var icon = event.detail.response.icon;
 
                 if (icon.owner) {
@@ -455,94 +438,91 @@
                 else {
                     this._onApplicationError();
                 }
-            },
+            }
 
-            _onApplicationError: function() {
-                this.fire('page-error');
-            },
+            _onApplicationError() {
+                this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
+            }
 
-            _onApplicationSettings: function() {
+            _onApplicationSettings() {
                 this._selected = 'appsco-application-settings-page';
-            },
+            }
 
-            _onAllSubscribers: function() {
+            _onAllSubscribers() {
                 this._selected = 'appsco-application-subscribers-page';
-            },
+            }
 
-            _onAllLog: function() {
+            _onAllLog() {
                 this._selected = 'appsco-application-log-page';
-            },
+            }
 
-            _onApplicationSettingsSaved: function() {
+            _onApplicationSettingsSaved() {
                 this._showApplicationComponentsPage();
-            },
+            }
 
-            _onApplicationSettingsBack: function() {
+            _onApplicationSettingsBack() {
                 this.$.appscoApplicationSettingsPage.resetPage();
                 this._showApplicationComponentsPage();
-            },
+            }
 
-            _onResourceBack: function() {
+            _onResourceBack() {
                 this._showApplicationComponentsPage();
-            },
+            }
 
-            _showApplicationComponentsPage: function() {
+            _showApplicationComponentsPage() {
                 this._selected = 'appsco-application-components-page';
-            },
+            }
 
-            _onShareApplication: function() {
-                this.fire('share-application', {
-                    application: this.application
-                });
-            },
+            _onShareApplication() {
+                this.dispatchEvent(new CustomEvent('share-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onOpenApplication: function() {
+            _onOpenApplication() {
                 window.open(this.application.meta.plugin_go, '_blank');
-            },
+            }
 
-            _onRemoveApplication: function() {
-                this.fire('remove-application');
-            },
+            _onRemoveApplication() {
+                this.dispatchEvent(new CustomEvent('remove-application', { bubbles: true, composed: true }));
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._showApplicationComponentsPage();
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            searchSubscribers: function(term) {
+            searchSubscribers(term) {
                 this.$.appscoApplicationSubscribersPage.searchSubscribers(term);
-            },
+            }
 
-            _onPageAnimationFinish: function(event) {
+            _onPageAnimationFinish(event) {
                 var fromPage = event.detail.fromPage,
                     toPage = event.detail.toPage;
 
-                switch(fromPage.getAttribute('name')) {
-                    case 'appsco-application-subscribers-page':
-                        fromPage.resetPage();
-                        break;
-
-                    default:
-                        break;
+                if('appsco-application-subscribers-page' === fromPage.getAttribute('name')) {
+                    fromPage.resetPage();
                 }
 
                 switch(toPage.getAttribute('name')) {
                     case 'appsco-application-settings-page':
                         toPage.setPage();
                         break;
-
                     case 'appsco-application-subscribers-page':
                         toPage.setupPage();
                         break;
-
                     default:
                         break;
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoResourcePage.is, AppscoResourcePage);
     </script>
 </dom-module>

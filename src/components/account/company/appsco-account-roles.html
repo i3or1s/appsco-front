@@ -2,6 +2,8 @@
 <link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../../../bower_components/iron-ajax/iron-request.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-roles`
 Provides switcher for account roles within company. Currently account can be set as Admin or not.
@@ -56,69 +58,72 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountRoles extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-roles'; }
 
-            is: 'appsco-account-roles',
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
-
-                /**
-                 * Role to set / unset as administrator.
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _admin: {
+                        type: Boolean,
+                        computed: '_computeAdminState(account)'
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                _admin: {
-                    type: Boolean,
-                    computed: '_computeAdminState(account)'
-                }
-            },
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                'administratorSwitch.change': '_onAdministratorSwitch'
-            },
+            _addListeners() {
+                this.addEventListener('administratorSwitch.change', this._onAdministratorSwitch);
+            }
 
-            _computeAdminState: function(account) {
-                return (account.roles && account.roles.indexOf('COMPANY_ROLE_ADMIN') != -1);
-            },
+            _computeAdminState(account) {
+                return (account.roles && account.roles.indexOf('COMPANY_ROLE_ADMIN') !== -1);
+            }
 
-            _onAdministratorSwitch: function(account) {
-                var request = document.createElement('iron-request'),
+            _onAdministratorSwitch(account) {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this.account.self + '/admin',
                         method: 'POST',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken
-                        }
+                        headers: this._headers
                     };
 
                 this.$.administratorSwitch.disabled = true;
 
                 request.send(options).then(function() {
-                    var account = request.response;
+                    const account = request.response;
 
                     this.set('account', account);
                     this.$.administratorSwitch.disabled = false;
 
-                    this.fire('account-role-changed', {
-                        account: account,
-                        role: {
-                            name: 'Administrator',
-                            value: this._computeAdminState(account)
+                    this.dispatchEvent(new CustomEvent('account-role-changed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            account: account,
+                            role: {
+                                name: 'Administrator',
+                                value: this._computeAdminState(account)
+                            }
                         }
-                    });
-
+                    }));
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountRoles.is, AppscoAccountRoles);
     </script>
 </dom-module>

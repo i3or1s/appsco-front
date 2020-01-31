@@ -8,6 +8,8 @@
 
 <link rel="import" href="appsco-company-group-resource-item.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-group-resources`
 Contains group's resource list and Load More action.
@@ -113,7 +115,7 @@ Custom property | Description | Default
             <iron-ajax
                     id="getGroupResourcesApiRequest"
                     url="[[ _listApi ]]"
-                    headers="[[ _computedHeaders ]]"
+                    headers="[[ _headers ]]"
                     debounce-duration="300"
                     on-error="_onError"
                     on-response="_onResponse"></iron-ajax>
@@ -158,220 +160,186 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroupResources extends Polymer.mixinBehaviors([
+            Appsco.HeadersMixin,
+            Polymer.NeonAnimationRunnerBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-group-resources'; }
 
-            is: 'appsco-company-group-resources',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Route to retrieve list
-                 */
-                listApi: {
-                    type: String,
-                    observer: '_onListApiChanged'
-                },
-
-                /**
-                 * Number of items to load and present
-                 */
-                size: {
-                    type: Number,
-                    value: 10
-                },
-
-                /**
-                 * Show load more button
-                 */
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if group should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _resources: {
-                    type: Array,
-                    value: function() {
-                        return [];
+            static get properties() {
+                return {
+                    listApi: {
+                        type: String,
+                        observer: '_onListApiChanged'
                     },
-                    notify: true
-                },
 
-                _allResources: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    size: {
+                        type: Number,
+                        value: 10
+                    },
+
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _resources: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
+                    },
+
+                    _allResources: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _resourcesEmpty: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _message: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _nextPageApiUrl: {
+                        type: String
+                    },
+
+                    _totalResources: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _renderedIndex: {
+                        type: Number,
+                        value: -1
+                    },
+
+                    _loaders: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _resourcesEmpty: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                _message: {
-                    type: String,
-                    value: ''
-                },
-
-                _nextPageApiUrl: {
-                    type: String
-                },
-
-                _totalResources: {
-                    type: Number,
-                    value: 0
-                },
-
-                _renderedIndex: {
-                    type: Number,
-                    value: -1
-                },
-
-                _loaders: {
-                    type: Array,
-                    value: function() { return []; }
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'slide-from-left-animation',
-                                nodes: [],
-                                nodeDelay: 50,
-                                timing: {
-                                    duration: 300
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'slide-from-left-animation',
+                        nodes: [],
+                        nodeDelay: 50,
+                        timing: {
+                            duration: 300
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _onListApiChanged: function(url) {
+            _onListApiChanged(url) {
                 if (!url) {
                     return;
                 }
-                this._listApi = ((url.indexOf('extended') != -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
+                this._listApi = ((url.indexOf('extended') !== -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
                 if (url && url.length > 0) {
                     this._loadResources();
                 }
-            },
+            }
 
-            _setLoadMoreAction: function() {
+            _setLoadMoreAction() {
                 this._loadMore = (!this.preview && this.loadMore && this._allResources.length < this._totalResources);
-            },
+            }
 
-            _hideLoadMoreAction: function() {
+            _hideLoadMoreAction() {
                 this._loadMore = false;
-            },
+            }
 
-            loadItems: function() {
+            loadItems() {
                 this._loadResources();
-            },
+            }
 
-            _loadResources: function() {
+            _loadResources() {
                 this._showProgressBar();
                 this._loadMore = false;
                 this._clearResources();
                 this.$.getGroupResourcesApiRequest.generateRequest();
-            },
+            }
 
-            reloadResources: function() {
+            reloadResources() {
                 this._loadResources();
-            },
+            }
 
-            _loadMoreResources: function() {
+            _loadMoreResources() {
                 this._showLoadMoreProgressBar();
                 this.$.getGroupResourcesApiRequest.url = this._nextPageApiUrl;
                 this.$.getGroupResourcesApiRequest.generateRequest();
-            },
+            }
 
-            _onError: function() {
+            _onError() {
                 this._message = 'We couldn\'t load resources at the moment. Please try again in a minute.';
                 this._handleEmptyLoad();
-            },
+            }
 
-            _handleEmptyLoad: function() {
+            _handleEmptyLoad() {
                 this._resourcesEmpty = true;
                 this._message = 'There are no resources attached to this group.';
 
-                /**
-                 * Fired when there are no resources.
-                 *
-                 * @event empty-load
-                 */
-                this.fire('empty-load');
+                this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
 
                 this._hideProgressBar();
                 this._hideLoadMoreProgressBar();
-            },
+            }
 
-            _clearLoaders: function() {
-                for (var idx in this._loaders) {
+            _clearLoaders() {
+                for (const idx in this._loaders) {
                     clearTimeout(this._loaders[idx]);
                 }
                 this.set('_loaders', []);
-            },
+            }
 
-            _clearResources: function() {
+            _clearResources() {
                 this._clearLoaders();
                 this.set('_resources', []);
                 this.set('_allResources', []);
-            },
+            }
 
-            _onResponse: function(event) {
-                var response = event.detail.response;
+            _onResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.applications) {
-                    var resources = response.applications,
+                    const resources = response.applications,
                         meta = response.meta,
                         resourcesCount = resources.length - 1;
 
@@ -390,13 +358,11 @@ Custom property | Description | Default
                         this._clearResources();
                     }
                     resources.forEach(function(el, index) {
-
                         this._loaders.push(setTimeout(function() {
-
                             this.push('_resources', el);
                             this.push('_allResources', el);
 
-                            if (index == resourcesCount) {
+                            if (index === resourcesCount) {
 
                                 this._loadMore = this.loadMore;
 
@@ -408,25 +374,21 @@ Custom property | Description | Default
                                 this._hideLoadMoreProgressBar();
                                 this._setLoadMoreAction();
 
-                                /**
-                                 * Fired when resources are loaded
-                                 *
-                                 * @event loaded
-                                 * @param {Object} companyResources[]
-                                 */
-                                this.fire('loaded', {
-                                    companyResources: resources
-                                });
+                                this.dispatchEvent(new CustomEvent('loaded', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        companyResources: resources
+                                    }
+                                }));
                             }
-
                         }.bind(this), (index + 1) * 30));
-
                     }.bind(this));
                 }
-            },
+            }
 
-            addGroupItems: function(resources) {
-                var length = resources.length,
+            addGroupItems(resources) {
+                const length = resources.length,
                     allResources = this._allResources,
                     allLength = allResources.length;
 
@@ -434,8 +396,7 @@ Custom property | Description | Default
                 this._message = '';
                 this._renderedIndex = length - 1;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (0 === allLength) {
                         this.push('_resources', resources[i]);
                         this.push('_allResources', resources[i]);
@@ -443,9 +404,7 @@ Custom property | Description | Default
                         this._totalResources++;
                     }
                     else {
-
-                        for (var j = 0; j < allLength; j++) {
-
+                        for (let j = 0; j < allLength; j++) {
                             if (allResources[j].alias === resources[i].alias) {
                                 break;
                             }
@@ -455,32 +414,29 @@ Custom property | Description | Default
 
                                 this._totalResources++;
                             }
-
                         }
                     }
                 }
-            },
+            }
 
-            removeGroupItems: function(resources) {
-                var length = resources.length,
-                        _resources = this._resources,
-                        _length = _resources.length,
-                        allResources = this._allResources,
-                        allLength = allResources.length;
+            removeGroupItems(resources) {
+                const length = resources.length,
+                    _resources = this._resources,
+                    _length = _resources.length,
+                    allResources = this._allResources,
+                    allLength = allResources.length;
 
-                for (var i = 0; i < length; i++) {
-                    var resource = resources[i];
+                for (let i = 0; i < length; i++) {
+                    const resource = resources[i];
 
                     for (var j = 0; j < _length; j++) {
-
                         if (resource.application.self === _resources[j].self) {
                             this.splice('_resources', j, 1);
                             break;
                         }
                     }
 
-                    for (var k = 0; k < allLength; k++) {
-
+                    for (let k = 0; k < allLength; k++) {
                         if (resource.application.self === allResources[k].self) {
                             this.splice('_allResources', k, 1);
                             break;
@@ -488,47 +444,40 @@ Custom property | Description | Default
                     }
 
                     this._totalResources--;
-
                 }
 
                 if (0 === this._resources.length) {
                     this._handleEmptyLoad();
                 }
-            },
+            }
 
-            _showProgressBar: function() {
-                this.$$('#paperProgress').hidden = false;
-            },
+            _showProgressBar() {
+                this.shadowRoot.getElementById('paperProgress').hidden = false;
+            }
 
-            _showLoadMoreProgressBar: function() {
-                this.$$('#loadMoreProgress').hidden = false;
-            },
+            _showLoadMoreProgressBar() {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
-                    this.$$('#paperProgress').hidden = true;
+                    this.shadowRoot.getElementById('paperProgress').hidden = true;
                 }.bind(this), 300);
+            }
 
-            },
-
-            _hideLoadMoreProgressBar: function() {
-
+            _hideLoadMoreProgressBar() {
                 setTimeout(function() {
-                    this.$$('#loadMoreProgress').hidden = true;
+                    this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                 }.bind(this), 300);
+            }
 
-            },
-
-            _onItemsDomChange: function() {
-                var index = this._renderedIndex;
-
-                if (-1 != index) {
-
+            _onItemsDomChange() {
+                const index = this._renderedIndex;
+                if (-1 !== index) {
                     this.animationConfig.entry.nodes = [];
 
-                    for (var i = 0; i <= index; i++) {
-                        var addedItem = this.$$('#appscoGroupResourceItem_' + i);
+                    for (let i = 0; i <= index; i++) {
+                        const addedItem = this.shadowRoot.getElementById('appscoGroupResourceItem_' + i);
                         this.animationConfig.entry.nodes.push(addedItem);
                     }
 
@@ -536,8 +485,8 @@ Custom property | Description | Default
 
                     this._renderedIndex = -1;
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyGroupResources.is, AppscoCompanyGroupResources);
     </script>
 </dom-module>

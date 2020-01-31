@@ -64,49 +64,38 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportContacts extends Polymer.Element {
+            static get is() { return 'appsco-import-contacts'; }
 
-            is: 'appsco-import-contacts',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    importApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    domain: {
+                        type: String
+                    }
+                };
+            }
 
-                /**
-                 * Import API link.
-                 */
-                importApi: {
-                    type: String
-                },
-
-                domain: {
-                    type: String
-                }
-            },
-
-            /**
-             * Toggles import.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.appscoImportResource.toggle();
-            },
+            }
 
-            /**
-             * Closes import.
-             */
-            close: function() {
+            close() {
                 this.$.appscoImportResource.close();
-            },
+            }
 
-            _onDownloadExampleImportFile: function(event) {
+            _onDownloadExampleImportFile(event) {
                 event.stopPropagation();
                 window.location.href = this.domain + '/example_import.csv';
             }
-        });
+        }
+        window.customElements.define(AppscoImportContacts.is, AppscoImportContacts);
     </script>
 </dom-module>

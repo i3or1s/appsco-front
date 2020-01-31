@@ -259,243 +259,242 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-resources-page',
+        class AppscoResourcesPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppscoPageBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-resources-page'; }
 
-            properties: {
-
-                resource: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    resource: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                account: {
-                    type: Object,
-                    value: function () {
-                        return {};
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    resourceAdmin: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _orgUnits: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _bulkActions: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+
+                    _infoShown: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _selectedTab: {
+                        type: Number
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    /**
+                     * Computed headers.
+                     * It contains authorization token.
+                     */
+                    computedHeaders: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    companyResourcesApi: {
+                        type: String
+                    },
+
+                    getCompanyIdpConfigListApi: {
+                        type: String
+                    },
+
+                    _hasSamlIdp: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _resourceSelectAction: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    groupsApi: {
+                        type: String
+                    },
+
+                    _selectedFilter: {
+                        type: Number,
+                        value: 0,
+                        observer: '_onSelectedFilterChanged'
+                    },
+
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onPageConfigChanged'
                     }
-                },
+                };
+            }
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            static get observers() {
+                return [
+                    '_getHasSamlIdpRequest(getCompanyIdpConfigListApi, authorizationToken)',
+                    '_updateScreen(mobileScreen, tabletScreen)',
+                    '_hideFilters(mobileScreen)'
+                ];
+            }
 
-                resourceAdmin: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                _orgUnits: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _bulkActions: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                },
-
-                _infoShown: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _selectedTab: {
-                    type: Number
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                computedHeaders: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Get company resources.
-                 */
-                companyResourcesApi: {
-                    type: String
-                },
-
-                getCompanyIdpConfigListApi: {
-                    type: String
-                },
-
-                _hasSamlIdp: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _resourceSelectAction: {
-                    type: Number,
-                    value: 0
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.set('_itemsComponent', this.$.appscoResources);
+                });
+            }
 
-                groupsApi: {
-                    type: String
-                },
-
-                _selectedFilter: {
-                    type: Number,
-                    value: 0,
-                    observer: '_onSelectedFilterChanged'
-                },
-
-                pageConfig: {
-                    type: Object,
-                    value: function() { return {}; },
-                    observer: '_onPageConfigChanged'
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.AppscoPageBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_getHasSamlIdpRequest(getCompanyIdpConfigListApi, authorizationToken)',
-                '_updateScreen(mobileScreen, tabletScreen)',
-                '_hideFilters(mobileScreen)'
-            ],
-
-            attached: function() {
-                this.pageLoaded = false;
-                this.set('_itemsComponent', this.$.appscoResources);
-
-                if (this.mobileScreen || this.tabletScreen) {
-                    this.updateStyles();
-                }
-
-            },
-
-            _updateScreen: function(mobile, tablet) {
+            _updateScreen(mobile, tablet) {
                 this.updateStyles();
-            },
+            }
 
-            _hideFilters: function(mobile) {
+            _hideFilters(mobile) {
                 if (mobile) {
                     this.hideResource();
                 }
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            initializePage: function() {
+            initializePage() {
                 this.setDefaultResource();
                 this._getHasSamlIdpRequest(this.getCompanyIdpConfigListApi, this.authorizationToken);
-            },
+            }
 
-            pageSelected: function () {
+            pageSelected () {
                 this.reloadResources();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._deselectAllItems();
                 this.$.appscoResources.reset();
                 this._resetFilters();
                 this._resetPageActions();
                 this.hideInfo();
-            },
+            }
 
-            removeResourceAssignee: function(resource, assignee) {
-
+            removeResourceAssignee(resource, assignee) {
                 if (resource.alias === this.resource.alias) {
-                    this.$$('#appscoApplicationAssignees').removeAssignee(assignee);
+                    this.shadowRoot.getElementById('appscoApplicationAssignees').removeAssignee(assignee);
                 }
-            },
+            }
 
-            _onObservableItemListChange: function(event, data) {
+            _onObservableItemListChange(event, data) {
                 if(data.type === 'resources') {
                     this.setObservableType('resources-page');
                     this.populateItems(data.items);
                 }
                 event.stopPropagation();
-            },
+            }
 
-            _onResourcesEmptyLoad: function() {
+            _onResourcesEmptyLoad() {
                 this.hideInfo();
                 this._pageLoaded();
-            },
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
                 this._infoShown = true;
                 this._selectedTab = 0;
-            },
+            }
 
-            hideInfo: function() {
+            hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
                 this.$.appscoResources.deactivateItem(this.resource);
-            },
+            }
 
-            toggleInfo: function() {
-
+            toggleInfo() {
                 if (this.$.appscoResources.getAllItems().length > 0) {
                     this.$.appscoContent.toggleSection('info');
                     this._infoShown = !this._infoShown;
@@ -509,21 +508,21 @@
                     }
                 }
 
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            hideResource: function() {
+            hideResource() {
                 this.$.appscoContent.hideSection('resource');
-            },
+            }
 
-            toggleAdditionalOptions: function() {
+            toggleAdditionalOptions() {
                 this.$.appscoContent.toggleSection('content-top');
-            },
+            }
 
-            _onPageConfigChanged: function(newValue) {
+            _onPageConfigChanged(newValue) {
                 newValue = newValue[this.getAttribute('name')];
 
                 if (!newValue) {
@@ -548,57 +547,63 @@
                         ascending: newValue.sort_ascending
                     });
                 }
-            },
+            }
 
-            _showBulkActions: function() {
-                this.fire('show-bulk-actions');
-            },
+            _showBulkActions() {
+                this.dispatchEvent(new CustomEvent('show-bulk-actions', { bubbles: true, composed: true }));
+            }
 
-            _hideBulkActions: function() {
-                this.fire('hide-bulk-actions');
-            },
+            _hideBulkActions() {
+                this.dispatchEvent(new CustomEvent('hide-bulk-actions', { bubbles: true, composed: true }));
+            }
 
-            _resetPageActions: function() {
-                this.fire('reset-page-actions');
-            },
+            _resetPageActions() {
+                this.dispatchEvent(new CustomEvent('reset-page-actions', { bubbles: true, composed: true }));
+            }
 
-            addGroup: function(group) {
-                this.$$('#appscoCompanyGroups').addItems([group]);
-            },
+            addGroup(group) {
+                this.shadowRoot.getElementById('appscoCompanyGroups').addItems([group]);
+            }
 
-            removeGroup: function(group) {
-                this.$$('#appscoCompanyGroups').removeItems([group]);
-            },
+            removeGroup(group) {
+                this.shadowRoot.getElementById('appscoCompanyGroups').removeItems([group]);
+            }
 
-            _handleResourceInfo: function(resource) {
+            _handleResourceInfo(resource) {
                 this.set('resource', resource);
 
                 if (!this._infoShown) {
                     this._showInfo();
                 }
-            },
+            }
 
-            _onViewResourceInfo: function(event) {
+            _onViewResourceInfo(event) {
                 this._handleResourceInfo(event.detail.item);
-            },
+            }
 
-            _onResourceEditAction: function(event) {
+            _onResourceEditAction(event) {
                 this.set('resource', event.detail.item);
-                this.fire('edit-resource', {
-                    resource: event.detail.item
-                });
-            },
+                this.dispatchEvent(new CustomEvent('edit-resource', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        resource: event.detail.item
+                    }
+                }));
+            }
 
-            _onResourceInfoEdit: function() {
-                this.fire('info-edit-resource', {
-                    resource: this.resource
-                });
-            },
+            _onResourceInfoEdit() {
+                this.dispatchEvent(new CustomEvent('info-edit-resource', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        resource: this.resource
+                    }
+                }));
+            }
 
-            _onResourceAction: function(event) {
-
+            _onResourceAction(event) {
                 if (!this.resourceAdmin) {
-
                     if (event.detail.item.activated) {
                         this._onViewResourceInfo(event);
                     }
@@ -607,124 +612,121 @@
                         this.setDefaultResource();
                     }
                 }
-            },
+            }
 
-            _onResourceSelectAction: function(event) {
+            _onResourceSelectAction(event) {
                 var resource = event.detail.item;
 
                 clearTimeout(this._resourceSelectAction);
 
                 this._resourceSelectAction = setTimeout(function() {
-
                     if (resource.selected) {
                         this._showBulkActions();
                     }
                     else {
                         var selectedResource = this.$.appscoResources.getFirstSelectedItem();
-
-                        for (key in selectedResource) {
+                        for (let key in selectedResource) {
                             return false;
                         }
-
                         this._hideBulkActions();
                     }
-
                 }.bind(this), 10);
 
                 this._handleItemsSelectedState();
-            },
+            }
 
-            _onShareResource: function() {
-                this.fire('share-company-resource', {
-                    resource: this.resource
-                });
-            },
+            _onShareResource() {
+                this.dispatchEvent(new CustomEvent('share-company-resource', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        resource: this.resource
+                    }
+                }));
+            }
 
-            reloadResources: function() {
+            reloadResources() {
                 this.$.appscoResources.reloadItems();
-            },
+            }
 
-            addResources: function(resources) {
+            addResources(resources) {
                 this.$.appscoResources.addItems(resources);
 
                 if (!this.resource) {
                     this.set('resource', resources[resources.length - 1]);
                 }
-            },
+            }
 
-            modifyResources: function(resources) {
+            modifyResources(resources) {
                 this.$.appscoResources.modifyItems(resources);
-            },
+            }
 
-            removeResources: function(resources) {
+            removeResources(resources) {
                 this.$.appscoResources.removeItems(resources);
                 this.setDefaultResource();
-            },
+            }
 
-            getSelectedResources: function() {
+            getSelectedResources() {
                 return this.$.appscoResources.getSelectedItems();
-            },
+            }
 
-            _onResourcesRemoved: function() {
+            _onResourcesRemoved() {
                 this._hideBulkActions();
                 this.setDefaultResource();
-            },
+            }
 
-            setDefaultResource: function() {
+            setDefaultResource() {
                 this.set('resource', this.$.appscoResources.getFirstItem());
-            },
+            }
 
-            filterResourcesByTerm: function(term) {
+            filterResourcesByTerm(term) {
                 this.$.appscoResources.filterByTerm(term);
-            },
+            }
 
-            resetListFilters: function() {
+            resetListFilters() {
                 this._resetFilters();
-                this.$$('#appscoSearch').reset();
+                this.shadowRoot.getElementById('appscoSearch').reset();
                 this._resetPageActions();
-            },
+            }
 
-            _onSelectedFilterChanged: function() {
-
+            _onSelectedFilterChanged() {
                 if (this.pageLoaded) {
                     this.resetPage();
                 }
-            },
+            }
 
-            _resetFilters: function() {
-
-                if (this.$$('#appscoCompanyGroups')) {
-                    this.$$('#appscoCompanyGroups').reset();
+            _resetFilters() {
+                if (this.shadowRoot.getElementById('appscoCompanyGroups')) {
+                    this.shadowRoot.getElementById('appscoCompanyGroups').reset();
                 }
-            },
+            }
 
-            _searchGroups: function(term) {
-                this.$$('#appscoCompanyGroups').filterByTerm(term);
-            },
+            _searchGroups(term) {
+                this.shadowRoot.getElementById('appscoCompanyGroups').filterByTerm(term);
+            }
 
-            _onSearchGroups: function(event) {
+            _onSearchGroups(event) {
                 this._searchGroups(event.detail.term);
-            },
+            }
 
-            _onSearchGroupsClear: function() {
-                this.$$('#appscoSearch').reset();
+            _onSearchGroupsClear() {
+                this.shadowRoot.getElementById('appscoSearch').reset();
                 this._searchGroups('');
-            },
+            }
 
-            _loadResourcesForGroup: function(group) {
+            _loadResourcesForGroup(group) {
                 this.$.appscoResources.filterByGroup(group);
-            },
+            }
 
-            _onGroupSelected: function(event) {
+            _onGroupSelected(event) {
                 this._loadResourcesForGroup(event.detail.item);
-            },
+            }
 
-            _onEditAdditionalOptionsAction: function() {
-                this.fire('edit-additional-options');
-            },
+            _onEditAdditionalOptionsAction() {
+                this.dispatchEvent(new CustomEvent('edit-additional-options', { bubbles: true, composed: true }));
+            }
 
-            _getHasSamlIdpRequest: function(api, token) {
-
+            _getHasSamlIdpRequest(api, token) {
                 if (!api || !token) {
                     this._hasSamlIdp = false;
                     return false;
@@ -746,6 +748,7 @@
                     this._hasSamlIdp = false;
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoResourcesPage.is, AppscoResourcesPage);
     </script>
 </dom-module>

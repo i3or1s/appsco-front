@@ -183,165 +183,165 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationForm extends Polymer.Element {
+            static get is() { return 'appsco-integration-form'; }
 
-            is: 'appsco-integration-form',
+            static get properties() {
+                return {
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    formType: {
+                        type: String,
+                        value: ''
+                    },
 
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    hasOwnUrl: {
+                        type: Boolean,
+                        value: false,
+                        computed: '_computeHasOwnUrl(integration)',
+                        reflectToAttribute: true
+                    },
+
+                    requireToken: {
+                        type: Boolean,
+                        value: false,
+                        computed: '_computeRequireToken(integration)',
+                        reflectToAttribute: true
+                    },
+
+                    requiresClaims: {
+                        type: Boolean,
+                        value: false,
+                        computed: '_computeRequiresClaims(integration)',
+                        reflectToAttribute: true
+                    },
+
+                    requiresInstanceId: {
+                        type: Boolean,
+                        value: false,
+                        computed: '_computeRequiresInstanceId(integration)',
+                        reflectToAttribute: true
+                    },
+
+                    _disableIntegrationTypeChange: {
+                        type: Boolean,
+                        computed: '_computeDisableIntegrationTypeChange(formType)'
+                    },
+
+                    _integrationKindList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    value: 'ra',
+                                    name: 'From integration system to AppsCo'
+                                },
+                                {
+                                    value: 'pst',
+                                    name: 'From AppsCo to integration system'
+                                }
+                            ];
+                        }
+                    },
+
+                    _urlValidationPattern: {
+                        type: String,
+                        value: 'https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)'
+                    },
+
+                    _preselectedIntegrationKind: {
+                        type: String,
+                        computed: '_computePreselectedIntegrationType(integration, _integrationKindList)'
+                    },
+
+                    _canForceSync: {
+                        type: Boolean,
+                        computed: '_computeCanForceSync(_preselectedIntegrationKind)'
+                    },
+
+                    _integrationScheduleSyncList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    value: 'daily',
+                                    name: 'Every day'
+                                },
+                                {
+                                    value: 'weekly',
+                                    name: 'Every Monday'
+                                },
+                                {
+                                    value: 'monthly',
+                                    name: 'Every 1st in the month'
+                                }
+                            ];
+                        }
+                    },
+
+                    _integrationForceSyncList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    value: null,
+                                    name: 'Never'
+                                },
+                                {
+                                    value: 'daily',
+                                    name: 'Every day'
+                                },
+                                {
+                                    value: 'weekly',
+                                    name: 'Every Monday'
+                                },
+                                {
+                                    value: 'monthly',
+                                    name: 'Every 1st in the month'
+                                }
+                            ];
+                        }
+                    },
+
+                    _isIntegrationActive: {
+                        type: String,
+                        computed: '_computeIsIntegrationActive(integration)'
                     }
-                },
+                };
+            }
 
-                formType: {
-                    type: String,
-                    value: ''
-                },
-
-                hasOwnUrl: {
-                    type: Boolean,
-                    value: false,
-                    computed: '_computeHasOwnUrl(integration)',
-                    reflectToAttribute: true
-                },
-
-                requireToken: {
-                    type: Boolean,
-                    value: false,
-                    computed: '_computeRequireToken(integration)',
-                    reflectToAttribute: true
-                },
-
-                requiresClaims: {
-                    type: Boolean,
-                    value: false,
-                    computed: '_computeRequiresClaims(integration)',
-                    reflectToAttribute: true
-                },
-
-                requiresInstanceId: {
-                    type: Boolean,
-                    value: false,
-                    computed: '_computeRequiresInstanceId(integration)',
-                    reflectToAttribute: true
-                },
-
-                _disableIntegrationTypeChange: {
-                    type: Boolean,
-                    computed: '_computeDisableIntegrationTypeChange(formType)'
-                },
-
-                _integrationKindList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                value: 'ra',
-                                name: 'From integration system to AppsCo'
-                            },
-                            {
-                                value: 'pst',
-                                name: 'From AppsCo to integration system'
-                            }
-                        ];
-                    }
-                },
-
-                _urlValidationPattern: {
-                    type: String,
-                    value: 'https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)'
-                },
-
-                _preselectedIntegrationKind: {
-                    type: String,
-                    computed: '_computePreselectedIntegrationType(integration, _integrationKindList)'
-                },
-
-                _canForceSync: {
-                    type: Boolean,
-                    computed: '_computeCanForceSync(_preselectedIntegrationKind)'
-                },
-
-                _integrationScheduleSyncList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                value: 'daily',
-                                name: 'Every day'
-                            },
-                            {
-                                value: 'weekly',
-                                name: 'Every Monday'
-                            },
-                            {
-                                value: 'monthly',
-                                name: 'Every 1st in the month'
-                            }
-                        ];
-                    }
-                },
-
-                _integrationForceSyncList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                value: null,
-                                name: 'Never'
-                            },
-                            {
-                                value: 'daily',
-                                name: 'Every day'
-                            },
-                            {
-                                value: 'weekly',
-                                name: 'Every Monday'
-                            },
-                            {
-                                value: 'monthly',
-                                name: 'Every 1st in the month'
-                            }
-                        ];
-                    }
-                },
-
-                _isIntegrationActive: {
-                    type: String,
-                    computed: '_computeIsIntegrationActive(integration)'
-                }
-            },
-
-            _onSelectClosed: function(event) {
+            _onSelectClosed(event) {
                 event.stopPropagation();
-            },
+            }
 
-            getIntegrationKind: function() {
+            getIntegrationKind() {
                 return this.$.integrationKindSelect.selectedItem ?
                     this.$.integrationKindSelect.selectedItem.value : null;
+            }
 
-            },
-            getIntegrationScheduleSync: function() {
+            getIntegrationScheduleSync() {
                 return this.$.integrationScheduleSyncSelect.selectedItem ?
                     this.$.integrationScheduleSyncSelect.selectedItem.value : null;
-            },
+            }
 
-            getIntegrationForceSync: function() {
-                if (!this.$$('#integrationForceSyncSelect')) {
+            getIntegrationForceSync() {
+                if (!this.shadowRoot.getElementById('integrationForceSyncSelect')) {
                     return null;
                 }
-                return this.$$('#integrationForceSyncSelect').selectedItem ?
-                    this.$$('#integrationForceSyncSelect').selectedItem.value : null;
-            },
+                return this.shadowRoot.getElementById('integrationForceSyncSelect').selectedItem ?
+                    this.shadowRoot.getElementById('integrationForceSyncSelect').selectedItem.value : null;
+            }
 
-            setToggleChecked: function(checked) {
+            setToggleChecked(checked) {
                 this.$.toggleIntegrationActive.checked = checked;
-            },
+            }
 
-            _computeHasOwnUrl: function(integration) {
+            _computeHasOwnUrl(integration) {
                 if (integration.integration) {
                     return integration.integration.alias === 4 || integration.integration.alias === 7 || integration.integration.alias === 8;
                 }
@@ -351,9 +351,9 @@
                 }
 
                 return false;
-            },
+            }
 
-            _computeRequireToken: function(integration) {
+            _computeRequireToken(integration) {
                 if (integration.integration) {
                     return integration.integration.alias === 8;
                 }
@@ -363,9 +363,9 @@
                 }
 
                 return false;
-            },
+            }
 
-            _computeRequiresClaims: function(integration) {
+            _computeRequiresClaims(integration) {
                 if (integration && integration.integration) {
                     return integration.integration.alias == 6;
                 }
@@ -375,9 +375,9 @@
                 }
 
                 return false;
-            },
+            }
 
-            _computeRequiresInstanceId: function(integration) {
+            _computeRequiresInstanceId(integration) {
                 if (integration && integration.integration) {
                     return [6, 10].indexOf(integration.integration.alias) > -1;
                 }
@@ -387,28 +387,28 @@
                 }
 
                 return false;
-            },
-
-            _computeIsIntegrationActive: function(integration) {
-                return integration && integration.active;
-            },
-
-            _computeDisableIntegrationTypeChange: function(formType) {
-                return 'update' === formType;
-            },
-
-            _computePreselectedIntegrationType: function(integration, integrationKindList) {
-                return (integration && integration.kind) ? integration.kind : integrationKindList[0].value;
-            },
-
-            _computeCanForceSync: function(computedKind) {
-                return computedKind === 'ra';
-            },
-
-            getIntegrationActive: function() {
-                return this.$.toggleIntegrationActive.checked ? '1' : '0';
             }
 
-        });
+            _computeIsIntegrationActive(integration) {
+                return integration && integration.active;
+            }
+
+            _computeDisableIntegrationTypeChange(formType) {
+                return 'update' === formType;
+            }
+
+            _computePreselectedIntegrationType(integration, integrationKindList) {
+                return (integration && integration.kind) ? integration.kind : integrationKindList[0].value;
+            }
+
+            _computeCanForceSync(computedKind) {
+                return computedKind === 'ra';
+            }
+
+            getIntegrationActive() {
+                return this.$.toggleIntegrationActive.checked ? '1' : '0';
+            }
+        }
+        window.customElements.define(AppscoIntegrationForm.is, AppscoIntegrationForm);
     </script>
 </dom-module>

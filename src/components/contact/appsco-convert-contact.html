@@ -9,6 +9,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-convert-contact`
 Shows dialog screen with confirmation for contact converting.
@@ -76,110 +78,87 @@ Shows dialog screen with confirmation for contact converting.
 
     </template>
     <script>
-        Polymer({
+        class AppscoConvertContact extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-convert-contact'; }
 
-            is: 'appsco-convert-contact',
-
-            properties: {
-
-                /**
-                 * Contact to convert.
-                 */
-                contact: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _convertContactApi: {
-                    type: String,
-                    computed: '_computeConvertContactApi(contact)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            setContact: function(contact) {
-                this.contact = contact;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    /**
+                     * Contact to convert.
+                     */
+                    contact: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _convertContactApi: {
+                        type: String,
+                        computed: '_computeConvertContactApi(contact)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeConvertContactApi: function(contact) {
+            setContact(contact) {
+                this.contact = contact;
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _computeConvertContactApi(contact) {
                 return contact.meta ? contact.meta.promote_to_user : null;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onConvertAction: function() {
-                var request = document.createElement('iron-request'),
+            _onConvertAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._convertContactApi,
                         method: 'POST',
@@ -193,23 +172,20 @@ Shows dialog screen with confirmation for contact converting.
                     this.close();
 
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when contact is converted.
-                         *
-                         * @event contact-converted
-                         * @param [Object] contact
-                         */
-                        this.fire('contact-converted', {
-                            contact: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('contact-converted', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                contact: request.response
+                            }
+                        }));
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoConvertContact.is, AppscoConvertContact);
     </script>
 </dom-module>

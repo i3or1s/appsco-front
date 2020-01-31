@@ -171,222 +171,142 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoContactsActions extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-contacts-actions'; }
 
-            is: 'appsco-contacts-actions',
+            static get properties() {
+                return {
+                    /**
+                     * Indicates if bulk actions are visible or not.
+                     * Used to show / hide bulk actions.
+                     */
+                    _bulkActions: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onBulkActionsChanged'
+                    },
 
-            properties: {
+                    _bulkSelectAll: {
+                        type: Boolean,
+                        value: true,
+                        observer: '_onBulkSelectAllChanged'
+                    },
 
-                /**
-                 * Indicates if bulk actions are visible or not.
-                 * Used to show / hide bulk actions.
-                 */
-                _bulkActions: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onBulkActionsChanged'
-                },
+                    _pages: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'Contacts',
+                                    value: 0
+                                },
+                                {
+                                    name: 'Invitations',
+                                    value: 1
+                                }];
+                        }
+                    },
 
-                _bulkSelectAll: {
-                    type: Boolean,
-                    value: true,
-                    observer: '_onBulkSelectAllChanged'
-                },
-
-                _pages: {
-                    type: Array,
-                    value: function () {
-                        return [
-                            {
-                                name: 'Contacts',
-                                value: 0
-                            },
-                            {
-                                name: 'Invitations',
-                                value: 1
-                            }];
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                /**
-                 * Animation config for bulk actions.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-in-animation',
-                                nodes: [],
-                                nodeDelay: 50,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-out-animation',
-                                nodes: [],
-                                nodeDelay: 0,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-in-animation',
+                        nodes: [],
+                        nodeDelay: 50,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-out-animation',
+                        nodes: [],
+                        nodeDelay: 0,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinish'
-            },
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+            }
 
-            /**
-             * Shows bulk actions.
-             */
-            showBulkActions: function() {
+            showBulkActions() {
                 this._bulkActions = true;
-            },
+            }
 
-            /**
-             * Hides bulk actions.
-             */
-            hideBulkActions: function() {
+            hideBulkActions() {
                 this._bulkActions = false;
-            },
+            }
 
             /**
              * Sets focus on search input field.
              */
-            focusSearch: function() {
+            focusSearch() {
                 this.$.appscoSearch.setup();
-            },
+            }
 
-            reset: function() {
+            reset() {
                 this.resetActions();
-                this.$$('#pagesListbox').selected = 0;
-            },
+                this.shadowRoot.getElementById('pagesListbox').selected = 0;
+            }
 
-            resetActions: function() {
+            resetActions() {
                 this.$.appscoSearch.reset();
                 this.hideBulkActions();
-            },
+            }
 
-            /**
-             * Called on add contact action.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onAddContactAction: function() {
+            _onAddContactAction() {
+                this.dispatchEvent(new CustomEvent('add-contact', { bubbles: true, composed: true }));
+            }
 
-                /**
-                 * Fired when add contact action is called.
-                 *
-                 * @event add-contact
-                 */
-                this.fire('add-contact');
-            },
+            _onImportContactsAction() {
+                this.dispatchEvent(new CustomEvent('import-contacts', { bubbles: true, composed: true }));
+            }
 
-            /**
-             * Called on import contacts action.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onImportContactsAction: function() {
+            _onDeleteContactsAction() {
+                this.dispatchEvent(new CustomEvent('delete-contacts', { bubbles: true, composed: true }));
+            }
 
-                /**
-                 * Fired when import contacts action is called.
-                 *
-                 * @event import-contacts
-                 */
-                this.fire('import-contacts');
-            },
+            _onAddToGroupAction() {
+                this.dispatchEvent(new CustomEvent('add-groups-to-contacts', { bubbles: true, composed: true }));
+            }
 
-            /**
-             * Called on delete action.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onDeleteContactsAction: function() {
+            _onSelectAllAction() {
+                this.dispatchEvent(new CustomEvent('select-all-contacts', { bubbles: true, composed: true }));
+            }
 
-                /**
-                 * Fired when delete action is called.
-                 *
-                 * @event delete-contacts
-                 */
-                this.fire('delete-contacts');
-            },
+            _onSendNotificationAction() {
+                this.dispatchEvent(new CustomEvent('send-notification', { bubbles: true, composed: true }));
+            }
 
-            /**
-             * Called on add to groups action.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onAddToGroupAction: function() {
+            _onActivePageSelected(event) {
+                this.dispatchEvent(new CustomEvent('page-selected', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        page: event.detail.item.getAttribute('name')
+                    }
+                }));
+            }
 
-                /**
-                 * Fired when add groups action is called.
-                 *
-                 * @event add-groups-to-contacts
-                 */
-                this.fire('add-groups-to-contacts');
-            },
-
-            /**
-             * Called on select all action.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onSelectAllAction: function() {
-
-                /**
-                 * Fired when select all action is called.
-                 *
-                 * @event select-all-contacts
-                 */
-                this.fire('select-all-contacts');
-            },
-
-            /**
-             * Called on send notification action tap.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onSendNotificationAction: function() {
-
-                /**
-                 * Fired when send notification action is triggered.
-                 *
-                 * @event send-notification
-                 */
-                this.fire('send-notification');
-            },
-
-            _onActivePageSelected: function(event) {
-
-                /**
-                 * Fired when page is selected from list.
-                 *
-                 * @event page-selected
-                 * @param {string} page Page to be displayed.
-                 */
-                this.fire('page-selected', {
-                    page: event.detail.item.getAttribute('name')
-                });
-            },
-
-            _onBulkActionsChanged: function() {
-                var bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action');
+            _onBulkActionsChanged() {
+                const bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action');
 
                 if (this.animationConfig) {
                     this.animationConfig.entry.nodes = bulkActions;
@@ -394,9 +314,9 @@
                 }
 
                 if (this._bulkActions) {
-                    var length = bulkActions.length;
+                    const length = bulkActions.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         bulkActions[i].style.display = 'flex';
                     }
 
@@ -405,38 +325,36 @@
                 else {
                     this.playAnimation('exit');
                 }
+            }
 
-            },
-
-            showBulkSelectAll: function() {
+            showBulkSelectAll() {
                 this._bulkSelectAll = true;
-            },
+            }
 
-            hideBulkSelectAll: function() {
+            hideBulkSelectAll() {
                 this._bulkSelectAll = false;
-            },
+            }
 
-            _onBulkSelectAllChanged: function () {
-                var bulkSelectAll = Polymer.dom(this.root).querySelectorAll('.bulk-select-all');
+            _onBulkSelectAllChanged () {
+                const bulkSelectAll = Polymer.dom(this.root).querySelectorAll('.bulk-select-all');
                 if (this._bulkSelectAll) {
                     bulkSelectAll[0].style.display = 'block';
                 }else {
                     bulkSelectAll[0].style.display = 'none';
                 }
-            },
+            }
 
-            _onNeonAnimationFinish: function() {
-
+            _onNeonAnimationFinish() {
                 if (!this._bulkActions) {
-                    var bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action'),
+                    const bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action'),
                         length = bulkActions.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         bulkActions[i].style.display = 'none';
                     }
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoContactsActions.is, AppscoContactsActions);
     </script>
 </dom-module>

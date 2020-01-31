@@ -13,9 +13,7 @@
 
 <dom-module id="appsco-policies-report-breached-policy-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 @apply --appsco-policies-report-breached-policy-item;
             }
@@ -57,14 +55,12 @@
     </template>
 
     <script>
-        Polymer({
-
-            is: 'appsco-policies-report-breached-policy-item',
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ]
-        });
+        class AppscoPoliciesReportBreachedPolicyItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-policies-report-breached-policy-item'; }
+        }
+        window.customElements.define(AppscoPoliciesReportBreachedPolicyItem.is, AppscoPoliciesReportBreachedPolicyItem);
     </script>
 </dom-module>

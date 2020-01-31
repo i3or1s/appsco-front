@@ -80,155 +80,152 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoManageCustomerComponentsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-manage-customer-components-page'; }
 
-            is: 'appsco-manage-customer-components-page',
-
-            properties: {
-
-                customer: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                customerPartnerAdminsApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                _isSubscriptionPaidExternally: {
-                    type: Boolean,
-                    computed: '_computeIsSubscriptionPaidExternally(customer)'
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'cascaded-animation',
-                                animation: 'fade-in-animation',
-                                nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
-                                nodeDelay: 50,
-                                timing: {
-                                    delay: 200,
-                                    duration: 100
-                                }
-                            }],
-                            'exit': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                fromPage: this
-                            }, {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }]
+            static get properties() {
+                return {
+                    customer: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    customerPartnerAdminsApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    _isSubscriptionPaidExternally: {
+                        type: Boolean,
+                        computed: '_computeIsSubscriptionPaidExternally(customer)'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
+            static get observers() {
+                return [
+                    '_updateScreen(tabletScreen, mediumScreen)'
+                ];
+            }
 
-            observers: [
-                '_updateScreen(tabletScreen, mediumScreen)'
-            ],
+            ready() {
+                super.ready();
 
-            attached: function() {
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'cascaded-animation',
+                        animation: 'fade-in-animation',
+                        nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
+                        nodeDelay: 50,
+                        timing: {
+                            delay: 200,
+                            duration: 100
+                        }
+                    }],
+                    'exit': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        fromPage: this
+                    }, {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }]
+                };
 
-                if (this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                });
+            }
 
-            loadPage: function() {
+            loadPage() {
                 this._loadRoles();
-            },
+            }
 
-            reloadCustomer: function(customer) {
+            reloadCustomer(customer) {
                 this.set('customer', {});
                 this.set('customer', customer);
-            },
+            }
 
-            reloadPartnerAdmins: function() {
+            reloadPartnerAdmins() {
                 this.$.appscoCustomerPartnerAdmins.reloadPartnerAdmins();
-            },
+            }
 
-            removePartnerAdmins: function(partnerAdmins) {
+            removePartnerAdmins(partnerAdmins) {
                 this.$.appscoCustomerPartnerAdmins.removePartnerAdmins(partnerAdmins);
-            },
+            }
 
-            _loadRoles: function() {
+            _loadRoles() {
                 this.$.appscoCustomerPartnerAdmins.loadRoles();
-            },
+            }
 
-            _updateScreen: function(tablet, medium) {
+            _updateScreen(tablet, medium) {
                 this.updateStyles();
-            },
+            }
 
-            _setSharedElement: function(target) {
-
+            _setSharedElement(target) {
                 while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
                     target = target.parentNode;
                 }
 
-                /**
-                 * Set hero animation element that is to be shared between pages.
-                 *
-                 * @type {{hero: *}}
-                 */
                 this.sharedElements = {
                     'hero': target
                 };
-            },
-
-            _onManageCustomerRoles: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-customer-roles');
-            },
-
-            _computeIsSubscriptionPaidExternally: function(customer) {
-                return customer && customer.subscription_paid_externally == true;
-            },
-
-            _onManageCustomerSubscription: function() {
-                this.fire('manage-customer-subscription', {
-                    'customer' : this.customer
-                });
             }
-        });
+
+            _onManageCustomerRoles(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('manage-customer-roles', { bubbles: true, composed: true }));
+            }
+
+            _computeIsSubscriptionPaidExternally(customer) {
+                return customer && customer.subscription_paid_externally == true;
+            }
+
+            _onManageCustomerSubscription() {
+                this.dispatchEvent(new CustomEvent('manage-customer-subscription', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        'customer' : this.customer
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoManageCustomerComponentsPage.is, AppscoManageCustomerComponentsPage);
     </script>
 </dom-module>
 

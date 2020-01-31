@@ -7,6 +7,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../../provisioning/appsco-integration-form.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-integration-settings">
     <template>
         <style>
@@ -25,23 +27,25 @@
 
         <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 
-        <form is="iron-form"
-              id="form"
-              action="[[ _computedAction ]]"
-              method="POST"
-              headers="[[ _headers ]]"
-              on-iron-form-presubmit="_onFormPresubmit"
-              on-iron-form-error="_onFormError"
-              on-iron-form-response="_onFormResponse"
-              on-keyup="_onKeyUp">
+        <iron-form
+                id="form"
+                headers="[[ _headers ]]"
+                on-iron-form-presubmit="_onFormPresubmit"
+                on-iron-form-error="_onFormError"
+                on-iron-form-response="_onFormResponse"
+                on-keyup="_onKeyUp">
+            <form
+                action="[[ _computedAction ]]"
+                method="POST">
 
-            <appsco-integration-form
-                    id="appscoIntegrationForm"
-                    name="appsco-integration-form"
-                    form-type="update"
-                    integration="[[ integration ]]">
-            </appsco-integration-form>
-        </form>
+                <appsco-integration-form
+                        id="appscoIntegrationForm"
+                        name="appsco-integration-form"
+                        form-type="update"
+                        integration="[[ integration ]]">
+                </appsco-integration-form>
+            </form>
+        </iron-form>
 
         <paper-button id="submit"
                       class="submit-button"
@@ -53,137 +57,95 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationSettings extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-integration-settings'; }
 
-            is: 'appsco-integration-settings',
-
-            properties: {
-
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Computed action.
-                 */
-                _computedAction: {
-                    type: Object,
-                    computed: "_computeAction(integration)"
-                },
-
-                /**
-                 * Integration api link.
-                 */
-                integrationApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _isIntegrationActive: {
-                    type: String,
-                    computed: '_computeIsIntegrationActive(integration)'
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message for integration settings form.
-                 */
-                _error: {
-                    type: String
-                },
-
-                /**
-                 * Target for iron-a11y-keys component.
-                 * Submit form on enter.
-                 */
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.form
-                    }
-                }
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _computeIsIntegrationActive: function(integration) {
+                    _computedAction: {
+                        type: Object,
+                        computed: "_computeAction(integration)"
+                    },
+
+                    integrationApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _isIntegrationActive: {
+                        type: String,
+                        computed: '_computeIsIntegrationActive(integration)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this._target = this.$.form;
+            }
+
+            _computeIsIntegrationActive(integration) {
                 return integration && integration.active;
-            },
+            }
 
-            _computeAction: function(integration) {
+            _computeAction(integration) {
                 return integration.self ? integration.self : null;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            /**
-             * Submits form on ENTER key using iron-a11y-keys component.
-             *
-             * @private
-             */
-            _onEnter: function() {
+            _onEnter() {
                 this._submitForm();
-            },
+            }
 
-            _submitForm: function() {
+            _submitForm() {
                 this.$.form.submit();
-            },
+            }
 
-            _onFormPresubmit: function(event) {
+            _onFormPresubmit(event) {
                 this._showLoader();
-                var form = event.target,
+                const form = event.target,
                     integrationKind = this.$.appscoIntegrationForm.getIntegrationKind(),
                     integrationScheduleSync = this.$.appscoIntegrationForm.getIntegrationScheduleSync(),
                     integrationForceSync = this.$.appscoIntegrationForm.getIntegrationForceSync();
@@ -196,34 +158,37 @@
                     integrationScheduleSync ? integrationScheduleSync : '';
                 form.request.body['activate_integration[forceSyncInterval]'] =
                     integrationForceSync ? integrationForceSync : '';
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 this.set('integration', event.detail.response.integration_active);
 
-                this.fire('integration-settings-changed', {
-                    integration: this.integration
-                });
+                this.dispatchEvent(new CustomEvent('integration-settings-changed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        integration: this.integration
+                    }
+                }));
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onKeyUp: function() {
+            _onKeyUp() {
                 this._hideError();
-            },
+            }
 
-            _reloadPage: function() {
+            _reloadPage() {
                 window.location.reload(true);
-            },
+            }
 
-            reset: function() {
-
-                var integration = JSON.parse(JSON.stringify(this.integration));
+            reset() {
+                const integration = JSON.parse(JSON.stringify(this.integration));
 
                 this._hideError();
                 this._hideLoader();
@@ -232,8 +197,8 @@
                     this.set('integration', {});
                     this.set('integration', integration);
                 }.bind(this), 10);
-            },
-
-        });
+            }
+        }
+        window.customElements.define(AppscoIntegrationSettings.is, AppscoIntegrationSettings);
     </script>
 </dom-module>

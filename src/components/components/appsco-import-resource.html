@@ -11,6 +11,7 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-import-resource">
     <template>
@@ -94,130 +95,80 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportResource extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-import-resource'; }
 
-            is: 'appsco-import-resource',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * API for resource import.
-                 */
-                importApi: {
-                    type: String
-                },
-
-                /**
-                 * Indicates if loader should be displayed or not.
-                 */
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message to display.
-                 */
-                _error: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                }
-            },
-
-            ready: function() {
-                this.$.uploadCsv.set('i18n.addFiles.many', 'Upload file');
-            },
-
-            /**
-             * Toggles dialog.
-             */
-            toggle: function() {
-                this.$.dialog.toggle();
-            },
-
-            /**
-             * Opens dialog.
-             */
-            open: function() {
-                this.$.dialog.open();
-            },
-
-            /**
-             * Closes dialog.
-             */
-            close: function() {
-                this.$.dialog.close();
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    importApi: {
+                        type: String
+                    },
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.$.uploadCsv.set('i18n.addFiles.many', 'Upload file');
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            _onDialogOpened() {
                 this._loader = false;
                 this._error = '';
                 this.$.uploadCsv.files = [];
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._loader = false;
                 this._error = '';
                 this.$.uploadCsv.files = [];
-            },
+            }
 
-            _uploadStarted: function(e) {},
+            _uploadStarted(e) {}
 
-            _fileRejected: function(e) {
+            _fileRejected(e) {
                 this._error = e.detail.error;
-            },
+            }
 
-            _uploadErrorResponse: function(e) {
-                if (e.detail.xhr.status == 402) {
+            _uploadErrorResponse(e) {
+                if (e.detail.xhr.status === 402) {
                     e.detail.file.error = "Maximum subscription reached. Please upgrade before import.";
                 }
-            },
+            }
 
-            _uploadSuccess: function(event) {
+            _uploadSuccess(event) {
                 this.close();
 
-                this.fire('import-finished', {
-                    response: JSON.parse(event.detail.xhr.response)
-                });
+                this.dispatchEvent(new CustomEvent('import-finished', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        response: JSON.parse(event.detail.xhr.response)
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoImportResource.is, AppscoImportResource);
     </script>
 </dom-module>

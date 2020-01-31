@@ -9,6 +9,7 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-remove-customer">
     <template>
@@ -66,132 +67,102 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoRemoveCustomer extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-remove-customer'; }
 
-            is: 'appsco-remove-customer',
-
-            properties: {
-
-                /**
-                 * Customer to remove.
-                 */
-                customer: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _removeCustomerApi: {
-                    type: String,
-                    computed: '_computeRemoveCustomerApi(customer)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            setCustomer: function(customer) {
-                this.customer = customer;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    customer: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _removeCustomerApi: {
+                        type: String,
+                        computed: '_computeRemoveCustomerApi(customer)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeRemoveCustomerApi: function(customer) {
+            setCustomer(customer) {
+                this.customer = customer;
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _computeRemoveCustomerApi(customer) {
                 return customer.meta ? customer.meta.remove_customer : null;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onRemoveAction: function() {
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this._removeCustomerApi,
-                            method: 'DELETE',
-                            handleAs: 'json',
-                            headers: this._headers
-                        };
+            _onRemoveAction() {
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this._removeCustomerApi,
+                        method: 'DELETE',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when customer is deleted.
-                         *
-                         * @event customer-removed
-                         * @param [Object] customer
-                         */
-                        this.fire('customer-removed', {
-                            customer: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('customer-removed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                customer: request.response
+                            }
+                        }));
 
                         this.close();
                     }
@@ -201,6 +172,7 @@
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoRemoveCustomer.is, AppscoRemoveCustomer);
     </script>
 </dom-module>

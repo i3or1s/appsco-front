@@ -52,100 +52,91 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanySettingsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-settings-page'; }
 
-            is: 'appsco-company-settings-page',
+            static get properties() {
+                return {
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    authorizationToken: {
+                        type: String
+                    },
 
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    settingsApi: {
+                        type: String
+                    },
+
+                    saveIpWhiteListApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Save settings link.
-                 */
-                settingsApi: {
-                    type: String
-                },
-
-                saveIpWhiteListApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
+                this.sharedElements = {
+                    'hero': this.$.companySettingsSettings
+                };
+            }
 
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.companySettingsSettings
-                        }
-                    }
-                }
-            },
+            _onBack() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
 
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _onBack: function() {
-                this.fire('back');
-            },
-
-            setupPage: function() {
+            setupPage() {
                 this.$.appscoCompanySettings.setup();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.$.appscoCompanySettings.reset();
             }
-        });
+        }
+        window.customElements.define(AppscoCompanySettingsPage.is, AppscoCompanySettingsPage);
     </script>
 </dom-module>
 

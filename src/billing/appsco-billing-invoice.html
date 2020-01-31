@@ -51,66 +51,67 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoBillingInvoice extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-billing-invoice'; }
 
-            is: 'appsco-billing-invoice',
+            static get properties() {
+                return {
+                    invoice: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    active: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                invoice: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                active: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'block';
+                });
 
-            attached: function() {
-                this.style.display = 'block';
-                this.playAnimation('entry');
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
 
-            select: function() {
+            select() {
                 this.active = true;
-            },
+            }
 
-            deselect: function() {
+            deselect() {
                 this.active = false;
             }
-        });
+        }
+        window.customElements.define(AppscoBillingInvoice.is, AppscoBillingInvoice);
     </script>
 </dom-module>

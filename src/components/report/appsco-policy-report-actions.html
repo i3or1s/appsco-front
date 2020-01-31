@@ -34,19 +34,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoPolicyReportActions extends Polymer.Element {
+            static get is() { return 'appsco-policy-report-actions'; }
 
-            is: 'appsco-policy-report-actions',
-
-            _onExportAction: function() {
-                /**
-                 * Fired when export action is tapped.
-                 *
-                 * @event export-policies-report
-                 */
-                this.fire('export-policies-report');
+            _onExportAction() {
+                this.dispatchEvent(new CustomEvent('export-policies-report', { bubbles: true, composed: true }));
             }
-
-        });
+        }
+        window.customElements.define(AppscoPolicyReportActions.is, AppscoPolicyReportActions);
     </script>
 </dom-module>

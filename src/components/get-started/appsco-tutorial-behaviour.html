@@ -137,10 +137,14 @@
         },
 
         _stepChanged: function(newValue, oldValue) {
-            this.fire('tutorial-step-changed', {
-                id: this.id,
-                step: newValue
-            });
+            this.dispatchEvent(new CustomEvent('tutorial-step-changed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    id: this.id,
+                    step: newValue
+                }
+            }));
             this._buildPopperStep(function(){
                 if(this.popperStep && this.popperStep[newValue]) {
                     this.currentStep = this.popperStep[newValue];
@@ -163,9 +167,13 @@
                     this.afterTutorialDone();
                 }
 
-                this.fire('tutorial-done', {
-                    tutorial: this
-                });
+                this.dispatchEvent(new CustomEvent('tutorial-done', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        tutorial: this
+                    }
+                }));
             }
         },
 

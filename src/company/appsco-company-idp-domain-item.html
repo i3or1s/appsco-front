@@ -161,102 +161,94 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyIdpDomainItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-idp-domain-item'; }
 
-            is: 'appsco-company-idp-domain-item',
-
-            properties: {
-
-                /**
-                 * Domain that is to be rendered
-                 */
-                domain: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    domain: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onDomainChanged'
                     },
-                    observer: '_onDomainChanged'
-                },
 
-                /**
-                 * Indicates if domain should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Indicates if domain should be in preview mode rather then full detailed view.
+                     */
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    _domainHasIdpConfigured: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                },
-
-                _domainHasIdpConfigured: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _onDomainChanged: function(domain) {
-                this._domainHasIdpConfigured = (domain && domain.hasIdp);
-            },
-
-            _onManageAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `manage` action is tapped.
-                 *
-                 * @event manage
-                 * @param {Object} domain
-                 */
-                this.fire('manage', {
-                    domain: this.domain
+                };
+                Polymer.RenderStatus.beforeNextRender(this, function () {
+                    this.style.display = 'inline-block';
                 });
-            },
 
-            _onDeactivateAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `deactivate` action is tapped.
-                 *
-                 * @event deactivate
-                 * @param {Object} domain
-                 */
-                this.fire('deactivate-domain-idp-settings', {
-                    domain: this.domain
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this.playAnimation('entry');
                 });
             }
 
-        });
+            _onDomainChanged(domain) {
+                this._domainHasIdpConfigured = (domain && domain.hasIdp);
+            }
+
+            _onManageAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('manage', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: this.domain
+                    }
+                }));
+            }
+
+            _onDeactivateAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('deactivate-domain-idp-settings', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: this.domain
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyIdpDomainItem.is, AppscoCompanyIdpDomainItem);
     </script>
 </dom-module>

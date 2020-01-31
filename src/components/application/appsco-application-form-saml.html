@@ -117,77 +117,76 @@
         <iron-a11y-keys keys="enter"></iron-a11y-keys>
     </template>
     <script>
-        Polymer({
-            is: 'appsco-application-form-saml',
+        class AppscoApplicationFormSaml extends Polymer.mixinBehaviors([Polymer.AppscoApplicationFormBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-form-saml'; }
 
-            properties: {
-                claims: {
-                    type: Object,
-                    value: function () { return {}; },
-                    observer: '_onClaimsChanged'
-                },
+            static get properties() {
+                return {
+                    claims: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onClaimsChanged'
+                    },
 
-                claimsNamePrefix: {
-                    type: String,
-                    value: "claims_saml"
-                },
+                    claimsNamePrefix: {
+                        type: String,
+                        value: "claims_saml"
+                    },
 
-                domain: {
-                    type: String
-                },
+                    domain: {
+                        type: String
+                    },
 
-                _nameIdPolicyList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                name: 'Email',
-                                value: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
-                            },
-                            {
-                                name: 'Persistent',
-                                value: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
-                            }
-                        ];
+                    _nameIdPolicyList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'Email',
+                                    value: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
+                                },
+                                {
+                                    name: 'Persistent',
+                                    value: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
+                                }
+                            ];
+                        }
+                    },
+
+                    _confirmationMethodList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'Bearer',
+                                    value: 'urn:oasis:names:tc:SAML:2.0:cm:bearer'
+                                }
+                            ];
+                        }
+                    },
+
+                    _authenticationContextList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'Password',
+                                    value: 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password'
+                                },
+                                {
+                                    name: 'Password protected transport',
+                                    value: 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'
+                                }
+                            ];
+                        }
                     }
-                },
+                };
+            }
 
-                _confirmationMethodList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                name: 'Bearer',
-                                value: 'urn:oasis:names:tc:SAML:2.0:cm:bearer'
-                            }
-                        ];
-                    }
-                },
-
-                _authenticationContextList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                name: 'Password',
-                                value: 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password'
-                            },
-                            {
-                                name: 'Password protected transport',
-                                value: 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'
-                            }
-                        ];
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoApplicationFormBehavior
-            ],
-
-            _onClaimsChanged: function(claims) {
-
-                for (key in claims) {
+            _onClaimsChanged(claims) {
+                for (let key in claims) {
                     return false;
                 }
 
@@ -199,6 +198,7 @@
                     allowCreate : false
                 });
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationFormSaml.is, AppscoApplicationFormSaml);
     </script>
 </dom-module>

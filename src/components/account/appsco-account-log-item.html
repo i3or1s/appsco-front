@@ -140,93 +140,75 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountLogItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-account-log-item'; }
 
-            is: 'appsco-account-log-item',
+            static get properties() {
+                return {
+                    item: {
+                        type: Object
+                    },
 
-            properties: {
+                    shortView: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                /**
-                 * Item to display.
-                 *
-                 * @type {Object}
-                 */
-                item: {
-                    type: Object
-                },
+                    _useDefaultIcon: {
+                        type: Boolean,
+                        computed: '_shouldUseDefaultIcon(item)'
+                    },
 
-                /**
-                 * Indicates if short view should be displayed.
-                 */
-                shortView: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                _useDefaultIcon: {
-                    type: Boolean,
-                    computed: '_shouldUseDefaultIcon(item)'
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'block';
+                });
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
 
-            attached: function() {
-                this.style.display = 'block';
-                this.playAnimation('entry');
-            },
-
-            /**
-             * Formats date and returns formatted date as string.
-             *
-             * @param {String} value
-             * @returns {string}
-             * @private
-             */
-            _dateFormat: function(value) {
-
+            _dateFormat(value) {
                 if (value) {
-
-                    var options = {
+                    const options = {
                         weekday: "long", year: "numeric", month: "short",
                         day: "numeric", hour: "2-digit", minute: "2-digit"
                     };
 
                     return (new Date(value)).toLocaleDateString('en', options);
                 }
+            }
 
-            },
-
-            _shouldUseDefaultIcon: function(item) {
+            _shouldUseDefaultIcon(item) {
                 return !item.image && !item.icon;
             }
-        });
+        }
+        window.customElements.define(AppscoAccountLogItem.is, AppscoAccountLogItem);
     </script>
 </dom-module>

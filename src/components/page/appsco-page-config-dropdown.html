@@ -11,6 +11,8 @@
 <link rel="import" href="../header/appsco-dropdown.html">
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-page-config-dropdown">
     <template>
         <style include="iron-flex iron-flex-alignment">
@@ -164,180 +166,165 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoPageConfigDropdown extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-page-config-dropdown'; }
 
-            is: 'appsco-page-config-dropdown',
+            static get properties() {
+                return {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    pageConfigApi: {
+                        type: String
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    page: {
+                        type: String,
+                        value: ''
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    optionHideResourceSection: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    optionDisplayList: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    optionSort: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _displayKindList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {value: 'list', name: 'List'},
+                                {value: 'grid', name: 'Grid'}
+                            ];
+                        }
+                    },
+
+                    _sortOptionList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    value: 'created0',
+                                    name: 'Newest to oldest',
+                                    sortField: 'created',
+                                    sortAscending: false
+                                },
+                                {
+                                    value: 'created1',
+                                    name: 'Oldest to newest',
+                                    sortField: 'created',
+                                    sortAscending: true
+                                },
+                                {
+                                    value: 'title1',
+                                    name: 'A to Z',
+                                    sortField: 'title',
+                                    sortAscending: true
+                                },
+                                {
+                                    value: 'title0',
+                                    name: 'Z to A',
+                                    sortField: 'title',
+                                    sortAscending: false
+                                }
+                            ];
+                        }
+                    },
+
+                    /**
+                     * DOM element which triggers the dropdown.
+                     */
+                    _triggerDropdown: {
+                        type: Object,
+                        notify: true
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _hideResourceSection: {
+                        type: Boolean,
+                        computed: '_computeHideResourceSection(pageConfig, page)'
+                    },
+
+                    _displayKind: {
+                        type: Boolean,
+                        computed: '_computeDisplayKind(pageConfig, page)'
+                    },
+
+                    _sortOption: {
+                        type: String,
+                        computed: '_computeSortOption(pageConfig, page)'
                     }
-                },
+                };
+            }
 
-                pageConfigApi: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                page: {
-                    type: String,
-                    value: ''
-                },
+                this._triggerDropdown = this.shadowRoot.getElementById('dropdownActions');
+            }
 
-                pageConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                optionHideResourceSection: {
-                    type: Boolean,
-                    value: false
-                },
-
-                optionDisplayList: {
-                    type: Boolean,
-                    value: false
-                },
-
-                optionSort: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _displayKindList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {value: 'list', name: 'List'},
-                            {value: 'grid', name: 'Grid'}
-                        ];
-                    }
-                },
-
-                _sortOptionList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                value: 'created0',
-                                name: 'Newest to oldest',
-                                sortField: 'created',
-                                sortAscending: false
-                            },
-                            {
-                                value: 'created1',
-                                name: 'Oldest to newest',
-                                sortField: 'created',
-                                sortAscending: true
-                            },
-                            {
-                                value: 'title1',
-                                name: 'A to Z',
-                                sortField: 'title',
-                                sortAscending: true
-                            },
-                            {
-                                value: 'title0',
-                                name: 'Z to A',
-                                sortField: 'title',
-                                sortAscending: false
-                            }
-                        ];
-                    }
-                },
-
-                /**
-                 * DOM element which triggers the dropdown.
-                 */
-                _triggerDropdown: {
-                    type: Object,
-                    notify: true
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _hideResourceSection: {
-                    type: Boolean,
-                    computed: '_computeHideResourceSection(pageConfig, page)'
-                },
-
-                _displayKind: {
-                    type: Boolean,
-                    computed: '_computeDisplayKind(pageConfig, page)'
-                },
-
-                _sortOption: {
-                    type: String,
-                    computed: '_computeSortOption(pageConfig, page)'
-                }
-            },
-
-            attached: function() {
-                this._triggerDropdown = this.$$('#dropdownActions');
-            },
-
-            toggle: function(target) {
+            toggle(target) {
                 this._triggerDropdown = target;
                 this.$.pageSettingsDropdown.toggle();
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
-
-            _computeHideResourceSection: function(pageConfig, page) {
+            _computeHideResourceSection(pageConfig, page) {
                 return pageConfig[page] ? !!pageConfig[page].hide_resource_section : false;
-            },
+            }
 
-            _computeDisplayKind: function(pageConfig, page) {
+            _computeDisplayKind(pageConfig, page) {
                 return pageConfig[page] ? pageConfig[page].display_style : 'list';
-            },
+            }
 
-            _computeSortOption: function(pageConfig, page) {
+            _computeSortOption(pageConfig, page) {
                 return pageConfig[page] ?
                     (pageConfig[page].sort_field + (pageConfig[page].sort_ascending ? 1 : 0)) :
                     (this._sortOptionList ? this._sortOptionList[0].value : '');
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _saveChanges: function(settings) {
-                var request = document.createElement('iron-request'),
+            _saveChanges(settings) {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this.pageConfigApi,
                         method: 'PUT',
                         handleAs: 'json',
                         headers: this._headers
-                    },
-                    body = 'page_config[page]=' + encodeURIComponent(this.page);
+                    };
+                let body = 'page_config[page]=' + encodeURIComponent(this.page);
 
-                for (var key in settings) {
+                for (const key in settings) {
                     body += ('&page_config[' + key +']=' +
                     (('boolean' === typeof settings[key]) ?
                         (settings[key] ? 1 : 0) :
@@ -347,37 +334,41 @@
                 options.body = body;
 
                 request.send(options).then(function(request) {
-
                     if (200 === request.status) {
-                        var pageConfig = request.response;
+                        const pageConfig = request.response;
 
                         this.set('pageConfig', pageConfig);
-                        this.fire('page-settings-changed', {
-                            page: this.page,
-                            pageConfig: pageConfig
-                        });
+                        this.dispatchEvent(new CustomEvent('page-settings-changed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                page: this.page,
+                                pageConfig: pageConfig
+                            }
+                        }));
 
                         this._hideLoader();
                     }
                 }.bind(this), function() {
-
-                   this.fire('notify-about-error', {
-                       message: this.apiErrors.getError(request.response.code)
-                   });
+                    this.dispatchEvent(new CustomEvent('notify-about-error', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            message: this.apiErrors.getError(request.response.code)
+                        }
+                    }));
 
                    this._hideLoader();
                 }.bind(this));
-            },
+            }
 
-            _onSaveChanges: function() {
-                var settings = {};
+            _onSaveChanges() {
+                const settings = {};
 
                 this._showLoader();
 
                 setTimeout(function() {
-
                     Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(field) {
-
                         if ('choice' === field.getAttribute('data-field') && field.selectedItem) {
                             settings[field.name] = field.selectedItem.value;
                         }
@@ -392,11 +383,10 @@
                             settings[field.name] = field.value;
                         }
                     }.bind(this));
-
                     this._saveChanges(settings);
                 }.bind(this), 30);
             }
-
-        });
+        }
+        window.customElements.define(AppscoPageConfigDropdown.is, AppscoPageConfigDropdown);
     </script>
 </dom-module>

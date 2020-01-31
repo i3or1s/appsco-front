@@ -90,106 +90,99 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyIdpSettingsOpenidForm extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppscoCompanyIdpSettingsFormBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-idp-settings-openid-form'; }
 
-            is: 'appsco-company-idp-settings-openid-form',
-
-            properties: {
-
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onIntegrationChanged'
                     },
-                    observer: '_onIntegrationChanged'
-                },
 
-                _subdomain: {
-                    type: String,
-                    value: ''
-                },
+                    _subdomain: {
+                        type: String,
+                        value: ''
+                    },
 
-                _needsSubDomain: {
-                    type: Boolean,
-                    computed: '_computeNeedsSubDomain(integration)'
-                },
+                    _needsSubDomain: {
+                        type: Boolean,
+                        computed: '_computeNeedsSubDomain(integration)'
+                    },
 
-                _needsClientId: {
-                    type: Boolean,
-                    computed: '_computeNeedsClientId(integration)'
-                },
+                    _needsClientId: {
+                        type: Boolean,
+                        computed: '_computeNeedsClientId(integration)'
+                    },
 
-                _needsClientSecret: {
-                    type: Boolean,
-                    computed: '_computeNeedsClientSecret(integration)'
-                },
+                    _needsClientSecret: {
+                        type: Boolean,
+                        computed: '_computeNeedsClientSecret(integration)'
+                    },
 
-                _needsAuthUrl: {
-                    type: Boolean,
-                    computed: '_computeNeedsAuthUrl(integration)'
-                },
+                    _needsAuthUrl: {
+                        type: Boolean,
+                        computed: '_computeNeedsAuthUrl(integration)'
+                    },
 
-                _needsUserInfoUrl: {
-                    type: Boolean,
-                    computed: '_computeNeedsUserInfoUrl(integration)'
-                },
+                    _needsUserInfoUrl: {
+                        type: Boolean,
+                        computed: '_computeNeedsUserInfoUrl(integration)'
+                    },
 
-                _needsTokenUrl: {
-                    type: Boolean,
-                    computed: '_computeNeedsTokenUrl(integration)'
-                },
+                    _needsTokenUrl: {
+                        type: Boolean,
+                        computed: '_computeNeedsTokenUrl(integration)'
+                    },
 
-                _needsScope: {
-                    type: Boolean,
-                    computed: '_computeNeedsScope(integration)'
-                }
-            },
-
-            _computeNeedsSubDomain: function(integration) {
-                return integration.id === 'bamboo_hr';
-            },
-
-            _computeNeedsClientId: function(integration) {
-                return integration.id === 'generic_open_id';
-            },
-
-            _computeNeedsClientSecret: function(integration) {
-                return integration.id === 'generic_open_id';
-            },
-
-            _computeNeedsAuthUrl: function(integration) {
-                return integration.id === 'generic_open_id';
-            },
-
-            _computeNeedsUserInfoUrl: function(integration) {
-                return integration.id === 'generic_open_id';
-            },
-
-            _computeNeedsTokenUrl: function(integration) {
-                return integration.id === 'generic_open_id';
-            },
-
-            _computeNeedsScope: function(integration) {
-                return integration.id === 'generic_open_id';
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.AppscoCompanyIdpSettingsFormBehavior
-            ],
-
-            _onIntegrationChanged: function(integration) {
-
-                switch (integration.id) {
-
-                    case 'bamboo_hr':
-                        this._subdomain = '.bamboohr.com';
-                        break;
-
-                    default:
-                        this._subdomain = '';
-                }
+                    _needsScope: {
+                        type: Boolean,
+                        computed: '_computeNeedsScope(integration)'
+                    }
+                };
             }
-        });
+
+            _computeNeedsSubDomain(integration) {
+                return integration.id === 'bamboo_hr';
+            }
+
+            _computeNeedsClientId(integration) {
+                return integration.id === 'generic_open_id';
+            }
+
+            _computeNeedsClientSecret(integration) {
+                return integration.id === 'generic_open_id';
+            }
+
+            _computeNeedsAuthUrl(integration) {
+                return integration.id === 'generic_open_id';
+            }
+
+            _computeNeedsUserInfoUrl(integration) {
+                return integration.id === 'generic_open_id';
+            }
+
+            _computeNeedsTokenUrl(integration) {
+                return integration.id === 'generic_open_id';
+            }
+
+            _computeNeedsScope(integration) {
+                return integration.id === 'generic_open_id';
+            }
+
+            _onIntegrationChanged(integration) {
+                this._subdomain = 'bamboo_hr' === integration.id ?
+                    '.bamboohr.com' :
+                    ''
+                ;
+            }
+        }
+        window.customElements.define(AppscoCompanyIdpSettingsOpenidForm.is, AppscoCompanyIdpSettingsOpenidForm);
     </script>
 </dom-module>

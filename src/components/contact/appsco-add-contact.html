@@ -8,12 +8,13 @@
 <link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
-<link rel="import" href="../../../bower_components/gold-email-input/gold-email-input.html">
 <link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
+
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-add-contact">
     <template>
@@ -92,62 +93,66 @@
 
                     <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 
-                    <form is="iron-form"
-                          id="form"
-                          method="POST"
-                          action="[[ addContactApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
-                        <div>
-                            <p class="info">
-                                First name and last name are required and displayed on the contact card.
-                            </p>
-                            <div class="flex-horizontal">
-                                <div class="flex">
-                                    <paper-input
-                                            id="firstName"
-                                            label="First name"
-                                            name="contact[firstName]"
-                                            required
-                                            auto-validate
-                                            error-message="Please provide first name."
-                                    ></paper-input>
-                                </div>
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
+                              method="POST"
+                              action="[[ addContactApi ]]">
+                            <div>
+                                <p class="info">
+                                    First name and last name are required and displayed on the contact card.
+                                </p>
+                                <div class="flex-horizontal">
+                                    <div class="flex">
+                                        <paper-input
+                                                id="firstName"
+                                                label="First name"
+                                                name="contact[firstName]"
+                                                required
+                                                auto-validate
+                                                error-message="Please provide first name."
+                                        ></paper-input>
+                                    </div>
 
-                                <div class="flex">
-                                    <paper-input
-                                            id="lastName"
-                                            label="Last name"
-                                            name="contact[lastName]"
-                                            required
-                                            auto-validate
-                                            error-message="Please provide last name."
-                                    ></paper-input>
+                                    <div class="flex">
+                                        <paper-input
+                                                id="lastName"
+                                                label="Last name"
+                                                name="contact[lastName]"
+                                                required
+                                                auto-validate
+                                                error-message="Please provide last name."
+                                        ></paper-input>
+                                    </div>
+                                </div>
+                                <p class="info mt">
+                                    Email is used as part of the credentials for accessing the system.
+                                    Email will also be used for log purposes, statistics and other reporting activities.
+                                </p>
+                                <div class="flex-horizontal">
+                                    <div class="flex">
+                                        <paper-input
+                                                id="email"
+                                                type="email"
+                                                label="Email"
+                                                value=""
+                                                name="contact[email]"
+                                                required
+                                                auto-validate
+                                                error-message="Please provide valid email."></paper-input>
+                                    </div>
+
+                                    <div class="baseline">
+                                        <paper-toggle-button id="sendActivationEmail"
+                                                             name="invitation[notify]">Send Activation Email</paper-toggle-button>
+                                    </div>
                                 </div>
                             </div>
-                            <p class="info mt">
-                                Email is used as part of the credentials for accessing the system.
-                                Email will also be used for log purposes, statistics and other reporting activities.
-                            </p>
-                            <div class="flex-horizontal">
-                                <div class="flex">
-                                    <gold-email-input id="email"
-                                                      label="Email"
-                                                      value=""
-                                                      name="contact[email]"
-                                                      required
-                                                      auto-validate
-                                                      error-message="Please provide valid email."></gold-email-input>
-                                </div>
-
-                                <div class="baseline">
-                                    <paper-toggle-button id="sendActivationEmail"
-                                                         name="invitation[notify]">Send Activation Email</paper-toggle-button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -162,118 +167,82 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAddContact extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-add-contact'; }
 
-            is: 'appsco-add-contact',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                addContactApi: {
-                    type: String
-                },
-
-                addInvitationApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                /**
-                 * Indicates if add application loader should be displayed or not.
-                 */
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-
-            },
-
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    addContactApi: {
+                        type: String
+                    },
+
+                    addInvitationApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _showLoader: function() {
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.firstName.focus();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this.$.form.reset();
-            },
+            }
 
-            _onEnter: function() {
+            _onEnter() {
                 this._onAddAction();
-            },
+            }
 
-            _onAddAction: function() {
-                var form = this.$.form;
+            _onAddAction() {
+                const form = this.$.form;
 
                 if (form.validate()) {
                     this._showLoader();
                     form.submit();
                 }
-            },
+            }
 
-            _onFormError: function(event) {
-                var code = event.detail.request.response.code;
+            _onFormError(event) {
+                const code = event.detail.request.response.code;
 
                 if (1499245276 == code) {
                     this._createInvitation(event.target);
@@ -282,28 +251,26 @@
 
                 this._showError(this.apiErrors.getError(code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function(event) {
-                var response = event.detail.response;
+            _onFormResponse(event) {
+                const response = event.detail.response;
 
                 if (200 === event.detail.status && response) {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when new contact is created.
-                     *
-                     * @event contact-created
-                     * @param {object} contact Created contact.
-                     */
-                    this.fire('contact-created', {
-                        contact: response
-                    });
+                    this.dispatchEvent(new CustomEvent('contact-created', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            contact: response
+                        }
+                    }));
                 }
-            },
+            }
 
-            _createInvitation: function(form) {
-                var formData = form.serialize(),
+            _createInvitation(form) {
+                let formData = form.serialize(),
                     request = document.createElement('iron-request'),
                     options = {
                         url: this.addInvitationApi,
@@ -315,35 +282,30 @@
 
                 body += 'invitation[type]=contact';
 
-                for (var key in formData) {
+                for (let key in formData) {
                     body += '&' + key.replace('contact', 'invitation') + '=' + encodeURIComponent(formData[key]);
                 }
 
                 options.body = body;
 
                 request.send(options).then(function() {
-
-                    if (200 == request.status) {
-
+                    if (200 === request.status) {
                         this.$.dialog.close();
 
-                        /**
-                         * Fired when new invitation of type 'contact' is created.
-                         *
-                         * @event invitation-created
-                         * @param {object} invitation Created invitation.
-                         */
-                        this.fire('invitation-created', {
-                            invitation: request.response
-                        });
-
+                        this.dispatchEvent(new CustomEvent('invitation-created', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                invitation: request.response
+                            }
+                        }));
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAddContact.is, AppscoAddContact);
     </script>
 </dom-module>

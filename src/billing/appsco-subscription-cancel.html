@@ -65,58 +65,46 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoSubscriptionCancel extends Polymer.Element {
+            static get is() { return 'appsco-subscription-cancel'; }
 
-            is: 'appsco-subscription-cancel',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    _subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    companyApi: {
+                        type: String
+                    },
 
-                _subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _subscriptionApi: {
+                        type: String,
+                        computed: '_computeSubscriptionApi(companyApi)'
+                    },
+
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                companyApi: {
-                    type: String
-                },
-
-                _subscriptionApi: {
-                    type: String,
-                    computed: '_computeSubscriptionApi(companyApi)'
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            setSubscription: function (subscription) {
+            setSubscription(subscription) {
                 this._subscription = subscription;
-            },
+            }
 
             /**
              * Computes authorization headers.
@@ -125,34 +113,26 @@
              * @returns {{ Authorization: string }}
              * @private
              */
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            },
+            }
 
-            _computeSubscriptionApi: function(companyApi) {
+            _computeSubscriptionApi(companyApi) {
                 return companyApi + '/billing/subscriptions';
-            },
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._loader = false;
-            },
+            }
 
-            _onConfirm: function() {
+            _onConfirm() {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this._subscriptionApi + '/' + this._subscription.id,
@@ -165,17 +145,16 @@
 
                 request.send(options).then(function(request) {
                     this.$.dialog.close();
-
-                    /**
-                     * Fired when application has been shared.
-                     *
-                     * @event application-shared
-                     */
-                    this.fire('subscription-canceled', {
-                        subscription: request.response
-                    });
+                    this.dispatchEvent(new CustomEvent('subscription-canceled', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            subscription: request.response
+                        }
+                    }));
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoSubscriptionCancel.is, AppscoSubscriptionCancel);
     </script>
 </dom-module>

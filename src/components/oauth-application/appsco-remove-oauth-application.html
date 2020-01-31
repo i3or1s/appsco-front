@@ -9,6 +9,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-remove-oauth-application">
     <template>
         <style>
@@ -67,107 +69,90 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoRemoveOAuthApplication extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-remove-oauth-application'; }
 
-            is: 'appsco-remove-oauth-application',
-
-            properties: {
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _removeApi: {
-                    type: String,
-                    computed: '_computeRemoveApi(application)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            setApplication: function(application) {
-                this.set('application', application);
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _removeApi: {
+                        type: String,
+                        computed: '_computeRemoveApi(application)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeRemoveApi: function(application) {
+            setApplication(application) {
+                this.set('application', application);
+            }
+
+            open () {
+                this.$.dialog.open();
+            }
+
+            close () {
+                this.$.dialog.close();
+            }
+
+            toggle () {
+                this.$.dialog.toggle();
+            }
+
+            _computeRemoveApi(application) {
                 return application.self ? application.self : null;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onRemoveAction: function() {
+            _onRemoveAction() {
 
                 if (!this._removeApi || !this._headers['Authorization']) {
                     this._showError(this.apiErrors.getError(404));
                     return false;
                 }
 
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._removeApi,
                         method: 'DELETE',
@@ -181,16 +166,13 @@
                     this.close();
 
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when application is removed.
-                         *
-                         * @event oauth-application-removed
-                         * @param [Object] application
-                         */
-                        this.fire('oauth-application-removed', {
-                            application: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('oauth-application-removed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                application: request.response
+                            }
+                        }));
                     }
 
                 }.bind(this), function() {
@@ -198,6 +180,7 @@
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoRemoveOAuthApplication.is, AppscoRemoveOAuthApplication);
     </script>
 </dom-module>

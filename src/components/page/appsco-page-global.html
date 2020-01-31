@@ -28,60 +28,53 @@ Custom property | Description | Default
 
 <dom-module id="appsco-page-global">
     <template>
-        <style is="custom-style">
-            :host {
-                display: inline-block;
-                margin-right: -20px;
-                @apply --layout-horizontal;
-                @apply --layout-center;
-                @apply --layout-end-justified;
+        <custom-style>
+            <style>
+                :host {
+                    display: inline-block;
+                    @apply --layout-horizontal;
+                    @apply --layout-center;
+                    @apply --layout-end-justified;
 
-                --paper-icon-button-ink-color: var(--appsco-page-global-action-color);
+                    --paper-icon-button-ink-color: var(--appsco-page-global-action-color);
 
-                @apply --appsco-page-global;
-            }
-            :host *[hidden] {
-                display: none;
-            }
-            :host .action {
-                margin-right: 10px;
-                position: relative;
-                @apply --layout-vertical;
-                @apply --layout-center;
-                @apply --global-action;
-            }
-            :host paper-icon-button {
-                color: var(--appsco-page-global-action-color);
-            }
-            :host paper-icon-button[active] {
-                @apply --appsco-icon-active;
-            }
-            :host .expand-icon {
-                width: 32px;
-                height: 32px;
-                transition: transform 0.2s linear;
-            }
-            :host .expand-icon[active] {
-                transform: rotate(180deg);
-                transition: transform 0.3s linear;
-            }
-            :host paper-icon-button::shadow paper-ripple {
-                width: 150%;
-                height: 150%;
-                top: -25%;
-                left: -25%;
-            }
-            .flex-none {
-                @apply --layout-flex-none;
-            }
-        </style>
-
-        <!--<template is="dom-if" if="[[ sort ]]">-->
-        <!--<paper-icon-button icon="av:sort-by-alpha" on-tap="_sort" toggles></paper-icon-button>-->
-        <!--</template>-->
-        <!--<template is="dom-if" if="[[ settings ]]">-->
-        <!--<paper-icon-button icon="icons:settings" on-tap="_settings" toggles></paper-icon-button>-->
-        <!--</template>-->
+                    @apply --appsco-page-global;
+                }
+                :host *[hidden] {
+                    display: none;
+                }
+                :host .action {
+                    position: relative;
+                    @apply --layout-vertical;
+                    @apply --layout-center;
+                    @apply --global-action;
+                }
+                :host paper-icon-button {
+                    color: var(--appsco-page-global-action-color);
+                }
+                :host paper-icon-button[active] {
+                    @apply --appsco-icon-active;
+                }
+                :host .expand-icon {
+                    width: 32px;
+                    height: 32px;
+                    transition: transform 0.2s linear;
+                }
+                :host .expand-icon[active] {
+                    transform: rotate(180deg);
+                    transition: transform 0.3s linear;
+                }
+                :host paper-icon-button::shadow paper-ripple {
+                    width: 150%;
+                    height: 150%;
+                    top: -25%;
+                    left: -25%;
+                }
+                .flex-none {
+                    @apply --layout-flex-none;
+                }
+            </style>
+        </custom-style>
 
         <template is="dom-if" if="[[ additionalOptions ]]">
             <div class="action flex-none">
@@ -104,141 +97,119 @@ Custom property | Description | Default
             </div>
         </template>
 
-        <!--<template is="dom-if" if="[[ help ]]">-->
-        <!--<paper-icon-button icon="icons:help-outline" on-tap="_help" toggles></paper-icon-button>-->
-        <!--</template>-->
-
     </template>
 
     <script>
-        Polymer({
+        class AppscoPageGlobal extends Polymer.Element {
+            static get is() { return 'appsco-page-global'; }
 
-            is: 'appsco-page-global',
+            static get properties() {
+                return {
+                    /**
+                     * Show info icon
+                     *
+                     * @type Boolean
+                     */
+                    info: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            properties: {
-                /**
-                 * Show info icon
-                 *
-                 * @type Boolean
-                 */
-                info: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Show help icon
+                     *
+                     * @type Boolean
+                     */
+                    help: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Show help icon
-                 *
-                 * @type Boolean
-                 */
-                help: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Show settings icon
+                     *
+                     * @type Boolean
+                     */
+                    settings: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Show settings icon
-                 *
-                 * @type Boolean
-                 */
-                settings: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Show sort icon
+                     *
+                     * @type Boolean
+                     */
+                    sort: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Show sort icon
-                 *
-                 * @type Boolean
-                 */
-                sort: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Show filters action
+                     *
+                     * @type Boolean
+                     */
+                    filters: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Show filters action
-                 *
-                 * @type Boolean
-                 */
-                filters: {
-                    type: Boolean,
-                    value: false
-                },
-
-                additionalOptions: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            _info: function (e) {
-                /**
-                 * Fired when `info` is tapped.
-                 *
-                 * @event page-global-info
-                 * @param {Boolean} active Is element active
-                 */
-                this.fire('page-global-info', {
-                    active: e.currentTarget.active
-                });
-            },
-
-            _settings: function (e) {
-                /**
-                 * Fired when `settings` is tapped.
-                 *
-                 * @event page-global-settings
-                 * @param {Boolean} active Is element active
-                 */
-                this.fire('page-global-settings', {
-                    active: e.currentTarget.active
-                });
-            },
-
-            _sort: function (e) {
-                /**
-                 * Fired when `sort` is tapped.
-                 *
-                 * @event page-global-sort
-                 * @param {Boolean} active Is element active
-                 */
-                this.fire('page-global-sort', {
-                    active: e.currentTarget.active
-                });
-            },
-
-            _help: function (e) {
-                /**
-                 * Fired when `help` is tapped.
-                 *
-                 * @event page-global-help
-                 * @param {Boolean} active Is element active
-                 */
-                this.fire('page-global-help', {
-                    active: e.currentTarget.active
-                });
-            },
-
-            _onFilters: function() {
-
-                /**
-                 * Fired when filters action is tapped.
-                 *
-                 * @event page-global-filters
-                 */
-                this.fire('page-global-filters');
-            },
-
-            _onAdditionalOptionsAction: function() {
-
-                /**
-                 * Fired when additional options action is tapped.
-                 *
-                 * @event page-global-toggle-additional-options
-                 */
-                this.fire('page-global-toggle-additional-options');
+                    additionalOptions: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
             }
-        });
+
+            _info(e) {
+                this.dispatchEvent(new CustomEvent('page-global-info', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        active: e.currentTarget.active
+                    }
+                }));
+            }
+
+            _settings(e) {
+                this.dispatchEvent(new CustomEvent('page-global-settings', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        active: e.currentTarget.active
+                    }
+                }));
+            }
+
+            _sort(e) {
+                this.dispatchEvent(new CustomEvent('page-global-sort', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        active: e.currentTarget.active
+                    }
+                }));
+            }
+
+            _help(e) {
+                this.dispatchEvent(new CustomEvent('page-global-help', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        active: e.currentTarget.active
+                    }
+                }));
+            }
+
+            _onFilters() {
+                this.dispatchEvent(new CustomEvent('page-global-filters', { bubbles: true, composed: true }));
+            }
+
+            _onAdditionalOptionsAction() {
+                this.dispatchEvent(new CustomEvent('page-global-toggle-additional-options', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoPageGlobal.is, AppscoPageGlobal);
     </script>
 </dom-module>

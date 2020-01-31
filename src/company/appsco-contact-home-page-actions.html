@@ -88,102 +88,100 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoContactHomePageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-contact-home-page-actions'; }
 
-            is: 'appsco-contact-home-page-actions',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    pageConfigApi: {
+                        type: String
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    page: {
+                        type: String,
+                        value: ''
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                pageConfigApi: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                pageConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                page: {
-                    type: String,
-                    value: ''
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 200,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 200,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen)'
-            ],
-
-            attached: function() {
-
-                if (this.mobileScreen || this.tabletScreen) {
-                    this.updateStyles();
-                }
-
-            },
-
-            _updateScreen: function() {
-                this.updateStyles();
-            },
-
-            _onShowPageSettings: function(event) {
-                this.$$('#resourcePageConfigDropdown').toggle(event.target);
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen) {
+                        this.updateStyles();
+                    }
+                });
             }
-        });
+
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen)'
+                ];
+            }
+
+            _updateScreen() {
+                this.updateStyles();
+            }
+
+            _onShowPageSettings(event) {
+                this.shadowRoot.getElementById('resourcePageConfigDropdown').toggle(event.target);
+            }
+        }
+        window.customElements.define(AppscoContactHomePageActions.is, AppscoContactHomePageActions);
     </script>
 </dom-module>
 

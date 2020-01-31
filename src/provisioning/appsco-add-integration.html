@@ -15,8 +15,7 @@
 
 <dom-module id="appsco-add-integration">
     <template>
-        <style include="appsco-list-item-styles"></style>
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 display: block;
                 position: relative;
@@ -96,98 +95,101 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAddIntegration extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-add-integration'; }
 
-            is: 'appsco-add-integration',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    availableIntegrationsApi: {
+                        type: String
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                availableIntegrationsApi: {
-                    type: String
-                },
+                    _selected: {
+                        type: String,
+                        value: 'appsco-add-integration-search',
+                        notify: true
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _addAction: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _selected: {
-                    type: String,
-                    value: 'appsco-add-integration-search',
-                    notify: true
-                },
+            ready() {
+                super.ready();
 
-                _addAction: {
-                    type: Boolean,
-                    value: false
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this.$.addAction,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this.$.addAction,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this.$.addAction,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this.$.addAction,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                '_selected-changed': '_onSelectedChanged',
-                'neon-animation-finish': '_onAddActionAnimationFinish'
-            },
+            _addListeners() {
+                this.addEventListener('_selected-changed', this._onSelectedChanged);
+                this.addEventListener('neon-animation-finish', this._onAddActionAnimationFinish);
+            }
 
-            open: function() {
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            _showIntegrationSearch: function() {
+            _showIntegrationSearch() {
                 this._selected = 'appsco-add-integration-search';
-            },
+            }
 
-            _showIntegrationForm: function() {
+            _showIntegrationForm() {
                 this._selected = 'appsco-add-integration-form';
-            },
+            }
 
-            _reset: function() {
+            _reset() {
                 this.$.appscoAddIntegrationSearch.reset();
                 this.$.appscoAddIntegrationForm.reset();
                 this._showIntegrationSearch();
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._reset();
-            },
+            }
 
-            _onSelectedChanged: function() {
-
+            _onSelectedChanged() {
                 if (this._selected != 'appsco-add-integration-search') {
                     this.$.addAction.style.display = 'block';
                     this.playAnimation('entry');
@@ -197,30 +199,29 @@
                     this._addAction = false;
                     this.playAnimation('exit');
                 }
-            },
+            }
 
-            _onAddActionAnimationFinish: function() {
-
+            _onAddActionAnimationFinish() {
                 if (!this._addAction) {
                     this.$.addAction.style.display = 'none';
                 }
-            },
+            }
 
-            _onAvailableIntegrationSelected: function(event) {
+            _onAvailableIntegrationSelected(event) {
                 this.$.appscoAddIntegrationForm.setIntegration(event.detail.integration);
                 this._showIntegrationForm();
-            },
+            }
 
-            _onAddAction: function() {
+            _onAddAction() {
                 this.$.appscoAddIntegrationForm.addIntegration();
-            },
+            }
 
-            _onIntegrationRequested: function(event) {
-
+            _onIntegrationRequested(event) {
                 if (event.detail.authorizationUrl) {
                     this.close();
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoAddIntegration.is, AppscoAddIntegration);
     </script>
 </dom-module>

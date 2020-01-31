@@ -164,136 +164,129 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationAssignee extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-assignee'; }
 
-            is: 'appsco-application-assignee',
+            static get properties() {
+                return {
+                    /**
+                     * Application which is assigned to account.
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    infoSection: {
+                        type: Boolean,
+                        value: function () {
+                            return true;
+                        }
+                    },
 
-                /**
-                 * Application which is assigned to account.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    /**
+                     * Assignee to display.
+                     *
+                     * @type {Object}
+                     */
+                    assignee: {
+                        type: Object
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _individualClaims: {
+                        type: Boolean,
+                        computed: '_computeIndividualClaims(application)'
+                    },
+
+                    _securityScorePermission: {
+                        type: Boolean,
+                        computed: '_computeSecurityScorePermission(application, infoSection)'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                infoSection: {
-                    type: Boolean,
-                    value: function () { return true; }
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Assignee to display.
-                 *
-                 * @type {Object}
-                 */
-                assignee: {
-                    type: Object
-                },
-
-                /**
-                 * Indicates if assignee should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _individualClaims: {
-                    type: Boolean,
-                    computed: '_computeIndividualClaims(application)'
-                },
-
-                _securityScorePermission: {
-                    type: Boolean,
-                    computed: '_computeSecurityScorePermission(application, infoSection)'
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _computeIndividualClaims: function(application) {
-                return application.claim_type === 'individual';
-            },
-
-            _computeSecurityScorePermission: function(application, infoSection) {
-                return (-1 < ['unpw', 'item'].indexOf(application.auth_type)) && infoSection;
-            },
-
-            _onAssigneeAction: function() {
-
-                /**
-                 * Fired when assignee is tapped.
-                 *
-                 * @event assignee
-                 * @param {Object} assignee
-                 */
-                this.fire('assignee', {
-                    detail: this.assignee
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
                 });
-            },
 
-            _onClaimsAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when claims action is tapped.
-                 *
-                 * @event assignee-claims
-                 * @param {Object} assignee
-                 */
-                this.fire('assignee-claims', {
-                    assignee: this.assignee
-                });
-            },
-
-            _onRevokeAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when revoke action is tapped.
-                 *
-                 * @event revoke-assignee
-                 * @param {Object} assignee
-                 */
-                this.fire('revoke-assignee', {
-                    assignee: this.assignee
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
                 });
             }
-        });
+
+            _computeIndividualClaims(application) {
+                return application.claim_type === 'individual';
+            }
+
+            _computeSecurityScorePermission(application, infoSection) {
+                return (-1 < ['unpw', 'item'].indexOf(application.auth_type)) && infoSection;
+            }
+
+            _onAssigneeAction() {
+                this.dispatchEvent(new CustomEvent('assignee', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        assignee: this.assignee
+                    }
+                }));
+            }
+
+            _onClaimsAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('assignee-claims', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        assignee: this.assignee
+                    }
+                }));
+            }
+
+            _onRevokeAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('revoke-assignee', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        assignee: this.assignee
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoApplicationAssignee.is, AppscoApplicationAssignee);
     </script>
 </dom-module>

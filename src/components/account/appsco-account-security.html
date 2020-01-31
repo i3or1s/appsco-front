@@ -88,53 +88,52 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountSecurity extends Polymer.Element {
+            static get is() { return 'appsco-account-security'; }
 
-            is: 'appsco-account-security',
-
-            properties: {
-
-                role: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_roleChanged'
                     },
-                    observer: '_roleChanged'
-                },
 
-                info: {
-                    type: Boolean,
-                    value: false
-                },
+                    info: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _score: {
-                    type: Number,
-                    value: 0
-                },
+                    _score: {
+                        type: Number,
+                        value: 0
+                    },
 
-                strong: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    strong: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                medium: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    medium: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                weak: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
+                    weak: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-            _roleChanged: function () {
-
+            _roleChanged() {
                 if (this.role && this.role.security) {
-                    var score = this.role.security.application_score;
+                    const score = this.role.security.application_score;
 
                     this._score = Math.round(score);
                     this.weak = false;
@@ -153,8 +152,8 @@ Custom property | Description | Default
 
                     this.weak = true;
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoAccountSecurity.is, AppscoAccountSecurity);
     </script>
 </dom-module>

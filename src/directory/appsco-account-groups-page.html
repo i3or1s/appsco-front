@@ -56,99 +56,85 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountGroupsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-account-groups-page'; }
 
-            is: 'appsco-account-groups-page',
-
-            properties: {
-
-                /**
-                 * Account
-                 */
-                account: {
-                    type: Object,
-                    value: function () {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Get labels link.
-                 */
-                groupsApi: {
-                    type: String,
-                    'observer': '_onGroupsApiChange'
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    authorizationToken: {
+                        type: String
+                    },
+
+                    groupsApi: {
+                        type: String,
+                        'observer': '_onGroupsApiChange'
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _onBack: function() {
-                this.fire('back');
-            },
-
-            _onGroupsApiChange: function() {
-                this.loadGroups();
-            },
-
-            loadGroups: function() {
-                this.$.appscoAccountGroup.loadGroups();
-            },
-
-            removeGroup: function(group) {
-                this.$.appscoAccountGroup.removeGroup(group);
+                };
             }
 
+            ready() {
+                super.ready();
 
-        });
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            _onBack() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            _onGroupsApiChange() {
+                this.loadGroups();
+            }
+
+            loadGroups() {
+                this.$.appscoAccountGroup.loadGroups();
+            }
+
+            removeGroup(group) {
+                this.$.appscoAccountGroup.removeGroup(group);
+            }
+        }
+        window.customElements.define(AppscoAccountGroupsPage.is, AppscoAccountGroupsPage);
     </script>
 </dom-module>
 

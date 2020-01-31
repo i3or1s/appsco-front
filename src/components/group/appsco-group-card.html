@@ -76,82 +76,86 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoGroupCard extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-group-card'; }
 
-            is: 'appsco-group-card',
+            static get properties() {
+                return {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    removeAction: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Item that is to be rendered.
-                 */
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    animationConfig: {
+                        value: function () {
+                            return {
 
-                removeAction: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
                             }
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+            ready() {
+                super.ready();
 
-            listeners: {
-                'tap': '_onTap',
-                'neon-animation-finish': '_onAnimationFinish'
-            },
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-            attached: function() {
-                this.style.display = 'flex';
-                this.playAnimation('entry');
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'flex';
+                });
 
-            _onTap: function() {
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                    this._addListeners();
+                })
+            }
 
+            _addListeners() {
+                this.addEventListener('tap', this._onTap);
+                this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+            }
+
+            _onTap() {
                 this.playAnimation('exit', {
                     exit: true
                 });
-            },
-
-            _onAnimationFinish: function(event) {
-
-                if (event.detail.exit) {
-                    this.fire('selected', {
-                        group: this.group
-                    });
-                }
             }
 
-        });
+            _onAnimationFinish(event) {
+                if (event.detail.exit) {
+                    this.dispatchEvent(new CustomEvent('selected', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            group: this.group
+                        }
+                    }));
+                }
+            }
+        }
+        window.customElements.define(AppscoGroupCard.is, AppscoGroupCard);
     </script>
 </dom-module>

@@ -35,19 +35,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessOnBoardingActions extends Polymer.Element {
+            static get is() { return 'appsco-access-on-boarding-actions'; }
 
-            is: 'appsco-access-on-boarding-actions',
-
-            _onExportAction: function() {
-                /**
-                 * Fired when export action is tapped.
-                 *
-                 * @event export-access-on-boarding
-                 */
-                this.fire('export-access-on-boarding');
+            _onExportAction() {
+                this.dispatchEvent(new CustomEvent('export-access-on-boarding', { bubbles: true, composed: true }));
             }
-
-        });
+        }
+        window.customElements.define(AppscoAccessOnBoardingActions.is, AppscoAccessOnBoardingActions);
     </script>
 </dom-module>

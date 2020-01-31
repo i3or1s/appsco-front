@@ -5,6 +5,8 @@
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-search`
 
@@ -146,60 +148,53 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoSearch extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-search'; }
 
-            is: 'appsco-search',
-
-            properties: {
-
-                label: {
-                    type: String,
-                    value: 'Search'
-                },
-
-                floatLabel: {
-                    type: Boolean,
-                    value: false
-                },
-
-                filter: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _searchValue: {
-                    type: String,
-                    value: ''
-                },
-
-                _clearSearch: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _searchDebounce: {
-                    type: Number,
-                    value: 0
-                }
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    label: {
+                        type: String,
+                        value: 'Search'
+                    },
 
-            _onFocus: function() {
-                this.fire('focus');
-            },
+                    floatLabel: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            _onValueChanged: function () {
-                this.fire('value-changed');
-            },
+                    filter: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            _onSearch: function(event) {
-                var value = this._searchValue,
+                    _searchValue: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _clearSearch: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _searchDebounce: {
+                        type: Number,
+                        value: 0
+                    }
+                };
+            }
+
+            _onFocus() {
+                this.dispatchEvent(new CustomEvent('focus', { bubbles: true, composed: true }));
+            }
+
+            _onValueChanged() {
+                this.dispatchEvent(new CustomEvent('value-changed', { bubbles: true, composed: true }));
+            }
+
+            _onSearch(event) {
+                const value = this._searchValue,
                     length = value.length;
 
                 if (this._searchDebounce > 0) {
@@ -209,70 +204,55 @@ Custom property | Description | Default
                 this._searchDebounce = setTimeout(function() {
                     this.set('_clearSearch', (length > 0));
 
-                    /**
-                     * Fired when user searches with more than 3 characters.
-                     *
-                     * @event search
-                     * @param {String} term
-                     */
-                    this.fire('search', {
-                        term: encodeURIComponent(value)
-                    });
-
+                    this.dispatchEvent(new CustomEvent('search', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            term: encodeURIComponent(value)
+                        }
+                    }));
                 }.bind(this), 300);
-            },
+            }
 
-            _onClearSearch: function() {
+            _onClearSearch() {
                 this.reset();
                 this.setup();
 
-                /**
-                 * Fired when user triggers clear search action.
-                 *
-                 * @event search-clear
-                 */
-                this.fire('search-clear');
-            },
+                this.dispatchEvent(new CustomEvent('search-clear', { bubbles: true, composed: true }));
+            }
 
-            getValue: function() {
+            getValue() {
                 return this._searchValue;
-            },
+            }
 
-            setValue: function(value) {
+            setValue(value) {
                 if (!value) { value = ''; }
                 this._searchValue = value;
 
                 this.set('_clearSearch', (value.length > 0));
-            },
+            }
 
-            focusAppscoSearchInput: function() {
+            focusAppscoSearchInput() {
                 this.$.searchInput.$.input.focus();
-            },
+            }
 
-            enableAppscoSearchInput: function () {
+            enableAppscoSearchInput() {
                 this.$.searchInput.disabled = false;
-            },
+            }
 
-            disableAppscoSearchInput: function () {
+            disableAppscoSearchInput() {
                 this.$.searchInput.disabled = true;
-            },
+            }
 
-            /**
-             * Sets focus on search input field.
-             */
-            setup: function() {
+            setup() {
                 this.focusAppscoSearchInput();
-            },
+            }
 
-            /**
-             * Resets search component.
-             * Sets input value to empty string.
-             * Removes clear search action.
-             */
-            reset: function() {
+            reset() {
                 this._searchValue = '';
                 this._clearSearch = false;
             }
-        });
+        }
+        window.customElements.define(AppscoSearch.is, AppscoSearch);
     </script>
 </dom-module>

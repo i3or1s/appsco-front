@@ -9,6 +9,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-deactivate-idp-settings`
 Shows dialog screen with confirmation to deactivate IdP settings.
@@ -73,110 +75,84 @@ Shows dialog screen with confirmation to deactivate IdP settings.
 
     </template>
     <script>
-        Polymer({
+        class AppscoDeactivateIdpSettings extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-deactivate-idp-settings'; }
 
-            is: 'appsco-deactivate-idp-settings',
-
-            properties: {
-
-                /**
-                 * Domain to remove IdP settings for.
-                 */
-                domain: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _deactivateApi: {
-                    type: String,
-                    computed: '_computeDeactivateApi(domain)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            setDomain: function(domain) {
-                this.domain = domain;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    domain: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _deactivateApi: {
+                        type: String,
+                        computed: '_computeDeactivateApi(domain)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeDeactivateApi: function(domain) {
+            setDomain(domain) {
+                this.domain = domain;
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _computeDeactivateApi(domain) {
                 return (domain.meta && domain.meta.idpConfig) ? domain.meta.idpConfig : null;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
                 this.set('domain', {});
-            },
+            }
 
-            _onDeactivateAction: function() {
+            _onDeactivateAction() {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this._deactivateApi,
@@ -188,30 +164,27 @@ Shows dialog screen with confirmation to deactivate IdP settings.
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
                         this.domain.hasIdp = false;
                         this.domain.meta.idpConfig = null;
 
-                        /**
-                         * Fired when IdP settings is deactivated.
-                         *
-                         * @event idp-settings-deactivated
-                         * @params [Object] idPConfig, [Object] domain
-                         */
-                        this.fire('idp-settings-deactivated', {
-                            idPConfig: request.response,
-                            domain: this.domain
-                        });
+                        this.dispatchEvent(new CustomEvent('idp-settings-deactivated', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                idPConfig: request.response,
+                                domain: this.domain
+                            }
+                        }));
 
                         this.close();
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoDeactivateIdpSettings.is, AppscoDeactivateIdpSettings);
     </script>
 </dom-module>

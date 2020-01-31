@@ -91,113 +91,116 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-page-actions'; }
 
-            is: 'appsco-company-page-actions',
+            static get properties() {
+                return {
+                    _domainsActionsActive: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            properties: {
+                    _groupsActionsActive: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onGroupsActionsActiveChanged'
+                    },
 
-                _domainsActionsActive: {
-                    type: Boolean,
-                    value: false
-                },
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _groupsActionsActive: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onGroupsActionsActiveChanged'
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            showDomainsPageActions: function() {
+            showDomainsPageActions() {
                 this._domainsActionsActive = true;
-            },
+            }
 
-            hideDomainsPageActions: function() {
+            hideDomainsPageActions() {
                 this._domainsActionsActive = false;
-            },
+            }
 
-            showGroupsPageActions: function() {
+            showGroupsPageActions() {
                 this._groupsActionsActive = true;
-            },
+            }
 
-            hideGroupsPageActions: function() {
+            hideGroupsPageActions() {
                 this._onSearchClear();
                 this._groupsActionsActive = false;
-            },
+            }
 
-            _onGroupsActionsActiveChanged: function(active) {
-
+            _onGroupsActionsActiveChanged(active) {
                 if (active) {
                     this.hideDomainsPageActions();
                 }
-            },
+            }
 
-            _onResourceAction: function() {
-                this.fire('resource-section');
-            },
+            _onResourceAction() {
+                this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+            }
 
-            _onAddDomainAction: function() {
-                this.fire('add-domain');
-            },
+            _onAddDomainAction() {
+                this.dispatchEvent(new CustomEvent('add-domain', { bubbles: true, composed: true }));
+            }
 
-            _onSearch: function(event) {
+            _onSearch(event) {
+                this.dispatchEvent(new CustomEvent('search-groups', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        term: event.detail.term
+                    }
+                }));
+            }
 
-                this.fire('search-groups', {
-                    term: event.detail.term
-                });
-            },
-
-            _onSearchClear: function() {
+            _onSearchClear() {
                 this._resetSearch();
 
-                this.fire('search-groups-clear', {
-                    term: ''
-                });
-            },
+                this.dispatchEvent(new CustomEvent('search-groups-clear', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        term: ''
+                    }
+                }));
+            }
 
-            _resetSearch: function() {
-
+            _resetSearch() {
                 if (this._groupsActionsActive) {
-                    this.$$('#appscoSearch').reset();
+                    this.shadowRoot.getElementById('appscoSearch').reset();
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyPageActions.is, AppscoCompanyPageActions);
     </script>
 </dom-module>
 

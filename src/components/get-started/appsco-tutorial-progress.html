@@ -6,7 +6,6 @@
     <template>
         <style>
             :host .progress-container{
-                /*display: inline-block;*/
                 background-color: var(--header-background-color);
                 color: var(--header-text-color);
                 position: absolute;
@@ -63,67 +62,68 @@
         </template>
     </template>
     <script>
-        Polymer({
+        class AppscoTutorialProgress extends Polymer.Element {
+            static get is() { return 'appsco-tutorial-progress'; }
 
-            is: 'appsco-tutorial-progress',
-
-            properties: {
-                _show: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                },
-
-                progress: {
-                    type: Number,
-                    value: 0,
-                    reflectToAttribute: true,
-                    notify: true
-                },
-
-                tutorials: {
-                    type: Object,
-                    value: function () {
-                        return {}
+            static get properties() {
+                return {
+                    _show: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
                     },
-                    notify: true,
-                    observer: "_tutorialsChanged"
-                },
 
-                _hiddenContent: {
-                    type: Boolean,
-                    value: true
-                },
+                    progress: {
+                        type: Number,
+                        value: 0,
+                        reflectToAttribute: true,
+                        notify: true
+                    },
 
-                _tutorialsList: {
-                    type: Array,
-                    computed: "_computeTutorialsList(tutorials)"
-                },
+                    tutorials: {
+                        type: Object,
+                        value: function () {
+                            return {}
+                        },
+                        notify: true,
+                        observer: "_tutorialsChanged"
+                    },
 
-                isTutorialActive: {
-                    type: Boolean,
-                    value: false,
-                    notify: true,
-                    observer: '_isActiveChanged'
-                }
+                    _hiddenContent: {
+                        type: Boolean,
+                        value: true
+                    },
 
-            },
+                    _tutorialsList: {
+                        type: Array,
+                        computed: "_computeTutorialsList(tutorials)"
+                    },
 
-            _tutorialsChanged: function(newValue, oldValue) {
+                    isTutorialActive: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        observer: '_isActiveChanged'
+                    }
+                };
+            }
+
+            _tutorialsChanged(newValue, oldValue) {
                 this.progress = 0;
-                var finishedTuts = numOfTuts = 0;
-                for(property in newValue) {
+                let finishedTuts = 0;
+                let numOfTuts = 0;
+                for(const property in newValue) {
                     numOfTuts++;
                     if(newValue.hasOwnProperty(property) && newValue[property].isDone()) {
                         finishedTuts++;
                     }
                 }
                 this.progress = numOfTuts <= 0 ? 0 : Math.round(100*finishedTuts/numOfTuts);
-            },
+            }
 
-            _computeTutorialsList: function (tutorials) {
-                var list = [];
-                for(id in tutorials) {
+            _computeTutorialsList (tutorials) {
+                const list = [];
+                for(const id in tutorials) {
                     if(tutorials.hasOwnProperty(id)) {
                         list.push({
                             name: tutorials[id].getId(),
@@ -132,20 +132,20 @@
                     }
                 }
                 return list;
-            },
-
-            _showProgressContent: function() {
-                this._hiddenContent = false;
-            },
-
-            _hideProgressContent: function() {
-                this._hiddenContent = true;
-            },
-
-            _isActiveChanged: function(newValue, oldValue) {
-                this._show = newValue;
             }
 
-        });
+            _showProgressContent() {
+                this._hiddenContent = false;
+            }
+
+            _hideProgressContent() {
+                this._hiddenContent = true;
+            }
+
+            _isActiveChanged(newValue, oldValue) {
+                this._show = newValue;
+            }
+        }
+        window.customElements.define(AppscoTutorialProgress.is, AppscoTutorialProgress);
     </script>
 </dom-module>

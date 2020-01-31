@@ -21,6 +21,7 @@
 <link rel="import" href="../../components/combo-box/suggestion-combo-box.html">
 
 <link rel="import" href="appsco-integration-rules-operators.html">
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-add-integration-rule">
     <template>
@@ -115,236 +116,237 @@
 
                     <appsco-form-error message="[[ _error ]]"></appsco-form-error>
 
-                    <form is="iron-form"
-                          id="form"
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-presubmit="_onFormPresubmit"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
                           method="POST"
-                          action="[[ _addIntegrationRuleApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-presubmit="_onFormPresubmit"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
-
-                        <div class="input-container">
-                            <paper-input id="title"
-                                         label="Rule name"
-                                         name="integration_recipe[name]"
-                                         required
-                                         auto-validate
-                                         error-message="Please enter rule name."></paper-input>
-                        </div>
-
-                        <template is="dom-if" if="[[ _integrationKindRA ]]">
-                            <div class="subtitle">Define reaction to event in [[ integration.name ]]</div>
-                            <p>
-                                Here you can define interaction with [[ integration.name ]] and AppsCo.
-                                Define events in [[ integration.name ]] and object to which this rule should react.
-                            </p>
-                            <p>
-                                Lookup - query the [[ integration.name ]] for list of defined incoming objects<br>
-                                Added - react to added event in the [[ integration.name ]]<br>
-                                Modified - react to modified event in the [[ integration.name ]]<br>
-                                Removed - react to removed event in the [[ integration.name ]]
-                            </p>
-                        </template>
-                        <template is="dom-if" if="[[ !_integrationKindRA ]]">
-                            <div class="subtitle">Events in AppsCo</div>
-                            <p>
-                                Here you can define interaction with [[ integration.name ]] and AppsCo.
-                                Define events in AppsCo and object to which this rule should react.
-                            </p>
-                            <p>
-                                Lookup - this option is not applicable to AppsCo<br>
-                                Added - react to when user is added in AppsCo directory<br>
-                                Modified - react to when user in your company is modified inside AppsCo<br>
-                                Removed - react to when user is removed from your company in AppsCo
-                            </p>
-                        </template>
-
-                        <div class="input-container">
-                            <paper-dropdown-menu id="fromMethod"
-                                                 label="Choose event or query the system"
-                                                 name="integration_recipe[fromMethod]"
-                                                 horizontal-align="left"
-                                                 on-iron-overlay-opened="_onIronOverlayEvents"
-                                                 on-iron-overlay-closed="_onIronOverlayEvents"
-                                                 required
-                                                 error-message="Please select at least one option."
-                                                 auto-validate>
-                                <paper-listbox id="fromMethodList"
-                                               class="dropdown-content"
-                                               on-iron-activate="_onFromMethodSelected"
-                                               attr-for-selected="value" slot="dropdown-content">
-                                    <template is="dom-repeat" items="[[ _computedFromMethodList ]]">
-                                        <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
-                                    </template>
-                                </paper-listbox>
-                            </paper-dropdown-menu>
-                        </div>
-                        <div class="input-container">
-                            <paper-dropdown-menu id="fromPSO"
-                                                 label="Incoming object (user, group)"
-                                                 name="integration_recipe[fromPSO]"
-                                                 horizontal-align="left"
-                                                 on-iron-overlay-opened="_onIronOverlayEvents"
-                                                 on-iron-overlay-closed="_onIronOverlayEvents"
-                                                 required
-                                                 error-message="Please select object."
-                                                 auto-validate>
-                                <paper-listbox id="fromPSOList"
-                                               class="dropdown-content"
-                                               attr-for-selected="value"
-                                               on-iron-activate="_onFromPSOSelected" slot="dropdown-content">
-                                    <template is="dom-repeat" items="[[ _computedFromPSOList ]]">
-                                        <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
-                                    </template>
-                                </paper-listbox>
-                            </paper-dropdown-menu>
-                        </div>
-                        <template is="dom-if" if="[[ _fromConditionListExist ]]">
+                          action="[[ _addIntegrationRuleApi ]]">
                             <div class="input-container">
-                                <p>Further filter incoming object</p>
-                                <paper-button class="primary-button"
-                                              on-tap="_onToggleConditionAction"
-                                              disabled$="[[ !_fromPSOSelected ]]"
-                                              toggles>Advanced</paper-button>
+                                <paper-input id="title"
+                                             label="Rule name"
+                                             name="integration_recipe[name]"
+                                             required
+                                             auto-validate
+                                             error-message="Please enter rule name."></paper-input>
                             </div>
-                        </template>
-                        <div id="fromConditionField"
-                             class="input-container display-none">
-                            <p>Define regular expression for fields to further filter the object. </p>
-                            <div class="input-container-title">Conditions:</div>
+
+                            <template is="dom-if" if="[[ _integrationKindRA ]]">
+                                <div class="subtitle">Define reaction to event in [[ integration.name ]]</div>
+                                <p>
+                                    Here you can define interaction with [[ integration.name ]] and AppsCo.
+                                    Define events in [[ integration.name ]] and object to which this rule should react.
+                                </p>
+                                <p>
+                                    Lookup - query the [[ integration.name ]] for list of defined incoming objects<br>
+                                    Added - react to added event in the [[ integration.name ]]<br>
+                                    Modified - react to modified event in the [[ integration.name ]]<br>
+                                    Removed - react to removed event in the [[ integration.name ]]
+                                </p>
+                            </template>
+                            <template is="dom-if" if="[[ !_integrationKindRA ]]">
+                                <div class="subtitle">Events in AppsCo</div>
+                                <p>
+                                    Here you can define interaction with [[ integration.name ]] and AppsCo.
+                                    Define events in AppsCo and object to which this rule should react.
+                                </p>
+                                <p>
+                                    Lookup - this option is not applicable to AppsCo<br>
+                                    Added - react to when user is added in AppsCo directory<br>
+                                    Modified - react to when user in your company is modified inside AppsCo<br>
+                                    Removed - react to when user is removed from your company in AppsCo
+                                </p>
+                            </template>
+
                             <div class="input-container">
-                                <table>
-                                    <tbody>
-                                        <template is="dom-repeat" items="[[ _fromConditionList ]]">
-                                            <tr>
-                                                <td class="operator-select">
-                                                    <paper-dropdown-menu id="fromConditionOperator_[[ item.key ]]"
-                                                                         label="Operator"
-                                                                         name="fromConditionOperator_[[ item.key ]]"
-                                                                         horizontal-align="left"
-                                                                         on-iron-overlay-opened="_onIronOverlayEvents"
-                                                                         on-iron-overlay-closed="_onIronOverlayEvents"
-                                                                         required
-                                                                         error-message="Please select operator."
-                                                                         auto-validate>
-                                                        <paper-listbox id="fromCondition_[[ item.key ]]"
-                                                                       class="dropdown-content"
-                                                                       attr-for-selected="value" selected="{{ item.operator }}" slot="dropdown-content">
-                                                            <template is="dom-repeat" items="[[ item.supportedOperators ]]" as="operator">
-                                                                <paper-item value="[[ operator ]]">[[ _formatOperator(operator) ]]</paper-item>
-                                                            </template>
-                                                        </paper-listbox>
-                                                    </paper-dropdown-menu>
-                                                </td>
-                                                <td>
-                                                    <template is="dom-if" if="[[ item.options ]]">
-                                                        <suggestion-combo-box label="[[ item.key ]]" value="{{ item.value }}" options="[[ item.options ]]" ></suggestion-combo-box>
-                                                    </template>
-                                                    <template is="dom-if" if="[[ !item.options ]]">
-                                                        <paper-input label="[[ item.key ]]" value="{{ item.value }}"></paper-input>
-                                                    </template>
-                                                </td>
-                                            </tr>
+                                <paper-dropdown-menu id="fromMethod"
+                                                     label="Choose event or query the system"
+                                                     name="integration_recipe[fromMethod]"
+                                                     horizontal-align="left"
+                                                     on-iron-overlay-opened="_onIronOverlayEvents"
+                                                     on-iron-overlay-closed="_onIronOverlayEvents"
+                                                     required
+                                                     error-message="Please select at least one option."
+                                                     auto-validate>
+                                    <paper-listbox id="fromMethodList"
+                                                   class="dropdown-content"
+                                                   on-iron-activate="_onFromMethodSelected"
+                                                   attr-for-selected="value" slot="dropdown-content">
+                                        <template is="dom-repeat" items="[[ _computedFromMethodList ]]">
+                                            <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                                         </template>
-                                    </tbody>
-                                </table>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
                             </div>
-                        </div>
-
-                        <template is="dom-if" if="[[ _integrationKindRA ]]">
-                            <div class="subtitle">Define action that should be performed on AppsCo</div>
-                            <p>
-                                Define action and object to which this will be applied in AppsCo.
-                            </p>
-                            <p>
-                                Add - add object into AppsCo<br>
-                                Modify - modify object in AppsCo<br>
-                                Remove - remove object from AppsCo
-                            </p>
-                        </template>
-                        <template is="dom-if" if="[[ !_integrationKindRA ]]">
-                            <div class="subtitle">Defined action that should be performed in [[ integration.name ]]</div>
-                            <p>
-                                Define action and object to which this will be applied in [[ integration.name ]].
-                            </p>
-                            <p>
-                                Add - add object into [[ integration.name ]]<br>
-                                Modify - modify object in [[ integration.name ]]<br>
-                                Remove - remove object from [[ integration.name ]]
-                            </p>
-                        </template>
-                        <div class="input-container">
-                            <paper-dropdown-menu id="toMethod"
-                                                 label="Action to be performed"
-                                                 name="integration_recipe[toMethod]"
-                                                 horizontal-align="left"
-                                                 on-iron-overlay-opened="_onIronOverlayEvents"
-                                                 on-iron-overlay-closed="_onIronOverlayEvents"
-                                                 required
-                                                 error-message="Please select method."
-                                                 auto-validate>
-                                <paper-listbox id="toMethodList"
-                                               class="dropdown-content"
-                                               on-iron-activate="_onToMethodSelected"
-                                               attr-for-selected="value" slot="dropdown-content">
-                                    <template is="dom-repeat" items="[[ _computedToMethodList ]]">
-                                        <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
-                                    </template>
-                                </paper-listbox>
-                            </paper-dropdown-menu>
-                        </div>
-                        <div class="input-container">
-                            <paper-dropdown-menu id="toPSO"
-                                                 label="Affected object"
-                                                 name="integration_recipe[toPSO]"
-                                                 horizontal-align="left"
-                                                 on-iron-overlay-opened="_onIronOverlayEvents"
-                                                 on-iron-overlay-closed="_onIronOverlayEvents"
-                                                 required
-                                                 error-message="Please select object."
-                                                 auto-validate>
-                                <paper-listbox id="toPSOList"
-                                               class="dropdown-content"
-                                               attr-for-selected="value"
-                                               on-iron-activate="_onToPSOSelected" slot="dropdown-content">
-                                    <template is="dom-repeat" items="[[ _computedToPSOList ]]">
-                                        <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
-                                    </template>
-                                </paper-listbox>
-                            </paper-dropdown-menu>
-                        </div>
-                        <template is="dom-if" if="[[ _toParamsListExist ]]">
                             <div class="input-container">
-                                <p>Further define affected object</p>
-                                <paper-button class="primary-button"
-                                              on-tap="_onToggleParamsAction"
-                                              disabled$="[[ !_toPSOSelected ]]"
-                                              toggles>Advanced</paper-button>
+                                <paper-dropdown-menu id="fromPSO"
+                                                     label="Incoming object (user, group)"
+                                                     name="integration_recipe[fromPSO]"
+                                                     horizontal-align="left"
+                                                     on-iron-overlay-opened="_onIronOverlayEvents"
+                                                     on-iron-overlay-closed="_onIronOverlayEvents"
+                                                     required
+                                                     error-message="Please select object."
+                                                     auto-validate>
+                                    <paper-listbox id="fromPSOList"
+                                                   class="dropdown-content"
+                                                   attr-for-selected="value"
+                                                   on-iron-activate="_onFromPSOSelected" slot="dropdown-content">
+                                        <template is="dom-repeat" items="[[ _computedFromPSOList ]]">
+                                            <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
                             </div>
-                            <div id="toParamField"
-                                 class="input-container" hidden$="[[ !_paramsVisible ]]">
-                                <p>Set default values that should be applied in affected object</p>
-                                <div class="input-container-title">Fields:</div>
-
+                            <template is="dom-if" if="[[ _fromConditionListExist ]]">
                                 <div class="input-container">
-                                    <template is="dom-repeat" items="[[ _toParamsList ]]">
-                                        <template is="dom-if" if="[[ item.options ]]">
-                                            <suggestion-combo-box label="[[ item.key ]]" value="{{ item.value }}" options="[[ item.options ]]" ></suggestion-combo-box>
-                                        </template>
-                                        <template is="dom-if" if="[[ !item.options ]]">
-                                            <paper-input label="[[ item.key ]]" value="{{ item.value }}"></paper-input>
-                                        </template>
-                                    </template>
+                                    <p>Further filter incoming object</p>
+                                    <paper-button class="primary-button"
+                                                  on-tap="_onToggleConditionAction"
+                                                  disabled$="[[ !_fromPSOSelected ]]"
+                                                  toggles>Advanced</paper-button>
+                                </div>
+                            </template>
+                            <div id="fromConditionField"
+                                 class="input-container display-none">
+                                <p>Define regular expression for fields to further filter the object. </p>
+                                <div class="input-container-title">Conditions:</div>
+                                <div class="input-container">
+                                    <table>
+                                        <tbody>
+                                            <template is="dom-repeat" items="[[ _fromConditionList ]]">
+                                                <tr>
+                                                    <td class="operator-select">
+                                                        <paper-dropdown-menu id="fromConditionOperator_[[ item.key ]]"
+                                                                             label="Operator"
+                                                                             name="fromConditionOperator_[[ item.key ]]"
+                                                                             horizontal-align="left"
+                                                                             on-iron-overlay-opened="_onIronOverlayEvents"
+                                                                             on-iron-overlay-closed="_onIronOverlayEvents"
+                                                                             required
+                                                                             error-message="Please select operator."
+                                                                             auto-validate>
+                                                            <paper-listbox id="fromCondition_[[ item.key ]]"
+                                                                           class="dropdown-content"
+                                                                           attr-for-selected="value" selected="{{ item.operator }}" slot="dropdown-content">
+                                                                <template is="dom-repeat" items="[[ item.supportedOperators ]]" as="operator">
+                                                                    <paper-item value="[[ operator ]]">[[ _formatOperator(operator) ]]</paper-item>
+                                                                </template>
+                                                            </paper-listbox>
+                                                        </paper-dropdown-menu>
+                                                    </td>
+                                                    <td>
+                                                        <template is="dom-if" if="[[ item.options ]]">
+                                                            <suggestion-combo-box label="[[ item.key ]]" value="{{ item.value }}" options="[[ item.options ]]" ></suggestion-combo-box>
+                                                        </template>
+                                                        <template is="dom-if" if="[[ !item.options ]]">
+                                                            <paper-input label="[[ item.key ]]" value="{{ item.value }}"></paper-input>
+                                                        </template>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </template>
 
-                        <div class="input-container">
-                            <paper-toggle-button id="active"
-                                                 name="integration_recipe[active]">Activate rule</paper-toggle-button>
-                        </div>
-                    </form>
+                            <template is="dom-if" if="[[ _integrationKindRA ]]">
+                                <div class="subtitle">Define action that should be performed on AppsCo</div>
+                                <p>
+                                    Define action and object to which this will be applied in AppsCo.
+                                </p>
+                                <p>
+                                    Add - add object into AppsCo<br>
+                                    Modify - modify object in AppsCo<br>
+                                    Remove - remove object from AppsCo
+                                </p>
+                            </template>
+                            <template is="dom-if" if="[[ !_integrationKindRA ]]">
+                                <div class="subtitle">Defined action that should be performed in [[ integration.name ]]</div>
+                                <p>
+                                    Define action and object to which this will be applied in [[ integration.name ]].
+                                </p>
+                                <p>
+                                    Add - add object into [[ integration.name ]]<br>
+                                    Modify - modify object in [[ integration.name ]]<br>
+                                    Remove - remove object from [[ integration.name ]]
+                                </p>
+                            </template>
+                            <div class="input-container">
+                                <paper-dropdown-menu id="toMethod"
+                                                     label="Action to be performed"
+                                                     name="integration_recipe[toMethod]"
+                                                     horizontal-align="left"
+                                                     on-iron-overlay-opened="_onIronOverlayEvents"
+                                                     on-iron-overlay-closed="_onIronOverlayEvents"
+                                                     required
+                                                     error-message="Please select method."
+                                                     auto-validate>
+                                    <paper-listbox id="toMethodList"
+                                                   class="dropdown-content"
+                                                   on-iron-activate="_onToMethodSelected"
+                                                   attr-for-selected="value" slot="dropdown-content">
+                                        <template is="dom-repeat" items="[[ _computedToMethodList ]]">
+                                            <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
+                            </div>
+                            <div class="input-container">
+                                <paper-dropdown-menu id="toPSO"
+                                                     label="Affected object"
+                                                     name="integration_recipe[toPSO]"
+                                                     horizontal-align="left"
+                                                     on-iron-overlay-opened="_onIronOverlayEvents"
+                                                     on-iron-overlay-closed="_onIronOverlayEvents"
+                                                     required
+                                                     error-message="Please select object."
+                                                     auto-validate>
+                                    <paper-listbox id="toPSOList"
+                                                   class="dropdown-content"
+                                                   attr-for-selected="value"
+                                                   on-iron-activate="_onToPSOSelected" slot="dropdown-content">
+                                        <template is="dom-repeat" items="[[ _computedToPSOList ]]">
+                                            <paper-item value="[[ item.key ]]">[[ item.value ]]</paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
+                            </div>
+                            <template is="dom-if" if="[[ _toParamsListExist ]]">
+                                <div class="input-container">
+                                    <p>Further define affected object</p>
+                                    <paper-button class="primary-button"
+                                                  on-tap="_onToggleParamsAction"
+                                                  disabled$="[[ !_toPSOSelected ]]"
+                                                  toggles>Advanced</paper-button>
+                                </div>
+                                <div id="toParamField"
+                                     class="input-container" hidden$="[[ !_paramsVisible ]]">
+                                    <p>Set default values that should be applied in affected object</p>
+                                    <div class="input-container-title">Fields:</div>
+
+                                    <div class="input-container">
+                                        <template is="dom-repeat" items="[[ _toParamsList ]]">
+                                            <template is="dom-if" if="[[ item.options ]]">
+                                                <suggestion-combo-box label="[[ item.key ]]" value="{{ item.value }}" options="[[ item.options ]]" ></suggestion-combo-box>
+                                            </template>
+                                            <template is="dom-if" if="[[ !item.options ]]">
+                                                <paper-input label="[[ item.key ]]" value="{{ item.value }}"></paper-input>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div class="input-container">
+                                <paper-toggle-button id="active"
+                                                     name="integration_recipe[active]">Activate rule</paper-toggle-button>
+                            </div>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -360,280 +362,277 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAddIntegrationRule extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-add-integration-rule'; }
 
-            is: 'appsco-add-integration-rule',
+            static get properties() {
+                return {
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    _getIntegrationPSOSApi: {
+                        type: String,
+                        computed: '_computeGetIntegrationPSOSApi(integration)'
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _getAppscoPSOSApi: {
+                        type: String,
+                        computed: '_computeGetAppscoPSOSApi(integration)'
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    _addIntegrationRuleApi: {
+                        type: String,
+                        computed: '_computeAddIntegrationRuleApi(integration)'
+                    },
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _integrationKindRA: {
+                        type: Boolean,
+                        computed: '_computeIntegrationKindRA(integration)'
+                    },
 
-                _getIntegrationPSOSApi: {
-                    type: String,
-                    computed: '_computeGetIntegrationPSOSApi(integration)'
-                },
+                    _selectedFromMethod: {
+                        type: String,
+                        value: ''
+                    },
 
-                _getAppscoPSOSApi: {
-                    type: String,
-                    computed: '_computeGetAppscoPSOSApi(integration)'
-                },
+                    _selectedToMethod: {
+                        type: String,
+                        value: ''
+                    },
 
-                _addIntegrationRuleApi: {
-                    type: String,
-                    computed: '_computeAddIntegrationRuleApi(integration)'
-                },
-
-                _integrationKindRA: {
-                    type: Boolean,
-                    computed: '_computeIntegrationKindRA(integration)'
-                },
-
-                _selectedFromMethod: {
-                    type: String,
-                    value: ''
-                },
-
-                _selectedToMethod: {
-                    type: String,
-                    value: ''
-                },
-
-                _fromMethodList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                value: 'from_lookup',
-                                name: 'Lookup'
-                            },
-                            {
-                                value: 'from_added',
-                                name: 'Added'
-                            },
-                            {
-                                value: 'from_modified',
-                                name: 'Modified'
-                            },
-                            {
-                                value: 'from_deleted',
-                                name: 'Removed'
-                            }
-                        ];
-                    }
-                },
-
-                _computedFromMethodList: {
-                    type: Array,
-                    computed: '_computeFromMethodList(_fromMethodList, integration)'
-                },
-
-                _fromPSOList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _computedFromPSOList: {
-                    type: Array,
-                    computed: '_computeFromPSOList(_fromPSOList, _selectedFromMethod, integration)'
-                },
-
-                _computedToPSOList: {
-                    type: Array,
-                    computed: '_computeToPSOList(_availableToPSOList, _selectedToMethod, integration)'
-                },
-
-                _fromConditionList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _fromConditionListExist: {
-                    type: Boolean,
-                    computed: '_computeEmptyArray(_fromConditionList)'
-                },
-
-                _toParamsList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _toParamsListExist: {
-                    type: Boolean,
-                    computed: '_computeEmptyArray(_toParamsList)'
-                },
-
-                _toMethodList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                value: 'add',
-                                name: 'Add'
-                            },
-                            {
-                                value: 'modify',
-                                name: 'Modify'
-                            },
-                            {
-                                value: 'delete',
-                                name: 'Remove'
-                            }
-                        ];
-                    }
-                },
-
-                _computedToMethodList: {
-                    type: Array,
-                    computed: '_computeToMethodList(_toMethodList, integration)'
-                },
-
-                _toPSOList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _availableToPSOList: {
-                    type: Array,
-                    value: function() { return [] }
-                },
-
-                _appscoPSOList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _fromPSOSelected: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _toPSOSelected: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _conditionVisible: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _paramsVisible: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.form
-                    }
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this.$.fromConditionField,
-                                timing: {
-                                    duration: 300
+                    _fromMethodList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    value: 'from_lookup',
+                                    name: 'Lookup'
+                                },
+                                {
+                                    value: 'from_added',
+                                    name: 'Added'
+                                },
+                                {
+                                    value: 'from_modified',
+                                    name: 'Modified'
+                                },
+                                {
+                                    value: 'from_deleted',
+                                    name: 'Removed'
                                 }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this.$.fromConditionField,
-                                timing: {
-                                    duration: 200
+                            ];
+                        }
+                    },
+
+                    _computedFromMethodList: {
+                        type: Array,
+                        computed: '_computeFromMethodList(_fromMethodList, integration)'
+                    },
+
+                    _fromPSOList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _computedFromPSOList: {
+                        type: Array,
+                        computed: '_computeFromPSOList(_fromPSOList, _selectedFromMethod, integration)'
+                    },
+
+                    _computedToPSOList: {
+                        type: Array,
+                        computed: '_computeToPSOList(_availableToPSOList, _selectedToMethod, integration)'
+                    },
+
+                    _fromConditionList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _fromConditionListExist: {
+                        type: Boolean,
+                        computed: '_computeEmptyArray(_fromConditionList)'
+                    },
+
+                    _toParamsList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _toParamsListExist: {
+                        type: Boolean,
+                        computed: '_computeEmptyArray(_toParamsList)'
+                    },
+
+                    _toMethodList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    value: 'add',
+                                    name: 'Add'
+                                },
+                                {
+                                    value: 'modify',
+                                    name: 'Modify'
+                                },
+                                {
+                                    value: 'delete',
+                                    name: 'Remove'
                                 }
-                            }
+                            ];
+                        }
+                    },
+
+                    _computedToMethodList: {
+                        type: Array,
+                        computed: '_computeToMethodList(_toMethodList, integration)'
+                    },
+
+                    _toPSOList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _availableToPSOList: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        }
+                    },
+
+                    _appscoPSOList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _fromPSOSelected: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _toPSOSelected: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _conditionVisible: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _paramsVisible: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this.$.fromConditionField,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this.$.fromConditionField,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
+                this._target = this.$.form;
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinished'
-            },
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinished);
+            }
 
-            setIntegration: function(integration) {
+            setIntegration(integration) {
                 this.set('integration', integration);
-            },
+            }
 
-            open: function() {
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _reset: function() {
-                var me = this;
+            _reset() {
+                const me = this;
 
                 this._target.reset();
                 this._fromPSOSelected = false;
@@ -641,10 +640,10 @@
                 this._conditionVisible = false;
                 this._paramsVisible = false;
                 this._hideConditionFields();
-                this.$$('#fromMethodList').selected = -1;
-                this.$$('#fromPSOList').selected = -1;
-                this.$$('#toMethodList').selected = -1;
-                this.$$('#toPSOList').selected = -1;
+                this.shadowRoot.getElementById('fromMethodList').selected = -1;
+                this.shadowRoot.getElementById('fromPSOList').selected = -1;
+                this.shadowRoot.getElementById('toMethodList').selected = -1;
+                this.shadowRoot.getElementById('toPSOList').selected = -1;
 
                 this._fromConditionList.forEach(function(element) {
                     if (me.$$('#fromCondition_' + element.key)) {
@@ -658,18 +657,18 @@
                 Polymer.dom(this.root).querySelectorAll('paper-button').forEach(function(element) {
                     element.active = false;
                 });
-            },
+            }
 
-            _computeFromMethodList: function(_fromMethodList, integration) {
-                var fromMethods = [];
+            _computeFromMethodList(_fromMethodList, integration) {
+                const fromMethods = [];
 
                 if (integration
                     && integration.supported_actions
                     && integration.supported_actions.source
                     && integration.supported_actions.source.existing
                 ) {
-                    for (var idx in integration.supported_actions.source.existing) {
-                        for (var idx2 in _fromMethodList) {
+                    for (const idx in integration.supported_actions.source.existing) {
+                        for (const idx2 in _fromMethodList) {
                             if (_fromMethodList[idx2].value == integration.supported_actions.source.existing[idx]) {
                                 fromMethods.push(
                                     _fromMethodList[idx2]
@@ -680,18 +679,18 @@
                 }
 
                 return fromMethods;
-            },
+            }
 
-            _computeToMethodList: function(_toMethodList, integration) {
-                var toMethods = [];
+            _computeToMethodList(_toMethodList, integration) {
+                const toMethods = [];
 
                 if (integration
                     && integration.supported_actions
                     && integration.supported_actions.target
                     && integration.supported_actions.target.existing
                 ) {
-                    for (var idx in integration.supported_actions.target.existing) {
-                        for (var idx2 in _toMethodList) {
+                    for (const idx in integration.supported_actions.target.existing) {
+                        for (const idx2 in _toMethodList) {
                             if (_toMethodList[idx2].value == integration.supported_actions.target.existing[idx]) {
                                 toMethods.push(
                                     _toMethodList[idx2]
@@ -702,12 +701,12 @@
                 }
 
                 return toMethods;
-            },
+            }
 
-            _computeFromPSOList: function(_fromPSOList, _selectedFromMethod, integration) {
-                var psos = [],
+            _computeFromPSOList(_fromPSOList, _selectedFromMethod, integration) {
+                const psos = [],
                     targets = {};
-                for (var idx in _fromPSOList) {
+                for (const idx in _fromPSOList) {
                     targets[_fromPSOList[idx].key] = _fromPSOList[idx];
                 }
                 if (integration
@@ -715,7 +714,7 @@
                     && integration.supported_actions.source
                     && integration.supported_actions.source.pso
                 ) {
-                    for (var pso in integration.supported_actions.source.pso) {
+                    for (const pso in integration.supported_actions.source.pso) {
                         if (integration.supported_actions.source.pso[pso].indexOf(_selectedFromMethod) > -1) {
                             psos.push(targets[pso]);
                         }
@@ -723,12 +722,12 @@
                 }
 
                 return psos;
-            },
+            }
 
-            _computeToPSOList: function(_availableToPSOList, _selectedToMethod, integration) {
-                var psos = [],
+            _computeToPSOList(_availableToPSOList, _selectedToMethod, integration) {
+                const psos = [],
                     available = {};
-                for (var idx in _availableToPSOList) {
+                for (const idx in _availableToPSOList) {
                     available[_availableToPSOList[idx].key] = _availableToPSOList[idx];
                 }
                 if (integration
@@ -736,7 +735,7 @@
                     && integration.supported_actions.target
                     && integration.supported_actions.target.pso
                 ) {
-                    for (var pso in integration.supported_actions.target.pso) {
+                    for (const pso in integration.supported_actions.target.pso) {
                         if (integration.supported_actions.target.pso[pso].indexOf(_selectedToMethod) > -1
                             && available[pso]
                         ) {
@@ -746,74 +745,67 @@
                 }
 
                 return psos;
-            },
+            }
 
-            _onFromMethodSelected: function(event) {
+            _onFromMethodSelected(event) {
                 this._selectedFromMethod = event.detail.selected;
-            },
+            }
 
-            _onToMethodSelected: function(event) {
+            _onToMethodSelected(event) {
                 this._selectedToMethod = event.detail.selected;
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                };
-            },
-
-            _computeGetIntegrationPSOSApi: function(integration) {
+            _computeGetIntegrationPSOSApi(integration) {
                 return integration.self ? (integration.self + '/pso') : null;
-            },
+            }
 
-            _computeGetAppscoPSOSApi: function(integration) {
+            _computeGetAppscoPSOSApi(integration) {
                 return integration.self ? (integration.self + '/pso/appsco') : null;
-            },
+            }
 
-            _computeAddIntegrationRuleApi: function(integration) {
+            _computeAddIntegrationRuleApi(integration) {
                 return integration.meta ? integration.meta.recipes : null;
-            },
+            }
 
-            _computeIntegrationKindRA: function(integration) {
+            _computeIntegrationKindRA(integration) {
                 return (integration.kind && 'ra' === integration.kind);
-            },
+            }
 
-            _computeEmptyArray: function(items) {
+            _computeEmptyArray(items) {
                 return items.length > 0;
-            },
+            }
 
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.title.focus();
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this._reset();
-            },
+            }
 
-            _onIronOverlayEvents: function(event) {
+            _onIronOverlayEvents(event) {
                 event.stopPropagation();
-            },
+            }
 
-            _loadIntegrationPSOS: function() {
-                var getIntegrationPSOSRequest = this.$.getIntegrationPSOSApiRequest;
+            _loadIntegrationPSOS() {
+                const getIntegrationPSOSRequest = this.$.getIntegrationPSOSApiRequest;
 
                 if (getIntegrationPSOSRequest.lastRequest) {
                     getIntegrationPSOSRequest.lastRequest.abort();
                 }
 
                 getIntegrationPSOSRequest.generateRequest();
-            },
+            }
 
-            _onIntegrationPSOSError: function() {
+            _onIntegrationPSOSError() {
                 this.set('_fromPSOList', []);
                 this.set('_toPSOList', []);
-            },
+            }
 
-            _onIntegrationPSOSResponse: function(event) {
-                var response = event.detail.response,
+            _onIntegrationPSOSResponse(event) {
+                const response = event.detail.response,
                     appscoPSOList = JSON.parse(JSON.stringify(this._appscoPSOList));
 
                 if (this._integrationKindRA) {
@@ -824,21 +816,21 @@
                     this.set('_fromPSOList', appscoPSOList);
                     this.set('_toPSOList', (response && response.psos) ? response.psos : []);
                 }
-            },
+            }
 
-            _onAppscoPSOSError: function() {
+            _onAppscoPSOSError() {
                 this.set('_appscoPSOList', []);
-            },
+            }
 
-            _onAppscoPSOSResponse: function(event) {
+            _onAppscoPSOSResponse(event) {
                 var response = event.detail.response;
 
                 this.set('_appscoPSOList', (response && response.psos) ? response.psos : []);
                 this._loadIntegrationPSOS();
-            },
+            }
 
-            _onFromPSOSelected: function(event) {
-                var selectedItem = event.detail.selected,
+            _onFromPSOSelected(event) {
+                let selectedItem = event.detail.selected,
                     transformable = [],
                     filteredTargetPsos = [];
 
@@ -846,10 +838,9 @@
                 this._hideConditionFields();
                 this._conditionVisible = false;
                 this._fromPSOList.forEach(function(element) {
-
                     if (selectedItem === element.key) {
-                        var _fromConditionList = [];
-                        for (var idx in element.conditions) {
+                        const _fromConditionList = [];
+                        for (const idx in element.conditions) {
                             _fromConditionList.push({
                                 key: idx,
                                 value: '',
@@ -880,22 +871,22 @@
                 if (transformable.indexOf(this.$.toPSOList.selected) === -1) {
                     this.$.toPSOList.selected = null;
                 }
-            },
+            }
 
-            _getOptions: function(element, idx) {
-                var result = [null];
+            _getOptions(element, idx) {
+                const result = [null];
                 if (!element.conditions || !element.condition_options || !element.conditions[idx] || !element.condition_options[idx]) {
                     return null;
                 }
-                for (var i in element.condition_options[idx]) {
+                for (const i in element.condition_options[idx]) {
                     result.push(element.condition_options[idx][i]);
                 }
 
                 return result;
-            },
+            }
 
-            _onToPSOSelected: function(event) {
-                var selectedItem = event.detail.selected;
+            _onToPSOSelected(event) {
+                const selectedItem = event.detail.selected;
 
                 this._toPSOSelected = true;
                 this._toPSOList.forEach(function(element) {
@@ -911,9 +902,9 @@
                         return false;
                     }
                 }.bind(this));
-            },
+            }
 
-            _onToggleConditionAction: function(event) {
+            _onToggleConditionAction(event) {
                 if (this.$.fromPSOList.selected) {
                     this._conditionVisible = !this._conditionVisible;
                     this._conditionVisible ? this._showConditionFields() : this._hideConditionFields();
@@ -921,50 +912,49 @@
                 else {
                     event.target.active = false;
                 }
-            },
+            }
 
-            _showConditionFields: function() {
+            _showConditionFields() {
                 this.animationConfig.entry.node.style.display = 'block';
                 this.playAnimation('entry');
-            },
+            }
 
-            _hideConditionFields: function() {
+            _hideConditionFields() {
                 this.playAnimation('exit');
                 this.animationConfig.entry.node.style.display = 'none';
-            },
+            }
 
-            _onToggleParamsAction: function() {
+            _onToggleParamsAction() {
                 if (this.$.toPSOList.selected) {
                     this._paramsVisible = !this._paramsVisible;
                 }
                 else {
                     event.target.active = false;
                 }
-            },
+            }
 
-            _onNeonAnimationFinished: function() {
+            _onNeonAnimationFinished() {
                 if (this.animationConfig && !this._conditionVisible) {
                     this.animationConfig.exit.node.style.display = 'none';
                 }
-            },
+            }
 
-            _onEnterAction: function() {
+            _onEnterAction() {
                 this._onAddAction();
-            },
+            }
 
-            _onAddAction: function() {
-
+            _onAddAction() {
                 this._hideError();
 
                 if (this._target.validate()) {
                     this._showLoader();
                     this._target.submit();
                 }
+            }
 
-            },
-
-            _onFormPresubmit: function(event) {
-                var form = event.target,
+            _onFormPresubmit(event) {
+                let index;
+                const form = event.target,
                     fromMethod = this.$.fromMethod,
                     fromPSO = this.$.fromPSO,
                     toMethod = this.$.toMethod,
@@ -976,10 +966,9 @@
                 form.request.body['integration_recipe[toPSO]'] = toPSO.selectedItem ? toPSO.selectedItem.value : '';
 
                 if (this._conditionVisible) {
-                    var index = 0;
+                    index = 0;
 
                     this._fromConditionList.forEach(function(element) {
-
                         if ('' != element.value) {
                             form.request.body['integration_recipe[fromCondition][' + index + '][field]'] = element.key;
                             form.request.body['integration_recipe[fromCondition][' + index + '][value]'] = element.value;
@@ -990,10 +979,9 @@
                 }
 
                 if (this._paramsVisible) {
-                    var index = 0;
+                    index = 0;
 
                     this._toParamsList.forEach(function(element) {
-
                         if ('' != element.value) {
                             form.request.body['integration_recipe[toField][' + index + '][key]'] = element.key;
                             form.request.body['integration_recipe[toField][' + index + '][value]'] = element.value;
@@ -1001,25 +989,30 @@
                         }
                     });
                 }
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 this.close();
 
-                this.fire('integration-rule-added', {
-                    integration: this.integration,
-                    rule: event.detail.response
-                });
-            },
+                this.dispatchEvent(new CustomEvent('integration-rule-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        integration: this.integration,
+                        rule: event.detail.response
+                    }
+                }));
+            }
 
-            _formatOperator: function(operatorKey) {
+            _formatOperator(operatorKey) {
                 return this.$.operators.getOperator(operatorKey);
             }
-        });
+        }
+        window.customElements.define(AppscoAddIntegrationRule.is, AppscoAddIntegrationRule);
     </script>
 </dom-module>

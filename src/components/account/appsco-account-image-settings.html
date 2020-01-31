@@ -56,59 +56,54 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountImageSettings extends Polymer.mixinBehaviors([Polymer.AppscoUploadImageBehavior], Polymer.Element) {
+            static get is() { return 'appsco-account-image-settings'; }
 
-            is: 'appsco-account-image-settings',
-
-            properties: {
-                /**
-                 * Account to update.
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {}
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {}
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                _imagePreview: {
-                    type: String,
-                    computed: '_computeImagePreviewClass(account)'
-                }
-            },
+                    _imagePreview: {
+                        type: String,
+                        computed: '_computeImagePreviewClass(account)'
+                    }
+                };
+            }
 
-            behaviors: [
-                Polymer.AppscoUploadImageBehavior
-            ],
-
-            reset: function() {
-                var account = JSON.parse(JSON.stringify(this.account));
+            reset() {
+                const account = JSON.parse(JSON.stringify(this.account));
 
                 this.set('account', {});
                 this.set('account', account);
-            },
+            }
 
-            _computeImagePreviewClass: function(account) {
+            _computeImagePreviewClass(account) {
                 return (account && account.picture_url) ? 'has-image' : 'no-image';
-            },
+            }
 
-            _setNewImage: function(file) {
-                var reader = new FileReader();
+            _setNewImage(file) {
+                const reader = new FileReader();
 
                 reader.onload = function(e) {
                     this._setObjectAttribute('account', 'picture_url', e.target.result);
                 }.bind(this);
 
                 reader.readAsDataURL(file);
-            },
+            }
 
-            _fireChangeEvent: function() {},
+            _fireChangeEvent() {}
 
-            _setStateAfterImageIsRemoved: function() {
+            _setStateAfterImageIsRemoved() {
                 this._setObjectAttribute('account', 'picture_url', '');
                 this._hideLoader();
             }
-        });
+        }
+        window.customElements.define(AppscoAccountImageSettings.is, AppscoAccountImageSettings);
     </script>
 </dom-module>

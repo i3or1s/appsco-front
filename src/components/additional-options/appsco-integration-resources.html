@@ -13,9 +13,7 @@
 
 <dom-module id="appsco-integration-resources">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             appsco-integration-resource-item {
                 @apply --appsco-integration-resource-item;
             }
@@ -76,40 +74,39 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationResources extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-integration-resources'; }
 
-            is: 'appsco-integration-resources',
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-            properties: {
-            },
+            ready() {
+                super.ready();
 
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this._showProgressBar();
+                });
+            }
 
-            observers: [
-                '_observeItems(_listItems)'
-            ],
-
-            attached: function() {
-                this._showProgressBar()
-            },
-
-            _observeItems: function(items) {
+            _observeItems(items) {
                 this.setObservableType('resources');
                 this.populateItems(items);
-            },
+            }
 
-            _setFinalItemList: function(availableItemList, existingItemList) {
-                var availableIndex = availableItemList.length,
+            _setFinalItemList(availableItemList, existingItemList) {
+                let availableIndex = availableItemList.length,
                     existingIndex = existingItemList.length;
 
-                for (var i = 0; i < availableIndex; i++) {
-                    var availableItem = availableItemList[i];
+                for (let i = 0; i < availableIndex; i++) {
+                    const availableItem = availableItemList[i];
 
-                    for (var j = 0; j < existingIndex; j++) {
-
+                    for (let j = 0; j < existingIndex; j++) {
                         if (availableItem.id === existingItemList[j].id) {
                             availableItem.exists = true;
                             existingItemList.splice(j, 1);
@@ -119,10 +116,10 @@
                 }
 
                 return availableItemList;
-            },
+            }
 
-            _onGetListResponse: function(event) {
-                var response = event.detail.response,
+            _onGetListResponse(event) {
+                const response = event.detail.response,
                     availableItemList = response.available ? response.available : [],
                     existingItemList = response.existing ? response.existing : [],
                     itemList = (0 < availableItemList.length) ? this._setFinalItemList(availableItemList, existingItemList) : [],
@@ -141,9 +138,8 @@
                     this._listEmpty = false;
 
                     itemList.forEach(function(el, index) {
-
                         this._listLoaders.push(setTimeout(function() {
-                            var items = JSON.parse(JSON.stringify(this._listItems));
+                            const items = JSON.parse(JSON.stringify(this._listItems));
 
                             el.activated = false;
                             el.selected = false;
@@ -153,24 +149,19 @@
                             this._listItems = items;
                             this.push('_allListItems', el);
 
-                            if (index == itemListCount - 1) {
+                            if (index === itemListCount - 1) {
                                 this._hideProgressBar();
 
-                                /**
-                                 * Fired when items are loaded
-                                 *
-                                 * @event loaded
-                                 * @param {Object} items[]
-                                 */
-                                this.fire('list-loaded', {
-                                    items: itemList
-                                });
+                                this.dispatchEvent(new CustomEvent('list-loaded', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        items: itemList
+                                    }
+                                }));
                             }
-
                         }.bind(this), (index + 1) * 30 ));
-
                     }.bind(this));
-
                 }
                 else {
                     (itemList && !itemListCount) ?
@@ -180,6 +171,7 @@
                     this._handleEmptyLoad();
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoIntegrationResources.is, AppscoIntegrationResources);
     </script>
 </dom-module>

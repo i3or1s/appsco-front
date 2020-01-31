@@ -9,6 +9,7 @@
 <link rel="import" href="../../components/appsco-loader.html">
 <link rel="import" href="../../components/appsco-form-error.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-account-disapprove-device">
     <template>
@@ -68,133 +69,109 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountDisapproveDevice extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-disapprove-device'; }
 
-            is: 'appsco-account-disapprove-device',
-
-            properties: {
-
-                /**
-                 * Device owner.
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Device to disapprove.
-                 */
-                device: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _disapproveDeviceApi: {
-                    type: String,
-                    computed: '_computeDisapproveApi(device)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            setDevice: function(device) {
-                this.set('device', device);
-            },
-
-            setAccount: function(account) {
-                this.set('account', account);
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            _computeDisapproveApi: function(device) {
-                return device.meta ? device.meta.disapprove : null;
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    device: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _disapproveDeviceApi: {
+                        type: String,
+                        computed: '_computeDisapproveApi(device)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _onDialogClosed: function() {
+            setDevice(device) {
+                this.set('device', device);
+            }
+
+            setAccount(account) {
+                this.set('account', account);
+            }
+
+            open () {
+                this.$.dialog.open();
+            }
+
+            close () {
+                this.$.dialog.close();
+            }
+
+            _computeDisapproveApi(device) {
+                return device.meta ? device.meta.disapprove : null;
+            }
+
+            _onDialogClosed() {
                 this._error = '';
                 this._loader = false;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDisapproveAction: function() {
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this._disapproveDeviceApi,
-                            method: 'POST',
-                            handleAs: 'json',
-                            headers: this._headers
-                        };
+            _onDisapproveAction() {
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this._disapproveDeviceApi,
+                        method: 'POST',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('device-disapprove-finished', {
-                            device: this.device
-                        });
+                        this.dispatchEvent(new CustomEvent('device-disapprove-finished', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                device: this.device
+                            }
+                        }));
 
                         this.close();
                     }
@@ -204,6 +181,7 @@
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountDisapproveDevice.is, AppscoAccountDisapproveDevice);
     </script>
 </dom-module>

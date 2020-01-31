@@ -79,81 +79,87 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyIdpSettingsCertificates extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-idp-settings-certificates'; }
 
-            is: 'appsco-company-idp-settings-certificates',
+            static get properties() {
+                return {
+                    certificates: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        }
+                    },
 
-            properties: {
+                    _certificatesEmpty: {
+                        type: Boolean,
+                        computed: '_computeCertificatesEmpty(certificates)'
+                    },
 
-                certificates: {
-                    type: Array,
-                    value: function () {
-                        return []
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _certificatesEmpty: {
-                    type: Boolean,
-                    computed: '_computeCertificatesEmpty(certificates)'
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'slide-from-left-animation',
-                                nodes: [],
-                                nodeDelay: 50,
-                                timing: {
-                                    duration: 300
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'slide-from-left-animation',
+                        nodes: [],
+                        nodeDelay: 50,
+                        timing: {
+                            duration: 300
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+            _computeCertificatesEmpty(certificates) {
+                return !certificates || certificates.length === 0;
+            }
 
-            _computeCertificatesEmpty: function(certificates) {
-                return !certificates || certificates.length == 0;
-            },
-
-            addCertificate: function(certificate) {
+            addCertificate(certificate) {
                 if (!this.certificates) {
                     this.certificates = [];
                 }
                 this.certificates.push(certificate);
                 this.certificates = JSON.parse(JSON.stringify(this.certificates));
 
-                this.fire('idp-certificate-added', {
-                    source: this
-                });
-            },
+                this.dispatchEvent(new CustomEvent('idp-certificate-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        source: this
+                    }
+                }));
+            }
 
-            getCertificates: function() {
+            getCertificates() {
                 return this.certificates;
-            },
+            }
 
-            _onAddCertificateAction: function() {
-                this.fire('idp-certificate-add', {
-                    source: this
-                });
-            },
+            _onAddCertificateAction() {
+                this.dispatchEvent(new CustomEvent('idp-certificate-add', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        source: this
+                    }
+                }));
+            }
 
-            _removeCert: function(event) {
-                var index = this.certificates.indexOf(event.detail.certificate);
+            _removeCert(event) {
+                const index = this.certificates.indexOf(event.detail.certificate);
                 if (index > -1) {
                     this.certificates.splice(index, 1);
                     this.set('certificates', JSON.parse(JSON.stringify(this.certificates)));
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyIdpSettingsCertificates.is, AppscoCompanyIdpSettingsCertificates);
     </script>
 </dom-module>

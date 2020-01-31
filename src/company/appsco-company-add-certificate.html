@@ -79,63 +79,45 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyAddCertificate extends Polymer.Element {
+            static get is() { return 'appsco-company-add-certificate'; }
 
-            is: 'appsco-company-add-certificate',
+            static get properties() {
+                return {
+                    source: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    _error: {
+                        type: String
+                    }
+                };
+            }
 
-                source: {
-                    type: Object,
-                    value: function() { return {}; }
-                },
-
-                _error: {
-                    type: String
-                }
-
-            },
-
-            /**
-             * Opens add certificate dialog.
-             */
-            open: function() {
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            /**
-             * Closes add certificate dialog.
-             */
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            /**
-             * Toggles add certificate dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.certificateName.focus();
-            },
+            }
 
-            /**
-             * Submits form on ENTER key using iron-a11y-keys component.
-             *
-             * @private
-             */
-            _onEnter: function() {
+            _onEnter() {
                 _submitForm();
-            },
+            }
 
-            _submitForm: function() {
+            _submitForm() {
                 if (!this.$.certificateName.value) {
                     this._error = 'Please enter certificate';
                     return;
@@ -144,12 +126,12 @@
                 this.$.certificateName.value = '';
                 this.error = '';
                 this.$.dialog.close();
-            },
-
-            setSource: function(event) {
-                this.source = event.detail.source;
             }
 
-        });
+            setSource(event) {
+                this.source = event.detail.source;
+            }
+        }
+        window.customElements.define(AppscoCompanyAddCertificate.is, AppscoCompanyAddCertificate);
     </script>
 </dom-module>

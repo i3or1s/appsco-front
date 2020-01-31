@@ -43,40 +43,29 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportResources extends Polymer.Element {
+            static get is() { return 'appsco-import-resources'; }
 
-            is: 'appsco-import-resources',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    importApi: {
+                        type: String
+                    }
+                };
+            }
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * API for importing resources.
-                 */
-                importApi: {
-                    type: String
-                }
-            },
-
-            /**
-             * Toggles import.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.appscoImportResource.toggle();
-            },
+            }
 
-            /**
-             * Closes import.
-             */
-            close: function() {
+            close() {
                 this.$.appscoImportResource.close();
             }
-        });
+        }
+        window.customElements.define(AppscoImportResources.is, AppscoImportResources);
     </script>
 </dom-module>

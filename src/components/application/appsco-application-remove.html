@@ -9,6 +9,8 @@
 <link rel="import" href="appsco-application-subscribers.html">
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-application-remove`
 Shows dialog screen with resource subscriptions and confirmation for its removal.
@@ -84,34 +86,33 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationRemove extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-application-remove'; }
 
-            is: 'appsco-application-remove',
+            static get properties() {
+                return {
+                    /**
+                     * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+                     */
+                    application: {
+                        type: Object,
+                        value: {},
+                        notify: true
+                    },
 
-            properties: {
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-                /**
-                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-                 */
-                application: {
-                    type: Object,
-                    value: {},
-                    notify: true
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-            open: function () {
+            open() {
                 this.$.removeDialog.open();
-            },
-            _removeApplication: function() {
-                var appRequest = document.createElement('iron-request');
+            }
+
+            _removeApplication() {
+                const appRequest = document.createElement('iron-request');
 
                 this._loader = true;
 
@@ -119,27 +120,21 @@ Custom property | Description | Default
                     url: this.application.meta["application-remove"],
                     method: "DELETE",
                     handleAs: 'json',
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken
-                    }
+                    headers: this._headers
                 }).then(function() {
-
                     this._loader = false;
 
-                    /**
-                     * Fired when applicaiton is deleted
-                     *
-                     * @event on-application-removed
-                     * @param {Object} application [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
-                     *                              for which event is fired
-                     */
-                    this.fire("application-removed", {
-                        application: this.application
-                    });
-
+                    this.dispatchEvent(new CustomEvent('application-removed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application
+                        }
+                    }));
                     this.$.removeDialog.close();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationRemove.is, AppscoApplicationRemove);
     </script>
 </dom-module>

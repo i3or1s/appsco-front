@@ -12,6 +12,8 @@
 <link rel="import" href="../../components/components/appsco-loader.html">
 <link rel="import" href="../../components/components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-company-rename-group">
     <template>
         <style>
@@ -79,182 +81,126 @@
             </div>
         </paper-dialog>
 
-        <iron-a11y-keys target="[[ _target ]]"
+        <iron-a11y-keys
                         keys="enter"
                         on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyRenameGroup extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-rename-group'; }
 
-            is: 'appsco-company-rename-group',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                renameGroupApi: {
-                    type: String,
-                    computed: '_computeRenameGroupApi(group)'
-                },
-
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    observer: '_onGroupChanged'
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    renameGroupApi: {
+                        type: String,
+                        computed: '_computeRenameGroupApi(group)'
+                    },
 
-            /**
-             * Opens add group dialog.
-             */
-            open: function() {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onGroupChanged'
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    }
+                };
+            }
+
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            /**
-             * Closes add group dialog.
-             */
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            /**
-             * Toggles add group dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.groupName.focus();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
-            },
+            }
 
             /**
              * Submits form on ENTER key using iron-a11y-keys component.
              *
              * @private
              */
-            _onEnter: function() {
+            _onEnter() {
                 this._renameGroupRequest();
-            },
+            }
 
-            _renameGroupRequest: function() {
-
+            _renameGroupRequest() {
                 this._hideError();
                 this._showLoader();
 
-                var renameGroupRequest = document.createElement('iron-request');
+                const renameGroupRequest = document.createElement('iron-request');
 
                 renameGroupRequest.send({
                     url: this.renameGroupApi,
                     method: 'PUT',
                     handleAs: 'json',
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken,
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
+                    headers: this._headers,
                     body: 'company_group[name]=' + encodeURIComponent(this.$.groupName.value)
                 }).then(function() {
-                    this.fire('group-renamed', {
-                        group: renameGroupRequest.response
-                    });
+                    this.dispatchEvent(new CustomEvent('group-renamed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            group: renameGroupRequest.response
+                        }
+                    }));
                     this.$.dialog.close();
-
                 }.bind(this), function(e) {
                     this._hideLoader();
                     this._showError(this.apiErrors.getError(renameGroupRequest.response.code));
                 }.bind(this));
-            },
+            }
 
-            /**
-             * Called on form error.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
             /**
              * Called after group has been added.
@@ -262,26 +208,30 @@
              * @param {Object} event
              * @private
              */
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 this.close();
 
-                this.fire('group-renamed', {
-                    group: event.detail.response
-                });
+                this.dispatchEvent(new CustomEvent('group-renamed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        group: event.detail.response
+                    }
+                }));
+            }
 
-            },
-
-            _computeRenameGroupApi: function(group) {
+            _computeRenameGroupApi(group) {
                 return group ? group.self : null;
-            },
+            }
 
-            _onGroupChanged: function(group) {
+            _onGroupChanged(group) {
                 this.$.groupName.value = group ? group.name : '';
-            },
+            }
 
-            setGroup: function(group) {
+            setGroup(group) {
                 this.group = group;
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyRenameGroup.is, AppscoCompanyRenameGroup);
     </script>
 </dom-module>

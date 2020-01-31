@@ -34,19 +34,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoComplianceReportActions extends Polymer.Element {
+            static get is() { return 'appsco-compliance-report-actions'; }
 
-            is: 'appsco-compliance-report-actions',
-
-            _onExportAction: function() {
-                /**
-                 * Fired when export action is tapped.
-                 *
-                 * @event export-compliance-report
-                 */
-                this.fire('export-compliance-report');
+            _onExportAction() {
+                this.dispatchEvent(new CustomEvent('export-compliance-report', { bubbles: true, composed: true }));
             }
-
-        });
+        }
+        window.customElements.define(AppscoComplianceReportActions.is, AppscoComplianceReportActions);
     </script>
 </dom-module>

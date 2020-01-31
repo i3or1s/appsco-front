@@ -10,6 +10,8 @@
 <link rel="import" href="appsco-application-subscribers.html">
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-application-subscriber-revoke`
 Shows dialog screen with application subscriptions and confirmation for removal o application.
@@ -72,42 +74,45 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationSubscriberRevoke extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-application-subscriber-revoke'; }
 
-            is: 'appsco-application-subscriber-revoke',
+            static get properties() {
+                return {
+                    /**
+                     * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
 
-            properties: {
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-                /**
-                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-                 */
-                application: {
-                    type: Object,
-                    value: function() { return {}; },
-                    notify: true
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+                    revokeAccount: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    }
+                };
+            }
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-                revokeAccount: {
-                    type: Object,
-                    value: function() { return {}; }
-                }
-            },
-            open: function () {
+            open() {
                 this.$.removeDialog.open();
-            },
-            _revokeAccess: function () {
-                var accountSelf = this.revokeAccount.self,
-                        revokeUri = this.application.meta.subscribers
-                        ;
+            }
 
-                var appRequest = document.createElement('iron-request');
+            _revokeAccess() {
+                const accountSelf = this.revokeAccount.self,
+                    revokeUri = this.application.meta.subscribers
+                ;
+
+                const appRequest = document.createElement('iron-request');
 
                 this._loader = true;
 
@@ -116,29 +121,23 @@ Custom property | Description | Default
                     method: "DELETE",
                     handleAs: 'json',
                     body: "account=" + encodeURIComponent(accountSelf),
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken,
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    }
+                    headers: this._headers
                 }).then(function() {
-
                     this._loader = false;
 
-                    /**
-                     * Fired when applicaiton is deleted
-                     *
-                     * @event on-application-removed
-                     * @param {Object} application [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
-                     *                              for which event is fired
-                     */
-                    this.fire("subscription-revoked", {
-                        application: this.application,
-                        account: this.revokeAccount
-                    });
+                    this.dispatchEvent(new CustomEvent('subscription-revoked', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application,
+                            account: this.revokeAccount
+                        }
+                    }));
 
                     this.$.removeDialog.close();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationSubscriberRevoke.is, AppscoApplicationSubscriberRevoke);
     </script>
 </dom-module>

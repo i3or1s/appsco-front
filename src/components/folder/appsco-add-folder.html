@@ -12,6 +12,8 @@
 <link rel="import" href="../../components/components/appsco-loader.html">
 <link rel="import" href="../../components/components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-add-folder">
     <template>
         <style>
@@ -61,25 +63,26 @@
                     <p>
                         Create a dashboard folder in order to group resources on your dashboard.
                     </p>
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-presubmit="_onFormPresubmit"
+                            on-iron-form-response="_onFormResponse">
+                         <form
+                              method="POST"
+                              action="[[ foldersApi ]]">
 
-                     <form is="iron-form"
-                          id="form"
-                          method="POST"
-                          action="[[ foldersApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-presubmit="_onFormPresubmit"
-                          on-iron-form-response="_onFormResponse">
-
-                        <div class="input-container">
-                            <paper-input id="title"
-                                         label="Dashboard folder name"
-                                         name="dashboardGroup[title]"
-                                         required
-                                         auto-validate
-                                         error-message="Please enter dashboard folder name."></paper-input>
-                        </div>
-                    </form>
+                            <div class="input-container">
+                                <paper-input id="title"
+                                             label="Dashboard folder name"
+                                             name="dashboardGroup[title]"
+                                             required
+                                             auto-validate
+                                             error-message="Please enter dashboard folder name."></paper-input>
+                            </div>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -95,149 +98,137 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAddFolder extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-add-folder'; }
 
-            is: 'appsco-add-folder',
-
-            properties: {
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                isOnPersonal: {
-                    type: Boolean,
-                    value: false
-                },
-
-                foldersApi: {
-                    type: String
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.form
-                    }
-                }
-            },
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            open: function() {
+                    isOnPersonal: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    foldersApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _error: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this._target = this.$.form;
+            }
+
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            setOnPersonal: function() {
+            setOnPersonal() {
                 this.isOnPersonal = true;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.title.focus();
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this._target.reset();
-            },
+            }
 
-            _onEnter: function() {
+            _onEnter() {
                 this._onAddAction();
-            },
+            }
 
-            _submitForm: function() {
-
+            _submitForm() {
                 this._hideError();
 
                 if (this._target.validate()) {
                     this._showLoader();
                     this._target.submit();
                 }
+            }
 
-            },
-
-            _onAddAction: function() {
+            _onAddAction() {
                 this._submitForm();
-            },
+            }
 
-            _onFormPresubmit: function(event) {
-
+            _onFormPresubmit(event) {
                 if (this.company.self && !this.isOnPersonal) {
                     event.target.request.body['dashboardGroup[company]'] = this.company.self;
                 }
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 this.close();
 
-                this.fire('folder-added', {
-                    folder: event.detail.response.dashboardGroup ? event.detail.response.dashboardGroup : {}
-                });
+                this.dispatchEvent(new CustomEvent('folder-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        folder: event.detail.response.dashboardGroup ? event.detail.response.dashboardGroup : {}
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoAddFolder.is, AppscoAddFolder);
     </script>
 </dom-module>

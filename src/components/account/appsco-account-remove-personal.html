@@ -8,6 +8,8 @@
 
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-account-remove-personal">
     <template>
         <style>
@@ -35,8 +37,6 @@
                 exit-animation="fade-out-animation"
                 on-iron-overlay-closed="_onDialogClosed">
 
-
-
             <div class="remove-container">
 
                 <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is removing your account" multi-color></appsco-loader>
@@ -55,37 +55,36 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'appsco-account-remove-personal',
+        class AppscoAccountRemovePersonal extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-remove-personal'; }
 
-            properties: {
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+            static get properties() {
+                return {
+                    removeAccountApi: {
+                        type: String
+                    },
 
-                removeAccountApi: {
-                    type: String
-                },
+                    logoutApi: {
+                        type: String
+                    },
 
-                logoutApi: {
-                    type: String
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-            open: function() {
+            open() {
                 this.$.removeDialog.open();
-            },
-            _onDialogClosed: function() {
+            }
+
+            _onDialogClosed() {
                 this._loader = false;
-            },
-            _onAccountRemove: function() {
-                var appRequest = document.createElement('iron-request');
+            }
+
+            _onAccountRemove() {
+                const appRequest = document.createElement('iron-request');
 
                 this._loader = true;
 
@@ -93,14 +92,13 @@
                     url: this.removeAccountApi,
                     method: 'DELETE',
                     handleAs: 'json',
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken
-                    }
+                    headers: this._headers
                 }).then(function() {
                     this.$.removeDialog.close();
                     window.location.href = this.logoutApi;
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountRemovePersonal.is, AppscoAccountRemovePersonal);
     </script>
 </dom-module>

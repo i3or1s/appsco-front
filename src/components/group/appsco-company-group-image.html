@@ -67,26 +67,26 @@ Account image is used to present group in form of an image or initials if image 
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroupImage extends Polymer.Element {
+            static get is() { return 'appsco-company-group-image'; }
 
-            is: 'appsco-company-group-image',
+            static get properties() {
+                return {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
-
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
                     }
-                },
-
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
+                };
             }
-
-        });
+        }
+        window.customElements.define(AppscoCompanyGroupImage.is, AppscoCompanyGroupImage);
     </script>
 </dom-module>

@@ -61,22 +61,20 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountOrgunits extends Polymer.Element {
+            static get is() { return 'appsco-account-orgunits'; }
 
-            is: 'appsco-account-orgunits',
-
-            properties: {
-
-                /**
-                 * Account
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     }
-                }
+                };
             }
-        });
+        }
+        window.customElements.define(AppscoAccountOrgunits.is, AppscoAccountOrgunits);
     </script>
 </dom-module>

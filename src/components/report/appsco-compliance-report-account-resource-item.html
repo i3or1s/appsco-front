@@ -12,9 +12,7 @@
 
 <dom-module id="appsco-compliance-report-account-resource-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 @apply --appsco-compliance-report-account-resource;
             }
@@ -61,33 +59,34 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoComplianceReportAccountResourceItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-compliance-report-account-resource-item'; }
 
-            is: 'appsco-compliance-report-account-resource-item',
+            static get properties() {
+                return {
+                    item: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    fields: {
+                        type: String,
+                        computed: '_computeFields(item)'
+                    }
+                };
+            }
 
-                item: {
-                    type: Object,
-                    value: function() {return {};}
-                },
-
-                fields: {
-                    type: String,
-                    computed: '_computeFields(item)'
-                }
-            },
-
-            _computeFields: function(item) {
+            _computeFields(item) {
                 return item && item.compliance && item.compliance.fields
                         ? item.compliance.fields
                         : 'none';
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ]
-        });
+            }
+        }
+        window.customElements.define(AppscoComplianceReportAccountResourceItem.is, AppscoComplianceReportAccountResourceItem);
     </script>
 </dom-module>

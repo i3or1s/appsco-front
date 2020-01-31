@@ -136,55 +136,60 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoTutorialCompanyDomain extends Polymer.mixinBehaviors([
+            Polymer.AppscoTutorialBehaviour,
+            Polymer.AppscoCoverBehaviour
+        ], Polymer.Element) {
+            static get is() { return 'appsco-tutorial-company-domain'; }
 
-            is: 'appsco-tutorial-company-domain',
+            static get properties() {
+                return {
+                    page: {
+                        type: String
+                    },
 
-            _readMore: function () {
+                    companyDomainsLoaded: {
+                        type: Boolean,
+                        notify: true
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.tutorialId = 'company_domain';
+                this.tutorialTitle = 'Company domain';
+                this.description = 'Verify your company\'s domain';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109091-How-to-add-a-company-domain-';
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                this.tutorialId = 'company_domain';
+                this.tutorialTitle = 'Company domain';
+                this.description = 'Verify your company\'s domain';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109091-How-to-add-a-company-domain-';
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.init();
+                });
+            }
+
+            _readMore() {
                 window.open(this.readme, '_blank');
-            },
+            }
 
-            property: {
-                page: {
-                    type: String
-                },
-
-                companyDomainsLoaded: {
-                    type: Boolean,
-                    notify: true
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoTutorialBehaviour,
-                Polymer.AppscoCoverBehaviour
-            ],
-
-            pageChanged: function() {
+            pageChanged() {
                 if(this.page !== 'company' && this.step === 2) {
                     this.reset();
                 }
-            },
+            }
 
-            ready: function() {
-                this.tutorialId = 'company_domain';
-                this.tutorialTitle = 'Company domain';
-                this.description = 'Verify your company\'s domain';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109091-How-to-add-a-company-domain-';
-            },
-
-            attached: function() {
-                this.tutorialId = 'company_domain';
-                this.tutorialTitle = 'Company domain';
-                this.description = 'Verify your company\'s domain';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109091-How-to-add-a-company-domain-';
-
-                this.init();
-            },
-
-            getPopperConfig: function() {
+            getPopperConfig() {
                 return {
                     step1: {
                         reference: '* /deep/ #menuBurger',
@@ -221,9 +226,9 @@
                             placement: 'bottom'
                         },
                         popperListenerBuilder: function(tutorial) {
-                            var cancelButton =  tutorial._querySelector('* /deep/ #companyDomainDialogCancelButton'),
+                            const cancelButton = tutorial._querySelector('* /deep/ #companyDomainDialogCancelButton'),
                                 addButton = tutorial._querySelector('* /deep/ #companyDomainDialogAddButton'),
-                                cancelListener = function() {
+                                cancelListener = function () {
                                     cancelButton.removeEventListener('click', cancelListener);
 
                                     tutorial
@@ -258,15 +263,15 @@
                             placement: 'right-start'
                         },
                         popperListenerBuilder: function(tutorial) {
-                            var copyButton =  tutorial._querySelector('* /deep/ #companyTokenCopyButton'),
+                            const copyButton = tutorial._querySelector('* /deep/ #companyTokenCopyButton'),
                                 closeButton = tutorial._querySelector('* /deep/ #companyTokenCloseButton'),
-                                closeListener = function() {
+                                closeListener = function () {
                                     tutorial
                                         ._querySelector('* /deep/ #companyTokenCloseButton')
                                         .removeEventListener('click', closeListener);
                                     tutorial.reset();
                                 },
-                                copyListener = function() {
+                                copyListener = function () {
                                     closeButton.removeEventListener('click', closeListener);
                                     closeButton.click();
                                     tutorial.nextStep();
@@ -294,11 +299,11 @@
                         }
                     }
                 };
-            },
+            }
 
-            step3: function(index, item, doneBuildingPopperHandler) {
-                var handleFunction = function() {
-                    var element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
+            step3(index, item, doneBuildingPopperHandler) {
+                const handleFunction = function () {
+                    const element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
                     if (this.page !== 'company') {
                         return;
                     }
@@ -310,11 +315,11 @@
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this);
                 setTimeout(handleFunction, 300);
-            },
+            }
 
-            step4: function(index, item, doneBuildingPopperHandler) {
-                var handleFunction = function() {
-                    var element = this._querySelector('* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain');
+            step4(index, item, doneBuildingPopperHandler) {
+                const handleFunction = function () {
+                    const element = this._querySelector('* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain');
                     if (this.page !== 'company') {
                         return;
                     }
@@ -325,14 +330,14 @@
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this);
                 setTimeout(handleFunction, 50);
-            },
+            }
 
-            step5: function(index, item, doneBuildingPopperHandler) {
+            step5(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
-                    var dialog = this._querySelector('* /deep/ #addCompanyDomainDialog'),
+                    let dialog = this._querySelector('* /deep/ #addCompanyDomainDialog'),
                         initialHeight = dialog.clientHeight,
-                        sizer = function() {
-                            var dialog = this._querySelector('* /deep/ #addCompanyDomainDialog');
+                        sizer = function () {
+                            const dialog = this._querySelector('* /deep/ #addCompanyDomainDialog');
                             if (!dialog || this.page !== 'company' || this.step !== 5 || dialog.style.display === 'none') {
                                 return;
                             }
@@ -351,24 +356,24 @@
                     this.handleStep(index, item, doneBuildingPopperHandler);
                     sizer();
                 }.bind(this), 500);
-            },
+            }
 
-            step7: function(index, item, doneBuildingPopperHandler) {
+            step7(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 800);
-            },
+            }
 
-            start: function() {
+            start() {
                 this.step = 0;
                 this.nextStep();
-            },
+            }
 
-            _nextStep: function() {
+            _nextStep() {
                 this.currentStep.reference.click();
-            },
+            }
 
-            domainAdded: function(domain) {
+            domainAdded(domain) {
                 this
                     ._querySelector('* /deep/ #addCompanyDomainDialog')
                     .removeAttribute('no-cancel-on-outside-click');
@@ -385,7 +390,7 @@
                     this.nextStep();
                 }.bind(this), 800);
             }
-
-        });
+        }
+        window.customElements.define(AppscoTutorialCompanyDomain.is, AppscoTutorialCompanyDomain);
     </script>
 </dom-module>

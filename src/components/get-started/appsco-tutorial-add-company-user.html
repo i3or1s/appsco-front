@@ -84,56 +84,60 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoTutorialAddCompanyUser extends Polymer.mixinBehaviors([
+            Polymer.AppscoTutorialBehaviour,
+            Polymer.AppscoCoverBehaviour
+        ], Polymer.Element) {
+            static get is() { return 'appsco-tutorial-add-company-user'; }
 
-            is: 'appsco-tutorial-add-company-user',
+            static get properties() {
+                return {
+                    page: {
+                        type: String
+                    },
 
-            _readMore: function () {
+                    directoryPageLoaded: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.tutorialId = 'directory';
+                this.tutorialTitle = 'Directory';
+                this.description = 'Add company users to directory';
+                this.icon = 'icons:social:person';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084191-Users-and-licences-';
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                this.tutorialId = 'directory';
+                this.tutorialTitle = 'Directory';
+                this.description = 'Add company users to directory';
+                this.icon = 'icons:social:person';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084191-Users-and-licences-';
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.init();
+                });
+            }
+
+            _readMore() {
                 window.open(this.readme, '_blank');
-            },
+            }
 
-            property: {
-                page: {
-                    type: String
-                },
-
-                directoryPageLoaded: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoTutorialBehaviour,
-                Polymer.AppscoCoverBehaviour
-            ],
-
-            pageChanged: function() {
+            pageChanged() {
                 if(this.page !== 'directory' && this.step === 2) {
                     this.reset();
                 }
-            },
+            }
 
-            ready: function() {
-                this.tutorialId = 'directory';
-                this.tutorialTitle = 'Directory';
-                this.description = 'Add company users to directory';
-                this.icon = 'icons:social:person';
-                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084191-Users-and-licences-';
-            },
-
-            attached: function() {
-                this.tutorialId = 'directory';
-                this.tutorialTitle = 'Directory';
-                this.description = 'Add company users to directory';
-                this.icon = 'icons:social:person';
-                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084191-Users-and-licences-';
-
-                this.init();
-            },
-
-            getPopperConfig: function() {
+            getPopperConfig() {
                 return {
                     step1: {
                         reference: '* /deep/ #menuBurger',
@@ -171,43 +175,44 @@
                         }
                     }
                 };
-            },
+            }
 
-            step3: function(index, item, doneBuildingPopperHandler) {
-                var attempts = 0,
-                    handleFunction = function() {
-                    attempts++;
-                    if (attempts > 100) {
-                        return;
-                    }
-                    var element = this._querySelector('* /deep/ #addAccountAction');
-                    if (!element || this.page !== 'directory' || !this.directoryPageLoaded) {
-                        setTimeout(handleFunction, 200);
-                        return;
-                    }
-                    this.handleStep(index, item, doneBuildingPopperHandler);
-                }.bind(this);
+            step3(index, item, doneBuildingPopperHandler) {
+                let attempts = 0,
+                    handleFunction = function () {
+                        attempts++;
+                        if (attempts > 100) {
+                            return;
+                        }
+                        const element = this._querySelector('* /deep/ #addAccountAction');
+                        if (!element || this.page !== 'directory' || !this.directoryPageLoaded) {
+                            setTimeout(handleFunction, 200);
+                            return;
+                        }
+                        this.handleStep(index, item, doneBuildingPopperHandler);
+                    }.bind(this);
                 handleFunction();
-            },
+            }
 
-            step4: function(index, item, doneBuildingPopperHandler) {
+            step4(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 550);
-            },
+            }
 
-            start: function() {
+            start() {
                 this.step = 0;
                 this.nextStep();
-            },
+            }
 
-            _nextStep: function() {
+            _nextStep() {
                 this.currentStep.reference.click();
-            },
+            }
 
-            _nextStep5: function() {
+            _nextStep5() {
                 this.nextStep();
             }
-        });
+        }
+        window.customElements.define(AppscoTutorialAddCompanyUser.is, AppscoTutorialAddCompanyUser);
     </script>
 </dom-module>

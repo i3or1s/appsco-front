@@ -58,14 +58,22 @@
 
                 fileReader.readAsDataURL(request.response);
 
-                this.fire(reportPage.getOnSuccessEvent(), {
-                    response: request.response
-                });
+                this.dispatchEvent(new CustomEvent(reportPage.getOnSuccessEvent(), {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        response: request.response
+                    }
+                }));
             }.bind(this), function(e) {
-                this.fire(reportPage.getOnFailEvent(), {
-                    error: e,
-                    message: reportPage.getFailMessage()
-                });
+                this.dispatchEvent(new CustomEvent(reportPage.getOnFailEvent(), {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        error: e,
+                        message: reportPage.getFailMessage()
+                    }
+                }));
             }.bind(this));
         },
 

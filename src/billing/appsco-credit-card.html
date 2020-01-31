@@ -98,76 +98,67 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCreditCard extends Polymer.Element {
+            static get is() { return 'appsco-credit-card'; }
 
-            is: 'appsco-credit-card',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    companyApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    _creditCardApi: {
+                        type: String,
+                        computed: '_computeCreditCardApi(companyApi)'
+                    },
 
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                companyApi: {
-                    type: String
-                },
+                    _publicKeyApi: {
+                        type: String,
+                        computed: '_computePublicKeyApi(companyApi)'
+                    },
 
-                _creditCardApi: {
-                    type: String,
-                    computed: '_computeCreditCardApi(companyApi)'
-                },
+                    _headers: {
+                        type: Object,
+                        computed: '_computeHeaders(authorizationToken)'
+                    },
 
-                _publicKeyApi: {
-                    type: String,
-                    computed: '_computePublicKeyApi(companyApi)'
-                },
+                    _stripePublicKey: {
+                        type: String,
+                        value: ''
+                    },
 
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _stripePublicKey: {
-                    type: String,
-                    value: ''
-                },
+                    _error: {
+                        type: String
+                    },
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                /**
-                 * Target for iron-a11y-keys component.
-                 * Submit form on enter.
-                 */
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.creditCardForm
+                    /**
+                     * Target for iron-a11y-keys component.
+                     * Submit form on enter.
+                     */
+                    _target: {
+                        type: Object
                     }
-                }
-            },
+                };
+            }
 
             /** Stripe controls do not work with shadow root so this hack is ugly but necessary */
-            attached: function() {
-                document.body.appendChild(this.root);
-            },
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    document.body.appendChild(this.root);
+                    this._target = this.shadowRoot.getElementById('creditCardForm');
+                });
+            }
 
             /**
              * Computes authorization headers.
@@ -176,56 +167,43 @@
              * @returns {{ Authorization: string }}
              * @private
              */
-            _computeHeaders: function (authorizationToken) {
+            _computeHeaders(authorizationToken) {
                 return {
                     'Authorization': 'token ' + authorizationToken,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            },
+            }
 
-            _computeCreditCardApi: function(companyApi) {
+            _computeCreditCardApi(companyApi) {
                 return companyApi + '/billing/cc';
-            },
+            }
 
-            _computePublicKeyApi: function(companyApi) {
+            _computePublicKeyApi(companyApi) {
                 return companyApi + '/billing/pk';
-            },
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.stripe_cc_dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this._showLoader();
                 this.$.getPublicKeyCall.generateRequest();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
-            },
+            }
 
-            _handlePublicKeyResponse: function(event) {
+            _handlePublicKeyResponse(event) {
                 this._stripePublicKey = event.detail.response.stripePublicKey;
                 this.stripe = new Stripe(this._stripePublicKey);
                 this.elements = this.stripe.elements();
@@ -234,54 +212,54 @@
                 });
                 this.cardNumber.mount('#card_number');
                 this._hideLoader();
-            },
+            }
 
-            _stripeResponseHandler: function(result) {
+            _stripeResponseHandler(result) {
                 if (result.error) {
                     this._error = result.error.message;
                     this._hideLoader();
-                } else {
-                    var request = document.createElement('iron-request'),
-                        options = {
-                            url: this._creditCardApi,
-                            method: 'POST',
-                            handleAs: 'json',
-                            headers: this._headers,
-                            body: 'stripeToken=' + result.token.id
-                        };
-
-                    this._showLoader();
-                    request.send(options).then(function() {
-                        if (200 === request.status) {
-                            this.$.stripe_cc_dialog.close();
-                            this.fire('credit-card-added', {
-                                credit_card: request.response
-                            });
-                        }
-                    }.bind(this), function() {
-                        this._showError(this.apiErrors.getError(request.response.code));
-                        this._hideLoader();
-                    }.bind(this));
+                    return;
                 }
-            },
 
-            _onAddCreditCard: function() {
+                var request = document.createElement('iron-request'),
+                    options = {
+                        url: this._creditCardApi,
+                        method: 'POST',
+                        handleAs: 'json',
+                        headers: this._headers,
+                        body: 'stripeToken=' + result.token.id
+                    };
+
+                this._showLoader();
+                request.send(options).then(function() {
+                    if (200 === request.status) {
+                        this.$.stripe_cc_dialog.close();
+                        this.dispatchEvent(new CustomEvent('credit-card-added', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                credit_card: request.response
+                            }
+                        }));
+                    }
+                }.bind(this), function() {
+                    this._showError(this.apiErrors.getError(request.response.code));
+                    this._hideLoader();
+                }.bind(this));
+            }
+
+            _onAddCreditCard() {
                 if (this.stripe) {
                     this.stripe.createToken(this.cardNumber).then(function(result) {
                         this._stripeResponseHandler(result);
                     }.bind(this));
                 }
-            },
-
-            /**
-             * Submits signup form on ENTER key using iron-a11y-keys component.
-             *
-             * @private
-             */
-            _onEnter: function() {
-                this._onAddCreditCard();
             }
 
-        });
+            _onEnter() {
+                this._onAddCreditCard();
+            }
+        }
+        window.customElements.define(AppscoCreditCard.is, AppscoCreditCard);
     </script>
 </dom-module>

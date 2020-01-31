@@ -105,37 +105,36 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-application-form-cc',
+        class AppscoApplicationFormCC extends Polymer.mixinBehaviors([Polymer.AppscoApplicationFormBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-form-cc'; }
 
-            properties: {
-                _cardNumber: {
-                    type: String,
-                    computed: '_cardNumberComputed(claims)'
-                },
+            static get properties() {
+                return {
+                    _cardNumber: {
+                        type: String,
+                        computed: '_cardNumberComputed(claims)'
+                    },
 
-                _verificationNumber: {
-                    type: String,
-                    computed: '_verificationNumberComputed(claims)'
-                },
+                    _verificationNumber: {
+                        type: String,
+                        computed: '_verificationNumberComputed(claims)'
+                    },
 
-                claimsNamePrefix: {
-                    type: String,
-                    value: "claims_cc"
-                }
-            },
+                    claimsNamePrefix: {
+                        type: String,
+                        value: "claims_cc"
+                    }
+                };
+            }
 
-            behaviors: [
-                Polymer.AppscoApplicationFormBehavior
-            ],
-
-            _cardNumberComputed: function(claims) {
+            _cardNumberComputed(claims) {
                 return (claims && claims.cardNumber) ? claims.cardNumber : '';
-            },
+            }
 
-            _verificationNumberComputed: function(claims) {
+            _verificationNumberComputed(claims) {
                 return (claims && claims.verificationNumber) ? claims.verificationNumber : '';
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationFormCC.is, AppscoApplicationFormCC);
     </script>
 </dom-module>

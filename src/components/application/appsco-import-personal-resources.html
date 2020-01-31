@@ -43,46 +43,38 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportPersonalResources extends Polymer.Element {
+            static get is() { return 'appsco-import-personal-resources'; }
 
-            is: 'appsco-import-personal-resources',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    applicationTemplateApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    _importPersonalResourcesApi: {
+                        type: String,
+                        computed: '_computeImportPersonalResourcesApi(applicationTemplateApi)'
+                    }
+                };
+            }
 
-                applicationTemplateApi: {
-                    type: String
-                },
-
-                _importPersonalResourcesApi: {
-                    type: String,
-                    computed: '_computeImportPersonalResourcesApi(applicationTemplateApi)'
-                }
-            },
-
-            /**
-             * Toggles import.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.appscoImportResource.toggle();
-            },
+            }
 
-            /**
-             * Closes import.
-             */
-            close: function() {
+            close() {
                 this.$.appscoImportResource.close();
-            },
+            }
 
-            _computeImportPersonalResourcesApi: function(applicationTemplateApi) {
+            _computeImportPersonalResourcesApi(applicationTemplateApi) {
                 return applicationTemplateApi ? applicationTemplateApi + '/import' : null;
             }
-        });
+        }
+        window.customElements.define(AppscoImportPersonalResources.is, AppscoImportPersonalResources);
     </script>
 </dom-module>

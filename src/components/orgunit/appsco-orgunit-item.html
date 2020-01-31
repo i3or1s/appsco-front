@@ -121,137 +121,138 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoOrgUnitItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-orgunit-item'; }
 
-            is: 'appsco-orgunit-item',
+            static get properties() {
+                return {
+                    /**
+                     * [OrgUnit]() that is to be rendered
+                     */
+                    orgUnit: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
-                /**
-                 * [OrgUnit]() that is to be rendered
-                 */
-                orgUnit: {
-                    type: Object,
-                    value: function () { return {}; }
-                },
+                    modify: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                modify: {
-                    type: Boolean,
-                    value: false
-                },
+                    add: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                add: {
-                    type: Boolean,
-                    value: false
-                },
+                    remove: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                remove: {
-                    type: Boolean,
-                    value: false
-                },
+                    selected: {
+                        type: Boolean,
+                        computed: '_computeSelected(orgUnit.*)',
+                        reflectToAttribute: true
+                    },
 
-                selected: {
-                    type: Boolean,
-                    computed: '_computeSelected(orgUnit.*)',
-                    reflectToAttribute: true
-                },
+                    _showOptions: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true,
+                        observer: '_onShowOptionsChange'
+                    },
 
-                _showOptions: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true,
-                    observer: '_onShowOptionsChange'
-                },
+                    animationConfig: {
+                        value: function () {
+                            return {
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'scale-up-animation',
-                                node: this.$.options,
-                                transformOrigin: '0 0',
-                                axis: 'y',
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this.$.options,
-                                timing: {
-                                    duration: 100
-                                }
                             }
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+            ready() {
+                super.ready();
 
-            listeners: {
-                'neon-animation-finish': '_onAnimationFinish'
-            },
+                this.animationConfig = {
+                    'entry': {
+                        name: 'scale-up-animation',
+                        node: this.$.options,
+                        transformOrigin: '0 0',
+                        axis: 'y',
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this.$.options,
+                        timing: {
+                            duration: 100
+                        }
+                    }
+                };
 
-            ready: function() {
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onAnimationFinish);
                 Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-            },
+            }
 
             /**
              * Evaluates if item is in given path.
              *
              * @param {HTMLElement} element The element to be evaluated.
-             * @param {Array<HTMLElements>=} path Elements in path to be checked against item element.
+             * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
              * @return {Boolean}
              *
              * @private
              */
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
+                for (let i = 0; i < path.length; i++) {
                     if (path[i] == element) {
                         return true;
-
-                        break;
                     }
                 }
 
                 return false;
-            },
+            }
 
             /**
              * Listens for click outside.
              * @private
              */
-            _handleDocumentClick: function(event) {
-                var path = Polymer.dom(event).path;
+            _handleDocumentClick(event) {
+                const path = Polymer.dom(event).path;
 
                 if (!this._isInPath(path, this.$.iconOptions) && !this._isInPath(path, this.$.options)) {
                     this._hideOptions();
                 }
 
-            },
+            }
 
-            _computeSelected: function(change) {
+            _computeSelected(change) {
                 return this.orgUnit && this.orgUnit.selected;
-            },
+            }
 
-            _onShowOptionsChange: function() {
+            _onShowOptionsChange() {
                 this._animateOptions();
-            },
+            }
 
-            _hideOptions: function() {
+            _hideOptions() {
                 this._showOptions = false;
-            },
+            }
 
-            _animateOptions: function() {
-
+            _animateOptions() {
                 if (this._showOptions) {
                     this.$.options.style.display = 'block';
                     this.playAnimation('entry');
@@ -260,52 +261,66 @@ Custom property | Description | Default
                     this.playAnimation('exit');
                 }
 
-            },
+            }
 
-            _toggleOptions: function() {
+            _toggleOptions() {
                 this._showOptions = !this._showOptions;
-            },
+            }
 
-            _modify: function() {
+            _modify() {
                 this._hideOptions();
-                this.fire('modify-orgunit', {
-                    orgUnit: this.orgUnit
-                })
-            },
+                this.dispatchEvent(new CustomEvent('modify-orgunit', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        orgUnit: this.orgUnit
+                    }
+                }));
+            }
 
-            _add: function() {
+            _add() {
                 this._hideOptions();
-                this.fire('add-orgunit', {
-                    orgUnit: this.orgUnit
-                })
-            },
+                this.dispatchEvent(new CustomEvent('add-orgunit', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        orgUnit: this.orgUnit
+                    }
+                }));
+            }
 
-            _remove: function() {
+            _remove() {
                 this._hideOptions();
-                this.fire('remove-orgunit', {
-                    orgUnit: this.orgUnit
-                })
-            },
+                this.dispatchEvent(new CustomEvent('remove-orgunit', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        orgUnit: this.orgUnit
+                    }
+                }));
+            }
 
-            _organizationUnitTapped: function() {
+            _organizationUnitTapped() {
+                this.dispatchEvent(new CustomEvent('selected', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        orgUnit: this.orgUnit,
+                        selected: !this.selected
+                    }
+                }));
+            }
 
-                this.fire('selected', {
-                    orgUnit: this.orgUnit,
-                    selected: !this.selected
-                });
-            },
-
-            _onAnimationFinish: function() {
-
+            _onAnimationFinish() {
                 if (!this._showOptions) {
                     this.$.options.style.display = 'none';
                 }
+            }
 
-            },
-
-            deSelect: function() {
+            deSelect() {
                 this.selected = false;
             }
-        });
+        }
+        window.customElements.define(AppscoOrgUnitItem.is, AppscoOrgUnitItem);
     </script>
 </dom-module>

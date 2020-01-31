@@ -2,6 +2,8 @@
 <link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-customer-subscription-toggle">
     <template>
         <style>
@@ -46,104 +48,95 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCustomerSubscriptionToggle extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-customer-subscription-toggle'; }
 
-            is: 'appsco-customer-subscription-toggle',
+            static get properties() {
+                return {
+                    customer: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    partner: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                customer: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    apiErrors: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _isSubscriptionPaidExternally: {
+                        type: Boolean,
+                        computed: '_computeIsSubscriptionPaidExternally(customer)'
+                    },
+
+                    _subscriptionPaidStateApi: {
+                        type: String,
+                        computed: '_computeSubscriptionPaidStateApi(customer)'
+                    },
+
+                    _error: {
+                        type: String
                     }
-                },
+                };
+            }
 
-                partner: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                apiErrors: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+            _addListeners() {
+                this.addEventListener('switch.change', this._onSwitchChanged);
+            }
 
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _isSubscriptionPaidExternally: {
-                    type: Boolean,
-                    computed: '_computeIsSubscriptionPaidExternally(customer)'
-                },
-
-                _subscriptionPaidStateApi: {
-                    type: String,
-                    computed: '_computeSubscriptionPaidStateApi(customer)'
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            listeners: {
-                'switch.change': '_onSwitchChanged'
-            },
-
-            resetCustomer: function() {
-                var customer = JSON.parse(JSON.stringify(this.customer));
+            resetCustomer() {
+                const customer = JSON.parse(JSON.stringify(this.customer));
                 this.set('customer', {});
                 this.set('customer', customer);
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                };
-            },
-
-            _showError: function(message) {
+            _showError(message) {
                 this._error = message;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._error = '';
-            },
+            }
 
-            _turnSubscriptionPaidExternallyOn: function() {
+            _turnSubscriptionPaidExternallyOn() {
                 this.customer.subscription_paid_externally = true;
                 this.resetCustomer();
                 this._callSubscriptionPaidExternallyApi(1);
-            },
+            }
 
-            _turnSubscriptionPaidExternallyOff: function() {
+            _turnSubscriptionPaidExternallyOff() {
                 this.customer.subscription_paid_externally = false;
                 this.resetCustomer();
                 this._callSubscriptionPaidExternallyApi(0);
-            },
+            }
 
-            _callSubscriptionPaidExternallyApi: function(status) {
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this._subscriptionPaidStateApi,
-                            method: 'PUT',
-                            handleAs: 'json',
-                            headers: this._headers,
-                            body: 'form[subscription_paid_externally]=' + status
-                        };
+            _callSubscriptionPaidExternallyApi(status) {
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this._subscriptionPaidStateApi,
+                        method: 'PUT',
+                        handleAs: 'json',
+                        headers: this._headers,
+                        body: 'form[subscription_paid_externally]=' + status
+                    };
 
                 if (!this._subscriptionPaidStateApi || !this._headers) {
                     this._showError(this.apiErrors.getError(404));
@@ -151,20 +144,15 @@
                 }
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when subscription paid externally state for customer has been changed.
-                         *
-                         * @event customer-subscription-state-changed
-                         * @param {Object} customer
-                         * @param {Object} partner
-                         */
-                        this.fire('customer-subscription-state-changed', {
-                            customer: request.response.customer,
-                            partner: request.response.partner
-                        });
+                        this.dispatchEvent(new CustomEvent('customer-subscription-state-changed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                customer: request.response.customer,
+                                partner: request.response.partner
+                            }
+                        }));
                     }
 
                 }.bind(this), function() {
@@ -172,20 +160,20 @@
                     this.customer.subscription_paid_externally = !status;
                     this.resetCustomer();
                 }.bind(this));
-            },
-
-            _onSwitchChanged: function(event) {
-                event.target.checked ? this._turnSubscriptionPaidExternallyOn() : this._turnSubscriptionPaidExternallyOff();
-            },
-
-            _computeIsSubscriptionPaidExternally: function(customer) {
-                return customer && customer.subscription_paid_externally == true;
-            },
-
-            _computeSubscriptionPaidStateApi: function(customer) {
-                return customer ? (customer.self + '/paid-externally') : null;
             }
 
-        });
+            _onSwitchChanged(event) {
+                event.target.checked ? this._turnSubscriptionPaidExternallyOn() : this._turnSubscriptionPaidExternallyOff();
+            }
+
+            _computeIsSubscriptionPaidExternally(customer) {
+                return customer && customer.subscription_paid_externally == true;
+            }
+
+            _computeSubscriptionPaidStateApi(customer) {
+                return customer ? (customer.self + '/paid-externally') : null;
+            }
+        }
+        window.customElements.define(AppscoCustomerSubscriptionToggle.is, AppscoCustomerSubscriptionToggle);
     </script>
 </dom-module>

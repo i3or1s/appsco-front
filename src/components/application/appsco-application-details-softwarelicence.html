@@ -131,33 +131,33 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationDetailsSoftwareLicence extends Polymer.Element {
+            static get is() { return 'appsco-application-details-softwarelicence'; }
 
-            is: 'appsco-application-details-softwarelicence',
+            static get properties() {
+                return {
+                    claims: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    }
+                };
+            }
 
-            properties: {
-
-                claims: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                }
-            },
-
-            _dateFormat: function(value) {
-
-                if (value) {
-
-                    var options = {
-                        year: "numeric", month: "numeric", day: "numeric"
-                    };
-
-                    return (new Date(value)).toLocaleDateString('en', options);
+            _dateFormat(value) {
+                if (!value) {
+                    return '';
                 }
 
-            },
-        });
+                const options = {
+                    year: "numeric", month: "numeric", day: "numeric"
+                };
+
+                return (new Date(value)).toLocaleDateString('en', options);
+            }
+        }
+        window.customElements.define(AppscoApplicationDetailsSoftwareLicence.is, AppscoApplicationDetailsSoftwareLicence);
     </script>
 </dom-module>

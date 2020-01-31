@@ -68,24 +68,25 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoOAuthApplicationInfo extends Polymer.Element {
+            static get is() { return 'appsco-oauth-application-info'; }
 
-            is: 'appsco-oauth-application-info',
+            static get properties() {
+                return {
+                    oAuthApplication: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
-
-                oAuthApplication: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    displayCopyValuesOnly: {
+                        type: Boolean,
+                        value: false
                     }
-                },
-
-                displayCopyValuesOnly: {
-                    type: Boolean,
-                    value: false
-                }
+                };
             }
-        });
+        }
+        window.customElements.define(AppscoOAuthApplicationInfo.is, AppscoOAuthApplicationInfo);
     </script>
 </dom-module>

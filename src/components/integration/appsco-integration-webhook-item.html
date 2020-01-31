@@ -14,9 +14,7 @@
 
 <dom-module id="appsco-integration-webhook-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host .item {
                 cursor: default;
             }
@@ -47,7 +45,6 @@
         </style>
 
         <div class="item" on-tap="_onItemAction">
-
             <template is="dom-if" if="[[ selectable ]]">
                 <div class="select-action"
                      on-tap="_onSelectItemAction">
@@ -94,71 +91,66 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationWebhookItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-integration-webhook-item'; }
 
-            is: 'appsco-integration-webhook-item',
+            static get properties() {
+                return {
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    _registered: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _url: {
+                        type: String
                     }
-                },
+                };
+            }
 
-                _registered: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _url: {
-                    type: String
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            register: function(url) {
+            register(url) {
                 this._registered = true;
                 this._url = url;
-            },
+            }
 
-            unregister: function() {
+            unregister() {
                 this._registered = false;
                 this._url = null;
-            },
-
-            _onRegisterItemAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `register` is tapped.
-                 *
-                 * @event register-item
-                 * @param {Object} item
-                 */
-                this.fire('register-item', {
-                    item: this.item
-                });
-            },
-
-            _onUnregisterItemAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `unregister` is tapped.
-                 *
-                 * @event unregister-item
-                 * @param {Object} item
-                 */
-                this.fire('unregister-item', {
-                    item: this.item
-                });
             }
-        });
+
+            _onRegisterItemAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('register-item', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        item: this.item
+                    }
+                }));
+            }
+
+            _onUnregisterItemAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('unregister-item', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        item: this.item
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoIntegrationWebhookItem.is, AppscoIntegrationWebhookItem);
     </script>
 </dom-module>

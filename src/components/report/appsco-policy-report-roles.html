@@ -12,9 +12,7 @@
 
 <dom-module id="appsco-policy-report-roles">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host {
                 --appsco-list-item: {
                     @apply --appsco-compliance-report-list-item;
@@ -76,48 +74,47 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoPolicyReportRoles extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-policy-report-roles'; }
 
-            is: 'appsco-policy-report-roles',
+            static get properties() {
+                return {
+                    policiesReportApi: {
+                        type: String
+                    },
 
-            properties: {
+                    _displayList: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
 
-                policiesReportApi: {
-                    type: String
-                },
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-                _displayList: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_observeItems(_listItems)'
-            ],
-
-            _observeItems: function(items) {
+            _observeItems(items) {
                 this.setObservableType('accounts');
                 this.populateItems(items);
-            },
+            }
 
-            _showList: function() {
+            _showList() {
                 this._displayList = true;
-            },
+            }
 
-            _getPoliciesReport: function(policy, dateFrom, dateTo) {
-
+            _getPoliciesReport(policy, dateFrom, dateTo) {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         url = (this.policiesReportApi + '?extended=1&limit=1000' +
-                        (policy.policy ? ('&policy=' + policy.policy) : '') +
-                        (dateFrom ? ('&from=' + dateFrom) : '') +
-                        (dateTo ? ('&to=' + dateTo) : '')),
+                            (policy.policy ? ('&policy=' + policy.policy) : '') +
+                            (dateFrom ? ('&from=' + dateFrom) : '') +
+                            (dateTo ? ('&to=' + dateTo) : '')),
                         options = {
                             url: url,
                             method: 'GET',
@@ -126,19 +123,17 @@
                         };
 
                     request.send(options).then(function() {
-
-                        if (200 == request.status) {
+                        if (200 === request.status) {
                             resolve(request.response.logs);
                         }
-
                     }.bind(this), function() {
                         reject(request.response.message);
                     });
                 }.bind(this));
-            },
+            }
 
-            filterRoles: function(filters) {
-                var filterTerm = filters.term ? filters.term : '',
+            filterRoles(filters) {
+                const filterTerm = filters.term ? filters.term : '',
                     filterPolicy = filters.policy ? filters.policy : null,
                     filterDateFrom = filters.dateFrom ? filters.dateFrom : '',
                     filterDateTo = filters.dateTo ? filters.dateTo : '',
@@ -152,7 +147,7 @@
                 else {
 
                     this._getPoliciesReport(filterPolicy, filterDateFrom, filterDateTo).then(function(policies) {
-                        var itemsLength = policies.length;
+                        const itemsLength = policies.length;
 
                         if (0 === itemsLength) {
                             this._showMessage('There are no broken policies for the selected filter.');
@@ -168,11 +163,9 @@
                         this._listEmpty = false;
 
                         if (filterTerm && 2 < filterTermLength) {
-
                             policies.forEach(function(policy, index) {
-
-                                for (var j = 0; j < allLength; j++) {
-                                    var aItem = allListItems[j];
+                                for (let j = 0; j < allLength; j++) {
+                                    const aItem = allListItems[j];
 
                                     if (aItem.account.id === policy.data.account.id &&
                                         (-1 < aItem.account.display_name.indexOf(filterTerm) ||
@@ -189,11 +182,9 @@
                             }.bind(this));
                         }
                         else {
-
                             policies.forEach(function(policy, index) {
-
-                                for (var i = 0; i < allLength; i++) {
-                                    var currentListItem = allListItems[i];
+                                for (let i = 0; i < allLength; i++) {
+                                    const currentListItem = allListItems[i];
 
                                     if (policy.data.account.id === currentListItem.account.id) {
                                         this.push('_listItems', currentListItem);
@@ -203,7 +194,6 @@
                                 if (index === itemsLength - 1) {
                                     this._hideProgressBar();
                                 }
-
                             }.bind(this));
                         }
 
@@ -217,29 +207,29 @@
                         }
 
                         this._showList();
-                        this.fire('filter-done');
+                        this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                     }.bind(this));
                 }
+              }
 
-              },
-
-            _removeDuplicates: function(array, property) {
-                var length = array.length,
+            _removeDuplicates(array, property) {
+                const length = array.length,
                     obj = {},
                     newArray = [];
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     if (!obj[array[i][property]]) {
                         obj[array[i][property]] = array[i];
                     }
                 }
 
-                for (var key in obj) {
+                for (const key in obj) {
                     newArray.push(obj[key]);
                 }
 
                 return newArray;
             }
-        });
+        }
+        window.customElements.define(AppscoPolicyReportRoles.is, AppscoPolicyReportRoles);
     </script>
 </dom-module>
