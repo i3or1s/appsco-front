@@ -23,6 +23,9 @@
             }
             :host .item-info {
                 padding: 0;
+                @apply --layout-horizontal;
+                width: 100%;
+                align-items: center;
             }
             :host .info-additional {
                 font-size: 12px;
@@ -66,6 +69,9 @@
             }
             table > tbody > tr > td {
                 border-top: 1px dashed var(--header-background-color);
+            }
+            .icon-container {
+                margin-left: 10px;
             }
             .icon-container, .icon {
                 height: 80px;
@@ -243,7 +249,7 @@
                 };
 
                 Polymer.RenderStatus.beforeNextRender(this, function() {
-                    this.style.display = 'inline-block';
+                    this.style.display = 'block';
                 });
 
                 Polymer.RenderStatus.afterNextRender(this, function() {

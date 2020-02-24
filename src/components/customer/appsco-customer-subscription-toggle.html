@@ -20,8 +20,9 @@
         </style>
 
         <paper-toggle-button id="switch"
-                             checked$="[[ customer.subscription_paid_externally ]]">Subscription paid by partner</paper-toggle-button>
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                             checked$="[[ customer.subscription_paid_externally ]]"
+                             on-change="_onSwitchChanged">Subscription paid by partner</paper-toggle-button>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
         <div class="info">
             <template is="dom-if" if="[[ _isSubscriptionPaidExternally  ]]">
@@ -84,22 +85,10 @@
                         computed: '_computeSubscriptionPaidStateApi(customer)'
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     }
                 };
-            }
-
-            ready() {
-                super.ready();
-
-                Polymer.RenderStatus.afterNextRender(this, function () {
-                    this._addListeners();
-                });
-            }
-
-            _addListeners() {
-                this.addEventListener('switch.change', this._onSwitchChanged);
             }
 
             resetCustomer() {
@@ -109,11 +98,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _turnSubscriptionPaidExternallyOn() {

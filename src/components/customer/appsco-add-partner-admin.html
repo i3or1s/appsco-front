@@ -149,7 +149,6 @@
                          on-list-empty="_onAccountsLoadFinished"></appsco-accounts>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -161,7 +160,7 @@
                            loader-alt="AppsCo is processing request"
                            multi-color></appsco-loader>
 
-            <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+            <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
             <div class="filter-accounts">
                 <appsco-search id="appscoSearch"
@@ -337,6 +336,10 @@
                 this.$.dialog.close();
             }
 
+            setCustomers(customers) {
+                this.customers = customers;
+            }
+
             _showLoader() {
                 this._createLoader = true;
             }
@@ -346,11 +349,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _showMessage(message) {

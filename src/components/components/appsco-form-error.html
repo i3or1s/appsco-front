@@ -79,6 +79,12 @@ Example:
                 };
             }
 
+            static get observers() {
+                return [
+                    '_onMessageChanged(message)'
+                ]
+            }
+
             ready() {
                 super.ready();
 
@@ -105,7 +111,6 @@ Example:
             }
 
             _addListeners() {
-                this.addEventListener('message-changed', this._onMessageChanged);
                 this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
             }
 

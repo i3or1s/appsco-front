@@ -53,7 +53,7 @@
 
         <appsco-loader active="[[ _loader ]]" loader-alt="AppsCo is processing request" multi-color></appsco-loader>
 
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
         <paper-input id="title"
                      label="Title"
@@ -87,7 +87,7 @@
                            class="dropdown-content"
                            attr-for-selected="value"
                            selected="[[ _idPConfig.integrationId ]]"
-                           on-selected-changed="_onIntegrationTypeSelect" slot="dropdown-content">
+                           on-iron-select="_onIntegrationTypeSelect" slot="dropdown-content">
                 <template is="dom-repeat" items="[[ _integrations ]]">
                     <paper-item value="[[ item.id ]]"
                                 integration-id="[[ item.id ]]">[[ item.name ]]</paper-item>
@@ -187,10 +187,7 @@
                         value: false
                     },
 
-                    /**
-                     * Error message for settings form.
-                     */
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -209,15 +206,18 @@
             ready() {
                 super.ready();
 
-                Polymer.RenderStatus.afterNextRender(this, function() {
+                Polymer.RenderStatus.beforeNextRender(this, function() {
                     this._clearForm();
+                });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
                     this._addListeners();
                 });
             }
 
             _addListeners() {
-                this.addEventListener('show-error', this._showError);
-                this.addEventListener('hide-error', this._hideError);
+                this.addEventListener('show-error', this._showError.bind(this));
+                this.addEventListener('hide-error', this._hideError.bind(this));
             }
 
             setup() {
@@ -228,7 +228,7 @@
                 this._clearForm();
                 this._hideError();
                 this._hideLoader();
-                Polymer.dom(this.root).querySelector('[data-form]').reset();
+                this.shadowRoot.querySelector('[data-form]').reset();
                 this.set('_idPConfig', {});
                 this.set('domain', {});
                 this.set('_selectedIntegration', {});
@@ -259,7 +259,7 @@
             }
 
             _showError(message) {
-                this._error = ('string' === typeof message) ?
+                this._errorMessage = ('string' === typeof message) ?
                     message :
                     ((message.detail && message.detail.message) ?
                         message.detail.message :
@@ -267,12 +267,12 @@
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _clearForm() {
-                Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
-                    var inputContainer = item.$$('#container');
+                this.shadowRoot.querySelectorAll('[data-field]').forEach(function(item) {
+                    const inputContainer = item.querySelector('#container');
 
                     item.value = '';
                     item.invalid = false;
@@ -298,7 +298,7 @@
             }
 
             _onSelectedIntegrationChanged(integration) {
-                for (var key in integration) {
+                for (const key in integration) {
                     this._activeForm = integration.kind.toLowerCase();
                     this._settingsApi = integration.meta.create;
                     return false;
@@ -307,13 +307,13 @@
             }
 
             _onIntegrationTypeSelect(event) {
-                var currentTarget = event.currentTarget;
+                const currentTarget = event.currentTarget;
 
                 this._hideError();
                 this.$.integrationType.invalid = false;
 
                 setTimeout(function() {
-                    var integrationID = currentTarget.selectedItem ? currentTarget.selectedItem.integrationId : '',
+                    const integrationID = currentTarget.selectedItem ? currentTarget.selectedItem.integrationId : '',
                         integrations = this._integrations;
 
                     integrations.forEach(function(item) {
@@ -330,7 +330,7 @@
             }
 
             _onIdPIntegrationsResponse(event) {
-                var response = event.detail.response;
+                const response = event.detail.response;
 
                 if (response && response.integrations) {
                     this.set('_integrations', response.integrations);
@@ -338,7 +338,7 @@
             }
 
             _onIdPConfigResponse(event) {
-                var response = event.detail.response;
+                const response = event.detail.response;
 
                 if (response) {
                     this.set('_idPConfig', {});
@@ -347,7 +347,7 @@
             }
 
             _onPageAnimationFinish(event) {
-                var fromPage = event.detail.fromPage;
+                const fromPage = event.detail.fromPage;
 
                 if (!this.domain.hasIdp && fromPage.$ && ('undefined' !== typeof fromPage.reset)) {
                     fromPage.reset();
@@ -359,9 +359,9 @@
             }
 
             _validateForm() {
-                var valid = true;
+                let valid = true;
 
-                Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
+                this.shadowRoot.querySelectorAll('[data-field]').forEach(function(item) {
                     item.validate();
                     valid = valid && !item.invalid;
                 }.bind());
@@ -370,9 +370,9 @@
             }
 
             _getEncodedBodyValues(form) {
-                var body = '';
+                let body = '';
 
-                Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
+                this.shadowRoot.querySelectorAll('[data-field]').forEach(function(item) {
                     if (item.value) {
                         body += ('' === body) ? '' : '&';
                         body += encodeURIComponent(item.name) + '=' + encodeURIComponent(item.value);
@@ -391,12 +391,11 @@
                     return false;
                 }
 
-                var form = Polymer.dom(this.root).querySelector('[name="' + this._activeForm +'"]');
+                const form = this.shadowRoot.querySelector('[name="' + this._activeForm + '"]');
 
                 if (this._validateForm() && form.validate()) {
-
                     if (form.getCertificates) {
-                        var certificates = form.getCertificates();
+                        const certificates = form.getCertificates();
 
                         if (!certificates || 0 === certificates.length) {
                             this._showError('Please add at least one certificate.');
@@ -407,7 +406,7 @@
                     this._showLoader();
 
                     this._save(form).then(function(response) {
-                        var config = response[0];
+                        const config = response[0];
 
                         this.domain.hasIdp = true;
                         this.domain.meta.idpConfig = config.self;
@@ -431,7 +430,7 @@
 
             _save(form) {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         options = {
                             url: this._settingsApi,
                             method: 'POST',

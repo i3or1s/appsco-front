@@ -11,6 +11,8 @@
 <link rel="import" href="../components/components/appsco-list-item.html">
 <link rel="import" href="../components/account/appsco-account-image.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-audit-log">
     <template>
         <style>
@@ -216,21 +218,14 @@
     </template>
 
     <script>
-        class AppscoAuditLog extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+        class AppscoAuditLog extends Polymer.mixinBehaviors([
+            Polymer.AppLocalizeBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-audit-log'; }
 
             static get properties() {
                 return {
-                    /**
-                     * Authorization token
-                     */
-                    authorizationToken: {
-                        type: String
-                    },
-
-                    /**
-                     * Get audit log link.
-                     */
                     auditLogApi: {
                         type: String
                     },
@@ -271,15 +266,6 @@
                         value: false
                     },
 
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     _auditLogApi: {
                         type: String,
                         computed: '_computeAuditLogApi(auditLogApi, size, _headers)',
@@ -290,9 +276,6 @@
                         type: String
                     },
 
-                    /**
-                     * Log list.
-                     */
                     _logList: {
                         type: Array,
                         value: function () {
@@ -414,20 +397,6 @@
                     this._timezoneListUrl = this.resolveUrl('./data/timezone-list.json');
                     this._countryListUrl = this.resolveUrl('./data/country-list.json');
                 });
-            }
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
             }
 
             _computeAuditLogApi(auditLogApi, size, headers) {

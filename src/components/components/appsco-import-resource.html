@@ -23,7 +23,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -50,7 +50,6 @@
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -67,7 +66,7 @@
 
                     <slot name="info" old-content-selector="[info]"></slot>
 
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <div>
                         <vaadin-upload id="uploadCsv"
@@ -78,11 +77,9 @@
                                        on-file-reject="_fileRejected"
                                        on-upload-error="_uploadErrorResponse"
                                        on-upload-success="_uploadSuccess"
-                                       headers="[[ _headers ]]">
-                            <div class="drop-label">
-                                <iron-icon icon="file-upload"></iron-icon>
-                                Upload resource
-                            </div>
+                                       headers="[[ _authorizationHeaders ]]">
+                            <iron-icon icon="file-upload" slot="drop-label-icon"></iron-icon>
+                            <span class="drop-label" slot="drop-label">Upload resource</span>
                         </vaadin-upload>
                     </div>
                 </div>
@@ -109,7 +106,7 @@
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     }
                 };
@@ -135,20 +132,20 @@
 
             _onDialogOpened() {
                 this._loader = false;
-                this._error = '';
+                this._errorMessage = '';
                 this.$.uploadCsv.files = [];
             }
 
             _onDialogClosed() {
                 this._loader = false;
-                this._error = '';
+                this._errorMessage = '';
                 this.$.uploadCsv.files = [];
             }
 
             _uploadStarted(e) {}
 
             _fileRejected(e) {
-                this._error = e.detail.error;
+                this._errorMessage = e.detail.error;
             }
 
             _uploadErrorResponse(e) {

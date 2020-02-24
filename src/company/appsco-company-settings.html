@@ -73,7 +73,7 @@ Custom property | Description | Default
 
         <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color></appsco-loader>
 
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
         <p class="info">
             Company name is used to distinguish company resources from users personal resources.
@@ -203,14 +203,10 @@ Custom property | Description | Default
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
-                    /**
-                     * Target for iron-a11y-keys component.
-                     * Submit form on enter.
-                     */
                     _target: {
                         type: Object
                     },
@@ -264,11 +260,11 @@ Custom property | Description | Default
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _submitSettingsForm() {

@@ -23,7 +23,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -48,7 +48,6 @@
         </style>
 
         <paper-dialog id="addCompanyDomainDialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -63,7 +62,7 @@
             <paper-dialog-scrollable>
                 <div class="dialog-container">
 
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <template is="dom-if" if="[[ _supportLink ]]">
                         <a href="https://support.appsco.com/hc/en-gb"
@@ -76,23 +75,25 @@
                         Example: <span class="emphasized">my-domain.com</span>
                     </p>
 
-                    <form is="iron-form"
-                          id="form"
-                          method="POST"
-                          action="[[ addDomainApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
+                                method="POST"
+                                action="[[ addDomainApi ]]">
 
-                        <div class="input-container">
-                            <paper-input id="domainName"
-                                         label="Your domain"
-                                         name="company_domain[domain]"
-                                         required
-                                         auto-validate
-                                         error-message="Please enter domain name."></paper-input>
-                        </div>
-                    </form>
+                            <div class="input-container">
+                                <paper-input id="domainName"
+                                             label="Your domain"
+                                             name="company_domain[domain]"
+                                             required
+                                             auto-validate
+                                             error-message="Please enter domain name."></paper-input>
+                            </div>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -131,7 +132,7 @@
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -140,10 +141,6 @@
                         value: false
                     },
 
-                    /**
-                     * Target for iron-a11y-keys component.
-                     * Submit form on enter.
-                     */
                     _target: {
                         type: Object
                     }
@@ -177,11 +174,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
                 this._hideAppscoSupportLink();
             }
 

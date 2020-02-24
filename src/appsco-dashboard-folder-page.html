@@ -17,6 +17,16 @@
 <link rel="import" href="components/application/appsco-application-details.html">
 <link rel="import" href="components/application/appsco-application-log.html">
 <link rel="import" href="components/components/appsco-drop-html-element-behavior.html">
+<link rel="import" href="components/folder/appsco-folders-application-add.html">
+<link rel="import" href="components/folder/appsco-dashboard-folder-page-actions.html">
+
+<link rel="import" href="components/application/appsco-application-share.html">
+<link rel="import" href="application/appsco-application-settings-dialog.html">
+<link rel="import" href="components/application/appsco-application-revoke.html">
+<link rel="import" href="components/application/company/appsco-company-resource-settings-dialog.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-dashboard-folder-page">
     <template>
@@ -188,8 +198,10 @@
                                 current-folder="[[ folder ]]"
                                 on-info="_onViewApplicationInfo"
                                 on-edit="_onApplicationEdit"
+                                on-edit-shared-application="_onEditSharedApplication"
                                 on-application="_onApplication"
                                 on-application-removed="_onApplicationRemoved"
+                                on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
                                 on-loaded="_pageLoaded"
                                 on-empty-load="_pageLoaded"></appsco-applications>
                     </div>
@@ -321,13 +333,47 @@
 
         </appsco-content>
 
+        <appsco-folders-application-add
+                id="appscoFoldersApplicationAdd"
+                authorization-token="[[ authorizationToken ]]"
+                folders-api="[[ foldersApi ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-folders-application-add>
+
+        <appsco-application-share
+                id="appscoApplicationShare"
+                authorization-token="[[ authorizationToken ]]"
+                accounts-api="[[ accountsApi ]]">
+        </appsco-application-share>
+
+        <appsco-application-settings-dialog
+                id="appscoApplicationSettingsDialog"
+                account="[[ account ]]"
+                authorization-token="[[ authorizationToken ]]"
+                on-application-settings-saved="_onApplicationCredentialsChanged">
+        </appsco-application-settings-dialog>
+
+        <appsco-application-revoke
+                id="appscoApplicationRevoke"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-application-revoke>
+
+        <appsco-company-resource-settings-dialog
+                id="appscoCompanyResourceSettingsDialog"
+                account="[[ account ]]"
+                authorization-token="[[ authorizationToken ]]"
+                domain="[[ domain ]]"
+                on-application-settings-saved="_onApplicationSettingsSaved">
+        </appsco-company-resource-settings-dialog>
+
     </template>
 
     <script>
         class AppscoDashboardFolderPage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
             Polymer.AppscoDropHTMLElementBehavior,
-            Polymer.AppscoDropHTMLElementBehavior
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-dashboard-folder-page'; }
 
@@ -338,11 +384,6 @@
                         value: function () {
                             return {};
                         }
-                    },
-
-                    authorizationToken: {
-                        type: String,
-                        value: ''
                     },
 
                     application: {
@@ -365,9 +406,21 @@
                         value: false
                     },
 
+                    domain: {
+                        type: String
+                    },
+
                     foldersApi: {
                         type: String,
                         observer: '_onFoldersApiChanged'
+                    },
+
+                    companyFoldersApi: {
+                        type: String
+                    },
+
+                    accountsApi: {
+                        type: String
                     },
 
                     pageConfig: {
@@ -380,11 +433,6 @@
                     _breadcrumbsDataPage: {
                         type: String,
                         computed: '_computeBreadcrumbsDataPage(isOnPersonal)'
-                    },
-
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
                     },
 
                     _shared: {
@@ -464,6 +512,18 @@
                     pageLoaded: {
                         type: Boolean,
                         value: false
+                    },
+
+                    toolbar: {
+                        type: Object
+                    },
+
+                    apiErrors: {
+                        type: Object
+                    },
+
+                    company: {
+                        type: Object
                     }
                 };
             }
@@ -508,17 +568,13 @@
             }
 
             _addListeners() {
-                this.addEventListener('item-dropped', this._onItemDropped);
+                this.addEventListener('item-dropped', this._onItemDropped.bind(this));
+                this.toolbar.addEventListener('search', this._onSearchApplications.bind(this));
+                this.toolbar.addEventListener('search-clear', this._onSearchApplicationsClear.bind(this));
             }
 
             _updateScreen() {
                 this.updateStyles();
-            }
-
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
             }
 
             _computeApplicationsApi(folder) {
@@ -547,7 +603,7 @@
                     return false;
                 }
 
-                var appscoApplicationsComponent = this.$.appscoApplications;
+                const appscoApplicationsComponent = this.$.appscoApplications;
 
                 if (newValue.display_style) {
                     appscoApplicationsComponent.setDisplayStyle(newValue.display_style);
@@ -567,7 +623,7 @@
 
             _getFolder() {
                 if (!this.folder.self && this.foldersApi && this._headers) {
-                    var folderApi = this.foldersApi + this.route.path,
+                    const folderApi = this.foldersApi + this.route.path,
                         getFolderRequest = this.$.ironAjaxGetFolder;
 
                     if (getFolderRequest.lastRequest) {
@@ -677,13 +733,9 @@
             }
 
             _onApplicationEditCredentials() {
-                this.dispatchEvent(new CustomEvent('info-edit-application-credentials', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        application: this.application
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoApplicationSettingsDialog');
+                dialog.setApplication(this.application);
+                dialog.toggle();
             }
 
             _onApplication(event) {
@@ -695,34 +747,26 @@
             }
 
             _onCitrixResourceAction(event) {
-                var application = event.detail.application;
-                var a = document.createElement('a');
-                var blob = new Blob([application.icocontent], {'type':'application/octet-stream'});
+                const application = event.detail.application;
+                const a = document.createElement('a');
+                const blob = new Blob([application.icocontent], {'type': 'application/octet-stream'});
                 a.href = window.URL.createObjectURL(blob);
                 a.download = application.title+'.ica';
                 a.click();
             }
 
-            _onShareApplication() {
+            _onShareApplication(event) {
                 if (this.isOnPersonal) {
-                    this.dispatchEvent(new CustomEvent('share-application', {
-                        bubbles: true,
-                        composed: true,
-                        detail: {
-                            application: this.application
-                        }
-                    }));
+                    const dialog = this.shadowRoot.getElementById('appscoApplicationShare');
+                    dialog.setApplication(this.application);
+                    dialog.toggle();
                 }
             }
 
             _onRevokeApplication() {
-                this.dispatchEvent(new CustomEvent('revoke-application', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        application: this.application
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoApplicationRevoke');
+                dialog.applicationInstance = this.application;
+                dialog.open();
             }
 
             setApplication(application) {
@@ -767,10 +811,10 @@
                     return false;
                 }
 
-                var icons = e.detail.response.icons;
+                const icons = e.detail.response.icons;
 
                 icons.forEach(function(el) {
-                    var item = {
+                    const item = {
                         application_url: el.imgsrc,
                         icon_url: el.imgsrc,
                         launchurl: el.launchurl,
@@ -797,7 +841,7 @@
             }
 
             _onItemDropped(event) {
-                var item = event.detail.item;
+                const item = event.detail.item;
                 this._removeResourceFromFolder(item);
             }
 
@@ -806,7 +850,7 @@
             }
 
             _removeResourceFromFolder(item) {
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._getRemoveResourceFromFolderApi(item),
                         method: 'DELETE',
@@ -854,6 +898,46 @@
             _computeBreadcrumbsDataPage(isOnPersonal) {
                 return isOnPersonal ? 'home' : 'company-home';
             }
+
+            _onOpenMoveToFolderDialog(event) {
+                const applicationIcon = event.detail.applicationIcon,
+                    currentFolder = event.detail.currentFolder;
+
+                const dialog = this.shadowRoot.getElementById('appscoFoldersApplicationAdd');
+                dialog.setApplicationIcon(applicationIcon);
+                dialog.setCurrentFolder(currentFolder);
+                dialog.setCompany(this.company.company);
+                dialog.toggle();
+            }
+
+            _computeFoldersApi(company) {
+                return company && company.company ?
+                    this.companyFoldersApi :
+                    this.foldersApi;
+            }
+
+            _onSearchApplications(event) {
+                this._showProgressBar();
+                this.filterApplicationsByTerm(event.detail.term);
+            }
+
+            _onSearchApplicationsClear() {
+                this.filterApplicationsByTerm('');
+            }
+
+            _onApplicationCredentialsChanged(event) {
+                const application = event.detail.application,
+                    message = 'You successfully changed ' + application.title + ' credentials.';
+
+                this._notify(message);
+            }
+
+            _onEditSharedApplication(event) {
+                const dialog = this.shadowRoot.getElementById('appscoCompanyResourceSettingsDialog');
+                dialog.setApplication(event.detail.application);
+                dialog.toggle();
+            }
+
         }
         window.customElements.define(AppscoDashboardFolderPage.is, AppscoDashboardFolderPage);
     </script>

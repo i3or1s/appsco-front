@@ -284,7 +284,7 @@ Custom property | Description | Default
                      */
                     account: {
                         type: Object,
-                        notify: true
+                        observer: '_accountChanged'
                     },
 
                     _accountExists: {
@@ -331,14 +331,6 @@ Custom property | Description | Default
                     this._checkAccountInfo();
                     this._checkIfAccountExists();
                 });
-
-                Polymer.RenderStatus.afterNextRender(this, function() {
-                    this._addListeners();
-                });
-            }
-
-            _addListeners() {
-                this.addEventListener('account-changed', this._accountChanged);
             }
 
             _checkIfAccountExists() {

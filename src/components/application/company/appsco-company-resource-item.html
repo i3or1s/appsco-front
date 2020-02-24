@@ -191,8 +191,7 @@ Custom property | Description | Default
 
             _onItemSettingsAction(evt) {
                 evt.preventDefault();
-                evt.bubbles = false;
-                evt.cancelBubble = true;
+                evt.stopPropagation();
                 this.dispatchEvent(new CustomEvent('resource-settings', {
                     bubbles: true,
                     composed: true,

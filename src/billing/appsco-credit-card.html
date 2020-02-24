@@ -16,12 +16,14 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-credit-card">
     <template>
         <style>
             #stripe_cc_dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             #stripe_cc_dialog paper-dialog-scrollable > * {
@@ -66,7 +68,6 @@
         </iron-ajax>
 
         <paper-dialog id="stripe_cc_dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -78,7 +79,7 @@
                                    loader-alt="Appsco is processing request"
                                    multi-color></appsco-loader>
                     <p>Once new credit card is added previous credit card will be lost.</p>
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <div class="form-row">
                         <div class="input-container" id="card_number"></div>
                     </div>
@@ -98,15 +99,11 @@
 
     </template>
     <script>
-        class AppscoCreditCard extends Polymer.Element {
+        class AppscoCreditCard extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
             static get is() { return 'appsco-credit-card'; }
 
             static get properties() {
                 return {
-                    authorizationToken: {
-                        type: String
-                    },
-
                     companyApi: {
                         type: String
                     },
@@ -121,11 +118,6 @@
                         computed: '_computePublicKeyApi(companyApi)'
                     },
 
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     _stripePublicKey: {
                         type: String,
                         value: ''
@@ -136,14 +128,10 @@
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
-                    /**
-                     * Target for iron-a11y-keys component.
-                     * Submit form on enter.
-                     */
                     _target: {
                         type: Object
                     }
@@ -158,20 +146,6 @@
                     document.body.appendChild(this.root);
                     this._target = this.shadowRoot.getElementById('creditCardForm');
                 });
-            }
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
             }
 
             _computeCreditCardApi(companyApi) {
@@ -216,7 +190,7 @@
 
             _stripeResponseHandler(result) {
                 if (result.error) {
-                    this._error = result.error.message;
+                    this._errorMessage = result.error.message;
                     this._hideLoader();
                     return;
                 }

@@ -13,8 +13,15 @@
 <link rel="import" href="application/appsco-application-subscribers-page.html">
 <link rel="import" href="application/appsco-application-log-page.html">
 <link rel="import" href="application/appsco-resource-image-settings.html">
-
 <link rel="import" href="components/account/appsco-account-image.html">
+<link rel="import" href="application/appsco-resource-page-actions.html">
+
+<link rel="import" href="components/application/appsco-application-share.html">
+<link rel="import" href="components/application/appsco-application-subscriber-revoke.html">
+<link rel="import" href="components/application/appsco-application-remove.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-resource-page">
     <template>
@@ -204,8 +211,11 @@
                                 name="appsco-application-subscribers-page"
                                 application="{{ application }}"
                                 authorization-token="[[ authorizationToken ]]"
-                                on-back="_onResourceBack"
                                 account="[[ account ]]"
+                                on-subscription-revoke="_onSubscriptionRevoke"
+                                on-enable-subscribers-search-action="_onEnableSubscribersSearchAction"
+                                on-disable-subscribers-search-action="_onDisableSubscribersSearchAction"
+                                on-back="_onResourceBack"
                                 on-subscribers-loaded="_pageLoaded"
                         ></appsco-application-subscribers-page>
 
@@ -229,13 +239,33 @@
                 url="[[ applicationsApi ]]"
                 on-error="_onApplicationError"
                 on-response="_onApplicationResponse"
-                headers="[[ _computedHeaders ]]">
+                headers="[[ _headers ]]">
         </iron-ajax>
+
+        <appsco-application-share
+                id="appscoApplicationShare"
+                authorization-token="[[ authorizationToken ]]"
+                accounts-api="[[ accountsApi ]]">
+        </appsco-application-share>
+
+        <appsco-application-remove
+                id="appscoApplicationRemove"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-application-remove>
+
+        <appsco-application-subscriber-revoke
+                id="appscoApplicationSubscriberRevoke"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-application-subscriber-revoke>
 
     </template>
 
     <script>
-        class AppscoResourcePage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoResourcePage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-resource-page'; }
 
             static get properties() {
@@ -272,20 +302,6 @@
                         type: String,
                         value: 'appsco-application-components-page',
                         notify: true
-                    },
-
-                    authorizationToken: {
-                        type: String,
-                        value: ''
-                    },
-
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _computedHeaders: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
                     },
 
                     accountsApi: {
@@ -381,7 +397,14 @@
 
                 Polymer.RenderStatus.afterNextRender(this, function() {
                     this._getApplication();
+                    this._addListeners();
                 });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+                this.toolbar.addEventListener('search-subscribers', this._onSearchSubscribers.bind(this));
+                this.toolbar.addEventListener('search-subscribers-clear', this._onSearchSubscribersClear.bind(this));
             }
 
             _onApplicationsApiChanged() {
@@ -399,19 +422,6 @@
                 }
             }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            }
-
             _computeResourceImageSettingsApi(resource) {
                 return resource.application && resource.application.meta ? resource.application.meta.change_application_image : null;
             }
@@ -422,7 +432,7 @@
             }
 
             _getApplication() {
-                if (!this.application.self && this.applicationsApi && this._computedHeaders) {
+                if (!this.application.self && this.applicationsApi && this._headers) {
                     this.$.ironAjaxGetApplication.url = this.iconsApi + this.route.path;
                     this.$.ironAjaxGetApplication.generateRequest();
                 }
@@ -430,7 +440,7 @@
             }
 
             _onApplicationResponse(event) {
-                var icon = event.detail.response.icon;
+                const icon = event.detail.response.icon;
 
                 if (icon.owner) {
                     this.application = event.detail.response.icon;
@@ -474,21 +484,13 @@
             }
 
             _onShareApplication() {
-                this.dispatchEvent(new CustomEvent('share-application', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        application: this.application
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoApplicationShare');
+                dialog.setApplication(this.application);
+                dialog.toggle();
             }
 
             _onOpenApplication() {
                 window.open(this.application.meta.plugin_go, '_blank');
-            }
-
-            _onRemoveApplication() {
-                this.dispatchEvent(new CustomEvent('remove-application', { bubbles: true, composed: true }));
             }
 
             resetPage() {
@@ -504,7 +506,7 @@
             }
 
             _onPageAnimationFinish(event) {
-                var fromPage = event.detail.fromPage,
+                const fromPage = event.detail.fromPage,
                     toPage = event.detail.toPage;
 
                 if('appsco-application-subscribers-page' === fromPage.getAttribute('name')) {
@@ -521,6 +523,41 @@
                     default:
                         break;
                 }
+            }
+
+            _searchSubscribers(term) {
+                this._showProgressBar();
+                this.searchSubscribers(term);
+            }
+
+            _onSearchSubscribers(event) {
+                this._searchSubscribers(event.detail.term);
+            }
+
+            _onSearchSubscribersClear() {
+                this._searchSubscribers('');
+            }
+
+            _onRemoveApplication() {
+                const dialog = this.shadowRoot.getElementById('appscoApplicationRemove');
+                dialog.setApplication(this.application);
+                dialog.open();
+            }
+
+            _onSubscriptionRevoke(event) {
+                const dialog = this.shadowRoot.getElementById('appscoApplicationSubscriberRevoke');
+                dialog.application =   event.detail.application;
+                dialog.revokeAccount = event.detail.account;
+
+                dialog.open();
+            }
+
+            _onEnableSubscribersSearchAction() {
+                this.toolbar.enableSubscribersSearchAction();
+            }
+
+            _onDisableSubscribersSearchAction() {
+                this.toolbar.disableSubscribersSearchAction();
             }
         }
         window.customElements.define(AppscoResourcePage.is, AppscoResourcePage);

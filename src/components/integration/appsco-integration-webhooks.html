@@ -136,7 +136,7 @@
             }
 
             removeIntegrationWatcher(watcher) {
-                let watchers = JSON.parse(JSON.stringify(this._watcherList)),
+                const watchers = JSON.parse(JSON.stringify(this._watcherList)),
                     length = watchers.length;
 
                 for (let i = 0; i < length; i++) {

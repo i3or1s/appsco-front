@@ -14,10 +14,29 @@
 <link rel="import" href="provisioning/appsco-integration-rules-page.html">
 <link rel="import" href="provisioning/appsco-integration-webhooks-page.html">
 <link rel="import" href="components/integration/appsco-integration-templates.html">
+<link rel="import" href="provisioning/appsco-manage-integration-page-actions.html">
+
+<link rel="import" href="components/integration/appsco-remove-integration.html">
+<link rel="import" href="components/integration/appsco-register-integration-webhook.html">
+<link rel="import" href="components/integration/appsco-unregister-integration-webhook.html">
+<link rel="import" href="components/integration/appsco-add-integration-rule.html">
+<link rel="import" href="components/integration/appsco-edit-integration-rule.html">
+<link rel="import" href="components/integration/appsco-run-integration-rule.html">
+<link rel="import" href="components/integration/appsco-remove-integration-rule.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-manage-integration-page">
     <template>
         <style include="appsco-manage-page-styles">
+            :host {
+                --paper-dropdown-menu-icon: {
+                    color: var(--primary-text-color);
+                    width: 22px;
+                    height: 22px;
+                };
+            }
             :host div[resource] {
                 height: calc(100% - 32px - 20px);
             }
@@ -255,6 +274,10 @@
                                 integration="[[ integration ]]"
                                 authorization-token="[[ authorizationToken ]]"
                                 api-errors="[[ apiErrors ]]"
+                                on-add-integration-rule="_onAddIntegrationRuleAction"
+                                on-edit-integration-rule="_onEditIntegrationRuleAction"
+                                on-run-integration-rule="_onRunIntegrationRuleAction"
+                                on-remove-integration-rule="_onRemoveIntegrationRuleAction"
                                 on-back="_onResourceBack">
                         </appsco-integration-rules-page>
 
@@ -263,6 +286,8 @@
                                 name="appsco-integration-webhooks-page"
                                 integration="[[ integration ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-register-integration-webhook="_onRegisterIntegrationWebhook"
+                                on-unregister-integration-webhook="_onUnregisterIntegrationWebhook"
                                 api-errors="[[ apiErrors ]]"
                                 on-back="_onResourceBack">
                         </appsco-integration-webhooks-page>
@@ -287,6 +312,7 @@
                             api-errors="[[ apiErrors ]]"
                             type="integration-template"
                             size="1000"
+                            on-integration-rule-added="_onIntegrationRuleAdded"
                             on-list-loaded="_evaluateInfoSectionActive"
                             on-list-empty="_evaluateInfoSectionActive">
                     </appsco-integration-templates>
@@ -294,10 +320,62 @@
             </div>
         </appsco-content>
 
+        <appsco-remove-integration
+                id="appscoRemoveIntegration"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-remove-integration>
+
+        <appsco-register-integration-webhook
+                id="appscoRegisterIntegrationWebhook"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-webhook-registered="_onIntegrationWebhookRegistered">
+        </appsco-register-integration-webhook>
+
+        <appsco-unregister-integration-webhook
+                id="appscoUnegisterIntegrationWebhook"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-webhook-unregistered="_onIntegrationWebhookUnregistered">
+        </appsco-unregister-integration-webhook>
+
+        <appsco-add-integration-rule
+                id="appscoAddIntegrationRule"
+                authorization-token="[[ authorizationToken ]]"
+                on-integration-rule-added="_onIntegrationRuleAdded"
+                api-errors="[[ apiErrors ]]">
+        </appsco-add-integration-rule>
+
+        <appsco-edit-integration-rule
+                id="appscoEditIntegrationRule"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-rule-edited="_onIntegrationRuleEdited">
+        </appsco-edit-integration-rule>
+
+        <appsco-run-integration-rule
+                id="appscoRunIntegrationRule"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-rule-run="_onIntegrationRuleRun">
+        </appsco-run-integration-rule>
+
+        <appsco-remove-integration-rule
+                id="appscoRemoveIntegrationRule"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-rule-removed="_onIntegrationRuleRemoved">
+        </appsco-remove-integration-rule>
+
     </template>
 
     <script>
-        class AppscoManageIntegrationPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoManageIntegrationPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-manage-integration-page'; }
 
             static get properties() {
@@ -337,11 +415,6 @@
                         computed: '_computeIntegrationTemplatesApi(integration)'
                     },
 
-                    authorizationToken: {
-                        type: String,
-                        value: ''
-                    },
-
                     _isIntegrationRA: {
                         type: Boolean,
                         computed: '_computeIsIntegrationRA(integration)'
@@ -357,15 +430,6 @@
                         value: function () {
                             return {};
                         }
-                    },
-
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
                     },
 
                     _hasDownloadableConfig: {
@@ -463,7 +527,7 @@
              */
             _dateFormat(value) {
                 if (value) {
-                    var options = {
+                    const options = {
                         year: 'numeric', month: 'short', day: 'numeric',
                         hour: 'numeric', minute: 'numeric', second: 'numeric'
                     };
@@ -514,7 +578,7 @@
             }
 
             _evaluateInfoSectionActive() {
-                var appscoIntegrationTemplatesComponent = this.shadowRoot.getElementById('appscoIntegrationTemplates');
+                const appscoIntegrationTemplatesComponent = this.shadowRoot.getElementById('appscoIntegrationTemplates');
 
                 this._infoSectionActive = (appscoIntegrationTemplatesComponent &&
                 (0 < appscoIntegrationTemplatesComponent.getCurrentCount()) &&
@@ -583,20 +647,7 @@
                 this.set('integration', {});
                 this.set('integration', event.detail.integration);
                 this._showComponentsPage();
-            }
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
+                this._hideProgressBar();
             }
 
             _computeWebhookApi(integration) {
@@ -608,51 +659,43 @@
             }
             
             _computeIsIntegrationRA(integration) {
-                return integration && integration.integration && integration.kind == 'ra';
+                return integration && integration.integration && integration.kind === 'ra';
             }
 
             _computeIsIntegrationPST(integration) {
-                return integration && integration.integration && integration.kind == 'pst';
+                return integration && integration.integration && integration.kind === 'pst';
             }
 
             _onResourceBack() {
                 this._showComponentsPage();
             }
 
-            _onRemoveIntegration() {
-                this.dispatchEvent(new CustomEvent('remove-integration', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        integration: this.integration
-                    }
-                }));
+            _onRemoveIntegration(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRemoveIntegration');
+                dialog.setIntegration(event.detail.integration);
+                dialog.open();
             }
 
             _onReauthorizeIntegration() {
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this.integration.integration.self + '?reauthorize_integration='+ this.integration.alias,
-                            method: 'POST',
-                            body: {
-                                "activate_integration[name]": this.integration.name,
-                                "activate_integration[kind]": this.integration.kind,
-                                "activate_integration[scheduleSyncInterval]":this.integration.scheduleSyncInterval
-                            },
-                            handleAs: 'text',
-                            headers: this._headers
-                        };
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this.integration.integration.self + '?reauthorize_integration=' + this.integration.alias,
+                        method: 'POST',
+                        body: {
+                            "activate_integration[name]": this.integration.name,
+                            "activate_integration[kind]": this.integration.kind,
+                            "activate_integration[scheduleSyncInterval]": this.integration.scheduleSyncInterval
+                        },
+                        handleAs: 'text',
+                        headers: this._headers
+                    };
 
                 request.send(options).then(function() {
                     if (200 === request.status) {
-                        var response = JSON.parse(request.response);
-                        this.dispatchEvent(new CustomEvent('integration-reauthorized', {
-                            bubbles: true,
-                            composed: true,
-                            detail: {
-                                authorizationUrl: response.authorization_url
-                            }
-                        }));
+                        const response = JSON.parse(request.response);
+                        if (response.authorization_url) {
+                            window.location.href = response.authorization_url;
+                        }
                     }
                 }.bind(this), function() {
                     this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
@@ -674,21 +717,98 @@
             _computeHasDownloadableConfig(integration) {
                 return integration
                     && integration.integration
-                    && (integration.integration.alias == 3 || integration.integration.alias == 11) ;
+                    && (integration.integration.alias === 3 || integration.integration.alias === 11) ;
             }
 
             _downloadConfig() {
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this.integration.meta.config,
-                            method: 'GET',
-                            handleAs: 'text',
-                            headers: this._headers
-                        };
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this.integration.meta.config,
+                        method: 'GET',
+                        handleAs: 'text',
+                        headers: this._headers
+                    };
 
                 request.send(options).then(function() {
                     window.location = 'data:application/octet-stream;charset=utf-16le;base64,' + request.response;
                 }.bind(this));
+            }
+
+            _onIntegrationRequested(event) {
+                if (event.detail.authorizationUrl) {
+                    window.location.href = event.detail.authorizationUrl;
+                }
+            }
+
+            _onRegisterIntegrationWebhook(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRegisterIntegrationWebhook');
+
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationWebhook(event.detail.webhook);
+                dialog.open();
+            }
+
+            _onIntegrationWebhookRegistered(event) {
+                this.addIntegrationWatcher(event.detail.watcher);
+                this._notify('Web hook for ' + event.detail.integration.name + ' has been registered.');
+            }
+
+            _onUnregisterIntegrationWebhook(event) {
+                const dialog = this.shadowRoot.getElementById('appscoUnegisterIntegrationWebhook');
+
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationWebhook(event.detail.webhook);
+                dialog.open();
+            }
+
+            _onIntegrationWebhookUnregistered(event) {
+                this.removeIntegrationWatcher(event.detail.watcher);
+                this._notify('Web hook for ' + event.detail.integration.name + ' has been unregistered.');
+            }
+
+            _onAddIntegrationRuleAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAddIntegrationRule');
+                dialog.setIntegration(event.detail.integration);
+                dialog.open();
+            }
+
+            _onIntegrationRuleAdded(event) {
+                this.addIntegrationRule(event.detail.rule);
+                this._notify('Rule for ' + event.detail.integration.name + ' has been successfully added.');
+            }
+
+            _onEditIntegrationRuleAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoEditIntegrationRule');
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationRule(event.detail.rule);
+                dialog.open();
+            }
+
+            _onIntegrationRuleEdited(event) {
+                this.modifyIntegrationRule(event.detail.rule);
+                this._notify('Rule for ' + event.detail.integration.name + ' has been successfully modified.');
+            }
+            _onRunIntegrationRuleAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRunIntegrationRule');
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationRule(event.detail.rule);
+                dialog.open();
+            }
+
+            _onIntegrationRuleRun(event) {
+                this._notify('Rule for ' + event.detail.integration.name + ' has been applied.');
+            }
+
+            _onRemoveIntegrationRuleAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRemoveIntegrationRule');
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationRule(event.detail.rule);
+                dialog.open();
+            }
+
+            _onIntegrationRuleRemoved(event) {
+                this.removeIntegrationRule(event.detail.rule);
+                this._notify('Rule for ' + event.detail.integration.name + ' has been removed.');
             }
         }
         window.customElements.define(AppscoManageIntegrationPage.is, AppscoManageIntegrationPage);

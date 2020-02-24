@@ -39,6 +39,7 @@
 
                 --paper-card-header-text: {
                     color: var(--primary-text-color);
+                    @apply --full-page-paper-card-header-text;
                 };
             }
             .page-close-action {
@@ -86,7 +87,7 @@
                 </p>
                 <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color></appsco-loader>
 
-                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                 <div class="logo-upload">
                     <label for="appscoCompanyLogoSettings" class="label">Company logo</label>
@@ -417,7 +418,7 @@
             }
 
             _onFormError(event) {
-                this._error = event.detail.error.message;
+                this._errorMessage = event.detail.error.message;
                 this._hideLoader();
             }
 
@@ -436,7 +437,7 @@
             }
 
             _onKeyUp() {
-                this._error = '';
+                this._errorMessage = '';
             }
         }
         window.customElements.define(AppscoCompanyBrandedLoginPage.is, AppscoCompanyBrandedLoginPage);

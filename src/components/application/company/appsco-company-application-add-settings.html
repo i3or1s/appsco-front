@@ -84,7 +84,7 @@ Custom property | Description | Default
 
         <div id="appscoApplicationSettings">
 
-            <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+            <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
             <iron-form
                     hidden
@@ -94,7 +94,7 @@ Custom property | Description | Default
                 <form
                       method="POST"
                       action$="[[ addApplicationApi ]]">
-                    <paper-input type="text" name="application_templates[]" value="[[ application.self ]]"></paper-input>
+                    <paper-input hidden type="text" name="application_templates[]" value="[[ application.self ]]"></paper-input>
                 </form>
             </iron-form>
 
@@ -140,10 +140,9 @@ Custom property | Description | Default
                 </div>
             </template>
 
-            <form is="iron-form"
-                  id="applicationClaimsForm"
-                  class="claims-form">
-            </form>
+            <iron-form id="applicationClaimsForm" class="claims-form">
+                <form></form>
+            </iron-form>
 
             <template is="dom-if" if="[[ !_claimTypeIndividual ]]">
                 <template is="dom-if" if="[[ _unPwAuthType ]]"
@@ -320,7 +319,7 @@ Custom property | Description | Default
                         type: String
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -677,7 +676,7 @@ Custom property | Description | Default
              * @private
              */
             _onFormError(event) {
-                this._error = event.detail.error.message;
+                this._errorMessage = event.detail.error.message;
                 this.dispatchEvent(new CustomEvent('form-error', { bubbles: true, composed: true }));
             }
 

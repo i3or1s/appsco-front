@@ -41,6 +41,11 @@ Custom property | Description | Default
                 margin: 0 0 10px 0;
                 @apply --appsco-account-item;
             }
+            :host {
+                --item-basic-info: {
+                    padding: 0 10px;
+                }
+            }
         </style>
 
         <iron-ajax id="getListApiRequest"

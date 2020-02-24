@@ -16,6 +16,19 @@
 <link rel="import" href="components/application/appsco-application-subscribers.html">
 <link rel="import" href="components/application/appsco-application-details.html">
 <link rel="import" href="components/application/appsco-application-log.html">
+<link rel="import" href="company/appsco-company-home-page-actions.html">
+
+<link rel="import" href="components/folder/appsco-add-folder.html">
+<link rel="import" href="components/folder/appsco-folders-remove.html">
+<link rel="import" href="components/folder/appsco-folders-rename.html">
+<link rel="import" href="components/folder/appsco-folders-application-add.html">
+<link rel="import" href="components/application/appsco-application-revoke.html">
+<link rel="import" href="application/appsco-application-settings-dialog.html">
+<link rel="import" href="components/application/appsco-application-share.html">
+<link rel="import" href="components/application/company/appsco-company-resource-settings-dialog.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-company-home-page">
     <template>
@@ -153,7 +166,7 @@
                 url="[[ netscalerApi ]]"
                 on-error="_onError"
                 on-response="_onResponseNetscaler"
-                headers="{{ _computedHeaders }}"
+                headers="{{ _headers }}"
                 debounce-duration="300"
         ></iron-ajax>
 
@@ -181,8 +194,10 @@
                                 type="folder"
                                 load-more
                                 authorization-token="[[ authorizationToken ]]"
-                                list-api="[[ foldersApi ]]"
+                                list-api="[[ companyFoldersApi ]]"
                                 on-list-loaded="_showFolders"
+                                on-open-rename-folder-dialog="_onOpenRenameFolderDialog"
+                                on-open-remove-folder-dialog="_onOpenRemoveFolderDialog"
                                 on-item="_onFolderAction"></appsco-folders>
                     </div>
 
@@ -202,6 +217,8 @@
                                 on-application="_onApplication"
                                 on-application-removed="_onApplicationRemoved"
                                 on-loaded="_pageLoaded"
+                                on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
+                                on-edit-shared-application="_onEditSharedApplication"
                                 on-empty-load="_pageLoaded"></appsco-applications>
                     </div>
 
@@ -320,12 +337,70 @@
 
         </appsco-content>
 
+        <appsco-folders-application-add
+                id="appscoFoldersApplicationAdd"
+                authorization-token="[[ authorizationToken ]]"
+                folders-api="[[ foldersApi ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-folders-application-add>
+
+        <appsco-add-folder id="appscoAddFolder"
+                           authorization-token="[[ authorizationToken ]]"
+                           folders-api="[[ foldersApi ]]"
+                           api-errors="[[ apiErrors ]]"
+                           company="[[ company ]]"
+                           on-folder-added="_onFolderAdded">
+        </appsco-add-folder>
+
+        <appsco-folders-rename
+                id="appscoFoldersRename"
+                authorization-token="[[ authorizationToken ]]"
+                folders-api="[[ foldersApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-folder-renamed="_onFolderRenamed">
+        </appsco-folders-rename>
+
+        <appsco-folders-remove
+                id="appscoFoldersRemove"
+                authorization-token="[[ authorizationToken ]]"
+                folders-api="[[ foldersApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-folder-removed="_onFolderRemoved">
+        </appsco-folders-remove>
+
+        <appsco-application-revoke
+                id="appscoApplicationRevoke"
+                authorization-token="[[ authorizationToken ]]"
+                on-application-instance-removed="_onApplicationInstanceRevoked">
+        </appsco-application-revoke>
+
+        <appsco-application-settings-dialog
+                id="appscoApplicationSettingsDialog"
+                account="[[ account ]]"
+                authorization-token="[[ authorizationToken ]]"
+                on-application-settings-saved="_onApplicationCredentialsChanged">
+        </appsco-application-settings-dialog>
+
+        <appsco-application-share
+                id="appscoApplicationShare"
+                authorization-token="[[ authorizationToken ]]"
+                accounts-api="[[ accountsApi ]]">
+        </appsco-application-share>
+
+        <appsco-company-resource-settings-dialog
+                id="appscoCompanyResourceSettingsDialog"
+                account="[[ account ]]"
+                authorization-token="[[ authorizationToken ]]"
+                domain="[[ domain ]]">
+        </appsco-company-resource-settings-dialog>
     </template>
 
     <script>
         class AppscoCompanyHomePage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
-            Polymer.AppscoDropHTMLElementBehavior
+            Polymer.AppscoDropHTMLElementBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-company-home-page'; }
 
@@ -356,8 +431,16 @@
                     },
 
                     foldersApi: {
+                        type: String
+                    },
+
+                    accountsApi: {
+                        type: String
+                    },
+
+                    companyFoldersApi: {
                         type: String,
-                        observer: '_foldersApiChanged'
+                        observer: '_companyFoldersApiChanged'
                     },
 
                     pageConfig: {
@@ -366,6 +449,10 @@
                             return {};
                         },
                         observer: '_onPageConfigChanged'
+                    },
+
+                    domain: {
+                        type: String
                     },
 
                     _shared: {
@@ -387,11 +474,6 @@
 
                     _selectedTab: {
                         type: Number
-                    },
-
-                    authorizationToken: {
-                        type: String,
-                        value: ''
                     },
 
                     applicationsApi: {
@@ -444,11 +526,6 @@
                         reflectToAttribute: true
                     },
 
-                    _computedHeaders: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     animationConfig: {
                         type: Object
                     },
@@ -456,6 +533,14 @@
                     pageLoaded: {
                         type: Boolean,
                         value: false
+                    },
+
+                    apiErrors: {
+                        type: Object
+                    },
+
+                    toolbar: {
+                        type: Object
                     }
                 };
             }
@@ -492,9 +577,19 @@
                         this.updateStyles();
                     }
                 });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
             }
 
-            _foldersApiChanged() {
+            _addListeners() {
+                this.toolbar.addEventListener('search', this._onSearchApplications.bind(this));
+                this.toolbar.addEventListener('add-new-folder', this._onAddNewFolderAction.bind(this));
+                this.toolbar.addEventListener('search-clear', this._onSearchApplicationsClear.bind(this));
+            }
+
+            _companyFoldersApiChanged() {
                 this._hideFolders();
             }
 
@@ -513,14 +608,8 @@
                 this.updateStyles();
             }
 
-            _computeHeaders (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            }
-
             _computeApplicationShared(application) {
-                return application && !application.owner;
+                return false;// application && !application.owner;
             }
 
             _computeEditClaims(application) {
@@ -575,21 +664,29 @@
 
             _onApplicationEdit(event) {
                 this.set('application', event.detail.application);
-                this.dispatchEvent(new CustomEvent('edit-application', { bubbles: true, composed: true }));
-            }
-
-            _onApplicationInfoEdit() {
-                this.dispatchEvent(new CustomEvent('info-edit-application', { bubbles: true, composed: true }));
-            }
-
-            _onApplicationEditCredentials() {
-                this.dispatchEvent(new CustomEvent('info-edit-application-credentials', {
+                this.dispatchEvent(new CustomEvent('edit-application', {
                     bubbles: true,
                     composed: true,
                     detail: {
                         application: this.application
                     }
                 }));
+            }
+
+            _onApplicationInfoEdit() {
+                this.dispatchEvent(new CustomEvent('info-edit-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
+
+            _onApplicationEditCredentials() {
+                const dialog = this.shadowRoot.getElementById('appscoApplicationSettingsDialog');
+                dialog.setApplication(this.application);
+                dialog.toggle();
             }
 
             _onApplication(event) {
@@ -601,32 +698,18 @@
             }
 
             _onCitrixResourceAction(event) {
-                var application = event.detail.application;
-                var a = document.createElement('a');
-                var blob = new Blob([application.icocontent], {'type':'application/octet-stream'});
+                const application = event.detail.application;
+                const a = document.createElement('a');
+                const blob = new Blob([application.icocontent], {'type': 'application/octet-stream'});
                 a.href = window.URL.createObjectURL(blob);
                 a.download = application.title+'.ica';
                 a.click();
             }
 
             _onShareApplication() {
-                this.dispatchEvent(new CustomEvent('share-application', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        application: this.application
-                    }
-                }));
-            }
-
-            _onRevokeApplication() {
-                this.dispatchEvent(new CustomEvent('revoke-application', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        application: this.application
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoApplicationShare');
+                dialog.setApplication(this.application);
+                dialog.toggle();
             }
 
             _onPageConfigChanged(newValue) {
@@ -636,7 +719,7 @@
                     return false;
                 }
 
-                var appscoApplicationsComponent = this.$.appscoApplications;
+                const appscoApplicationsComponent = this.$.appscoApplications;
 
                 if (newValue.display_style) {
                     appscoApplicationsComponent.setDisplayStyle(newValue.display_style);
@@ -706,9 +789,9 @@
                 if (!e.detail.response) {
                     return false;
                 }
-                var icons = e.detail.response.icons;
+                const icons = e.detail.response.icons;
                 icons.forEach(function(el, index) {
-                    var item = {
+                    const item = {
                         application_url: el.imgsrc,
                         icon_url: el.imgsrc,
                         launchurl: el.launchurl,
@@ -749,6 +832,100 @@
                     }
                 }));
             }
+
+            _onSearchApplications(event) {
+                this._showProgressBar();
+                this.filterApplicationsByTerm(event.detail.term);
+            }
+
+            _onOpenMoveToFolderDialog(event) {
+                const applicationIcon = event.detail.applicationIcon,
+                    currentFolder = event.detail.currentFolder;
+
+                const dialog = this.shadowRoot.getElementById('appscoFoldersApplicationAdd');
+                dialog.setApplicationIcon(applicationIcon);
+                dialog.setCurrentFolder(currentFolder);
+                dialog.setCompany(this.company);
+                dialog.toggle();
+            }
+
+            _onOpenRenameFolderDialog(event) {
+                const folderItem = event.detail.folderItem,
+                    dialog = this.shadowRoot.getElementById('appscoFoldersRename');
+
+                dialog.setFolderItem(folderItem);
+                dialog.setCompany(this.company);
+                dialog.toggle();
+            }
+
+            _onOpenRemoveFolderDialog(event) {
+                const folderItem = event.detail.folderItem,
+                    dialog = this.shadowRoot.getElementById('appscoFoldersRemove');
+                dialog.setFolderItem(folderItem);
+                dialog.setCompany(this.company);
+                dialog.toggle();
+            }
+
+            _onFolderRenamed(event) {
+                const folder = event.detail.folder;
+
+                this.renameFolder(folder);
+                this._notify('Dashboard folder ' + folder.title + ' has been renamed.');
+                this._hideProgressBar();
+            }
+
+            _onFolderRemoved(event) {
+                const folder = event.detail.folder;
+
+                this.removeFolder(folder);
+                this._notify('Dashboard folder ' + folder.title + ' has been removed.');
+                this._hideProgressBar();
+            }
+
+            _onAddNewFolderAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAddFolder');
+
+                if (dialog.$) {
+                    dialog.open();
+                }
+            }
+
+            _onFolderAdded(event) {
+                const folder = event.detail.folder;
+
+                this.addFolder(folder);
+                this._notify('Dashboard folder ' + folder.title + ' has been successfully created.');
+            }
+
+            _onSearchApplicationsClear() {
+                this.filterApplicationsByTerm('');
+            }
+
+            _onRevokeApplication() {
+                const dialog = this.shadowRoot.getElementById('appscoApplicationRevoke');
+                dialog.applicationInstance = this.application;
+                dialog.open();
+            }
+
+            _onApplicationInstanceRevoked(event) {
+                this.removeApplications([event.detail.applicationInstance]);
+                this.setDefaultApplication();
+                this._notify('You have successfully revoked access to ' + event.detail.applicationInstance.application.title + '.');
+            }
+
+            _onApplicationCredentialsChanged(event) {
+                const application = event.detail.application,
+                    message = 'You successfully changed ' + application.title + ' credentials.';
+
+                this._notify(message);
+            }
+
+            _onEditSharedApplication(event) {
+                const dialog = this.shadowRoot.getElementById('appscoCompanyResourceSettingsDialog');
+                dialog.setApplication(event.detail.application);
+                dialog.toggle();
+            }
+
         }
         window.customElements.define(AppscoCompanyHomePage.is, AppscoCompanyHomePage);
     </script>

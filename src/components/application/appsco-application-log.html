@@ -89,7 +89,7 @@ Custom property | Description | Default
                 url="[[ _currentUrl ]]"
                 on-response="_handleResponse"
                 on-error="_handleError"
-                headers="{{ _headers }}"
+                headers="[[ _headers ]]"
                 debounce-duration="300">
         </iron-ajax>
 
@@ -138,7 +138,8 @@ Custom property | Description | Default
                         value: function () {
                             return {};
                         },
-                        notify: true
+                        notify: true,
+                        observer: '_init'
                     },
 
                     /**
@@ -205,14 +206,16 @@ Custom property | Description | Default
             ready() {
                 super.ready();
 
-                Polymer.RenderStatus.afterNextRender(this, function() {
+                Polymer.RenderStatus.beforeNextRender(this, function() {
                     this.load();
+                });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
                     this._addListeners();
                 });
             }
 
             _addListeners() {
-                this.addEventListener('application-changed', this._init);
                 this.addEventListener('on-request', this._loading);
             }
 

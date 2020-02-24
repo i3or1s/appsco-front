@@ -30,7 +30,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -104,7 +104,6 @@
         </iron-ajax>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -118,7 +117,7 @@
 
             <paper-dialog-scrollable>
                 <div class="dialog-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <div>
                         <p class="info">
@@ -299,7 +298,7 @@
 
             _onDialogClosed() {
                 this._purchaseLoader = false;
-                this._error = '';
+                this._errorMessage = '';
                 this.$.quantity.value = '';
                 this.$.quantity.invalid = false;
             }
@@ -309,7 +308,7 @@
             }
 
             _onPurchaseAction() {
-                var subscriptionsInput = this.$.quantity;
+                const subscriptionsInput = this.$.quantity;
 
                 if (subscriptionsInput.value.length === 0) {
                     subscriptionsInput.invalid = true;
@@ -317,7 +316,7 @@
                     return false;
                 }
 
-                var url, method = '';
+                let url, method = '';
                 if (this._subscription.id !== undefined) {
                     url = this.companyApi + '/billing/subscriptions/' + this._subscription.id;
                     method = 'PUT';
@@ -326,24 +325,21 @@
                     method = 'POST';
                 }
 
-                var request = document.createElement('iron-request'),
+                let request = document.createElement('iron-request'),
                     options = {
                         url: url,
                         method: method,
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     },
                     body = encodeURIComponent(this.$.quantity.name) +
-                            '=' +
-                            encodeURIComponent(this.$.quantity.value) +
-                            '&' +
-                            encodeURIComponent('subscription[period]') +
-                            "=" +
-                            encodeURIComponent(this.$.subscriptionPlan.selectedItem.value);
-                    if (this.$.couponCode.value) {
+                        '=' +
+                        encodeURIComponent(this.$.quantity.value) +
+                        '&' +
+                        encodeURIComponent('subscription[period]') +
+                        "=" +
+                        encodeURIComponent(this.$.subscriptionPlan.selectedItem.value);
+                if (this.$.couponCode.value) {
                         body +=
                             '&' +
                             encodeURIComponent(this.$.couponCode.name) +
@@ -359,12 +355,12 @@
                 request.send(options).then(
                     function(request) {
                         if (request.response.requires_action) {
-                            var stripe = Stripe(this._stripePublicKey);
-                            var elements = stripe.elements();
+                            const stripe = Stripe(this._stripePublicKey);
+                            const elements = stripe.elements();
 
                             stripe.handleCardPayment(request.response.client_secret).then(function(result) {
                                 if (result.error) {
-                                    this._error = 'An error occured';
+                                    this._errorMessage = 'An error occurred';
                                     this._purchaseLoader = false;
                                 } else {
                                     this._paymentCompleted(request.response);
@@ -376,14 +372,14 @@
                         this._paymentCompleted(request.response);
                     }.bind(this),
                     function() {
-                        this._error = request.response.message;
+                        this._errorMessage = request.response.message;
                         this._purchaseLoader = false;
                     }.bind(this)
                 );
             }
 
             _reCalculateAllPlans() {
-                var plansList = JSON.parse(JSON.stringify(this._plans));
+                const plansList = JSON.parse(JSON.stringify(this._plans));
                 this.set('_plans', []);
                 this.set('_plans', plansList);
             }
@@ -393,15 +389,12 @@
             }
 
             _paymentCompleted(response) {
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     options = {
                         url: response.on_confirm,
                         method: 'POST',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     };
                 request.send(options).then(function() {
                     this.$.dialog.close();

@@ -66,7 +66,7 @@
             }
 
             reset() {
-                var company = JSON.parse(JSON.stringify(this.company));
+                const company = JSON.parse(JSON.stringify(this.company));
 
                 this.set('company', {});
                 this.set('company', company);
@@ -77,7 +77,7 @@
             }
 
             _setNewImage(file) {
-                var reader = new FileReader();
+                const reader = new FileReader();
 
                 reader.onload = function(e) {
                     this._setObjectAttribute('company', 'dashboard_image', e.target.result);

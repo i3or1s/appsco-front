@@ -11,6 +11,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/application/appsco-application-add-settings.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-dialog-application-add">
     <template>
         <style>
@@ -20,7 +22,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -44,7 +46,6 @@
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-closed="_onDialogClosed">
@@ -89,24 +90,8 @@
                         }
                     },
 
-                    /**
-                     * Authorization token.
-                     */
-                    authorizationToken: {
-                        type: String
-                    },
-
                     dashboardApi: {
                         type: String
-                    },
-
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
                     },
 
                     _loader: {
@@ -129,36 +114,14 @@
                 this.addEventListener('form-error', this._hideLoader);
             }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-
             setApplicationTemplate(applicationTpl) {
                 this.applicationTemplate = applicationTpl;
             }
 
-            /**
-             * Toggles add applications dialog.
-             */
             toggle() {
                 this.$.dialog.toggle();
             }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
             _onDialogClosed() {
                 this._hideLoader();
                 this.reset();

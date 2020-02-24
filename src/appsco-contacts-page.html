@@ -18,12 +18,21 @@
 <link rel="import" href="components/account/appsco-account-details.html">
 <link rel="import" href="components/account/appsco-account-log.html">
 <link rel="import" href="components/components/appsco-page-behavior.html">
+<link rel="import" href="components/contact/appsco-contacts-page-actions.html">
+
+<link rel="import" href="components/contact/appsco-import-contacts.html">
+<link rel="import" href="components/contact/appsco-add-contact.html">
+<link rel="import" href="components/contact/appsco-delete-contacts.html">
+<link rel="import" href="components/group/appsco-resource-add-groups.html">
+<link rel="import" href="components/notifications/appsco-send-notification.html">
+<link rel="import" href="components/account/appsco-invitation-remove.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-contacts-page">
     <template>
         <style include="appsco-page-styles">
             :host {
-
                 --account-details-label: {
                     font-size: 12px;
                 };
@@ -34,6 +43,10 @@
                 --account-log-appsco-list-item: {
                     padding-top: 14px;
                     padding-bottom: 8px;
+                };
+
+                --item-basic-info: {
+                    padding: 0 10px;
                 };
 
                 --appsco-account-log-container: {
@@ -140,6 +153,7 @@
                                 on-remove="_onRemoveInvitationAction"
                                 on-loaded="_onInvitationsLoaded"
                                 on-empty-load="_onInvitationsEmptyLoad"
+                                on-invitation-resent="_onContactInvitationResent"
                                 on-observable-list-empty="_onObservableItemListChange"
                                 on-observable-list-filled="_onObservableItemListChange"
                         ></appsco-invitations>
@@ -204,13 +218,65 @@
 
         </appsco-content>
 
+        <appsco-add-contact
+                id="appscoAddContact"
+                authorization-token="[[ authorizationToken ]]"
+                add-contact-api="[[ companyContactsApi ]]"
+                add-invitation-api="[[ companyInvitationsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-contact-created="_onContactCreated"
+                on-invitation-created="_onInvitationCreated">
+        </appsco-add-contact>
+
+        <appsco-import-contacts
+                id="appscoImportContacts"
+                authorization-token="[[ authorizationToken ]]"
+                import-api="[[ importContactsApi ]]"
+                domain="[[ domain ]]"
+                on-import-finished="_onImportContactsFinished">
+        </appsco-import-contacts>
+
+        <appsco-delete-contacts
+                id="appscoContactsRemove"
+                contacts="[[ _selectedContacts ]]"
+                company-api="[[ companyApi ]]"
+                authorization-token="[[ authorizationToken ]]"
+                on-contacts-removed="_onDeletedContacts"
+                on-contacts-remove-failed="_onDeleteContactsFailed">
+        </appsco-delete-contacts>
+
+        <appsco-resource-add-groups
+                id="appscoShareToGroupDialog"
+                authorization-token="[[ authorizationToken ]]"
+                groups-api="[[ groupsApi ]]">
+        </appsco-resource-add-groups>
+
+        <appsco-send-notification
+                id="appscoSendNotification"
+                authorization-token="[[ authorizationToken ]]"
+                company-notifications-api="[[ companyNotificationsApi ]]"
+                get-roles-api="[[ companyRolesApi ]]"
+                get-contacts-api="[[ companyContactsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-notification-sent="_onNotificationSent">
+        </appsco-send-notification>
+
+        <appsco-invitation-remove
+                id="appscoInvitationRemove"
+                authorization-token="[[ authorizationToken ]]"
+                on-invitation-removed="_onInvitationRemoved"
+                on-invitation-already-removed="_onInvitationAlreadyRemoved"
+                disable-upgrade$="[[!_applicationsApi]]">
+        </appsco-invitation-remove>
+
     </template>
 
     <script>
         class AppscoContactsPage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
             Polymer.AppscoPageBehavior,
-            Polymer.AppscoListObserverBehavior
+            Polymer.AppscoListObserverBehavior,
+            Appsco.PageMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-contacts-page'; }
 
@@ -263,6 +329,22 @@
                         type: String
                     },
 
+                    companyApi: {
+                        type: String
+                    },
+
+                    companyRolesApi: {
+                        type: String
+                    },
+
+                    companyNotificationsApi: {
+                        type: String
+                    },
+
+                    importContactsApi: {
+                        type: String
+                    },
+
                     _account: {
                         type: Object,
                         computed: '_computeAccount(contact)'
@@ -304,6 +386,13 @@
                         value: false
                     },
 
+                    _selectedContacts: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
                     _selectedTab: {
                         type: Number
                     },
@@ -311,6 +400,10 @@
                     _contactSelectAction: {
                         type: Number,
                         value: 0
+                    },
+
+                    apiErrors: {
+                        type: Object
                     }
                 };
             }
@@ -351,7 +444,20 @@
 
                 Polymer.RenderStatus.afterNextRender(this, function() {
                     this.set('_itemsComponent', this.$.appscoContacts);
+                    this._addListeners();
                 });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('search', this._onSearchContacts.bind(this));
+                this.toolbar.addEventListener('search-clear', this._onSearchContactsClear.bind(this));
+                this.toolbar.addEventListener('add-contact', this._onAddContactAction.bind(this));
+                this.toolbar.addEventListener('import-contacts', this._onImportContactsAction.bind(this));
+                this.toolbar.addEventListener('select-all-contacts', this._onSelectAllContactsAction.bind(this));
+                this.toolbar.addEventListener('delete-contacts', this._onDeleteContactsAction.bind(this));
+                this.toolbar.addEventListener('add-groups-to-contacts', this._onAddGroupsToContactsAction.bind(this));
+                this.toolbar.addEventListener('send-notification', this._onSendNotificationToContacts.bind(this));
+                this.toolbar.addEventListener('page-selected', this._onPageSelected.bind(this));
             }
 
             pageSelected() {
@@ -500,7 +606,7 @@
             }
 
             _resetPageActions() {
-                this.dispatchEvent(new CustomEvent('reset-page-actions', { bubbles: true, composed: true }));
+                this.toolbar.resetPageActions();
             }
 
             _resetPageLists() {
@@ -553,13 +659,9 @@
             }
 
             _onRemoveInvitationAction(event) {
-                this.dispatchEvent(new CustomEvent('remove-invitation', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        invitation: event.detail.invitation
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoInvitationRemove');
+                dialog.setInvitation(event.detail.invitation);
+                dialog.open();
             }
 
             _onContactsLoaded() {
@@ -619,7 +721,7 @@
             }
 
             _onSelectContactAction(event) {
-                var contact = event.detail.item;
+                const contact = event.detail.item;
 
                 clearTimeout(this._contactSelectAction);
 
@@ -635,7 +737,6 @@
 
                         this._hideBulkActions();
                     }
-
                 }.bind(this), 10);
                 this._handleItemsSelectedState();
             }
@@ -648,14 +749,6 @@
                         contact: event.detail.item
                     }
                 }));
-            }
-
-            _showBulkActions() {
-                this.dispatchEvent(new CustomEvent('show-bulk-actions', { bubbles: true, composed: true }));
-            }
-
-            _hideBulkActions() {
-                this.dispatchEvent(new CustomEvent('hide-bulk-actions', { bubbles: true, composed: true }));
             }
 
             _showInfo() {
@@ -681,6 +774,129 @@
             _onPageAnimationFinished() {
                 this._resetPageActions();
                 this._resetPageLists();
+            }
+
+            _searchContacts(term) {
+                this._showProgressBar();
+                this.filterByTerm(term);
+            }
+
+            _onSearchContacts(event) {
+                this._searchContacts(event.detail.term);
+            }
+
+            _onSearchContactsClear() {
+                this._searchContacts('');
+            }
+
+            _onAddContactAction() {
+                this.shadowRoot.getElementById('appscoAddContact').toggle();
+            }
+
+            _onContactCreated(event) {
+                const contact = event.detail.contact;
+
+                this.addContacts([contact]);
+                this._notify('Contact ' + contact.email + ' was successfully added.');
+            }
+
+            _onImportContactsAction() {
+                this.shadowRoot.getElementById('appscoImportContacts').toggle();
+            }
+
+            _onImportContactsFinished(event) {
+                const response = event.detail.response;
+                let message = response.numberOfContacts + ' contacts imported out of ' + response.total + '.'
+                    + ' Number of invitations created: ' + response.numberOfInvitations + '.'
+                    + ' Number of failed imports: ' + response.numberOfFailed + '.';
+
+                if (0 < response.numberOfContacts) {
+                    this.reloadContactsAndActions();
+                }
+
+                if (0 < response.numberOfInvitations) {
+                    this.reloadInvitations();
+                }
+
+                this._notify(message, true);
+                this._hideProgressBar();
+                this.dispatchEvent(new CustomEvent('reload-account-log', { bubbles: true, composed: true }));
+            }
+
+            _onSelectAllContactsAction() {
+                this.selectAllItems();
+            }
+
+            _onDeleteContactsAction() {
+                const selectedContacts = this.getSelectedContacts();
+
+                if (selectedContacts.length > 0) {
+                    this.set('_selectedContacts', selectedContacts);
+                    this.shadowRoot.getElementById('appscoContactsRemove').toggle();
+                }
+                else {
+                    this._onHideContactBulkActions();
+                }
+            }
+
+            _onDeletedContacts() {
+                this.removeContacts(this._selectedContacts);
+                this.hideBulkActions();
+                this._notify('Selected contacts were successfully removed from company.');
+            }
+
+            _onDeleteContactsFailed() {
+                this.set('_selectedContacts', []);
+                this._notify('An error occurred. Selected contacts were not removed from company. Please try again.');
+            }
+
+            _onAddGroupsToContactsAction() {
+                const selectedContacts = this.getSelectedContacts();
+                if (0 === selectedContacts.length) {
+                    return;
+                }
+
+                const dialog = this.shadowRoot.getElementById('appscoShareToGroupDialog');
+                dialog.setItems(selectedContacts);
+                dialog.setType('contact');
+                dialog.open();
+            }
+
+            _onSendNotificationToContacts() {
+                const dialog = this.shadowRoot.getElementById('appscoSendNotification');
+                dialog.setFilterType('contact');
+                dialog.toggle();
+                this._hideProgressBar();
+            }
+
+            _onNotificationSent(event) {
+                this._notify('Notification successfully sent to '+ event.detail.counter +' accounts.');
+            }
+
+            _onPageSelected(event) {
+                this.showPage(event.detail.page.toLowerCase());
+            }
+
+            _onContactInvitationResent(event) {
+                this._notify('Invitation for contact ' + event.detail.invitation.email + ' has been sent.');
+            }
+
+            _onInvitationCreated(event) {
+                const invitation = event.detail.invitation;
+                this.addInvitations([invitation]);
+                this._notify('Invitation for account ' + invitation.email + ' was successfully created and can be found under invitations.');
+            }
+
+            _onInvitationRemoved(event) {
+                const invitation = event.detail.invitation;
+                this.removeInvitations([invitation]);
+                this._notify('Invitation for account ' + invitation.email + ' has been removed.');
+            }
+
+            _onInvitationAlreadyRemoved(event) {
+                const invitation = event.detail.invitation;
+                this.removeInvitations([invitation]);
+                this._notify('Invitation for account ' + invitation.email + ' has already been removed.');
             }
         }
         window.customElements.define(AppscoContactsPage.is, AppscoContactsPage);

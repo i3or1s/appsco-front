@@ -14,6 +14,15 @@
 <link rel="import" href="components/components/appsco-date-format.html">
 <link rel="import" href="components/components/appsco-price.html">
 <link rel="import" href="billing/appsco-billing-invoice.html">
+<link rel="import" href="billing/appsco-billing-page-actions.html">
+
+<link rel="import" href="upgrade/appsco-upgrade-action.html">
+<link rel="import" href="billing/appsco-subscription-cancel.html">
+<link rel="import" href="billing/appsco-credit-card.html">
+<link rel="import" href="billing/appsco-billing-send-invoice.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-billing-page">
     <template>
@@ -36,7 +45,8 @@
                     border-color: var(--divider-color);
                 };
                 --paper-card-header-text: {
-                    padding: 8px 16px;
+                    @apply --page-paper-card-header-text;
+
                     font-size: 18px;
                     color: var(--primary-text-color);
                     border-bottom: 1px solid var(--divider-color);
@@ -202,7 +212,7 @@
                 id="billingCCRequest"
                 url="[[ _creditCardApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 auto
                 on-response="_handleCCResponse"
         ></iron-ajax>
@@ -211,7 +221,7 @@
                 id="billingSubscriptionRequest"
                 url="[[ _subscriptionApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 auto
                 on-response="_handleSubscriptionResponse"
         ></iron-ajax>
@@ -220,7 +230,7 @@
                 id="billingPlansRequest"
                 url="[[ _plansApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 auto
                 on-response="_handlePlansResponse"
         ></iron-ajax>
@@ -228,14 +238,14 @@
         <iron-ajax id="upcomingInvoiceCall"
                    url="[[ _upcomingInvoiceApi ]]"
                    handle-as="json"
-                   headers="[[ _computedHeaders ]]"
+                   headers="[[ _headers ]]"
                    on-response="_handleUpcomingInvoiceResponse"
         ></iron-ajax>
 
         <iron-ajax id="invoiceListCall"
                 url="[[ _invoiceListApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleInvoicesResponse"
         ></iron-ajax>
 
@@ -323,7 +333,6 @@
                     </template>
 
                     <div class="plan-upcoming-invoice flex-horizontal flex-start">
-
                         <template is="dom-if" if="[[ _cc.brand ]]">
                             <paper-card heading="Subscription plan" class="subscription-plan">
                                 <appsco-loader active="[[ _subscriptionLoader ]]"
@@ -543,10 +552,39 @@
                 </div>
             </div>
         </appsco-content>
+
+        <appsco-credit-card
+                id="appscoCreditCard"
+                authorization-token="[[ authorizationToken ]]"
+                company-api="[[ companyApi ]]">
+        </appsco-credit-card>
+
+        <appsco-upgrade-action
+                id="appscoUpgradeAction"
+                authorization-token="[[ authorizationToken ]]"
+                company-api="[[ companyApi ]]">
+        </appsco-upgrade-action>
+
+        <appsco-subscription-cancel
+                id="appscoSubscriptionCancel"
+                authorization-token="[[ authorizationToken ]]"
+                company-api="[[ companyApi ]]">
+        </appsco-subscription-cancel>
+
+        <appsco-billing-send-invoice
+                id="appscoBillingSendInvoice"
+                company="[[ currentCompany ]]"
+                authorization-token="[[ authorizationToken ]]"
+                company-api="[[ companyApi ]]"
+                on-invoice-sent="_onInvoiceSent">
+        </appsco-billing-send-invoice>
     </template>
 
     <script>
-        class AppscoBillingPage extends Polymer.Element {
+        class AppscoBillingPage extends Polymer.mixinBehaviors([
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-billing-page'; }
 
             static get properties() {
@@ -559,18 +597,12 @@
                         notify: true
                     },
 
-                    authorizationToken: {
-                        type: String,
-                        value: ''
+                    currentCompany: {
+                        type: Object
                     },
 
                     companyApi: {
                         type: String
-                    },
-
-                    _computedHeaders: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
                     },
 
                     _subscriptionApi: {
@@ -746,7 +778,12 @@
 
                 Polymer.RenderStatus.afterNextRender(this, function() {
                     this._pageLoaded();
+                    this._addListeners();
                 });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
             }
 
             pageSelected() {
@@ -778,19 +815,6 @@
                 }
             }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            }
-
             _computeSubscriptionApi(companyApi) {
                 return companyApi ? companyApi + '/billing/subscriptions' : null;
             }
@@ -816,7 +840,7 @@
             }
 
             _computePaymentMethod(cc) {
-                for (var key in cc) {
+                for (const key in cc) {
                     return true;
                 }
                 return false;
@@ -850,12 +874,8 @@
                 this.$.appscoContent.toggleSection('resource');
             }
 
-            _onManageCreditCard() {
-                this.dispatchEvent(new CustomEvent('manage-credit-card', { bubbles: true, composed: true }));
-            }
-
             _onSubscriptionChanged(subscription) {
-                for (key in subscription) {
+                for (const key in subscription) {
                     this._loadUpcomingInvoice();
                     this._loadInvoiceList();
 
@@ -875,7 +895,7 @@
             }
 
             _handleCCResponse(event) {
-                var response = event.detail.response;
+                const response = event.detail.response;
 
                 if (null == response || 0 === response.length) {
                     this.set('_cc', {});
@@ -890,7 +910,7 @@
             }
 
             _computeCCLogo(cc) {
-                var logoUrl = '/images/cc/';
+                let logoUrl = '/images/cc/';
 
                 if (cc.brand) {
                     if (cc.brand === 'American Express') {
@@ -908,12 +928,12 @@
             }
 
             _handleSubscriptionResponse(e) {
-                if(null == e.detail.response) {
+                if (null == e.detail.response) {
                     return;
                 }
 
-                var subscriptions = e.detail.response,
-                    activeSubscription = '';
+                const subscriptions = e.detail.response;
+                let activeSubscription = '';
 
                 subscriptions.forEach(function(element) {
                     if (element.type === 'company' && element.status === 'active') {
@@ -934,7 +954,7 @@
                     return;
                 }
 
-                var response = e.detail.response,
+                const response = e.detail.response,
                     plans = [];
                 response.forEach(function (element) {
                     if (element.type === 'company') {
@@ -965,7 +985,7 @@
             }
 
             _handleInvoicesResponse(event) {
-                var response = event.detail.response;
+                const response = event.detail.response;
 
                 this.set('_invoices', []);
 
@@ -975,11 +995,9 @@
                 }
 
                 if (response.length > 0) {
-
                     this._invoicesExists = true;
 
                     response.forEach(function(el, index) {
-
                         if (0 === index) {
                             this.lastInvoice = el;
                         }
@@ -1003,7 +1021,7 @@
             }
 
             _onInvoiceAction(event) {
-                var selectedInvoice = event.model.item;
+                const selectedInvoice = event.model.item;
 
                 if (selectedInvoice.id != this._selectedInvoice.id) {
                     this._selectedInvoice = selectedInvoice;
@@ -1052,35 +1070,32 @@
             }
 
             _onChangePlan() {
-                this.dispatchEvent(new CustomEvent('upgrade-active', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        'subscription': this._subscription,
-                        'plans': this._plans
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoUpgradeAction');
+                dialog.setSubscription(this._subscription);
+                dialog.setPlans(this._plans);
+                dialog.initializePage();
+                dialog.toggle();
             }
 
             _onCancelSubscription() {
-                this.dispatchEvent(new CustomEvent('cancel-subscription', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        'subscription': this._subscription
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoSubscriptionCancel');
+                dialog.setSubscription(this._subscription);
+                dialog.toggle();
             }
 
             _onSendInvoice() {
-                this.dispatchEvent(new CustomEvent('send-invoice', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        invoice: this._selectedInvoice,
-                        subscription: this._subscription
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoBillingSendInvoice');
+                dialog.setInvoice(this._selectedInvoice);
+                dialog.setSubscription(this._subscription);
+                dialog.toggle();
+            }
+
+            _onInvoiceSent(event) {
+                this._notify('Invoice has been sent to ' + event.detail.sentTo + '.');
+            }
+
+            _onManageCreditCard() {
+                this.shadowRoot.getElementById('appscoCreditCard').toggle();
             }
         }
         window.customElements.define(AppscoBillingPage.is, AppscoBillingPage);

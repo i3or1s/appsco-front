@@ -14,6 +14,14 @@
 <link rel="import" href="components/group/appsco-group-roles-page.html">
 <link rel="import" href="components/group/appsco-group-contacts-page.html">
 <link rel="import" href="components/group/appsco-group-resources-page.html">
+<link rel="import" href="components/group/appsco-manage-group-page-actions.html">
+
+<link rel="import" href="components/group/appsco-company-remove-group.html">
+<link rel="import" href="components/group/appsco-group-add-resource.html">
+<link rel="import" href="components/group/appsco-resource-remove-from-group.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-manage-group-page">
     <template>
@@ -116,6 +124,8 @@
                                 group="[[ group ]]"
                                 group-roles-api="[[ _groupRolesApi ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-add-item-to-group-event="_onAddItemToGroupAction"
+                                on-remove-company-role-from-group="_onRemoveCompanyRoleFromGroup"
                                 on-back="_onResourceBack">
                         </appsco-group-roles-page>
 
@@ -125,6 +135,8 @@
                                 group="[[ group ]]"
                                 group-contacts-api="[[ _groupContactsApi ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-add-item-to-group-event="_onAddItemToGroupAction"
+                                on-remove-company-contact-from-group="_onRemoveCompanyContactFromGroup"
                                 on-back="_onResourceBack">
                         </appsco-group-contacts-page>
 
@@ -134,6 +146,8 @@
                                 group="[[ group ]]"
                                 group-resources-api="[[ _groupResourcesApi ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-add-item-to-group-event="_onAddItemToGroupAction"
+                                on-remove-company-resource-from-group="_onRemoveCompanyResourceFromGroup"
                                 on-back="_onResourceBack">
                         </appsco-group-resources-page>
 
@@ -143,10 +157,32 @@
             </div>
         </appsco-content>
 
+        <appsco-company-remove-group
+                id="appscoCompanyRemoveGroup"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-company-remove-group>
+
+        <appsco-resource-remove-from-group
+                id="appscoResourceRemoveFromGroup"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-resource-remove-from-group>
+
+        <appsco-group-add-resource
+                id="appscoGroupAddResource"
+                group="[[ group ]]"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-group-add-resource>
+
     </template>
 
     <script>
-        class AppscoManageGroupPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoManageGroupPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-manage-group-page'; }
 
             static get properties() {
@@ -167,23 +203,21 @@
                         observer: '_onGroupChanged'
                     },
 
-                    authorizationToken: {
-                        type: String,
-                        value: ''
-                    },
-
                     groupApi: {
                         type: String,
                         observer: '_onGroupApiChanged'
                     },
 
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
+                    companyApplicationsApi: {
+                        type: String
+                    },
+
+                    companyRolesApi: {
+                        type: String
+                    },
+
+                    companyContactsApi: {
+                        type: String
                     },
 
                     _groupRolesApi: {
@@ -199,6 +233,10 @@
                     _groupResourcesApi: {
                         type: String,
                         computed: '_computeGroupResourcesApi(group)'
+                    },
+
+                    apiErrors: {
+                        type: Object
                     },
 
                     mediumScreen: {
@@ -275,7 +313,12 @@
 
                 Polymer.RenderStatus.afterNextRender(this, function() {
                     this._getGroup();
+                    this._addListeners();
                 });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
             }
 
             reloadPage() {
@@ -284,10 +327,9 @@
             }
 
             addGroupItems(groups, items, resourceType) {
-                var length = groups.length;
+                const length = groups.length;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (this.group.alias === groups[i].alias) {
                         this._addGroupItems(items, resourceType);
                         break;
@@ -317,12 +359,6 @@
                 }
                 else if (!this.$.appscoContent.resourceActive) {
                     this.$.appscoContent.showSection('resource');
-                }
-            }
-
-            _computeHeaders (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
                 }
             }
 
@@ -430,7 +466,7 @@
             }
 
             _onGroupChanged(group) {
-                for (let key in group) {
+                for (const key in group) {
                     this.reloadPage();
                     break;
                 }
@@ -438,7 +474,7 @@
 
             _getGroup() {
                 if (!this.group.self && this.groupApi && this._headers) {
-                    var groupApi = this.groupApi + this.route.path,
+                    const groupApi = this.groupApi + this.route.path,
                         getGroupRequest = this.$.ironAjaxGetGroup;
 
                     if (getGroupRequest.lastRequest) {
@@ -463,13 +499,9 @@
             }
 
             _onRemoveGroupAction() {
-                this.dispatchEvent(new CustomEvent('remove-group', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        group: this.group
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoCompanyRemoveGroup');
+                dialog.setGroup(this.group);
+                dialog.open();
             }
 
             _onManageGroupRoles() {
@@ -482,6 +514,52 @@
 
             _onManageGroupResources() {
                 this._showGroupResourcesPage();
+            }
+
+            _onRemoveCompanyRoleFromGroup(event) {
+                this._removeResourceFromGroup(event.detail.group, event.detail.role, 'role');
+            }
+
+            _onRemoveCompanyContactFromGroup(event) {
+                this._removeResourceFromGroup(event.detail.group, event.detail.contact, 'contact');
+            }
+
+            _onRemoveCompanyResourceFromGroup(event) {
+                this._removeResourceFromGroup(event.detail.group, event.detail.resource, 'resource');
+            }
+
+            _removeResourceFromGroup(group, item, type) {
+                const dialog = this.shadowRoot.getElementById('appscoResourceRemoveFromGroup');
+                dialog.setGroup(group);
+                dialog.setItem(item);
+                dialog.setType(type);
+                dialog.open();
+            }
+
+            _onAddItemToGroupAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoGroupAddResource'),
+                    resourceType = event.detail.resourceType;
+
+                dialog.setType(resourceType);
+
+                switch (resourceType) {
+                    case 'resource':
+                        dialog.setListItemsApi(this.companyApplicationsApi);
+                        break;
+
+                    case 'role':
+                        dialog.setListItemsApi(this.companyRolesApi);
+                        break;
+
+                    case 'contact':
+                        dialog.setListItemsApi(this.companyContactsApi);
+                        break;
+
+                    default:
+                        return false;
+                }
+
+                dialog.open();
             }
         }
         window.customElements.define(AppscoManageGroupPage.is, AppscoManageGroupPage);

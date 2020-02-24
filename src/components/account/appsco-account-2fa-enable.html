@@ -331,7 +331,7 @@ Example:
                         <form
                                 method="POST"
                                 action="[[ twoFaApi ]]">
-                            <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                            <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                             <paper-input class="verification-code-input"
                                          label="Verification code"
@@ -451,7 +451,7 @@ Example:
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -487,12 +487,12 @@ Example:
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
                 this.errored = true;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
                 this.errored = false;
             }
 

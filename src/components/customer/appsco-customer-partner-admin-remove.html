@@ -55,7 +55,6 @@ Shows dialog screen with confirmation for removal company resource from group.
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -69,7 +68,7 @@ Shows dialog screen with confirmation for removal company resource from group.
 
             <paper-dialog-scrollable>
                 <div class="remove-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <p>Please confirm revoking partner admin role.</p>
 
@@ -130,7 +129,7 @@ Shows dialog screen with confirmation for removal company resource from group.
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -170,11 +169,11 @@ Shows dialog screen with confirmation for removal company resource from group.
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _onDialogClosed() {

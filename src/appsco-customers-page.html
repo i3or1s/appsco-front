@@ -17,6 +17,16 @@
 <link rel="import" href="auditlog/appsco-audit-log.html">
 <link rel="import" href="components/components/appsco-page-behavior.html">
 <link rel="import" href="components/components/appsco-list-observer-behavior.html">
+<link rel="import" href="components/customer/appsco-customers-page-actions.html">
+
+<link rel="import" href="components/customer/appsco-add-customer.html">
+<link rel="import" href="components/customer/appsco-add-partner-admin.html">
+<link rel="import" href="components/customer/appsco-remove-customers.html">
+<link rel="import" href="components/customer/appsco-import-customers.html">
+<link rel="import" href="components/customer/appsco-import-customer-resources.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-customers-page">
     <template>
@@ -150,13 +160,61 @@
             </div>
         </appsco-content>
 
+        <appsco-add-partner-admin
+                id="appscoAddPartnerAdmin"
+                customers="[[ _selectedCustomers ]]"
+                authorization-token="[[ authorizationToken ]]"
+                get-roles-api="[[ companyRolesApi ]]"
+                add-partner-admin-api="[[ addPartnerAdminToCustomerApi ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-add-partner-admin>
+
+        <appsco-import-customer-resources
+                id="appscoImportCustomerResources"
+                authorization-token="[[ authorizationToken ]]"
+                import-api="[[ _importCustomerResourcesApi ]]"
+                domain="[[ domain ]]"
+                on-import-finished="_onCustomerResourcesImportFinished"
+                disable-upgrade$="[[!_applicationsApi]]">
+        </appsco-import-customer-resources>
+
+        <appsco-add-customer
+                id="appscoAddCustomer"
+                authorization-token="[[ authorizationToken ]]"
+                customers-api="[[ customersApi ]]"
+                company-convert-to-customer-api="[[ convertToCustomerApi ]]"
+                roles-api="[[ companyRolesApi ]]"
+                check-if-customer-exists-api="[[ checkIfCustomerExistsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-customer-added="_onCustomerAdded">
+        </appsco-add-customer>
+
+        <appsco-remove-customers
+                id="appscoCustomersRemove"
+                customers="[[ _selectedCustomers ]]"
+                customers-api="[[ customersApi ]]"
+                authorization-token="[[ authorizationToken ]]"
+                on-customers-removed="_onRemovedCustomers"
+                on-customers-remove-failed="_onRemovedCustomersFailed">
+        </appsco-remove-customers>
+
+        <appsco-import-customers
+                id="appscoImportCustomers"
+                authorization-token="[[ authorizationToken ]]"
+                import-api="[[ customersImportApi ]]"
+                domain="[[ domain ]]"
+                on-import-finished="_onCustomersImportFinished">
+        </appsco-import-customers>
+
     </template>
 
     <script>
         class AppscoCustomersPage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
             Polymer.AppscoPageBehavior,
-            Polymer.AppscoListObserverBehavior
+            Polymer.AppscoListObserverBehavior,
+            Appsco.PageMixin,
+            Appsco.HeadersMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-customers-page'; }
 
@@ -170,16 +228,31 @@
                         observer: '_onCustomerChanged'
                     },
 
-                    authorizationToken: {
-                        type: String,
-                        value: ''
-                    },
-
                     customersApi: {
                         type: String
                     },
 
                     customersExportApi: {
+                        type: String
+                    },
+
+                    customersImportApi: {
+                        type: String
+                    },
+
+                    convertToCustomerApi: {
+                        type: String
+                    },
+
+                    companyRolesApi: {
+                        type: String
+                    },
+
+                    checkIfCustomerExistsApi: {
+                        type: String
+                    },
+
+                    addPartnerAdminToCustomerApi: {
                         type: String
                     },
 
@@ -195,8 +268,19 @@
                         computed: '_computeCustomerLogApi(customer)'
                     },
 
+                    domain: {
+                        type: String
+                    },
+
                     _selectedTab: {
                         type: Number
+                    },
+
+                    _selectedCustomers: {
+                        type: Array,
+                        value: function() {
+                            return [];
+                        }
                     },
 
                     _infoShown: {
@@ -261,7 +345,20 @@
 
                 Polymer.RenderStatus.afterNextRender(this, function() {
                     this.set('_itemsComponent', this.$.appscoCustomers);
+                    this._addListeners();
                 });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('search', this._onSearchCustomersAction.bind(this));
+                this.toolbar.addEventListener('search-clear', this._onSearchCustomersClearAction.bind(this));
+                this.toolbar.addEventListener('add-customer', this._onAddCustomerAction.bind(this));
+                this.toolbar.addEventListener('remove-customers', this._onRemoveCustomersAction.bind(this));
+                this.toolbar.addEventListener('add-partner-admin', this._onAddPartnerAdminToCustomersAction.bind(this));
+                this.toolbar.addEventListener('select-all-customers', this._onSelectAllCustomersAction.bind(this));
+                this.toolbar.addEventListener('import-customers', this._onImportCustomersAction.bind(this));
+                this.toolbar.addEventListener('import-customer-resources', this._onImportCustomerResources.bind(this));
+                this.toolbar.addEventListener('export-customers', this._onExportCustomersAction.bind(this));
             }
 
             initializePage() {
@@ -337,7 +434,7 @@
             }
 
             _resetPageActions() {
-                this.dispatchEvent(new CustomEvent('reset-page-actions', { bubbles: true, composed: true }));
+                this.toolbar.resetPageActions();
             }
 
             _updateScreen() {
@@ -358,11 +455,11 @@
             }
 
             _showBulkActions() {
-                this.dispatchEvent(new CustomEvent('show-bulk-actions', { bubbles: true, composed: true }));
+                this.toolbar.showBulkActions();
             }
 
             _hideBulkActions() {
-                this.dispatchEvent(new CustomEvent('hide-bulk-actions', { bubbles: true, composed: true }));
+                this.toolbar.hideBulkActions();
             }
 
             _showInfo() {
@@ -444,18 +541,15 @@
             }
 
             exportToCsv() {
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this.customersExportApi,
                         method: 'GET',
                         handleAs: 'text',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     };
                 request.send(options).then(function(response) {
-                    var link = document.createElement('a');
+                    const link = document.createElement('a');
 
                     link.href = "data:application/octet-stream," + encodeURIComponent(response.response);
                     link.setAttribute('download', 'customers.csv');
@@ -465,7 +559,7 @@
                         link.click();
                     }
                     else if (document.createEvent) {
-                        var event = document.createEvent('MouseEvents');
+                        const event = document.createEvent('MouseEvents');
 
                         event.initEvent('click', true, true);
                         link.dispatchEvent(event);
@@ -477,6 +571,99 @@
 
             getSelectedCustomers() {
                 return this.$.appscoCustomers.getSelectedItems()
+            }
+
+            _searchCustomers(term) {
+                this._showProgressBar();
+                this.filterByTerm(term);
+            }
+
+            _onSearchCustomersAction(event) {
+                this._searchCustomers(event.detail.term);
+            }
+
+            _onSearchCustomersClearAction() {
+                this._searchCustomers('');
+            }
+
+            _onImportCustomerResources() {
+                this.shadowRoot.getElementById('appscoImportCustomerResources').toggle();
+            }
+
+            _onAddCustomerAction() {
+                this.shadowRoot.getElementById('appscoAddCustomer').open();
+            }
+
+            _onExportCustomersAction() {
+                this.exportToCsv();
+            }
+
+            _onCustomerAdded(event) {
+                const customer = event.detail.customer;
+
+                this.addCustomer(customer);
+                this.reloadCustomers();
+
+                this._notify('New customer ' + customer.name + ' was successfully added.');
+            }
+
+            _onRemoveCustomersAction() {
+                const selectedCustomers = this.getSelectedCustomers();
+
+                if (selectedCustomers.length > 0) {
+                    this.set('_selectedCustomers', selectedCustomers);
+                    this.shadowRoot.getElementById('appscoCustomersRemove').toggle();
+                }
+                else {
+                    this._hideBulkActions();
+                }
+            }
+
+            _onRemovedCustomers(event) {
+                const customersCount = this.removeCustomers(this._selectedCustomers);
+
+                this._hideBulkActions();
+                this._notify(customersCount + ' customers were successfully removed from company.');
+            }
+
+            _onRemoveCustomersFailed() {
+                this.set('_selectedCustomers', []);
+                this._notify('An error occurred. Selected customers were not removed from company. Please try again.');
+            }
+
+            _onAddPartnerAdminToCustomersAction() {
+                const selectedCustomers = this.getSelectedCustomers();
+
+                if (selectedCustomers.length > 0) {
+                    this.set('_selectedCustomers', selectedCustomers);
+                    this.shadowRoot.getElementById('appscoAddPartnerAdmin').open();
+                    this._hideProgressBar();
+                }
+                else {
+                    this._hideBulkActions();
+                }
+            }
+
+            _onSelectAllCustomersAction() {
+                this.selectAllItems();
+            }
+
+            _onImportCustomersAction() {
+                this.shadowRoot.getElementById('appscoImportCustomers').open();
+            }
+
+            _onCustomersImportFinished(event) {
+                const response = event.detail.response;
+
+                let message = response.numberOfCreated + ' customers created out of ' + response.total + '.'
+                    + ' Number of failed imports: ' + response.numberOfFailed + '.'
+                    + ' Number of existing companies: ' + response.numberOfExisting + '.';
+
+                if (0 < response.numberOfCreated) {
+                    this.reloadCustomers();
+                }
+
+                this._notify(message, true);
             }
         }
         window.customElements.define(AppscoCustomersPage.is, AppscoCustomersPage);

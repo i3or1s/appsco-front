@@ -15,6 +15,12 @@
 <link rel="import" href="components/oauth-application/appsco-oauth-applications.html">
 <link rel="import" href="components/oauth-application/appsco-oauth-application-info.html">
 <link rel="import" href="components/components/appsco-page-behavior.html">
+<link rel="import" href="components/oauth-application/appsco-oauth-applications-page-actions.html">
+
+<link rel="import" href="components/oauth-application/appsco-add-oauth-application.html">
+<link rel="import" href="components/oauth-application/appsco-remove-oauth-application.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-oauth-applications-page">
     <template>
@@ -96,7 +102,8 @@
                             on-item="_onOAuthApplicationAction"
                             on-list-loaded="_onOAuthApplicationsLoaded"
                             on-list-empty="_onOAuthApplicationsEmptyLoad"
-                    ></appsco-oauth-applications>
+                            on-remove-oauth-application="_onRemoveOAuthApplicationAction">
+                    </appsco-oauth-applications>
                 </div>
             </div>
 
@@ -122,10 +129,28 @@
             </div>
         </appsco-content>
 
+        <appsco-remove-oauth-application
+                id="appscoRemoveOAuthApplication"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-remove-oauth-application>
+
+        <appsco-add-oauth-application
+                id="appscoAddOauthApplication"
+                authorization-token="[[ authorizationToken ]]"
+                oauth-applications-api="[[ oAuthApplicationsApi ]]"
+                company="[[ currentCompany ]]"
+                api-errors="[[ apiErrors ]]"
+                on-oauth-application-added="_onOauthApplicationAdded">
+        </appsco-add-oauth-application>
+
     </template>
 
     <script>
-        class AppscoOauthApplicationsPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoOauthApplicationsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-oauth-applications-page'; }
 
             static get properties() {
@@ -135,6 +160,10 @@
                         value: function () {
                             return {};
                         }
+                    },
+
+                    currentCompany: {
+                        type: Object
                     },
 
                     oAuthApplicationsApi: {
@@ -213,6 +242,14 @@
                         this.updateStyles();
                     }
                 });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('add-oauth-application', this._onAddOAuthApplicationAction.bind(this));
             }
 
             initializePage() {
@@ -281,6 +318,25 @@
                         application: this.oAuthApplication
                     }
                 }));
+            }
+
+            _onAddOAuthApplicationAction() {
+                this.shadowRoot.getElementById('appscoAddOauthApplication').open();
+            }
+
+            _onOauthApplicationAdded(event) {
+                const application = event.detail.application;
+
+                this.reloadOAuthApplications();
+                this.hideInfo();
+
+                this._notify('OAuth application ' + application.title + ' has been successfully added.');
+            }
+
+            _onRemoveOAuthApplicationAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRemoveOAuthApplication');
+                dialog.setApplication(event.detail.application);
+                dialog.open();
             }
         }
         window.customElements.define(AppscoOauthApplicationsPage.is, AppscoOauthApplicationsPage);

@@ -82,7 +82,6 @@ Custom property | Description | Default
         </style>
 
         <paper-dialog
-                with-backdrop
                 id="addApplicationDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -227,12 +226,14 @@ Custom property | Description | Default
                     }
                 };
 
-                this._addListeners();
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
             }
 
             _addListeners() {
-                this.addEventListener('changed', this._onSelectedChanged);
-                this.addEventListener('neon-animation-finish', this._onAddActionAnimationFinish);
+                this.addEventListener('_selected-changed', this._onSelectedChanged.bind(this));
+                this.addEventListener('neon-animation-finish', this._onAddActionAnimationFinish.bind(this));
             }
 
             _showLoader() {

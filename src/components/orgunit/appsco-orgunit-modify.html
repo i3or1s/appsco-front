@@ -61,7 +61,6 @@ Custom property | Description | Default
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="modifyDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -82,7 +81,7 @@ Custom property | Description | Default
 
                     <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is removing organization unit" multi-color></appsco-loader>
 
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <paper-input
                             id="name"
@@ -150,7 +149,7 @@ Custom property | Description | Default
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     }
                 };
@@ -198,7 +197,7 @@ Custom property | Description | Default
                 this.$.name.value = '';
                 this.$.description.value = '';
                 this.$.name.invalid = false;
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _validate() {
@@ -245,7 +244,7 @@ Custom property | Description | Default
                         this.$.modifyDialog.close();
                     }.bind(this), function(e) {
                         this._loader = false;
-                        this._error = 'We couldn\'t save your changes. Please try again in a minute.';
+                        this._errorMessage = 'We couldn\'t save your changes. Please try again in a minute.';
                     }.bind(this));
                 }
             }
@@ -281,7 +280,7 @@ Custom property | Description | Default
                         this.$.modifyDialog.close();
                     }.bind(this), function(e) {
                         this._loader = false;
-                        this._error = 'We couldn\'t save your changes. Please try again in a minute.';
+                        this._errorMessage = 'We couldn\'t save your changes. Please try again in a minute.';
                     }.bind(this));
                 }
             }

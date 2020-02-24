@@ -20,6 +20,11 @@
             }
             :host paper-card {
                 @apply --full-page-paper-card;
+
+                --paper-card-header: {
+                    @apply --full-page-paper-card-header-text;
+                    border-bottom: 1px solid var(--divider-color);
+                }
             }
             .page-close-action {
                 @apply --page-close-action;

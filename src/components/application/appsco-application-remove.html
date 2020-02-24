@@ -56,7 +56,6 @@ Custom property | Description | Default
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="removeDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation">
@@ -109,6 +108,10 @@ Custom property | Description | Default
 
             open() {
                 this.$.removeDialog.open();
+            }
+
+            setApplication(application) {
+                this.application = application;
             }
 
             _removeApplication() {

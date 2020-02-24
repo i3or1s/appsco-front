@@ -51,7 +51,6 @@ Shows dialog screen with confirmation for integration removal.
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -63,7 +62,7 @@ Shows dialog screen with confirmation for integration removal.
 
             <paper-dialog-scrollable>
                 <div class="remove-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>By removing the integration, all connections between the systems will be lost. Are you sure you wish to remove the integration? </p>
                 </div>
             </paper-dialog-scrollable>
@@ -105,7 +104,7 @@ Shows dialog screen with confirmation for integration removal.
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     }
                 };
@@ -140,11 +139,11 @@ Shows dialog screen with confirmation for integration removal.
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _onDialogClosed() {

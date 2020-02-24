@@ -34,11 +34,18 @@ Provides functionality of adding accounts to organization units.
             :host {
                 display: block;
                 position: relative;
+
+                --paper-dropdown-menu-icon: {
+                    color: var(--primary-text-color);
+                    width: 22px;
+                    height: 22px;
+                };
+
             }
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-            @apply --appsco-paper-dialog;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
                 @apply --paper-dialog-scrollable-child;
@@ -49,27 +56,27 @@ Provides functionality of adding accounts to organization units.
              };
             }
             :host paper-listbox {
-            @apply --paper-listbox;
+                @apply --paper-listbox;
                 min-width: 225px;
             }
             :host paper-item:hover {
-            @apply --paper-item-hover;
+                @apply --paper-item-hover;
             }
             :host .message {
                 margin: 0;
                 color: var(--secondary-text-color);
                 font-style: italic;
-            @apply --paper-font-body2;
-            @apply --info-message;
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host .buttons paper-button {
-            @apply --paper-dialog-button;
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-            @apply --paper-dialog-confirm-button;
+                @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-            @apply --paper-dialog-dismiss-button;
+                @apply --paper-dialog-dismiss-button;
             }
         </style>
 
@@ -81,7 +88,6 @@ Provides functionality of adding accounts to organization units.
                    headers="{{ _headers }}"></iron-ajax>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -164,6 +170,10 @@ Provides functionality of adding accounts to organization units.
 
             toggle() {
                 this.$.dialog.toggle();
+            }
+
+            setAccounts(accounts) {
+                this.accounts = accounts;
             }
 
             _onDialogOpened() {

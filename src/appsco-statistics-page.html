@@ -16,6 +16,9 @@
 <link rel="import" href="components/components/appsco-loader.html">
 <link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-statistics-page">
     <template>
         <style include="appsco-page-styles">
@@ -136,7 +139,7 @@
                 auto
                 url="[[ _applicationSecurityApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleApplicationSecurityResponse"
                 on-error="_handleApplicationSecurityError"
         ></iron-ajax>
@@ -146,7 +149,7 @@
                 auto
                 url="[[ _userSecurityApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleUserPasswordsScoresResponse"
                 on-error="_handleUserPasswordsScoresError"
                 ></iron-ajax>
@@ -157,7 +160,7 @@
                 method="POST"
                 url="[[ _loginAttemptsApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleLoginAttemptsResponse"
                 on-error="_handleLoginAttemptsError"
         ></iron-ajax>
@@ -167,7 +170,7 @@
                 auto
                 url="[[ _twoFaApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleTwoFaResponse"
                 on-error="_handleTwoFaError"
                 ></iron-ajax>
@@ -177,7 +180,7 @@
                 auto
                 url="[[ _licenceApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleLicencesResponse"
                 on-error="_handleLicencesError"
                 ></iron-ajax>
@@ -416,26 +419,17 @@
     </template>
 
     <script>
-        class AppscoStatisticsPage extends Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+        class AppscoStatisticsPage extends Polymer.mixinBehaviors([
+            Polymer.IronResizableBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-statistics-page'; }
 
             static get properties() {
                 return {
                     companyApi: {
                         type: String
-                    },
-
-                    authorizationToken: {
-                        type: String
-                    },
-
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _computedHeaders: {
-                        type: Object,
-                        computed: "_computeHeaders(authorizationToken)"
                     },
 
                     _applicationSecurityApi: {
@@ -601,19 +595,6 @@
 
             _updateScreen() {
                 this.updateStyles();
-            }
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
             }
 
             _computeApplicationSecurityApi(companyApi) {

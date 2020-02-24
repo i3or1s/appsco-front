@@ -86,7 +86,6 @@ Provides functionality of sharing resources to users.
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -104,7 +103,7 @@ Provides functionality of sharing resources to users.
 
                     <div class="account-list">
 
-                        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                         <template is="dom-repeat" items="[[ _selectedAccounts ]]">
                             <appsco-account-card class="selected-account"
@@ -180,11 +179,6 @@ Provides functionality of sharing resources to users.
                         }
                     },
 
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     /**
                      * Applications which are shared.
                      * This array is populated from sharing API response.
@@ -251,11 +245,11 @@ Provides functionality of sharing resources to users.
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _onDialogOpened() {

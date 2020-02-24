@@ -189,7 +189,6 @@
                          on-list-empty="_onContactsLoadFinished"></appsco-contacts>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -201,7 +200,7 @@
                            loader-alt="Appsco is processing request"
                            multi-color></appsco-loader>
 
-            <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+            <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
             <paper-input
                     id="notificationMessage"
@@ -426,11 +425,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _showMessage(message) {

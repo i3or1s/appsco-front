@@ -15,7 +15,15 @@
 <link rel="import" href="company/appsco-company-domains-page.html">
 <link rel="import" href="company/appsco-company-transfer-token-page.html">
 <link rel="import" href="company/appsco-company-manage-idp-settings-page.html">
+<link rel="import" href="company/appsco-company-page-actions.html">
 
+<link rel="import" href="company/appsco-company-add-domain.html">
+<link rel="import" href="company/appsco-company-add-certificate.html">
+<link rel="import" href="company/appsco-company-remove-domain.html">
+<link rel="import" href="company/appsco-deactivate-idp-settings.html">
+<link rel="import" href="company/appsco-company-domain-token.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-company-page">
     <template>
@@ -122,6 +130,9 @@
                                 domains-api="[[ _domainsApi ]]"
                                 api-errors="[[ apiErrors ]]"
                                 on-company-settings-changed="_onSettingsChanged"
+                                on-deactivate-domain-idp-settings="_onDeactivateDomainIdPSettings"
+                                on-idp-certificate-add="_onAddIdpCertificate"
+                                on-idp-settings-saved="_onIdPSettingsSaved"
                                 on-back="_onResourceBack">
                         </appsco-company-manage-idp-settings-page>
 
@@ -129,6 +140,11 @@
                                 name="appsco-company-domains-page"
                                 authorization-token="[[ authorizationToken ]]"
                                 domains-api="[[ _domainsApi ]]"
+                                on-remove-domain="_onRemoveDomain"
+                                on-get-token="_onDomainGetToken"
+                                on-domain-not-verified="_onDomainNotVerified"
+                                on-show-domains-page-actions="_onShowDomainsPageActions"
+                                on-hide-domains-page-actions="_onHideDomainsPageActions"
                                 on-back="_onResourceBack">
                         </appsco-company-domains-page>
 
@@ -138,6 +154,7 @@
                                 transfer-token-api="[[ transferTokenApi ]]"
                                 partners-api-url="[[ partnersApiUrl ]]"
                                 send-transfer-token-api="[[ sendTransferTokenApi ]]"
+                                on-transfer-token-sent="_onTransferTokenSent"
                                 api-errors="[[ apiErrors ]]"
                                 on-back="_onResourceBack">
                         </appsco-company-transfer-token-page>
@@ -147,10 +164,36 @@
             </div>
         </appsco-content>
 
+        <appsco-company-add-domain
+                id="appscoCompanyAddDomain"
+                authorization-token="[[ authorizationToken ]]"
+                add-domain-api="[[ _domainsApi ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-company-add-domain>
+
+        <appsco-company-add-certificate id="appscoCompanyAddCertificate"></appsco-company-add-certificate>
+
+        <appsco-company-remove-domain
+                id="appscoCompanyRemoveDomain"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-company-remove-domain>
+
+        <appsco-company-domain-token id="appscoCompanyDomainToken"></appsco-company-domain-token>
+
+        <appsco-deactivate-idp-settings
+                id="appscoDeactivateIdPSettings"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-idp-settings-deactivated="_onIdPSettingsDeactivated">
+        </appsco-deactivate-idp-settings>
+
     </template>
 
     <script>
-        class AppscoCompanyPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoCompanyPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-company-page'; }
 
             static get properties() {
@@ -282,6 +325,17 @@
                         this.updateStyles();
                     }
                 });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this._onResourceActionCompanyPage.bind(this));
+                this.toolbar.addEventListener('add-domain', this._onAddDomain.bind(this));
+                this.toolbar.addEventListener('search-groups', this._onSearchGroups.bind(this));
+                this.toolbar.addEventListener('search-groups-clear', this._onSearchGroupsClear.bind(this));
             }
 
             resetPage() {
@@ -437,7 +491,7 @@
             }
 
             _onPageAnimationFinish(event) {
-                var fromPage = event.detail.fromPage,
+                const fromPage = event.detail.fromPage,
                     toPage = event.detail.toPage;
 
                 switch(fromPage.getAttribute('name')) {
@@ -458,6 +512,79 @@
                     default:
                         break;
                 }
+            }
+
+            _onResourceActionCompanyPage() {
+                this.toolbar.toggleResource();
+            }
+
+            _onAddDomain() {
+                this.shadowRoot.getElementById('appscoCompanyAddDomain').open();
+            }
+
+            _onRemoveDomain(event) {
+                const dialog = this.shadowRoot.getElementById('appscoCompanyRemoveDomain');
+                dialog.setDomain(event.detail.domain);
+                dialog.open();
+            }
+
+            _onAddIdpCertificate(event) {
+                const dialog = this.shadowRoot.getElementById('appscoCompanyAddCertificate');
+                dialog.setSource(event);
+                dialog.open();
+            }
+
+            _searchGroups(term) {
+                this._showProgressBar();
+                this.searchGroups(term);
+            }
+
+            _onSearchGroups(event) {
+                this._searchGroups(event.detail.term);
+            }
+
+            _onSearchGroupsClear() {
+                this._searchGroups('');
+            }
+
+            _onDomainGetToken(event) {
+                const dialog = this.shadowRoot.getElementById('appscoCompanyDomainToken');
+                dialog.setDomain(event.detail.domain);
+                dialog.open();
+            }
+
+            _onTransferTokenSent() {
+                this._notify('Transfer token email has been successfully sent.');
+            }
+
+            _onShowDomainsPageActions() {
+                this.toolbar.showDomainsPageActions();
+            }
+
+            _onHideDomainsPageActions() {
+                this.toolbar.hideDomainsPageActions();
+            }
+
+            _onIdPSettingsSaved(event) {
+                this._notify('IdP settings for ' + event.detail.domain.domain + ' domain was successfully saved.');
+            }
+
+            _onDeactivateDomainIdPSettings(event) {
+                const dialog = this.shadowRoot.getElementById('appscoDeactivateIdPSettings');
+                dialog.setDomain(event.detail.domain);
+                dialog.open();
+            }
+
+            _onIdPSettingsDeactivated(event) {
+                const domain = event.detail.domain;
+
+                this.modifyDomain(domain);
+                this._notify('IdP settings for ' + domain.domain + ' domain was successfully deactivated.');
+            }
+
+            _onDomainNotVerified(event) {
+                const domain = event.detail.domain;
+                this._notify('Unable to verify ' + domain.domain + ' domain - please wait until the DNS record change is propagated.', true);
             }
         }
         window.customElements.define(AppscoCompanyPage.is, AppscoCompanyPage);

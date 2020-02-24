@@ -8,6 +8,10 @@
 <link rel="import" href="components/page/appsco-manage-page-styles.html">
 <link rel="import" href="components/additional-options/appsco-additional-options-components-page.html">
 <link rel="import" href="components/additional-options/appsco-manage-idp-page.html">
+<link rel="import" href="components/additional-options/appsco-additional-options-page-actions.html">
+<link rel="import" href="components/resource/appsco-idp-resource-add.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-additional-options-page">
     <template>
@@ -72,10 +76,22 @@
             </div>
         </appsco-content>
 
+        <appsco-idp-resource-add
+                id="appscoIdpResourceAdd"
+                authorization-token="[[ authorizationToken ]]"
+                add-resource-api="[[ _companyApplicationsApi ]]"
+                link="[[ link ]]"
+                api-errors="[[ apiErrors ]]"
+                on-resource-added="_onIdpResourceAdded">
+        </appsco-idp-resource-add>
+
     </template>
 
     <script>
-        class AppscoAdditionalOptionsPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoAdditionalOptionsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-additional-options-page'; }
 
             static get properties() {
@@ -122,6 +138,10 @@
                     },
 
                     animationConfig: {
+                        type: Object
+                    },
+
+                    link: {
                         type: Object
                     },
 
@@ -177,6 +197,14 @@
                         this.updateStyles();
                     }
                 });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
             }
 
             initializePage() {
@@ -227,6 +255,18 @@
             _onManageIdP(event) {
                 this.set('_idp', event.detail.idp);
                 this._showManagePage();
+            }
+
+            _onAddIdPItemAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoIdpResourceAdd');
+                dialog.setResource(event.detail.item);
+                dialog.open();
+            }
+
+            _onIdpResourceAdded(event) {
+                const resource = event.detail.resource;
+                this.modifyAddedResource(event.detail.template);
+                this._notify(resource.title + ' was successfully added.');
             }
         }
         window.customElements.define(AppscoAdditionalOptionsPage.is, AppscoAdditionalOptionsPage);

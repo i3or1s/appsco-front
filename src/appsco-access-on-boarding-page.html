@@ -11,6 +11,9 @@
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="components/access-on-boarding/appsco-access-on-boarding-roles.html">
 <link rel="import" href="components/access-on-boarding/appsco-access-on-boarding-page-filters.html">
+<link rel="import" href="components/access-on-boarding/appsco-access-on-boarding-page-actions.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-access-on-boarding-page">
     <template>
@@ -65,7 +68,9 @@
                             api-errors="[[ apiErrors ]]"
                             load-more
                             on-list-loaded="_onRolesLoadFinished"
-                            on-list-empty="_onRolesLoadFinished"></appsco-access-on-boarding-roles>
+                            on-access-on-boarding-events-resolved="_onEventsResolved"
+                            on-list-empty="_onRolesLoadFinished">
+                    </appsco-access-on-boarding-roles>
                 </div>
             </div>
 
@@ -74,7 +79,10 @@
     </template>
 
     <script>
-        class AppscoAccessOnBoardingPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoAccessOnBoardingPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-access-on-boarding-page'; }
 
             static get properties() {
@@ -159,6 +167,14 @@
                         this.updateStyles();
                     }
                 });
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+                this.toolbar.addEventListener('export-access-on-boarding', this._onExportAccessOnBoardingAction.bind(this));
             }
 
             _toggleFilters(mobile) {
@@ -193,8 +209,7 @@
             }
 
             export() {
-                var request = document.createElement('iron-request'),
-                    url = this.exportAccessOnBoardingApi,
+                const request = document.createElement('iron-request'),
                     options = {
                         method: 'GET',
                         handleAs: 'blob',
@@ -204,7 +219,9 @@
                     },
                     filters = this._getAccessOnBoardingFilters();
 
-                if (filters.group.alias && 'all' != filters.group.alias) {
+                let url = this.exportAccessOnBoardingApi
+
+                if (filters.group.alias && 'all' !== filters.group.alias) {
                     url += (-1 < url.indexOf('?')) ?
                         ('&group=' + filters.group.alias) :
                         ('?group=' + filters.group.alias);
@@ -219,10 +236,10 @@
                 options.url = url;
 
                 request.send(options).then(function() {
-                    var fileReader = new FileReader();
+                    const fileReader = new FileReader();
 
                     fileReader.onload = function(event) {
-                        var link = document.createElement('a');
+                        const link = document.createElement('a');
 
                         link.href = event.target.result;
                         link.setAttribute('download', 'AppsCo - Access On-boarding Status List.xlsx');
@@ -232,7 +249,7 @@
                             link.click();
                         }
                         else if (document.createEvent) {
-                            var clickEvent = document.createEvent('MouseEvents');
+                            const clickEvent = document.createEvent('MouseEvents');
 
                             clickEvent.initEvent('click', true, true);
                             link.dispatchEvent(clickEvent);
@@ -243,15 +260,10 @@
 
                     fileReader.readAsDataURL(request.response);
 
-                    this.dispatchEvent(new CustomEvent('export-access-on-boarding-finished', { bubbles: true, composed: true }));
+                    this._hideProgressBar();
                 }.bind(this), function() {
-                    this.dispatchEvent(new CustomEvent('export-access-on-boarding-failed', {
-                        bubbles: true,
-                        composed: true,
-                        detail: {
-                            message: 'Export of Access On Boarding Report failed. Please contact AppsCo support.'
-                        }
-                    }));
+                    this._hideProgressBar();
+                    this._notify('Export of Access On Boarding Report failed. Please contact AppsCo support.');
                 }.bind(this));
             }
 
@@ -282,7 +294,19 @@
 
             _onFilterPageAction(event) {
                 this.$.appscoAccessOnBoardingRoles.filterRoles(event.detail.filters);
+                this._showProgressBar();
             }
+
+            _onEventsResolved(event) {
+                this._notify((0 === event.detail.unresolvedItems.length) ?
+                    'Selected events have been resolved manually.' :
+                    'There was an error while resolving some events. Not all events were resolved.');
+            }
+            _onExportAccessOnBoardingAction() {
+                this._showProgressBar();
+                this.export();
+            }
+
         }
         window.customElements.define(AppscoAccessOnBoardingPage.is, AppscoAccessOnBoardingPage);
     </script>

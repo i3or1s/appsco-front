@@ -51,7 +51,6 @@ Custom property | Description | Default
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="revokeDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation">
@@ -95,6 +94,10 @@ Custom property | Description | Default
 
             open() {
                 this.$.revokeDialog.open();
+            }
+
+            setApplication(application) {
+                this.application = application;
             }
 
             _revokeApplication() {

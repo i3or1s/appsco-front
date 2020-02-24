@@ -26,7 +26,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
 
@@ -85,7 +85,6 @@
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation">
 
@@ -114,7 +113,7 @@
                                        loader-alt="AppsCo is processing request"
                                        multi-color></appsco-loader>
 
-                        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                         <template is="dom-repeat" items="[[ _foldersListDisplay ]]">
                             <appsco-folders-item id="appscoListItem_[[ index ]]"
@@ -200,8 +199,9 @@
                         value: ''
                     },
 
-                    _error: {
-                        type: String
+                    _errorMessage: {
+                        type: String,
+                        value: ''
                     },
 
                     _searchLoader: {
@@ -234,8 +234,8 @@
             }
 
             _computeFoldersListApi(foldersApi, company) {
-                if (company && company != undefined && company.company) {
-                    return company.company.self + '/dashboard-groups?extended=1';
+                if (company && company.self) {
+                    return company.self + '/dashboard-groups?extended=1';
                 }
                 return foldersApi ? foldersApi + '?extended=1' : null;
             }
@@ -265,11 +265,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _searchList(searchTerm) {

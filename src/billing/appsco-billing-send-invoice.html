@@ -9,6 +9,8 @@
 
 <link rel="import" href="../components/components/appsco-loader.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-billing-send-invoice">
     <template>
         <style>
@@ -18,7 +20,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -37,7 +39,6 @@
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-closed="_onDialogClosed">
@@ -69,7 +70,7 @@
 
     </template>
     <script>
-        class AppscoBillingSendInvoice extends Polymer.Element {
+        class AppscoBillingSendInvoice extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
             static get is() { return 'appsco-billing-send-invoice'; }
 
             static get properties() {
@@ -95,10 +96,6 @@
                         }
                     },
 
-                    authorizationToken: {
-                        type: String
-                    },
-
                     companyApi: {
                         type: String
                     },
@@ -108,23 +105,11 @@
                         computed: '_computeSendInvoiceApi(companyApi, invoice, subscription)'
                     },
 
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     _loader: {
                         type: Boolean,
                         value: false
                     }
                 };
-            }
-
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
             }
 
             _computeSendInvoiceApi(companyApi, invoice, subscription) {
@@ -140,7 +125,7 @@
             }
 
             _onSend() {
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._sendInvoiceApi,
                         method: 'POST',
@@ -157,7 +142,7 @@
                         bubbles: true,
                         composed: true,
                         detail: {
-                            sentTo: this.company.company.billing_email
+                            sentTo: this.company.billing_email
                         }
                     }));
                 }.bind(this));

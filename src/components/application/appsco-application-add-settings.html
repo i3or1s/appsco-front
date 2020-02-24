@@ -63,14 +63,14 @@ Custom property | Description | Default
 
             <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is saving application" multi-color></appsco-loader>
 
-            <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+            <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
             <iron-form
                     id="addApplicationForm"
-                    hidden
                     headers="[[ _headers ]]"
                     on-iron-form-response="_onFormResponse">
                 <form
+                      hidden
                       method="POST"
                       action$="[[ _computedAction ]]">
                     <input type="text" name="application[resource]" value$="[[ applicationTemplate.self ]]">
@@ -136,7 +136,7 @@ Custom property | Description | Default
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -203,7 +203,7 @@ Custom property | Description | Default
              * @private
              */
             _onFormError(event) {
-                this._error = event.detail.error.message;
+                this._errorMessage = event.detail.error.message;
                 this._hideLoader();
             }
 

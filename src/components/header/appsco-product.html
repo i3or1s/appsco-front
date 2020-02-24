@@ -199,8 +199,7 @@ Custom property | Description | Default
                         value: function () {
                             return [];
                         },
-                        notify: true,
-                        observer: '_onBusinessChanged'
+                        notify: true
                     },
 
                     /** Appsco products. */
@@ -254,6 +253,12 @@ Custom property | Description | Default
                 };
             }
 
+            static get observers() {
+                return [
+                    '_setupProducts(_productToSelect, business)'
+                ];
+            }
+
             ready() {
                 super.ready();
 
@@ -291,8 +296,42 @@ Custom property | Description | Default
             }
 
             _addListeners() {
-                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish.bind(this));
                 Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+            }
+
+            _setupProducts(productToSelect, business) {
+                if (this._products && business && business.length > 0) {
+                    const products = JSON.parse(JSON.stringify(this._products)),
+                        productsLength = products.length,
+                        length = business.length;
+
+                    for (let i = 0; i < length; i++) {
+                        for (let j = 0; j < productsLength; j++) {
+                            if (products[j].company && (products[j].company.company.alias === business[i].company.alias)) {
+                                products[j] = this._createNewBusinessProduct(business[i]);
+                                break;
+                            }
+                            else if (j === productsLength - 1) {
+                                products.push(this._createNewBusinessProduct(business[i]));
+                            }
+                        }
+                    }
+
+                    products.sort(this._compareCompaniesByName);
+
+                    this.set('_products', []);
+                    this.set('_products', products);
+
+                    this.set('_productListDisplay', []);
+                    this.set('_productListDisplay', products);
+
+                    // paper-item doesn't display product name inside paper-listbox list without click event.
+                    document.body.click();
+
+                    this._multiProducts = true;
+                    this.setProduct(this._productToSelect);
+                }
             }
 
             _format(value) {
@@ -350,8 +389,8 @@ Custom property | Description | Default
                             // couldn't set proper selected value when '_selectedProduct' is changed
                             setTimeout(function() {
                                 this.set('_selectedProduct', products[i]);
-                                var productList = this.shadowRoot.getElementById('productList');
-                                var selected = productList.selected;
+                                const productList = this.shadowRoot.getElementById('productList');
+                                const selected = productList.selected;
                                 productList.selected = undefined;
                                 productList.selected = selected;
                             }.bind(this), 30);
@@ -449,40 +488,6 @@ Custom property | Description | Default
                     name: 'appsco-partner-product',
                     company: null
                 };
-            }
-
-            _onBusinessChanged(business) {
-                if (this._products && business && business.length > 0) {
-                    const products = JSON.parse(JSON.stringify(this._products)),
-                        productsLength = products.length,
-                        length = business.length;
-
-                    for (let i = 0; i < length; i++) {
-                        for (let j = 0; j < productsLength; j++) {
-                            if (products[j].company && (products[j].company.company.alias === business[i].company.alias)) {
-                                products[j] = this._createNewBusinessProduct(business[i]);
-                                break;
-                            }
-                            else if (j === productsLength - 1) {
-                                products.push(this._createNewBusinessProduct(business[i]));
-                            }
-                        }
-                    }
-
-                    products.sort(this._compareCompaniesByName);
-
-                    this.set('_products', []);
-                    this.set('_products', products);
-
-                    this.set('_productListDisplay', []);
-                    this.set('_productListDisplay', products);
-
-                    // paper-item doesn't display product name inside paper-listbox list without click event.
-                    document.body.click();
-
-                    this._multiProducts = true;
-                    this.setProduct(this._productToSelect);
-                }
             }
 
             _compareCompaniesByName(companyA, companyB) {

@@ -22,7 +22,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -46,7 +46,6 @@
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-closed="_onDialogClosed">
@@ -152,7 +151,7 @@
                         bubbles: true,
                         composed: true,
                         detail: {
-                            resource: this.companyApplication
+                            resource: _self.companyApplication
                         }
                     }));
                 });

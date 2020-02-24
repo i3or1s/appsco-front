@@ -10,6 +10,8 @@
 
 <link rel="import" href="../components/components/appsco-date-format.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-domain-item`
 Presents domain in form of an item.
@@ -40,7 +42,7 @@ Custom property | Description | Default
     <template>
         <style>
             :host {
-                display: none;
+                display: block;
                 color: var(--primary-text-color);
                 font-size: 14px;
             }
@@ -228,7 +230,10 @@ Custom property | Description | Default
     </template>
 
     <script>
-        class AppscoCompanyDomainItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+        class AppscoCompanyDomainItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-company-domain-item'; }
 
             static get properties() {
@@ -337,7 +342,7 @@ Custom property | Description | Default
                 this.domain.verified = this._verified;
 
                 if (this._verificationAction) {
-                    var eventType = this._verified ? 'domain-verified' : 'domain-not-verified';
+                    const eventType = this._verified ? 'domain-verified' : 'domain-not-verified';
                     this.dispatchEvent(new CustomEvent(eventType, {
                         bubbles: true,
                         composed: true,
@@ -381,7 +386,6 @@ Custom property | Description | Default
             }
 
             _onDomainStatusResponse(event) {
-
                 if (event.detail.response && 200 === event.detail.status) {
                     this._verified = true;
                     this._notifyDomainStatus();

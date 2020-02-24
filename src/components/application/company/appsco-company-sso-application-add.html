@@ -26,7 +26,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -62,7 +62,6 @@
         </style>
 
         <paper-dialog
-                with-backdrop
                 id="addApplicationDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -343,7 +342,7 @@
              *
              * @private
              */
-            _onDialogOpened() {
+            _onDialogOpened(event) {
                 this._dialogTitle = 'Add application';
                 this.$.appscoApplicationAddSearch.setup();
                 this._setupAppscoSearch();

@@ -78,7 +78,7 @@ Used to update company resource - configuration fields and claims.
 
         <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color></appsco-loader>
 
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
         <div class="configuration-container">
             <iron-form
@@ -332,7 +332,7 @@ Used to update company resource - configuration fields and claims.
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -602,15 +602,15 @@ Used to update company resource - configuration fields and claims.
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _showClaimsForm() {
-                if (this._resourceClaimsForm) {
+                if (Object.keys(this._resourceClaimsForm).length > 0) {
                     this._resourceClaimsForm.updateStyles({'display': 'block'});
                     this.playAnimation('entry');
                 }

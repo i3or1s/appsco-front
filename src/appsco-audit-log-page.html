@@ -15,6 +15,10 @@
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="components/components/appsco-search.html">
 <link rel="import" href="auditlog/appsco-audit-log.html">
+<link rel="import" href="auditlog/appsco-audit-log-page-actions.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-audit-log-page">
     <template>
@@ -189,15 +193,16 @@
     </template>
 
     <script>
-        class AppscoAuditLogPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior, Polymer.AppLocalizeBehavior], Polymer.Element) {
+        class AppscoAuditLogPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppLocalizeBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-audit-log-page'; }
 
             static get properties() {
                 return {
-                    authorizationToken: {
-                        type: String
-                    },
-
                     companyApi: {
                         type: String
                     },
@@ -214,11 +219,6 @@
                     _searchAccountsApi: {
                         type: String,
                         computed: '_computeSearchAccountsApi(companyApi, _accountTerm)'
-                    },
-
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
                     },
 
                     _eventTypeList: {
@@ -319,9 +319,6 @@
                         reflectToAttribute: true
                     },
 
-                    /**
-                     * Animation config.
-                     */
                     animationConfig: {
                         type: Object
                     },
@@ -380,11 +377,15 @@
 
                 Polymer.RenderStatus.afterNextRender(this, function() {
                     this._setupDatePicker();
-
                     Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-
                     this.loadResources(this.resolveUrl('./components/components/data/event-types.json'));
+                    this._addListeners();
                 });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+                this.toolbar.addEventListener('export-audit-log', this._onExportAuditLogAction.bind(this));
             }
 
             _updateScreen() {
@@ -411,7 +412,6 @@
             }
 
             initializePage() {
-
                 if (this.pageLoaded) {
                     this.$.filterAccount.setValue(this._filterAccountDisplay);
                     this._filterLog();
@@ -434,8 +434,7 @@
             _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
+                for (let i = 0; i < path.length; i++) {
                     if (path[i] == element) {
                         return true;
                     }
@@ -445,7 +444,7 @@
             }
 
             _handleDocumentClick(event) {
-                var path = Polymer.dom(event).path;
+                const path = Polymer.dom(event).path;
 
                 if (!this._isInPath(path, this.$.filterEventType)) {
                     this._hideEventTypeList();
@@ -453,18 +452,10 @@
                 if (!this._isInPath(path, this.$.filterAccount)) {
                     this._hideAccountList();
                 }
-
             }
 
             _computeAuditLogEventTypesApi(companyApi) {
                 return companyApi ? companyApi + '/log/events' : null;
-            }
-
-            _computeHeaders (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
             }
 
             _computeSearchAccountsApi(companyApi, term) {
@@ -476,14 +467,15 @@
             }
 
             _setValidDates() {
-                var date = new Date(),
-                    day = date.getDate(),
+                const date = new Date(),
+                    filterDateFromComponent = this.$.filterDateFrom,
+                    filterDateToComponent = this.$.filterDateTo;
+
+                let day = date.getDate(),
                     month = date.getMonth(),
                     year = date.getFullYear(),
                     fromMonth = month,
-                    fromYear = year,
-                    filterDateFromComponent = this.$.filterDateFrom,
-                    filterDateToComponent = this.$.filterDateTo;
+                    fromYear = year;
 
                 if (10 > day) {
                     day = '0' + day;
@@ -523,8 +515,8 @@
             }
 
             _onFilterDateFrom(event) {
-                var fromDate = event.detail.value,
-                    filterDateFromComponent = this.$.filterDateFrom;
+                let fromDate = event.detail.value;
+                const filterDateFromComponent = this.$.filterDateFrom;
 
                 if (!fromDate) {
                     fromDate = this._defaultFromDateValue;
@@ -540,8 +532,8 @@
             }
 
             _onFilterDateTo(event) {
-                var toDate = event.detail.value,
-                    filterDateToComponent = this.$.filterDateTo;
+                let toDate = event.detail.value;
+                const filterDateToComponent = this.$.filterDateTo;
 
                 if (!toDate) {
                     toDate = this._defaultToDateValue;
@@ -563,7 +555,7 @@
             }
 
             _formatEventType(item) {
-                var localized = this.localize(item);
+                const localized = this.localize(item);
 
                 if (!localized) {
                     return false;
@@ -589,18 +581,18 @@
             }
 
             _onEventTypesResponse(event) {
-                var response = event.detail.response;
+                const response = event.detail.response;
 
                 if (response && response.length > 0) {
                     this.set('_eventTypeList', []);
                     response.forEach(function(item, index) {
-                        var eventType = this._formatEventType(item);
+                        const eventType = this._formatEventType(item);
                         if (eventType) {
                             this.push('_eventTypeList', eventType);
                         }
                     }.bind(this));
 
-                    var listSorted = this._eventTypeList.sort(this._sortEventTypesByText);
+                    const listSorted = this._eventTypeList.sort(this._sortEventTypesByText);
 
                     listSorted.unshift(this._defaultEventType);
                     this.set('_eventTypeListDisplay', listSorted);
@@ -609,7 +601,7 @@
             }
 
             _sortEventTypesByText(typeA, typeB) {
-                    return typeA.text < typeB.text ? -1 : typeA.text > typeB.text ? 1 : 0;
+                return typeA.text < typeB.text ? -1 : typeA.text > typeB.text ? 1 : 0;
             }
 
             _setDefaultEventType() {
@@ -618,7 +610,7 @@
             }
 
             _filterEventTypeListByTerm(term) {
-                var termLength = term.length,
+                const termLength = term.length,
                     eventTypes = this._eventTypeList,
                     length = eventTypes.length;
 
@@ -628,15 +620,14 @@
                     term = '';
                 }
 
-                var termDecoded = decodeURIComponent(term.toLowerCase()).trim();
+                const termDecoded = decodeURIComponent(term.toLowerCase()).trim();
 
-                for (var i = 0; i < length; i++) {
-                    var eventType = eventTypes[i];
+                for (let i = 0; i < length; i++) {
+                    const eventType = eventTypes[i];
 
                     if (eventType && eventType.text.toLowerCase().indexOf(termDecoded) >= 0) {
                         this.push('_eventTypeListDisplay', eventType);
                     }
-
                 }
 
                 if (0 === this._eventTypeListDisplay.length && 3 < termLength) {
@@ -652,7 +643,7 @@
             }
 
             _hideEventTypeList() {
-                var eventTypeFilter = this.$.filterListEventTypes,
+                const eventTypeFilter = this.$.filterListEventTypes,
                     appscoEventTypeSearch = this.$.appscoSearchEventType;
 
                 if (0 === appscoEventTypeSearch.getValue().length && eventTypeFilter.selectedItem) {
@@ -667,7 +658,7 @@
             }
 
             _onFilterEventTypeKeyup(event) {
-                var keyCode = event.keyCode;
+                const keyCode = event.keyCode;
 
                 if (40 === keyCode) {
                     event.target.blur();
@@ -685,7 +676,7 @@
             }
 
             _selectFirstEventType() {
-                var eventTypeFilter = this.$.filterListEventTypes;
+                const eventTypeFilter = this.$.filterListEventTypes;
 
                 if (!eventTypeFilter.selectedItem) {
                     eventTypeFilter.selected = this._eventTypeListDisplay[0].value;
@@ -700,20 +691,18 @@
 
             _getAccountsByTerm() {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
-                            options = {
-                                url: this._searchAccountsApi,
-                                method: 'GET',
-                                handleAs: 'json',
-                                headers: {'Authorization': 'token ' + this.authorizationToken}
-                            };
+                    const request = document.createElement('iron-request'),
+                        options = {
+                            url: this._searchAccountsApi,
+                            method: 'GET',
+                            handleAs: 'json',
+                            headers: this._headers
+                        };
 
                     request.send(options).then(function() {
-
                         if (request.response) {
                             resolve(request.response.company_roles);
                         }
-
                     }, function() {
                         reject(request.response.message);
                     });
@@ -721,57 +710,49 @@
             }
 
             _filterAccountListByTerm(term) {
-
                 this._accountTerm = term;
                 this.set('_accountList', []);
 
                  this._getAccountsByTerm().then(function(accounts) {
-
                         accounts.forEach(function(elem, index) {
                             this.push('_accountList', {
                                 value: elem.account.self,
                                 text: elem.account.display_name
                             });
-
-
                         }.bind(this));
-
                 }.bind(this));
             }
 
             exportToCSV() {
                 this.set('_logListForExport', []);
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this.auditLogApi + '/export',
-                            method: 'POST',
-                            handleAs: 'text',
-                            body: {
-                                "from": this._filterFromDate,
-                                "to": this._filterToDate,
-                                "event":this._filterEventType,
-                                "account": this._filterAccount
-                            },
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        };
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this.auditLogApi + '/export',
+                        method: 'POST',
+                        handleAs: 'text',
+                        body: {
+                            "from": this._filterFromDate,
+                            "to": this._filterToDate,
+                            "event": this._filterEventType,
+                            "account": this._filterAccount
+                        },
+                        headers: this._headers
+                    };
                 request.send(options).then(function(response) {
                     if (response.response) {
-                        var responseObject = JSON.parse(response.response);
-                        var logs = responseObject.logs;
+                        const responseObject = JSON.parse(response.response);
+                        const logs = responseObject.logs;
                         logs.forEach(function(log, i) {
-                            var record =  this._formatLogItem(logs[i]),
-                                    exportRecord = [
-                                        this._formatDate(record.date),
-                                        record.event_type.text,
-                                        record.account.name + " - " + record.account.email,
-                                        record.role.name,
-                                        record.event,
-                                        record.application,
-                                        record.ip_address
-                                    ];
+                            const record = this._formatLogItem(logs[i]),
+                                exportRecord = [
+                                    this._formatDate(record.date),
+                                    record.event_type.text,
+                                    record.account.name + " - " + record.account.email,
+                                    record.role.name,
+                                    record.event,
+                                    record.application,
+                                    record.ip_address
+                                ];
                             this.push('_logListForExport', exportRecord);
                         }.bind(this));
 
@@ -783,26 +764,26 @@
             }
 
             _formatDate(date) {
-                var dateString = new Date(date).toString();
+                const dateString = new Date(date).toString();
                 return dateString.split('GMT')[0];
             }
 
             _setCSVReportHeader () {
-                var header = ['Date', 'Event type', 'Account', 'Role', 'Event', 'Application', 'IP Address'];
+                const header = ['Date', 'Event type', 'Account', 'Role', 'Event', 'Application', 'IP Address'];
                 this._logListForExport.unshift(header);
             }
 
             _printCSV() {
-                var csvContent = "data:text/csv;charset=utf-8,",
-                        logs = this._logListForExport;
+                let csvContent = "data:text/csv;charset=utf-8,";
+                const logs = this._logListForExport;
 
                 logs.forEach(function(logElement){
                     let log = logElement.join(",");
                     csvContent += log + "\r\n";
                 });
 
-                var encodedUri = encodeURI(csvContent),
-                        link = document.createElement("a");
+                const encodedUri = encodeURI(csvContent),
+                    link = document.createElement("a");
                 link.setAttribute("href", encodedUri);
                 link.setAttribute("download", "company_log.csv");
                 document.body.appendChild(link);
@@ -811,7 +792,7 @@
                     link.click();
                 }
                 else if (document.createEvent) {
-                    var clickEvent = document.createEvent('MouseEvents');
+                    const clickEvent = document.createEvent('MouseEvents');
 
                     clickEvent.initEvent('click', true, true);
                     link.dispatchEvent(clickEvent);
@@ -821,7 +802,7 @@
             }
 
             _formatLogItem(log) {
-                var logItem = this.$.appscoAuditLog.formatLogItem(log);
+                const logItem = this.$.appscoAuditLog.formatLogItem(log);
                 logItem.event_type = this._formatEventType(log.type);
                 logItem.application = this._formatApplication(log);
                 return logItem;
@@ -864,6 +845,11 @@
 
             toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
+            }
+
+            _onExportAuditLogAction() {
+                this._showProgressBar();
+                this.exportToCSV();
             }
         }
         window.customElements.define(AppscoAuditLogPage.is, AppscoAuditLogPage);

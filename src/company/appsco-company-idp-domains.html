@@ -80,8 +80,7 @@ Domains are loaded inside component through iron-ajax.
 
                 <div class="domains">
                     <template is="dom-repeat"
-                              items="[[ _domains ]]"
-                              on-dom-change="_onItemsDomChange">
+                              items="[[ _domains ]]">
 
                         <appsco-company-idp-domain-item id="appscoDomainItem_[[ index ]]"
                                                         domain="[[ item ]]"
@@ -95,7 +94,10 @@ Domains are loaded inside component through iron-ajax.
     </template>
 
     <script>
-        class AppscoCompanyIdpDomains extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior, Appsco.HeadersMixin], Polymer.Element) {
+        class AppscoCompanyIdpDomains extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-company-idp-domains'; }
 
             static get properties() {
@@ -188,19 +190,19 @@ Domains are loaded inside component through iron-ajax.
             }
 
             modifyDomain(domain) {
-                var domains = JSON.parse(JSON.stringify(this._domains)),
+                const domains = JSON.parse(JSON.stringify(this._domains)),
                     length = domains.length,
                     allDomains = JSON.parse(JSON.stringify(this._allDomains)),
                     allLength = allDomains.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     if (domain.alias === domains[i].alias) {
                         domains[i] = domain;
                         break;
                     }
                 }
 
-                for (var j = 0; j < allLength; j++) {
+                for (let j = 0; j < allLength; j++) {
                     if (domain.alias === allDomains[j].alias) {
                         allDomains[j] = domain;
                         break;
@@ -248,7 +250,7 @@ Domains are loaded inside component through iron-ajax.
             }
 
             _onResponse(event) {
-                var response = event.detail.response,
+                const response = event.detail.response,
                     domains = response.domains,
                     meta = response.meta,
                     domainsCount = domains.length - 1;
@@ -270,7 +272,7 @@ Domains are loaded inside component through iron-ajax.
                             this.push('_allDomains', el);
                         }
 
-                        if (index == domainsCount) {
+                        if (index === domainsCount) {
                             this._hideProgressBar();
 
                             if (!this._domains.length) {
@@ -298,23 +300,6 @@ Domains are loaded inside component through iron-ajax.
                 setTimeout(function() {
                     this.shadowRoot.getElementById('paperProgress').hidden = true;
                 }.bind(this), 300);
-            }
-
-            _onItemsDomChange() {
-                var index = this._renderedIndex;
-
-                if (-1 != index) {
-                    this.animationConfig.entry.nodes = [];
-
-                    for (var i = 0; i <= index; i++) {
-                        var addedItem = this.shadowRoot.getElementById('appscoDomainItem_' + i);
-                        this.animationConfig.entry.nodes.push(addedItem);
-                    }
-
-                    this.playAnimation('entry');
-
-                    this._renderedIndex = -1;
-                }
             }
         }
         window.customElements.define(AppscoCompanyIdpDomains.is, AppscoCompanyIdpDomains);

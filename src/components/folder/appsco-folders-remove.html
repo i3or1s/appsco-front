@@ -37,7 +37,6 @@
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation">
@@ -50,7 +49,7 @@
                 <appsco-loader active="[[ _loader ]]"
                                loader-alt="AppsCo is processing request"
                                multi-color></appsco-loader>
-                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                 <div class="remove-container">
                     <p>Confirm removing [[ folder.name ]] from dashboard?</p>
                 </div>
@@ -87,8 +86,9 @@
                         value: ''
                     },
 
-                    _error: {
-                        type: String
+                    _errorMessage: {
+                        type: String,
+                        value: ''
                     }
                 };
             }
@@ -108,11 +108,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _onDeleteAction() {

@@ -6,11 +6,16 @@
 <link rel="import" href="components/page/appsco-content.html">
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="provisioning/appsco-active-integrations.html">
+<link rel="import" href="provisioning/appsco-provisioning-page-actions.html">
+
+<link rel="import" href="provisioning/appsco-add-integration.html">
+<link rel="import" href="components/integration/appsco-run-integration-force-sync.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-provisioning-page">
     <template>
-        <style include="appsco-page-styles"></style>
-        <style>
+        <style include="appsco-page-styles">
             :host {
                 --appsco-active-integration-item: {
                     cursor: default;
@@ -18,6 +23,14 @@
                 --appsco-active-integration-item-activated: {
                     @apply --shadow-elevation-2dp;
                 };
+                --paper-dropdown-menu-icon: {
+                    color: var(--primary-text-color);
+                    width: 22px;
+                    height: 22px;
+                };
+            }
+            :host .item-info {
+                padding: 0 10px;
             }
         </style>
 
@@ -37,25 +50,47 @@
                             api-errors="[[ apiErrors ]]"
                             on-edit-item="_onIntegrationEditAction"
                             on-list-loaded="_onIntegrationsLoadFinished"
+                            on-force-sync="_onIntegrationForceSync"
                             on-list-empty="_onIntegrationsLoadFinished"></appsco-active-integrations>
                 </div>
             </div>
 
         </appsco-content>
+
+        <appsco-add-integration
+                id="appscoAddIntegration"
+                authorization-token="[[ authorizationToken ]]"
+                available-integrations-api="[[ availableIntegrationsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-requested="_onIntegrationRequested">
+        </appsco-add-integration>
+
+        <appsco-run-integration-force-sync
+                id="appscoRunIntegrationForceSync"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-force-sync-done="_onForceSyncRun">
+        </appsco-run-integration-force-sync>
     </template>
 
     <script>
-        class AppscoProvisioningPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoProvisioningPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-provisioning-page'; }
 
             static get properties() {
                 return {
                     authorizationToken: {
-                        type: String,
-                        value: ''
+                        type: String
                     },
 
                     activeIntegrationsApi: {
+                        type: String
+                    },
+
+                    availableIntegrationsApi: {
                         type: String
                     },
 
@@ -97,6 +132,14 @@
                 };
 
                 this.pageLoaded = false;
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('add-integration', this._onAddIntegrationAction.bind(this));
             }
 
             reloadIntegrations() {
@@ -124,6 +167,26 @@
                         integration: event.detail.item
                     }
                 }));
+            }
+
+            _onAddIntegrationAction() {
+                this.shadowRoot.getElementById('appscoAddIntegration').open();
+            }
+
+            _onIntegrationRequested(event) {
+                if (event.detail.authorizationUrl) {
+                    window.location.href = event.detail.authorizationUrl;
+                }
+            }
+
+            _onIntegrationForceSync(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRunIntegrationForceSync');
+                dialog.setIntegration(event.detail.integration);
+                dialog.open();
+            }
+
+            _onForceSyncRun(event) {
+                this._notify('Resync for ' + event.detail.integration.name + ' has been finished.');
             }
         }
         window.customElements.define(AppscoProvisioningPage.is, AppscoProvisioningPage);

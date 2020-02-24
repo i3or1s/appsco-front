@@ -46,7 +46,6 @@
         </style>
 
         <paper-dialog
-                with-backdrop
                 id="addResourceDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -59,7 +58,7 @@
 
             <paper-dialog-scrollable>
                 <div class="dialog-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <iron-form
                             id="addResourceForm"
@@ -74,29 +73,30 @@
                         </form>
                     </iron-form>
 
-                    <form is="iron-form"
-                          id="saveResourceForm">
-                        <paper-input
-                                id="title"
-                                label="title"
-                                value="[[ resource.title ]]"
-                                name="configure_application[title]"
-                                required
-                                auto-validate
-                                error-message="Please enter resource title."
-                        ></paper-input>
-                        <paper-input
-                                id="url"
-                                label="url"
-                                value="[[ resource.url ]]"
-                                pattern="[[ _urlValidationPattern ]]"
-                                error-message="Url is invalid."
-                                required
-                                auto-validate
-                                name="configure_application[url]"
-                                hidden$="[[ !_shouldShowUrl ]]"
-                        ></paper-input>
-                    </form>
+                    <iron-form id="saveResourceForm">
+                        <form>
+                            <paper-input
+                                    id="title"
+                                    label="title"
+                                    value="[[ resource.title ]]"
+                                    name="configure_application[title]"
+                                    required
+                                    auto-validate
+                                    error-message="Please enter resource title."
+                            ></paper-input>
+                            <paper-input
+                                    id="url"
+                                    label="url"
+                                    value="[[ resource.url ]]"
+                                    pattern="[[ _urlValidationPattern ]]"
+                                    error-message="Url is invalid."
+                                    required
+                                    auto-validate
+                                    name="configure_application[url]"
+                                    hidden$="[[ !_shouldShowUrl ]]"
+                            ></paper-input>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -153,7 +153,7 @@
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -186,11 +186,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _openDialog() {

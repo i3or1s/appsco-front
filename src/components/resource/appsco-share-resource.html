@@ -40,13 +40,19 @@
                     font-weight: normal;
                 };
 
+                --paper-dropdown-menu-icon: {
+                    color: var(--primary-text-color);
+                    width: 22px;
+                    height: 22px;
+                };
+
                 --paper-checkbox-unchecked-color: var(--secondary-text-color);
                 --paper-checkbox-checked-color: var(--secondary-text-color);
                 --paper-checkbox-size: 22px;
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -201,7 +207,6 @@
                                on-list-empty="_onGroupsLoadFinished"></appsco-company-groups>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -221,7 +226,7 @@
             </template>
 
             <div class="error-container">
-                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
             </div>
 
             <paper-tabs id="paperTabs" selected="{{ _selectedTab }}">
@@ -620,6 +625,10 @@
                 return contactsLoaded && rolesLoaded;
             }
 
+            setResources(resources) {
+                this.resources = resources;
+            }
+
             _reset() {
                 this.$.appscoSearchAccounts.reset();
                 this.$.appscoSearchGroups.reset();
@@ -661,11 +670,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _showMessage(message) {
@@ -1078,7 +1087,7 @@
             }
 
             _onGroupsLoadFinished(event) {
-                const listItems = event.detail.items ? event.detail.items : [];
+                const listItems = event.detail && event.detail.items ? event.detail.items : [];
 
                 this._showGroupListProgress();
 

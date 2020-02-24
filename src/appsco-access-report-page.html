@@ -11,8 +11,10 @@
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="components/report/appsco-access-report-accounts.html">
 <link rel="import" href="components/report/appsco-access-report-page-filters.html">
-
+<link rel="import" href="components/report/appsco-access-report-page-actions.html">
 <link rel="import" href="components/components/appsco-behavior-report-page.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-access-report-page">
     <template>
@@ -94,8 +96,9 @@
         class AppscoAccessReportPage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
             Polymer.NeonAnimationRunnerBehavior,
-            Polymer.AppscoBehaviourReportPage],
-            Polymer.Element) {
+            Polymer.AppscoBehaviourReportPage,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-access-report-page'; }
 
             static get properties() {
@@ -217,7 +220,8 @@
             }
 
             _addListeners() {
-                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish.bind(this));
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
             }
 
             _toggleFilters(mobile) {

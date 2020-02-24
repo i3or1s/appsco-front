@@ -62,7 +62,6 @@ Shows dialog screen with form for changing claims for application instance.
         </style>
 
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -75,7 +74,7 @@ Shows dialog screen with form for changing claims for application instance.
                 <div class="dialog-container">
                     <appsco-loader active="[[ _loader ]]" loader-alt="AppsCo is revoking access" multi-color></appsco-loader>
 
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <iron-form
                             id="form"
@@ -230,7 +229,7 @@ Shows dialog screen with form for changing claims for application instance.
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -309,7 +308,7 @@ Shows dialog screen with form for changing claims for application instance.
             }
 
             _onFormKeyUp() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             /**
@@ -364,7 +363,7 @@ Shows dialog screen with form for changing claims for application instance.
              * @private
              */
             _onFormError(event) {
-                this._error = event.detail.error.message;
+                this._errorMessage = event.detail.error.message;
                 this._hideLoader();
             }
 
@@ -390,7 +389,7 @@ Shows dialog screen with form for changing claims for application instance.
             }
 
             reset() {
-                this._error = '';
+                this._errorMessage = '';
                 this._hideLoader();
             }
         }

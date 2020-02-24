@@ -22,6 +22,11 @@
                 type: Object,
                 computed: '_computeHeaders(authorizationToken)'
             },
+
+            _authorizationHeaders: {
+                type: Object,
+                computed: '_computeAuthorizationHeaders(authorizationToken)'
+            }
         },
         /**
          * Computes authorization headers.
@@ -35,6 +40,10 @@
                 'Authorization': 'token ' + authorizationToken,
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
+        },
+
+        _computeAuthorizationHeaders: function (authorizationToken) {
+            return { 'Authorization': 'token ' + authorizationToken };
         }
     };
 </script>

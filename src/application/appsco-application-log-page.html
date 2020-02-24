@@ -26,6 +26,10 @@
             }
             :host paper-card {
                 @apply --full-page-paper-card;
+
+                --paper-card-header-text: {
+                    @apply --full-page-paper-card-header-text;
+                };
             }
             .page-close-action {
                 @apply --page-close-action;
@@ -66,8 +70,7 @@
             static get properties() {
                 return {
                     authorizationToken: {
-                        type: String,
-                        value: ''
+                        type: String
                     },
 
                     company: {

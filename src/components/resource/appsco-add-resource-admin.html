@@ -151,7 +151,6 @@
                          on-list-empty="_onAccountsLoadFinished"></appsco-accounts>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -164,7 +163,7 @@
                            multi-color></appsco-loader>
 
             <div class="error-container">
-                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
             </div>
 
             <div class="filter-accounts">
@@ -349,6 +348,10 @@
                 this.$.dialog.toggle();
             }
 
+            setResources(resources) {
+                this.resources = resources;
+            }
+
             _showLoader() {
                 this._shareLoader = true;
             }
@@ -358,11 +361,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _showMessage(message) {

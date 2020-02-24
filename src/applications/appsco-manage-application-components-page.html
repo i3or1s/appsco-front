@@ -18,6 +18,8 @@
 <link rel="import" href="../components/application/appsco-application-autologin.html">
 <link rel="import" href="../components/page/appsco-layout-with-cards-styles.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-manage-application-components-page">
     <template>
         <style include="appsco-layout-with-cards-styles">
@@ -81,7 +83,7 @@
         <iron-ajax
                 auto
                 url="[[ companyIdpSamlMetadataApi ]]"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_onCompanyIdpSamlMetadataReponse"
         ></iron-ajax>
 
@@ -243,7 +245,10 @@
     </template>
 
     <script>
-        class AppscoManageApplicationComponentsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+        class AppscoManageApplicationComponentsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-manage-application-components-page'; }
 
             static get properties() {
@@ -270,11 +275,6 @@
                         reflectToAttribute: true
                     },
 
-                    authorizationToken: {
-                        type: String,
-                        value: ''
-                    },
-
                     apiErrors: {
                         type: Object,
                         value: function () {
@@ -287,25 +287,10 @@
                         value: false
                     },
 
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _computedHeaders: {
-                        type: Object,
-                        computed: "_computeHeaders(authorizationToken)"
-                    },
-
-                    /**
-                     * Get application groups link.
-                     */
                     groupsApi: {
                         type: String
                     },
 
-                    /**
-                     * Selected application from search list.
-                     */
                     application: {
                         type: Object,
                         value: function () {
@@ -403,19 +388,6 @@
             _onApplicationChanged() {
                 this._autologinUnavailable = false;
                 this._autologinItem = this.application.auth_type == 'item';
-            }
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
             }
 
             _loadGroups() {

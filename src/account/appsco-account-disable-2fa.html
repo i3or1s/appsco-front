@@ -9,6 +9,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-disable-2fa`
 Shows dialog screen with confirmation for disabling two-factor authentication.
@@ -49,7 +51,6 @@ Shows dialog screen with confirmation for disabling two-factor authentication.
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -61,7 +62,7 @@ Shows dialog screen with confirmation for disabling two-factor authentication.
 
             <paper-dialog-scrollable>
                 <div class="disable-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Please confirm that you want to disable two-factor authentication.</p>
                 </div>
             </paper-dialog-scrollable>
@@ -74,21 +75,13 @@ Shows dialog screen with confirmation for disabling two-factor authentication.
 
     </template>
     <script>
-        class AppscoAccountDisable2fa extends Polymer.Element {
+        class AppscoAccountDisable2fa extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
             static get is() { return 'appsco-account-disable-2fa'; }
 
             static get properties() {
                 return {
                     twoFaApi: {
                         type: String
-                    },
-
-                    /**
-                     * Authorization token.
-                     */
-                    authorizationToken: {
-                        type: String,
-                        value: ''
                     },
 
                     apiErrors: {
@@ -98,20 +91,12 @@ Shows dialog screen with confirmation for disabling two-factor authentication.
                         }
                     },
 
-                    _headers: {
-                        type: String,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     _loader: {
                         type: Boolean,
                         value: false
                     },
 
-                    /**
-                     * Error message.
-                     */
-                    _error: {
+                    _errorMessage: {
                         type: String
                     }
                 };
@@ -129,13 +114,6 @@ Shows dialog screen with confirmation for disabling two-factor authentication.
                 this.$.dialog.toggle();
             }
 
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                };
-            }
-
             _showLoader() {
                 this._loader = true;
             }
@@ -145,11 +123,11 @@ Shows dialog screen with confirmation for disabling two-factor authentication.
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _onDialogClosed() {
@@ -158,7 +136,7 @@ Shows dialog screen with confirmation for disabling two-factor authentication.
             }
 
             _onDisableAction() {
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this.twoFaApi,
                         method: 'DELETE',

@@ -15,6 +15,8 @@
 <link rel="import" href="../components/account/appsco-account-log.html">
 <link rel="import" href="../components/page/appsco-layout-with-cards-styles.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-account-components-page">
     <template>
         <style include="appsco-layout-with-cards-styles">
@@ -109,7 +111,10 @@
                 transition: opacity 0.2s ease-out;
 
                 --paper-card-header-text: {
-                     padding: 8px 16px;
+                     padding-top: 8px;
+                     padding-bottom: 8px;
+                     padding-left: 16px;
+                     padding-right: 16px;
                      font-size: 18px;
                      color: var(--success-color);
                      border-bottom: 1px solid var(--success-color);
@@ -134,7 +139,7 @@
                 id="twofaapi"
                 url="[[ twoFaApi ]]"
                 on-response="_on2FAResponse"
-                headers="{{ _computedHeaders }}">
+                headers="{{ _headers }}">
         </iron-ajax>
 
         <div class="cols-layout three-cols-layout">
@@ -260,7 +265,10 @@
     </template>
 
     <script>
-        class AppscoAccountComponentsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+        class AppscoAccountComponentsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-account-components-page'; }
 
             static get properties() {
@@ -273,27 +281,14 @@
                         notify: true
                     },
 
-                    authorizationToken: {
-                        type: String
-                    },
-
-                    /**
-                     * Get notifications link.
-                     */
                     notificationsApi: {
                         type: String
                     },
 
-                    /**
-                     * Get authorized applications link.
-                     */
                     authorizedAppsApi: {
                         type: String
                     },
 
-                    /**
-                     * Get account log link.
-                     */
                     logApi: {
                         type: String
                     },
@@ -303,20 +298,8 @@
                         value: false
                     },
 
-                    /**
-                     * Get 2fa status link.
-                     */
                     twoFaApi: {
                         type: String
-                    },
-
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _computedHeaders: {
-                        type: Object,
-                        computed: "_computeHeaders(authorizationToken)"
                     },
 
                     /**
@@ -334,10 +317,6 @@
                         value: false
                     },
 
-                    /**
-                     * Indicates if it is medium screen size.
-                     * It uses iron-media-query.
-                     */
                     mediumScreen: {
                         type: Boolean,
                         value: false,
@@ -411,19 +390,6 @@
 
             _updateScreen(tablet, medium) {
                 this.updateStyles();
-            }
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
             }
 
             setSharedElement(target, callback) {

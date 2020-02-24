@@ -11,6 +11,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/application/appsco-application-settings.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-application-settings-dialog">
     <template>
         <style>
@@ -20,7 +22,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -44,7 +46,6 @@
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-closed="_onDialogClosed">
@@ -85,7 +86,7 @@
 
     </template>
     <script>
-        class AppscoApplicationSettingsDialog extends Polymer.Element {
+        class AppscoApplicationSettingsDialog extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
             static get is() { return 'appsco-application-settings-dialog'; }
 
             static get properties() {
@@ -109,41 +110,11 @@
                         }
                     },
 
-                    /**
-                     * Authorization token.
-                     */
-                    authorizationToken: {
-                        type: String
-                    },
-
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     _loader: {
                         type: Boolean,
                         value: false
                     }
                 };
-            }
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
             }
 
             setApplication(application) {

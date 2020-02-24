@@ -94,7 +94,6 @@ Custom property | Description | Default
         </style>
 
         <paper-dialog
-                with-backdrop
                 id="shareDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -115,7 +114,7 @@ Custom property | Description | Default
 
                     <div class="account-list">
 
-                        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                         <template is="dom-repeat" items="[[ _accounts ]]">
                             <appsco-account-card class="selected-account"
@@ -223,7 +222,7 @@ Custom property | Description | Default
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -272,21 +271,25 @@ Custom property | Description | Default
                 });
             }
 
+            setApplication(application) {
+                this.application = application;
+            }
+
             _addListeners() {
                 this.addEventListener('on-request', this._loading);
             }
 
-            _removeFromAccounts_(event) {
-                var account = event.detail.account;
+            _removeFromAccounts(event) {
+                const account = event.detail.account;
 
                 this.splice('_accounts', this._accounts.indexOf(account), 1);
                 this.push('_searchList', account);
             }
 
-            _share_(event) {
-                var account = event.detail.account;
+            _share(event) {
+                const account = event.detail.account;
 
-                this._error = '';
+                this._errorMessage = '';
                 this.push('_accounts', account);
                 this.splice('_searchList', this._searchList.indexOf(account), 1);
             }
@@ -297,9 +300,8 @@ Custom property | Description | Default
              * @returns Promise
              * @private
              */
-            _shareToUser_(account) {
-                const appRequest = document.createElement('iron-request'),
-                    me = this;
+            _shareToUser(account) {
+                const appRequest = document.createElement('iron-request');
 
                 return appRequest.send({
                     url: account.self+"/share",
@@ -315,7 +317,7 @@ Custom property | Description | Default
              *
              * @private
              */
-            _shareApplication_() {
+            _shareApplication() {
                 let me = this,
                     length = this._accounts.length;
                 this._accounts.forEach(function(item) {
@@ -340,7 +342,7 @@ Custom property | Description | Default
              *
              * @private
              */
-            _sharingFinished_() {
+            _sharingFinished() {
                 this.$.shareDialog.close();
                 this.set('_accounts', []);
                 this._shareLoader = false;
@@ -356,7 +358,7 @@ Custom property | Description | Default
                 }));
             }
 
-            _shareApplicationAction_() {
+            _shareApplicationAction() {
                 if (this._accounts.length > 0) {
                     this._shareLoader = true;
 
@@ -367,19 +369,19 @@ Custom property | Description | Default
                     }.bind(this), 500);
                 }
                 else {
-                    this._error = 'Please add at least one user to share resource to.';
+                    this._errorMessage = 'Please add at least one user to share resource to.';
                     this.$.search.focus();
                 }
             }
 
-            _onSearch_(event) {
+            _onSearch(event) {
                 const value = event.detail.term;
 
                 this._loader = true;
                 this.set('_message', '');
 
                 setTimeout(function() {
-                    this._error = '';
+                    this._errorMessage = '';
                 }.bind(this), 500);
 
                 if (value.length < 3) {
@@ -417,28 +419,28 @@ Custom property | Description | Default
                 }.bind(this));
             }
 
-            _onSearchClear_() {
+            _onSearchClear() {
                 this._reset();
             }
 
-            toggle_() {
+            toggle() {
                 this.$.shareDialog.toggle();
             }
 
-            _onDialogOpened_() {
+            _onDialogOpened() {
                 this.$.appscoSearch.setup();
             }
 
-            _onDialogClosed_() {
+            _onDialogClosed() {
                 this._reset();
                 this.set('_accounts', []);
             }
 
-            _reset_() {
+            _reset() {
                 this.$.appscoSearch.reset();
                 this.set('_searchList', []);
                 this._shareLoader = false;
-                this._error = '';
+                this._errorMessage = '';
                 this._message = '';
             }
         }

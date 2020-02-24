@@ -12,10 +12,27 @@
 <link rel="import" href="components/contact/appsco-contact-applications-page.html">
 <link rel="import" href="components/contact/appsco-contact-groups-page.html">
 <link rel="import" href="account/appsco-account-log-page.html">
+<link rel="import" href="components/contact/appsco-manage-contact-page-actions.html">
+
+<link rel="import" href="components/contact/appsco-delete-contact.html">
+<link rel="import" href="components/contact/appsco-convert-contact.html">
+<link rel="import" href="components/application/company/appsco-application-assignee-revoke.html">
+<link rel="import" href="components/contact/appsco-contact-remove-group.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-manage-contact-page">
     <template>
         <style include="appsco-manage-page-styles">
+            :host {
+                --paper-card-header-text: {
+                    padding: 16px;
+                    font-size: 24px;
+                    font-weight: 400;
+                    color: #414042;
+                };
+            }
             :host div[resource] {
                 height: calc(100% - 32px - 20px);
             }
@@ -94,6 +111,7 @@
                                 name="appsco-contact-applications-page"
                                 contact="[[ contact ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-revoke-assignee="_onRevokeAssigneeAccess"
                                 on-back="_onResourceBack">
                         </appsco-contact-applications-page>
 
@@ -112,19 +130,44 @@
                                 authorization-token="[[ authorizationToken ]]"
                                 groups-api="[[ _groupsApi ]]"
                                 contact="[[ contact ]]"
+                                on-remove-from-group="_onRemoveContactFromGroup"
                                 on-back="_onResourceBack">
                         </appsco-contact-groups-page>
 
                     </neon-animated-pages>
                 </div>
-
             </div>
         </appsco-content>
 
+        <appsco-delete-contact
+                id="appscoDeleteContact"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-delete-contact>
+
+        <appsco-convert-contact
+                id="appscoConvertContact"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-convert-contact>
+
+        <appsco-application-assignee-revoke
+                id="appscoApplicationAssigneeRevoke"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-application-assignee-revoke>
+
+        <appsco-contact-remove-group
+                id="appscoContactRemoveGroup"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-contact-remove-group>
     </template>
 
     <script>
-        class AppscoManageContactPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoManageContactPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-manage-contact-page'; }
 
             static get properties() {
@@ -144,11 +187,6 @@
                         observer: '_onContactChanged'
                     },
 
-                    authorizationToken: {
-                        type: String,
-                        value: ''
-                    },
-
                     contactsApi: {
                         type: String,
                         observer: '_onContactsApiChanged'
@@ -162,16 +200,6 @@
                     _groupsApi: {
                         type: String,
                         computed: '_computeGroupsApi(contact)'
-                    },
-
-
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
                     },
 
                     mediumScreen: {
@@ -248,7 +276,12 @@
 
                 Polymer.RenderStatus.afterNextRender(this, function() {
                     this._getContact();
+                    this._addListeners();
                 });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
             }
 
             toggleResource() {
@@ -285,12 +318,6 @@
 
             _computeGroupsApi(contact) {
                 return contact.meta ? contact.meta.groups + '?extended=1' : null;
-            }
-
-            _computeHeaders (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
             }
 
             _onPageLoaded() {
@@ -339,23 +366,15 @@
             }
 
             _onConvertContactToUserAction() {
-                this.dispatchEvent(new CustomEvent('convert-contact-to-user', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        contact: this.contact
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoConvertContact');
+                dialog.setContact(this.contact);
+                dialog.toggle();
             }
 
-            _onDeleteContactAction() {
-                this.dispatchEvent(new CustomEvent('delete-contact', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        contact: this.contact
-                    }
-                }));
+            _onDeleteContactAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoDeleteContact');
+                dialog.setContact(this.contact);
+                dialog.toggle();
             }
 
             _onManageApplications() {
@@ -389,6 +408,19 @@
 
             reload() {
                 this.$.appscoManageContactComponentsPage.load();
+            }
+
+            _onRevokeAssigneeAccess(event) {
+                const dialog = this.shadowRoot.getElementById('appscoApplicationAssigneeRevoke');
+                dialog.setAssignee(event.detail.assignee);
+                dialog.toggle();
+            }
+
+            _onRemoveContactFromGroup(event) {
+                let appscoContactRemoveGroup = this.shadowRoot.getElementById('appscoContactRemoveGroup');
+                appscoContactRemoveGroup.setGroup(event.detail.group);
+                appscoContactRemoveGroup.setContact(event.detail.contact);
+                appscoContactRemoveGroup.toggle();
             }
         }
         window.customElements.define(AppscoManageContactPage.is, AppscoManageContactPage);

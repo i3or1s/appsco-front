@@ -17,6 +17,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-directory-add-account">
     <template>
         <style>
@@ -27,7 +29,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -83,7 +85,6 @@
         </style>
 
         <paper-dialog id="addAccountDialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -98,7 +99,7 @@
             <paper-dialog-scrollable>
                 <div class="dialog-container">
 
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <iron-form
                             id="form"
@@ -107,7 +108,6 @@
                             on-iron-form-error="_onFormError"
                             on-iron-form-response="_onFormResponse">
                         <form
-
                               method="POST"
                               action="[[ addCompanyRoleApi ]]">
                             <div>
@@ -183,7 +183,10 @@
 
     </template>
     <script>
-        class AppscoDirectoryAddAccount extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+        class AppscoDirectoryAddAccount extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-directory-add-account'; }
 
             static get properties() {
@@ -203,15 +206,12 @@
                         }
                     },
 
-                    /**
-                     * Indicates if add application loader should be displayed or not.
-                     */
                     _loader: {
                         type: Boolean,
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     }
                 };
@@ -230,11 +230,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _onDialogOpened() {
@@ -252,7 +252,7 @@
             }
 
             _submitForm() {
-                var form = this.$.form;
+                const form = this.$.form;
 
                 if (form.validate()) {
                     this._showLoader();
@@ -265,7 +265,7 @@
             }
 
             _onFormError(event) {
-                var code = event.detail.request.response.code;
+                const code = event.detail.request.response.code;
 
                 if (1499245162 === code) {
                     this._createInvitation(event.target);
@@ -277,7 +277,7 @@
             }
 
             _onFormResponse(event) {
-                var response = event.detail.response;
+                const response = event.detail.response;
 
                 if (200 === event.detail.status && response) {
                     this.$.addAccountDialog.close();
@@ -293,17 +293,16 @@
             }
 
             _createInvitation(form) {
-                var formData = form.serialize(),
+                const formData = form.serializeForm(),
                     request = document.createElement('iron-request'),
                     options = {
                         url: this.addInvitationApi,
                         method: 'POST',
                         handleAs: 'json',
                         headers: this._headers
-                    },
-                    body = '';
+                    };
 
-                body += 'invitation[type]=user';
+                let body = 'invitation[type]=user';
 
                 for (const key in formData) {
                     body += '&' + key.replace('register_account', 'invitation') + '=' + encodeURIComponent(formData[key]);

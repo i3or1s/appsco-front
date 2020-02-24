@@ -32,6 +32,7 @@ Contains info about resources shared to company role.
                 width: 100%;
                 --paper-progress-active-color: #7baaf7;
                 @apply --appsco-list-progress-bar;
+                display: block;
             }
             :host .progress {
                 height: 6px;
@@ -213,7 +214,7 @@ Contains info about resources shared to company role.
             ready() {
                 super.ready();
 
-                Polymer.RenderStatus.afterNextRender(this, function() {
+                Polymer.RenderStatus.beforeNextRender(this, function() {
                     this.load();
                 });
             }
@@ -262,20 +263,19 @@ Contains info about resources shared to company role.
              * @private
              */
             _handleResponse(event) {
-                var response = event.detail.response;
+                const response = event.detail.response;
 
                 if (!response) {
                     return false;
                 }
 
-                var applications = response.applications,
-                        currentLength = this._applications.length,
-                        total = response.meta.total;
+                const applications = response.applications,
+                    currentLength = this._applications.length,
+                    total = response.meta.total;
 
                 this._totalApplications = total;
 
                 if (applications && applications.length > 0) {
-
                     this._nextPage += 1;
 
                     applications.forEach(function(application, index) {
@@ -283,12 +283,7 @@ Contains info about resources shared to company role.
                             this.push('_applications', applications[index]);
 
                             if (index === (applications.length - 1)) {
-
-                                this._moreApplications = true;
-
-                                if (this._applications.length === total) {
-                                    this._moreApplications = false;
-                                }
+                                this._moreApplications = this._applications.length !== total;
 
                                 this._hideProgressBar();
                                 this.dispatchEvent(new CustomEvent('applications-loaded', { bubbles: true, composed: true }));

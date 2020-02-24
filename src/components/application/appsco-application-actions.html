@@ -521,7 +521,7 @@ Custom property | Description | Default
              * Evaluates if item is in given path.
              *
              * @param {HTMLElement} element The element to be evaluated.
-             * @param {Array<HTMLElements>=} path Elements in path to be checked against item element.
+             * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
              * @return {Boolean}
              *
              * @private
@@ -547,7 +547,7 @@ Custom property | Description | Default
              * @private
              */
             _handleDocumentClick(event) {
-                var path = Polymer.dom(event).path;
+                const path = Polymer.dom(event).path;
 
                 if (!this._isInPath(path, this.shadowRoot.getElementById('addItemAction')) && !this._isInPath(path, this.shadowRoot.getElementById('addItemActionIconButton'))
                         && !this._isInPath(path, this.shadowRoot.getElementById('addItemActionIconButton')))
@@ -615,7 +615,7 @@ Custom property | Description | Default
             }
 
             _onBulkActionsChanged() {
-                var bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action');
+                const bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action');
 
                 if (this.animationConfig) {
                     this.animationConfig.entry.nodes = bulkActions;
@@ -623,7 +623,7 @@ Custom property | Description | Default
                 }
 
                 if (this.bulkActions) {
-                    var length = bulkActions.length;
+                    const length = bulkActions.length;
 
                     for (let i = 0; i < length; i++) {
                         bulkActions[i].style.display = 'flex';
@@ -644,7 +644,7 @@ Custom property | Description | Default
             }
 
             _onBulkSelectAllChanged () {
-                var bulkSelectAll = Polymer.dom(this.root).querySelectorAll('.bulk-select-all');
+                const bulkSelectAll = Polymer.dom(this.root).querySelectorAll('.bulk-select-all');
                 if (bulkSelectAll.length > 0) {
                     if (this._bulkSelectAll) {
                         bulkSelectAll[0].style.display = 'block';
@@ -664,10 +664,10 @@ Custom property | Description | Default
 
             _onNeonAnimationFinish() {
                 if (!this.bulkActions) {
-                    var bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action'),
+                    const bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action'),
                         length = bulkActions.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         bulkActions[i].style.display = 'none';
                     }
                 }

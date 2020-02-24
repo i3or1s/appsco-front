@@ -91,7 +91,7 @@ Custom property | Description | Default
 
         <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color></appsco-loader>
 
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
         <iron-form
                 id="form"
@@ -236,17 +236,10 @@ Custom property | Description | Default
                         value: false
                     },
 
-                    /**
-                     * Error message for settings form.
-                     */
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
-                    /**
-                     * Target for iron-a11y-keys component.
-                     * Submit form on enter.
-                     */
                     _target: {
                         type: Object
                     }
@@ -290,7 +283,7 @@ Custom property | Description | Default
             }
 
             _onFormError(event) {
-                this._error = event.detail.error.message;
+                this._errorMessage = event.detail.error.message;
                 this._hideLoader();
             }
 
@@ -309,7 +302,7 @@ Custom property | Description | Default
             }
 
             _onKeyUp() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             setup() {
@@ -317,12 +310,12 @@ Custom property | Description | Default
             }
 
             reset() {
-                var company = JSON.parse(JSON.stringify(this.company));
+                const company = JSON.parse(JSON.stringify(this.company));
 
                 this.company = {};
                 this.company = company;
 
-                this._error = '';
+                this._errorMessage = '';
                 this.$.contactEmail.invalid = false;
                 this.$.billingEmail.invalid = false;
             }

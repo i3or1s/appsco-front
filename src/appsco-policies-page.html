@@ -14,10 +14,21 @@
 <link rel="import" href="components/policy/appsco-policies.html">
 <link rel="import" href="components/policy/appsco-policy-info.html">
 <link rel="import" href="components/policy/appsco-policy-settings.html">
+<link rel="import" href="components/policy/appsco-policies-page-actions.html">
+
+<link rel="import" href="components/policy/appsco-change-policy-status.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-policies-page">
     <template>
         <style include="appsco-page-styles">
+            :host {
+                --item-basic-info: {
+                    padding: 0 10px;
+                };
+            }
             :host div[resource] > .resource-content {
                 padding-top: 20px;
             }
@@ -120,9 +131,12 @@
                         </div>
 
                         <div name="settings" class="tab-content">
-                            <appsco-policy-settings policy="[[ policy ]]"
-                                                    authorization-token="[[ authorizationToken ]]"
-                                                    api-errors="[[ apiErrors ]]"></appsco-policy-settings>
+                            <appsco-policy-settings
+                                    policy="[[ policy ]]"
+                                    authorization-token="[[ authorizationToken ]]"
+                                    api-errors="[[ apiErrors ]]"
+                                    on-policy-updated="_onPolicyUpdated">
+                            </appsco-policy-settings>
                         </div>
 
                     </neon-animated-pages>
@@ -143,13 +157,22 @@
 
         </appsco-content>
 
+        <appsco-change-policy-status
+                id="appscoChangePolicyStatus"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ _apiErrors ]]"
+                on-policy-status-changed="_onPolicyStatusChanged">
+        </appsco-change-policy-status>
+
     </template>
 
     <script>
         class AppscoPoliciesPage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
             Polymer.AppscoPageBehavior,
-            Polymer.AppscoListObserverBehavior
+            Polymer.AppscoListObserverBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-policies-page'; }
 
@@ -324,7 +347,7 @@
             }
 
             _computePolicyExistence(policy) {
-                for (let key in policy) {
+                for (const key in policy) {
                     return true;
                 }
 
@@ -378,14 +401,10 @@
             }
 
             _changePolicyStatus(policy, action) {
-                this.dispatchEvent(new CustomEvent('change-policy-status', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        policy: policy,
-                        action: action
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoChangePolicyStatus');
+                dialog.setPolicy(policy);
+                dialog.setAction(action);
+                dialog.open();
             }
 
             _onEnablePolicyAction(event) {
@@ -394,6 +413,27 @@
 
             _onDisablePolicyAction(event) {
                 this._changePolicyStatus((event.detail.policy ? event.detail.policy : this.policy), 'disable');
+            }
+
+            _onChangePolicyStatusAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoChangePolicyStatus');
+                dialog.setPolicy(event.detail.policy);
+                dialog.setAction(event.detail.action);
+                dialog.open();
+            }
+
+            _onPolicyStatusChanged(event) {
+                const policy = event.detail.policy;
+                this.modifyPolicy(policy);
+                this.modifyPolicies([policy]);
+                this._notify('Company policy successfully ' + (('active' === policy.status) ? 'enabled' : 'disabled') + '.');
+            }
+
+            _onPolicyUpdated(event) {
+                const policy = event.detail.policy;
+                this.modifyPolicy(policy);
+                this.modifyPolicies([policy]);
+                this._notify('Company policy successfully updated.');
             }
         }
         window.customElements.define(AppscoPoliciesPage.is, AppscoPoliciesPage);

@@ -20,12 +20,26 @@
 <link rel="import" href="components/account/appsco-account-image.html">
 <link rel="import" href="components/components/appsco-page-behavior.html">
 <link rel="import" href="components/components/appsco-list-observer-behavior.html">
+<link rel="import" href="directory/appsco-directory-page-actions.html">
+
+<link rel="import" href="components/orgunit/appsco-orgunit-modify.html">
+<link rel="import" href="components/orgunit/appsco-orgunit-remove.html">
+<link rel="import" href="components/account/company/appsco-account-remove.html">
+<link rel="import" href="directory/appsco-directory-add-account.html">
+<link rel="import" href="directory/appsco-import-accounts.html">
+<link rel="import" href="components/notifications/appsco-send-notification.html">
+<link rel="import" href="components/account/company/appsco-account-orgunit.html">
+<link rel="import" href="components/group/appsco-resource-add-groups.html">
+<link rel="import" href="upgrade/appsco-upgrade-action.html">
+<link rel="import" href="components/account/appsco-invitation-remove.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-directory-page">
     <template>
         <style include="appsco-page-styles">
             :host {
-
                 --appsco-list-item-message: {
                     font-size: 14px;
                     @apply --paper-font-common-nowrap;
@@ -117,20 +131,20 @@
 
         <iron-ajax auto
                    url="[[ companyOrgunitsApi ]]"
-                   headers="[[ computedHeaders ]]"
+                   headers="[[ _headers ]]"
                    handle-as="json"
                    on-response="_onOrgunitsResponse"></iron-ajax>
 
         <iron-ajax id="getDomainsCall"
                    auto
                    url="[[ domainsApi ]]"
-                   headers="[[ computedHeaders ]]"
+                   headers="[[ _headers ]]"
                    on-response="_onDomainResponse"></iron-ajax>
 
         <iron-ajax
                 id="companySubscriptionInfo"
                 url="[[ companySubscriptionApi ]]"
-                headers="[[ computedHeaders ]]"
+                headers="[[ _headers ]]"
                 handle-as="json"
                 auto
                 on-response="_onSubscriptionResponse"></iron-ajax>
@@ -138,7 +152,6 @@
         <appsco-content id="appscoContent" resource-active>
 
             <div class="flex-vertical" resource slot="resource">
-
                 <div class="resource-content flex-vertical">
                     <paper-tabs id="paperTabs" selected="{{ _selectedFilter }}">
                         <paper-tab name="organization-units">Organization units</paper-tab>
@@ -154,6 +167,9 @@
                         <div name="organization-units" class="tab-content organization-units">
                             <appsco-orgunit-tree id="appscoOrgunitTree"
                                                  org-units="[[ _orgUnits ]]"
+                                                 on-add-orgunit="_onAddOrgunit"
+                                                 on-modify-orgunit="_onModifyOrgunit"
+                                                 on-remove-orgunit="_onRemoveOrgunit"
                                                  on-selected="_onOrgunitSelected"></appsco-orgunit-tree>
                         </div>
 
@@ -189,6 +205,7 @@
                             on-remove="_onRemoveInvitation"
                             on-loaded="_onInvitationsLoaded"
                             on-empty-load="_onInvitationsEmptyLoad"
+                            on-invitation-resent="_onInvitationResent"
                             on-observable-list-empty="_onObservableItemListChange"
                             on-observable-list-filled="_onObservableItemListChange"></appsco-invitations>
 
@@ -259,13 +276,92 @@
             </div>
         </appsco-content>
 
+        <appsco-account-remove
+                id="appscoAccountsRemove"
+                accounts="[[ selectedAccounts ]]"
+                authorization-token="[[ authorizationToken ]]"
+                company-api="[[ companyApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-accounts-removed="_onAccountsRemoved">
+        </appsco-account-remove>
+
+        <appsco-directory-add-account
+                id="appscoDirectoryAccountAdd"
+                authorization-token="[[ authorizationToken ]]"
+                add-company-role-api="[[ companyDirectoryRolesApi]]"
+                add-invitation-api="[[ companyInvitationsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-company-role-created="_onCompanyRoleCreated"
+                on-invitation-created="_onInvitationCreated">
+        </appsco-directory-add-account>
+
+        <appsco-import-accounts
+                id="appscoDirectoryImportAccounts"
+                authorization-token="[[ authorizationToken ]]"
+                import-api="[[ companyImportAccountsApi ]]"
+                domain="[[ domain ]]"
+                on-import-finished="_onAccountImportFinished">
+        </appsco-import-accounts>
+
+        <appsco-orgunit-modify
+                id="appscoOrgunitModify"
+                on-orgunit-added="_onOrgunitAdded"
+                on-orgunit-modified="_onOrgunitModified"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-orgunit-modify>
+
+        <appsco-orgunit-remove
+                id="appscoOrgunitRemove"
+                on-orgunit-removed="_onOrgunitRemoved"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-orgunit-remove>
+
+        <appsco-send-notification
+                id="appscoSendNotification"
+                authorization-token="[[ authorizationToken ]]"
+                company-notifications-api="[[ companyNotificationsApi ]]"
+                get-roles-api="[[ companyDirectoryRolesApi ]]"
+                get-contacts-api="[[ companyContactsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-notification-sent="_onNotificationSent">
+        </appsco-send-notification>
+
+        <appsco-account-orgunit
+                id="appscoAccountOrgunit"
+                authorization-token="[[ authorizationToken ]]"
+                company-orgunits-api="[[ companyOrgunitsApi ]]"
+                accounts="[[ selectedAccounts ]]">
+        </appsco-account-orgunit>
+
+
+        <appsco-resource-add-groups
+                id="appscoShareToGroupDialog"
+                authorization-token="[[ authorizationToken ]]"
+                groups-api="[[ groupsApi ]]">
+        </appsco-resource-add-groups>
+
+        <appsco-upgrade-action
+                id="appscoUpgradeAction"
+                authorization-token="[[ authorizationToken ]]"
+                company-api="[[ companyApi ]]">
+        </appsco-upgrade-action>
+
+        <appsco-invitation-remove
+                id="appscoInvitationRemove"
+                authorization-token="[[ authorizationToken ]]"
+                on-invitation-removed="_onInvitationRemoved"
+                on-invitation-already-removed="_onInvitationAlreadyRemoved">
+        </appsco-invitation-remove>
+
     </template>
 
     <script>
         class AppscoDirectoryPage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
             Polymer.AppscoPageBehavior,
-            Polymer.AppscoListObserverBehavior
+            Polymer.AppscoListObserverBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-directory-page'; }
 
@@ -301,11 +397,6 @@
                         type: Number
                     },
 
-                    authorizationToken: {
-                        type: String,
-                        value: ''
-                    },
-
                     companySubscriptionApi: {
                         type: String
                     },
@@ -315,6 +406,38 @@
                     },
 
                     groupsApi: {
+                        type: String
+                    },
+
+                    companyInvitationsApi: {
+                        type: String
+                    },
+
+                    companyDirectoryRolesApi: {
+                        type: String
+                    },
+
+                    companyOrgunitsApi: {
+                        type: String
+                    },
+
+                    companyRolesApi: {
+                        type: String
+                    },
+
+                    companyNotificationsApi: {
+                        type: String
+                    },
+
+                    companyContactsApi: {
+                        type: String
+                    },
+
+                    companyImportAccountsApi: {
+                        type: String
+                    },
+
+                    companyApi: {
                         type: String
                     },
 
@@ -330,29 +453,6 @@
                         value: false
                     },
 
-                    /**
-                     * Computed headers.
-                     * It contains authorization token.
-                     */
-                    computedHeaders: {
-                        type: Object,
-                        value: function () {
-                            return {};
-                        }
-                    },
-
-                    companyInvitationsApi: {
-                        type: String
-                    },
-
-                    companyDirectoryRolesApi: {
-                        type: String
-                    },
-
-                    companyOrgunitsApi: {
-                        type: String
-                    },
-
                     _roles: {
                         type: Array,
                         value: function () {
@@ -366,6 +466,10 @@
                             return {};
                         },
                         observer: '_onRoleChange'
+                    },
+
+                    domain: {
+                        type: String
                     },
 
                     _accountSelectAction: {
@@ -451,6 +555,14 @@
                     pageLoaded: {
                         type: Boolean,
                         value: false
+                    },
+
+                    apiErrors: {
+                        type: Object
+                    },
+
+                    toolbar: {
+                        type: Object
                     }
                 };
             }
@@ -491,7 +603,22 @@
 
                 Polymer.RenderStatus.afterNextRender(this, function() {
                     this.set('_itemsComponent', this.shadowRoot.getElementById('appscoAccounts'));
+                    this._addListeners();
                 });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('add-account', this._onCompanyAddAccount.bind(this));
+                this.toolbar.addEventListener('search', this._onSearchAccounts.bind(this));
+                this.toolbar.addEventListener('search-clear', this._onSearchAccountsClear.bind(this));
+                this.toolbar.addEventListener('filter-roles', this._onFilterRoles.bind(this));
+                this.toolbar.addEventListener('send-notification', this._onSendNotificationToCompanyRoles.bind(this));
+                this.toolbar.addEventListener('orgunits', this._onAddAccountsToOrgunit.bind(this));
+                this.toolbar.addEventListener('remove', this._onRemoveAccounts.bind(this));
+                this.toolbar.addEventListener('select-all-company-roles', this._onSelectAllCompanyRolesAction.bind(this));
+                this.toolbar.addEventListener('import-accounts', this._onCompanyImportAccounts.bind(this));
+                this.toolbar.addEventListener('add-groups-to-company-roles', this._onAddGroupsToCompanyRoles.bind(this));
+                this.toolbar.addEventListener('upgrade', this._fireUpgrade.bind(this));
             }
 
             initializePage() {
@@ -521,9 +648,9 @@
             }
 
             _computePageReadyState(accounts, invitations, domains, subscriptionLoaded) {
-                var ready = (accounts && invitations && domains);
+                const ready = (accounts && invitations && domains);
 
-                for (var key in this.subscription) {
+                for (const key in this.subscription) {
                     return ready && subscriptionLoaded;
                 }
 
@@ -537,8 +664,10 @@
                 }
             }
 
-            _onSelectedFilterChanged() {
-                this.resetPage();
+            _onSelectedFilterChanged(newValue, oldValue) {
+                if (undefined !== oldValue) {
+                    this.resetPage();
+                }
             }
 
             _resetFilters() {
@@ -547,7 +676,7 @@
             }
 
             _resetTypeFilter() {
-                this.dispatchEvent(new CustomEvent('reset-type-filter', { bubbles: true, composed: true }));
+                this.toolbar.resetTypeFilter();
             }
 
             _onSubscriptionLimitInfoHandled(handled) {
@@ -612,12 +741,12 @@
                 this.set('selectedAccounts', []);
                 this._resetPageLists();
                 this._resetFilters();
-                this._resetPageActions();
+                this.toolbar.resetPageActions();
                 this.hideInfo();
             }
 
             _resetPageActions() {
-                this.dispatchEvent(new CustomEvent('reset-page-actions', { bubbles: true, composed: true }));
+                this.toolbar.resetPageActions();
             }
 
             _resetPageLists() {
@@ -630,7 +759,6 @@
                 if (role && role.meta && role.meta.log) {
                     this._loadLog();
                 }
-
             }
 
             _loadLog() {
@@ -646,13 +774,9 @@
             }
 
             _onRemoveInvitation(event) {
-                this.dispatchEvent(new CustomEvent('remove-invitation', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        invitation: event.detail.invitation
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoInvitationRemove');
+                dialog.setInvitation(event.detail.invitation);
+                dialog.open();
             }
 
             _onAccountsLoaded() {
@@ -686,16 +810,8 @@
                 this.set('role', this.shadowRoot.getElementById('appscoAccounts').getFirstItem());
             }
 
-            _showBulkActions() {
-                this.dispatchEvent(new CustomEvent('show-bulk-actions', { bubbles: true, composed: true }));
-            }
-
-            _hideBulkActions() {
-                this.dispatchEvent(new CustomEvent('hide-bulk-actions', { bubbles: true, composed: true }));
-            }
-
             _onAccountEditAction(event) {
-                var role = event.detail.item;
+                const role = event.detail.item;
 
                 this.set('role', role);
                 this.dispatchEvent(new CustomEvent('edit-account', {
@@ -718,7 +834,7 @@
             }
 
             _onAccountSelectAction(event) {
-                var account = event.detail.item;
+                const account = event.detail.item;
 
                 clearTimeout(this._accountSelectAction);
 
@@ -727,9 +843,8 @@
                         this._showBulkActions();
                     }
                     else {
-                        var selectedAccount = this.shadowRoot.getElementById('appscoAccounts').getFirstSelectedItem();
-
-                        for (let key in selectedAccount) {
+                        const selectedAccount = this.shadowRoot.getElementById('appscoAccounts').getFirstSelectedItem();
+                        for (const key in selectedAccount) {
                             return false;
                         }
 
@@ -759,7 +874,7 @@
             }
 
             _onDomainResponse(event) {
-                var status = event.detail.status,
+                const status = event.detail.status,
                     response = event.detail.response;
 
                 if (200 === status && response) {
@@ -770,7 +885,7 @@
             }
 
             _handleSubscriptionLimitReachedInfo() {
-                var subscription = this.subscription,
+                const subscription = this.subscription,
                     licencesTotal = subscription.quantity,
                     accountsTotal = this.shadowRoot.getElementById('appscoAccounts').getTotalCount() + this.shadowRoot.getElementById('appscoInvitations').getTotalCount();
 
@@ -812,27 +927,21 @@
             }
 
             _showSubscriptionLimitReachedInfo(subscription) {
-                this.dispatchEvent(new CustomEvent('show-subscription-limit-reached-info', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        subscription: subscription
-                    }
-                }));
+                this.toolbar.showSubscriptionLimitReachedInfo(subscription);
             }
 
             _hideSubscriptionLimitReachedInfo() {
-                this.dispatchEvent(new CustomEvent('hide-subscription-limit-reached-info', { bubbles: true, composed: true }));
+                this.toolbar.hideSubscriptionLimitReachedInfo();
             }
 
             _showDomainNotVerifiedInfo() {
                 this._verifiedDomain = false;
-                this.dispatchEvent(new CustomEvent('show-domain-not-verified-info', { bubbles: true, composed: true }));
+                this.toolbar.showDomainNotVerifiedInfo();
             }
 
             _hideDomainNotVerifiedInfo() {
                 this._verifiedDomain = true;
-                this.dispatchEvent(new CustomEvent('hide-domain-not-verified-info', { bubbles: true, composed: true }));
+                this.toolbar.hideDomainNotVerifiedInfo();
             }
 
             hideDomainNotVerifiedInfo() {
@@ -963,7 +1072,7 @@
             }
 
             _onSubscriptionResponse(event) {
-                var status = event.detail.status,
+                const status = event.detail.status,
                     subscriptions = event.detail.response;
 
                 if (200 === status && subscriptions) {
@@ -979,6 +1088,188 @@
                         }
                     }.bind(this));
                 }
+            }
+
+            _onCompanyAddAccount() {
+                this.shadowRoot.getElementById('appscoDirectoryAccountAdd').toggle();
+            }
+
+            _onInvitationCreated(event) {
+                const invitation = event.detail.invitation;
+                this.addInvitations([invitation]);
+                this._notify('Invitation for account ' + invitation.email + ' was successfully created and can be found under invitations.');
+            }
+
+            _onCompanyRoleCreated(event) {
+                this.addAccounts([event.detail.role]);
+                this._notify('Account ' + event.detail.role.account.email + ' was successfully added.');
+            }
+
+            _searchAccounts(term) {
+                this._showProgressBar();
+                this.filterDirectoryResourcesByTerm(term);
+            }
+
+            _onSearchAccounts(event) {
+                this._searchAccounts(event.detail.term);
+            }
+
+            _onSearchAccountsClear() {
+                this._searchAccounts('');
+            }
+
+            _onFilterRoles(event) {
+                const filter = event.detail.filter;
+
+                this._showProgressBar();
+                this.filterAccounts(filter);
+            }
+
+            _onSendNotificationToCompanyRoles() {
+                const dialog = this.shadowRoot.getElementById('appscoSendNotification');
+                dialog.setFilterType('user');
+                dialog.toggle();
+
+                this._hideProgressBar();
+            }
+
+            _onNotificationSent(event) {
+                this._notify('Notification successfully sent to '+ event.detail.counter +' accounts.');
+            }
+
+            _onAddAccountsToOrgunit() {
+                const selectedAccounts = this.getSelectedAccounts();
+                if (selectedAccounts.length > 0) {
+                    this.set('selectedAccounts', selectedAccounts);
+                    this.shadowRoot.getElementById('appscoAccountOrgunit').toggle();
+                }
+                else {
+                    this._hideBulkActions();
+                }
+            }
+
+            _onRemoveAccounts() {
+                const selectedAccounts = this.getSelectedAccounts();
+
+                if (selectedAccounts.length > 0) {
+                    this.set('selectedAccounts', selectedAccounts);
+                    this.shadowRoot.getElementById('appscoAccountsRemove').toggle();
+                }
+                else {
+                    this._hideBulkActions()
+                }
+            }
+
+            _onAccountsRemoved(event) {
+                this.removeAccounts(event.detail.accounts);
+                this._hideBulkActions();
+                this.set('selectedAccounts', []);
+                this._notify('Selected accounts were successfully removed from company.');
+            }
+
+            _onCompanyImportAccounts() {
+                this.shadowRoot.getElementById('appscoDirectoryImportAccounts').toggle();
+            }
+
+            _onAccountImportFinished(event) {
+                const response = event.detail.response;
+                let message = response.numberOfRoles + ' accounts imported out of ' + response.total + '.'
+                    + ' Number of invitations created: ' + response.numberOfInvitations + '.'
+                    + ' Number of failed imports: ' + response.numberOfFailed + '.';
+
+                if (0 < response.numberOfRoles) {
+                    this.reloadAccounts();
+                }
+
+                if (0 < response.numberOfInvitations) {
+                    this.reloadInvitations();
+                }
+
+                if (response.maxSubscriptionSizeReached) {
+                    this._showSubscriptionLimitReachedInfo(this._subscription);
+                }
+
+                this._notify(message, true);
+            }
+
+            _onSelectAllCompanyRolesAction() {
+                this.selectAllItems();
+            }
+
+            _onAddGroupsToCompanyRoles() {
+                const selectedRoles = this.getSelectedAccounts();
+
+                if (selectedRoles.length > 0) {
+                    const dialog = this.shadowRoot.getElementById('appscoShareToGroupDialog');
+                    dialog.setItems(selectedRoles);
+                    dialog.setType('role');
+                    dialog.open();
+                }
+            }
+
+            _onInvitationResent(event) {
+                this._notify('Invitation for account ' + event.detail.invitation.email + ' has been sent.');
+            }
+
+            _onAddOrgunit(event) {
+                const orgunitAddDialog = this.shadowRoot.getElementById('appscoOrgunitModify');
+
+                orgunitAddDialog.parent = event.detail.orgUnit;
+                orgunitAddDialog.orgUnit = {};
+                orgunitAddDialog.open();
+            }
+
+            _onOrgunitAdded(event) {
+                const orgunit = event.detail.orgUnit;
+                this.addOrgunit(orgunit);
+                this._notify('Organization unit ' + orgunit.name + ' successfully added.');
+            }
+
+            _onModifyOrgunit(event) {
+                const orgunitModifyDialog = this.shadowRoot.getElementById('appscoOrgunitModify');
+
+                orgunitModifyDialog.parent = {};
+                orgunitModifyDialog.orgUnit = event.detail.orgUnit;
+                orgunitModifyDialog.open();
+            }
+
+            _onOrgunitModified(event) {
+                const orgunit = event.detail.orgUnit;
+                this.modifyOrgunit(orgunit);
+                this._notify('Organization unit ' + orgunit.name + ' successfully modified.');
+            }
+
+            _onRemoveOrgunit(event) {
+                const orgunitRemoveDialog = this.shadowRoot.getElementById('appscoOrgunitRemove');
+
+                orgunitRemoveDialog.orgUnit = event.detail.orgUnit;
+                orgunitRemoveDialog.open();
+            }
+
+            _onOrgunitRemoved(event) {
+                const orgunit = event.detail.orgUnit;
+                this.removeOrgunit(orgunit);
+                this._notify('Organization unit ' + orgunit.name + ' successfully removed.');
+            }
+
+            _fireUpgrade(event) {
+                const dialog = this.shadowRoot.getElementById('appscoUpgradeAction');
+                dialog.setSubscription(event.detail.subscription);
+                dialog.setPlans(event.detail.plans);
+                dialog.initializePage();
+                dialog.toggle();
+            }
+
+            _onInvitationRemoved(event) {
+                const invitation = event.detail.invitation;
+                this.removeInvitations([invitation]);
+                this._notify('Invitation for account ' + invitation.email + ' has been removed.');
+            }
+
+            _onInvitationAlreadyRemoved(event) {
+                const invitation = event.detail.invitation;
+                this.removeInvitations([invitation]);
+                this._notify('Invitation for account ' + invitation.email + ' has already been removed.');
             }
         }
         window.customElements.define(AppscoDirectoryPage.is, AppscoDirectoryPage);

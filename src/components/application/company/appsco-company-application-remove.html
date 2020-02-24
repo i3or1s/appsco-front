@@ -55,7 +55,6 @@ Shows dialog screen with confirmation for resource removal.
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation">
@@ -139,6 +138,10 @@ Shows dialog screen with confirmation for resource removal.
 
             toggle() {
                 this.$.dialog.open();
+            }
+
+            setApplications(applications) {
+                this.applications = applications;
             }
 
             _computeSingleApplication(applications) {

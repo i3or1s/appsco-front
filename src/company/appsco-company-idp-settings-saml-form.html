@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload-file.html">
+<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-animatable-behavior.html">
 
 <link rel="import" href="appsco-company-idp-settings-certificates.html">
@@ -86,10 +87,7 @@
             static get properties() {
                 return {
                     uploadIdpMetadataField: {
-                        type: Object,
-                        value: function () {
-                            return this.$.uploadIdpMetadataField;
-                        }
+                        type: Object
                     }
                 };
             }
@@ -97,14 +95,16 @@
             ready() {
                 super.ready();
 
+                this.uploadIdpMetadataField = this.$.uploadIdpMetadataField;
+
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     this.uploadIdpMetadataField.set('i18n.addFiles.many', 'Upload file');
                 });
             }
 
             getEncodedBodyValues() {
-                var certificates = this.getCertificates(),
-                    body = '';
+                const certificates = this.getCertificates();
+                let body = '';
 
                 Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
                     if (item.value) {
@@ -113,7 +113,7 @@
                     }
                 }.bind(this));
 
-                for (var i = 0; i < certificates.length; i++) {
+                for (let i = 0; i < certificates.length; i++) {
                     body += ('&' + this.formPrefix + '[certs][' + i + ']=' + encodeURIComponent(certificates[i]));
                 }
 
@@ -126,7 +126,7 @@
 
             reset() {
                 Polymer.dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
-                    var inputContainer = item.$$('#container');
+                    const inputContainer = item.shadowRoot.getElementById('#container');
 
                     item.value = '';
                     item.invalid = false;
@@ -148,7 +148,7 @@
                 // Prevent AJAX request
                 event.preventDefault();
 
-                var file = event.detail.file,
+                const file = event.detail.file,
                     uploadField = this.uploadIdpMetadataField,
                     fileIndex = uploadField.files.indexOf(file);
 
@@ -160,12 +160,12 @@
             }
 
             _parseIdPMetadataXMLFile(file) {
-                var reader = new FileReader();
+                const reader = new FileReader();
 
                 (function(me) {
 
                     reader.onload = function(a, b, c) {
-                        var xmlDocument = new DOMParser().parseFromString(this.result, 'text/xml');
+                        const xmlDocument = new DOMParser().parseFromString(this.result, 'text/xml');
 
                         me._fillIdPMetadataFromXML(xmlDocument);
                     };
@@ -175,7 +175,7 @@
             }
 
             _fillIdPMetadataFromXML(xmlDocument) {
-                var idpEntityDescriptor = xmlDocument.querySelector('[entityID]'),
+                let idpEntityDescriptor = xmlDocument.querySelector('[entityID]'),
                     entityId = idpEntityDescriptor.getAttribute('entityID'),
                     certificateDOM = xmlDocument.getElementsByTagName('X509Certificate'),
                     singleSignOnServices = xmlDocument.querySelectorAll('SingleSignOnService'),
@@ -183,20 +183,20 @@
                     signInURL,
                     certificates = [];
 
-                if (!certificateDOM || certificateDOM.length == 0) {
+                if (!certificateDOM || certificateDOM.length === 0) {
                     certificateDOM = xmlDocument.getElementsByTagName('ds:X509Certificate');
                 }
 
-                for (var i = 0; i < length; i++) {
-                    var singleSignOnService = singleSignOnServices[i];
+                for (let i = 0; i < length; i++) {
+                    const singleSignOnService = singleSignOnServices[i];
 
-                    if (-1 != singleSignOnService.getAttribute('Binding').indexOf('HTTP-Redirect')) {
+                    if (-1 !== singleSignOnService.getAttribute('Binding').indexOf('HTTP-Redirect')) {
                         signInURL = singleSignOnService.getAttribute('Location');
                         break;
                     }
                 }
 
-                for (var i = 0; i < certificateDOM.length; i++) {
+                for (let i = 0; i < certificateDOM.length; i++) {
                     certificates.push(certificateDOM[i].textContent);
                 }
 

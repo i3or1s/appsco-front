@@ -19,6 +19,8 @@
 <link rel="import" href="../components/components/appsco-form-error.html">
 <link rel="import" href="../components/components/appsco-price.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-update-subscription-action">
     <template>
         <style>
@@ -31,7 +33,7 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
+                top: 120px;
                 @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
@@ -99,7 +101,7 @@
                 id="plansRequest"
                 url="[[ _plansApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 auto
                 on-response="_handlePlansResponse"
         ></iron-ajax>
@@ -114,7 +116,6 @@
         </iron-ajax>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -128,7 +129,7 @@
 
             <paper-dialog-scrollable>
                 <div class="dialog-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <div>
 
@@ -205,20 +206,11 @@
 
     </template>
     <script>
-        class AppscoUpdateSubscriptionAction extends Polymer.Element {
+        class AppscoUpdateSubscriptionAction extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
             static get is() { return 'appsco-update-subscription-action'; }
 
             static get properties() {
                 return {
-                    authorizationToken: {
-                        type: String
-                    },
-
-                    _computedHeaders: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     companyApi: {
                         type: String
                     },
@@ -280,11 +272,6 @@
                         value: ''
                     },
 
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     _publicKeyApi: {
                         type: String,
                         computed: '_computePublicKeyApi(companyApi)'
@@ -301,12 +288,6 @@
                     return;
                 }
                 this._stripePublicKey = event.detail.response.stripePublicKey;
-            }
-
-            _computeHeaders (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
             }
 
             _computePlansApi(companyApi) {
@@ -362,7 +343,7 @@
 
             _onDialogClosed() {
                 this._purchaseLoader = false;
-                this._error = '';
+                this._errorMessage = '';
                 this.$.quantity.value = '';
                 this.$.quantity.invalid = false;
             }
@@ -400,10 +381,7 @@
                         url: this._purchaseApi,
                         method: method,
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     },
                     body = encodeURIComponent(this.$.quantity.name) +
                             '=' +
@@ -433,7 +411,7 @@
 
                             stripe.handleCardPayment(request.response.client_secret).then(function(result) {
                                 if (result.error) {
-                                    this._error = 'An error occured';
+                                    this._errorMessage = 'An error occured';
                                     this._purchaseLoader = false;
                                 } else {
                                     this._paymentCompleted(request.response);
@@ -445,7 +423,7 @@
                         this._paymentCompleted(request.response);
                     }.bind(this),
                     function() {
-                        this._error = request.response.message;
+                        this._errorMessage = request.response.message;
                         this._purchaseLoader = false;
                     }.bind(this)
                 );
@@ -457,10 +435,7 @@
                         url: response.on_confirm,
                         method: 'POST',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     };
                 request.send(options).then(function() {
                     this.$.dialog.close();

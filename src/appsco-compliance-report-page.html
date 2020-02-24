@@ -12,8 +12,10 @@
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="components/report/appsco-compliance-report-accounts.html">
 <link rel="import" href="components/report/appsco-compliance-report-page-filters.html">
-
+<link rel="import" href="components/report/appsco-compliance-report-page-actions.html">
 <link rel="import" href="components/components/appsco-behavior-report-page.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-compliance-report-page">
     <template>
@@ -95,7 +97,8 @@
         class AppscoComplianceReportPage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
             Polymer.NeonAnimationRunnerBehavior,
-            Polymer.AppscoBehaviourReportPage
+            Polymer.AppscoBehaviourReportPage,
+            Appsco.PageMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-compliance-report-page'; }
 
@@ -218,7 +221,8 @@
             }
 
             _addListeners() {
-                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish.bind(this));
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
             }
 
             _toggleFilters(mobile) {
@@ -249,7 +253,7 @@
             }
 
             getFilters() {
-                var filters = this.$.complianceReportPageFilters.getFilters(),
+                const filters = this.$.complianceReportPageFilters.getFilters(),
                     data = {};
                 switch (filters.type) {
                     case 'users':

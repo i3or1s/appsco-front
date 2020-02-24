@@ -12,6 +12,8 @@
 <link rel="import" href="../components/account/appsco-account-2fa-enable.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-account-2fa-manage">
     <template>
         <style include="webkit-scrollbar-style">
@@ -24,6 +26,10 @@
             }
             :host paper-card {
                 @apply --full-page-paper-card;
+
+                --paper-card-header-text: {
+                    @apply --full-page-paper-card-header-text;
+                };
             }
             .page-close-action {
                 @apply --page-close-action;
@@ -62,7 +68,7 @@
 
                 <paper-button on-tap="_toggleRecoveryCodes">VIEW RECOVERY CODES</paper-button>
 
-                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                 <div hidden="[[ recoveryCodes ]]">
                     <ul>
@@ -77,7 +83,10 @@
     </template>
 
     <script>
-        class AppscoAccount2faManage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+        class AppscoAccount2faManage extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-account-2fa-manage'; }
 
             static get properties() {
@@ -88,11 +97,6 @@
                             return {};
                         },
                         notify: true
-                    },
-
-                    authorizationToken: {
-                        type: String,
-                        value: ''
                     },
 
                     twoFaApi: {
@@ -122,11 +126,6 @@
                         value: true
                     },
 
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     _codes: {
                         type: Array,
                         value: function () {
@@ -134,7 +133,7 @@
                         }
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -180,18 +179,12 @@
                 };
             }
 
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                };
-            }
-
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _onBackAction() {

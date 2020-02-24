@@ -14,6 +14,9 @@
 <link rel="import" href="components/report/appsco-reports-list.html">
 <link rel="import" href="components/components/appsco-page-behavior.html">
 <link rel="import" href="components/components/appsco-list-observer-behavior.html">
+<link rel="import" href="components/report/appsco-reports-page-actions.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-reports-page">
     <template>
@@ -80,7 +83,8 @@
         class AppscoReportsPage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
             Polymer.AppscoPageBehavior,
-            Polymer.AppscoListObserverBehavior
+            Polymer.AppscoListObserverBehavior,
+            Appsco.PageMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-reports-page'; }
 
@@ -259,20 +263,17 @@
             }
 
             _setReportApi() {
-                var reportDetailsComponent = this.$.appscoReportDetails;
+                const reportDetailsComponent = this.$.appscoReportDetails;
 
-                switch (this.report.type) {
-                    case 'policies-report':
-                        reportDetailsComponent.setReportApi(this.getPoliciesApi + '?page=1&extended=1&limit=1000');
-                        break;
-
-                    default:
-                        reportDetailsComponent.setReportApi(this.getAccessReportApi);
+                if (this.report.type === 'policies-report') {
+                    reportDetailsComponent.setReportApi(this.getPoliciesApi + '?page=1&extended=1&limit=1000');
+                } else {
+                    reportDetailsComponent.setReportApi(this.getAccessReportApi);
                 }
             }
 
             _resetPageActions() {
-                this.dispatchEvent(new CustomEvent('reset-page-actions', { bubbles: true, composed: true }));
+                this.toolbar.resetPageActions();
             }
 
             _updateScreen() {

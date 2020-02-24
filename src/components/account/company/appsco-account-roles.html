@@ -41,8 +41,10 @@ Custom property | Description | Default
             }
         </style>
 
-        <paper-toggle-button id="administratorSwitch"
-                             checked$="[[ _admin ]]">Company administrator</paper-toggle-button>
+        <paper-toggle-button
+                id="administratorSwitch"
+                checked$="[[ _admin ]]"
+                on-change="_onAdministratorSwitch">Company administrator</paper-toggle-button>
 
         <div class="info">
             <template is="dom-if" if="[[ _admin ]]">
@@ -77,23 +79,11 @@ Custom property | Description | Default
                 };
             }
 
-            ready() {
-                super.ready();
-
-                Polymer.RenderStatus.afterNextRender(this, function () {
-                    this._addListeners();
-                });
-            }
-
-            _addListeners() {
-                this.addEventListener('administratorSwitch.change', this._onAdministratorSwitch);
-            }
-
             _computeAdminState(account) {
                 return (account.roles && account.roles.indexOf('COMPANY_ROLE_ADMIN') !== -1);
             }
 
-            _onAdministratorSwitch(account) {
+            _onAdministratorSwitch() {
                 const request = document.createElement('iron-request'),
                     options = {
                         url: this.account.self + '/admin',

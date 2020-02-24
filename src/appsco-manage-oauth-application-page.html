@@ -12,6 +12,14 @@
 <link rel="import" href="components/oauth-application/appsco-oauth-application-settings-page.html">
 <link rel="import" href="components/oauth-application/appsco-oauth-application-certificates-page.html">
 <link rel="import" href="components/oauth-application/appsco-oauth-application-info.html">
+<link rel="import" href="components/oauth-application/appsco-manage-oauth-application-page-actions.html">
+
+<link rel="import" href="components/oauth-application/appsco-remove-oauth-application.html">
+<link rel="import" href="components/oauth-application/appsco-add-oauth-application-certificate.html">
+<link rel="import" href="components/oauth-application/appsco-remove-oauth-application-certificate.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-manage-oauth-application-page">
     <template>
@@ -109,6 +117,8 @@
                                                                     application="[[ application ]]"
                                                                     authorization-token="[[ authorizationToken ]]"
                                                                     certificates-api="[[ _certificatesApi ]]"
+                                                                    on-add-oauth-application-certificate="_onAddOAuthApplicationCertificateAction"
+                                                                    on-remove-oauth-application-certificate="_onRemoveOAuthApplicationCertificateAction"
                                                                     api-errors="[[ apiErrors ]]"
                                                                     on-oauth-application-updated="_onApplicationUpdated"
                                                                     on-back="_onInnerPageClosed"
@@ -119,10 +129,34 @@
             </div>
         </appsco-content>
 
+        <appsco-add-oauth-application-certificate
+                id="appscoAddOauthApplicationCertificate"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-oauth-application-certificate-added="_onOauthApplicationCertificateAdded">
+        </appsco-add-oauth-application-certificate>
+
+        <appsco-remove-oauth-application-certificate
+                id="appscoRemoveCertificate"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-oauth-application-certificate-removed="_onOAuthApplicationCertificateRemoved">
+        </appsco-remove-oauth-application-certificate>
+
+        <appsco-remove-oauth-application
+                id="appscoRemoveOAuthApplication"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-remove-oauth-application>
+
     </template>
 
     <script>
-        class AppscoManageOauthApplicationPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoManageOauthApplicationPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-manage-oauth-application-page'; }
 
             static get properties() {
@@ -139,11 +173,6 @@
                         value: function () {
                             return {};
                         }
-                    },
-
-                    authorizationToken: {
-                        type: String,
-                        value: ''
                     },
 
                     oauthApplicationsApi: {
@@ -170,11 +199,6 @@
                         type: String,
                         value: 'appsco-application-components-page',
                         notify: true
-                    },
-
-                    _headers: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
                     },
 
                     mediumScreen: {
@@ -245,6 +269,11 @@
                 });
             }
 
+            /*on-remove-oauth-application="_onRemoveOAuthApplicationAction"
+            on-add-oauth-application-certificate="_onAddOAuthApplicationCertificateAction"
+            on-remove-oauth-application-certificate="_onRemoveOAuthApplicationCertificateAction"
+            on-oauth-application-updated="_onOAuthApplicationUpdated"*/
+
             resetPage() {
                 this._showApplicationComponentsPage();
             }
@@ -273,12 +302,6 @@
                 }
             }
 
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                };
-            }
-
             _computeCertificatesApi(application) {
                 return application.self ? (application.self + '/certificates') : null;
             }
@@ -290,9 +313,7 @@
 
             _getApplication() {
                 if (!this.application.self && this.oauthApplicationsApi && this._headers) {
-                    var applicationApi = this.oauthApplicationsApi + this.route.path;
-
-                    this.$.ironAjaxGetApplication.url = applicationApi;
+                    this.$.ironAjaxGetApplication.url = this.oauthApplicationsApi + this.route.path;
                     this.$.ironAjaxGetApplication.generateRequest();
                 }
             }
@@ -333,22 +354,39 @@
             }
 
             _onRemoveApplication() {
-                this.dispatchEvent(new CustomEvent('remove-oauth-application', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        application: this.application
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoRemoveOAuthApplication');
+                dialog.setApplication(this.application);
+                dialog.open();
             }
 
             _onPageAnimationFinish(event) {
-                var fromPage = event.detail.fromPage,
-                    toPage = event.detail.toPage;
+                const toPage = event.detail.toPage;
 
                 if('appsco-application-settings-page' === toPage.getAttribute('name')) {
                     toPage.setPage();
                 }
+            }
+
+            _onAddOAuthApplicationCertificateAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAddOauthApplicationCertificate');
+                dialog.setApplication(event.detail.application);
+                dialog.open();
+            }
+
+            _onOauthApplicationCertificateAdded(event) {
+                this.reloadCertificates();
+                this._notify('Certificate for OAuth application ' + event.detail.application.title + ' has been successfully added.');
+            }
+
+            _onRemoveOAuthApplicationCertificateAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRemoveCertificate');
+                dialog.setCertificate(event.detail.certificate);
+                dialog.open();
+            }
+
+            _onOAuthApplicationCertificateRemoved() {
+                this.reloadCertificates();
+                this._notify('OAuth application certificate has been successfully removed.');
             }
         }
         window.customElements.define(AppscoManageOauthApplicationPage.is, AppscoManageOauthApplicationPage);

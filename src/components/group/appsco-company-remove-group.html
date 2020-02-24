@@ -51,7 +51,6 @@ Shows dialog screen with confirmation for group removal.
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -63,7 +62,7 @@ Shows dialog screen with confirmation for group removal.
 
             <paper-dialog-scrollable>
                 <div class="remove-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Please confirm removal of this group.</p>
                 </div>
             </paper-dialog-scrollable>
@@ -105,7 +104,7 @@ Shows dialog screen with confirmation for group removal.
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     }
                 };
@@ -140,11 +139,11 @@ Shows dialog screen with confirmation for group removal.
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _onDialogClosed() {

@@ -82,7 +82,7 @@
             Once transfer token is used it will become inactive.
         </p>
 
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
         <div class="token-section">
             <paper-button class="action-button"
@@ -186,7 +186,7 @@
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -256,11 +256,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _hideToken() {

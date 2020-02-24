@@ -81,7 +81,7 @@ Custom property | Description | Default
                 active: {
                     type: Boolean,
                     value: false,
-                    notify: true
+                    observer: '_onActiveChanged'
                 },
 
                 /**
@@ -129,16 +129,17 @@ Custom property | Description | Default
 
             Polymer.RenderStatus.afterNextRender(this, function() {
                 this._addListeners();
-                this._onActiveChanged();
             });
         }
 
         _addListeners() {
-            this.addEventListener('active-changed', this._onActiveChanged);
             this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
         }
 
-        _onActiveChanged() {
+        _onActiveChanged(newValue, oldValue) {
+            if (undefined === oldValue && !newValue) {
+                return;
+            }
             if (this.active) {
                 this.style.display = 'block';
                 this.playAnimation('entry');

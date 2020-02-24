@@ -56,6 +56,7 @@
     "manifest.json",
     "bower_components/webcomponentsjs/*.js",
     "bower_components/web-animations-js/web-animations-next-lite.min.js",
+    "bower_components/popper.js/dist/umd/*",
     "bower_components/gold-cc-input/images/*",
     "bower_components/gold-cc-cvc-input/cvc_hint.png",
     "bower_components/gold-cc-cvc-input/cvc_hint_amex.png"

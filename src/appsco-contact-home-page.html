@@ -14,6 +14,12 @@
 <link rel="import" href="components/application/appsco-application-subscribers.html">
 <link rel="import" href="components/application/appsco-application-details.html">
 <link rel="import" href="components/application/appsco-application-log.html">
+<link rel="import" href="company/appsco-contact-home-page-actions.html">
+
+<link rel="import" href="components/application/appsco-application-revoke.html">
+<link rel="import" href="application/appsco-application-settings-dialog.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-contact-home-page">
     <template>
@@ -65,17 +71,6 @@
             }
             :host .view-button {
                 margin-right: 1px;
-            }
-            appsco-application-share {
-                --appsco-application-share-button: {
-                    border-radius: 0;
-                    margin: 0;
-                    padding: 6px 12px;
-                    background-color: var(--app-secondary-color);
-                    color: #ffffff;
-                    font-size: 14px;
-                    height: 34px;
-                };
             }
             appsco-application-details {
                 --appsco-application-icons-color: var(--primary-text-color);
@@ -214,12 +209,6 @@
                                 on-tap="_onApplicationInfoEdit">
                             Edit
                         </paper-button>
-
-                        <paper-button
-                                class="button secondary-button flex"
-                                on-tap="_onShareApplication">
-                            Share
-                        </paper-button>
                     </div>
                 </template>
 
@@ -247,10 +236,26 @@
 
         </appsco-content>
 
+        <appsco-application-revoke
+                id="appscoApplicationRevoke"
+                authorization-token="[[ authorizationToken ]]"
+                on-application-instance-removed="_onApplicationInstanceRevoked">
+        </appsco-application-revoke>
+
+        <appsco-application-settings-dialog
+                id="appscoApplicationSettingsDialog"
+                account="[[ account ]]"
+                authorization-token="[[ authorizationToken ]]"
+                on-application-settings-saved="_onApplicationCredentialsChanged">
+        </appsco-application-settings-dialog>
+
     </template>
 
     <script>
-        class AppscoContactHomePage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+        class AppscoContactHomePage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-contact-home-page'; }
 
             static get properties() {
@@ -258,6 +263,10 @@
                     application: {
                         type: Object,
                         notify: true
+                    },
+
+                    account: {
+                        type: Object
                     },
 
                     applicationsApi: {
@@ -373,6 +382,15 @@
                         this.updateStyles();
                     }
                 });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('search', this._onSearchApplications.bind(this));
+                this.toolbar.addEventListener('search-clear', this._onSearchApplicationsClear.bind(this));
             }
 
             initializePage() {
@@ -462,16 +480,6 @@
                 }));
             }
 
-            _onShareApplication() {
-                this.dispatchEvent(new CustomEvent('share-application', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        application: this.application
-                    }
-                }));
-            }
-
             _onApplicationRemoved() {
                 this.setDefaultApplication();
             }
@@ -489,23 +497,21 @@
             }
 
             _onRevokeApplication() {
-                this.dispatchEvent(new CustomEvent('revoke-application', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        application: this.application
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoApplicationRevoke');
+                dialog.applicationInstance = this.application;
+                dialog.open();
+            }
+
+            _onApplicationInstanceRevoked(event) {
+                this.removeApplications([event.detail.applicationInstance]);
+                this.setDefaultApplication();
+                this._notify('You have successfully revoked access to ' + event.detail.applicationInstance.application.title + '.');
             }
 
             _onApplicationEditCredentials() {
-                this.dispatchEvent(new CustomEvent('info-edit-application-credentials', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        application: this.application
-                    }
-                }));
+                const dialog = this.shadowRoot.getElementById('appscoApplicationSettingsDialog');
+                dialog.setApplication(event.detail.application);
+                dialog.toggle();
             }
 
             _onPageConfigChanged(newValue) {
@@ -515,7 +521,7 @@
                     return false;
                 }
 
-                var appscoApplicationsComponent = this.$.appscoApplications;
+                const appscoApplicationsComponent = this.$.appscoApplications;
 
                 if (newValue.display_style) {
                     appscoApplicationsComponent.setDisplayStyle(newValue.display_style);
@@ -527,6 +533,22 @@
                         ascending: newValue.sort_ascending
                     });
                 }
+            }
+
+            _onSearchApplications(event) {
+                this._showProgressBar();
+                this.filterApplicationsByTerm(event.detail.term);
+            }
+
+            _onSearchApplicationsClear() {
+                this.filterApplicationsByTerm('');
+            }
+
+            _onApplicationCredentialsChanged(event) {
+                const application = event.detail.application,
+                    message = 'You successfully changed ' + application.title + ' credentials.';
+
+                this._notify(message);
             }
         }
         window.customElements.define(AppscoContactHomePage.is, AppscoContactHomePage);

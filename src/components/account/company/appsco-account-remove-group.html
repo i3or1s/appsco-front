@@ -42,7 +42,6 @@
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -54,7 +53,7 @@
 
             <paper-dialog-scrollable>
                 <div class="remove-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Please confirm removal of [[ account.account.name ]] from [[ group.name ]] group.</p>
                 </div>
             </paper-dialog-scrollable>
@@ -91,7 +90,7 @@
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     }
                 };
@@ -101,8 +100,16 @@
                 this.$.dialog.open();
             }
 
+            setGroup(group) {
+                this.group = group;
+            }
+
+            setAccount(account) {
+                this.account = account;
+            }
+
             _onDialogClosed() {
-                this._error = '';
+                this._errorMessage = '';
                 this._loader = false;
             }
 
@@ -130,7 +137,7 @@
                     }));
                 }.bind(this), function() {
                     if (appRequest.status !== 200) {
-                        this._error = this.apiErrors.getError(request.response.code);
+                        this._errorMessage = this.apiErrors.getError(request.response.code);
                     }
 
                     this._loader = false;

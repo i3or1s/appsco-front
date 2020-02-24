@@ -132,8 +132,7 @@ Custom property | Description | Default
 
                 <div class="domains">
                     <template is="dom-repeat"
-                              items="{{ _domains }}"
-                              on-dom-change="_onItemsDomChange">
+                              items="{{ _domains }}">
 
                         <appsco-company-domain-item id="appscoDomainItem_[[ index ]]"
                                                     domain="{{ item }}"
@@ -469,27 +468,10 @@ Custom property | Description | Default
             }
 
             _hideLoadMoreProgressBar() {
-                setTimeout(function() {
+                setTimeout(function () {
                     this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                 }.bind(this), 300);
 
-            }
-
-            _onItemsDomChange() {
-                var index = this._renderedIndex;
-
-                if (-1 != index) {
-                    this.animationConfig.entry.nodes = [];
-
-                    for (var i = 0; i <= index; i++) {
-                        var addedItem = this.shadowRoot.getElementById('appscoDomainItem_' + i);
-                        this.animationConfig.entry.nodes.push(addedItem);
-                    }
-
-                    this.playAnimation('entry');
-
-                    this._renderedIndex = -1;
-                }
             }
         }
         window.customElements.define(AppscoCompanyDomains.is, AppscoCompanyDomains);

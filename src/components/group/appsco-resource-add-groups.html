@@ -93,7 +93,6 @@ Provides functionality of adding resource item to groups.
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -111,7 +110,7 @@ Provides functionality of adding resource item to groups.
 
                     <div class="group-list">
 
-                        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                         <template is="dom-repeat" items="[[ _selectedGroups ]]">
                             <appsco-group-card class="selected-group"
@@ -338,11 +337,11 @@ Provides functionality of adding resource item to groups.
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             /**

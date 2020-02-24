@@ -8,7 +8,6 @@
     Polymer.AppscoUploadImageBehavior = {
 
         properties: {
-
             authorizationToken: {
                 type: String,
                 value: ''
@@ -23,9 +22,9 @@
                 value: false
             },
 
-            _computedHeaders: {
+            _computedAuthorizationHeader: {
                 type: Object,
-                computed: '_computeHeaders(authorizationToken)'
+                computed: '_computeAuthorizationHeader(authorizationToken)'
             },
 
             _loader: {
@@ -34,7 +33,7 @@
             }
         },
 
-        _computeHeaders: function (authorizationToken) {
+        _computeAuthorizationHeader: function (authorizationToken) {
             return ('token ' + authorizationToken).toString();
         },
 
@@ -47,9 +46,10 @@
         },
 
         _validateImageFile: function(file) {
-            var validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'],
-                fileType = file.type,
-                valid = true;
+            const validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'],
+                fileType = file.type;
+
+            let valid = true;
 
             if (file.size > 1048576) {
                 this.dispatchEvent(new CustomEvent('image-upload-error', {
@@ -60,9 +60,7 @@
                 valid = false;
             }
             else {
-
-                for (var i = 0; i < validFileTypes.length; i++) {
-
+                for (let i = 0; i < validFileTypes.length; i++) {
                     if (validFileTypes[i] === fileType) {
                         valid = true;
                         break;
@@ -87,17 +85,17 @@
         _setObjectAttribute: function(object, attribute, value) {
             this[object][attribute] = value;
 
-            var objectClone = JSON.parse(JSON.stringify(this[object]));
+            const objectClone = JSON.parse(JSON.stringify(this[object]));
 
             this.set(object, {});
             this.set(object, objectClone);
         },
 
         _onUploadImage: function(event) {
-            var input = event.target;
+            const input = event.target;
 
             if (input.files && input.files[0]) {
-                var file = input.files[0],
+                const file = input.files[0],
                     formData = new FormData(),
                     request = new XMLHttpRequest();
 
@@ -115,7 +113,7 @@
 
                 request.onreadystatechange = function()
                 {
-                    if (request.readyState == 4 && request.status == 200) {
+                    if (request.readyState === 4 && request.status === 200) {
                         this._setNewImage(file);
                         this._fireChangeEvent(request.response);
                         this._hideLoader();
@@ -123,7 +121,7 @@
                 }.bind(this);
 
                 request.open('POST', this.imageSettingsApi, true);
-                request.setRequestHeader('Authorization', this._computedHeaders);
+                request.setRequestHeader('Authorization', this._computedAuthorizationHeader);
                 request.send(formData);
             }
         },
@@ -131,13 +129,13 @@
         _onRemoveImageAction: function(event) {
             event.stopPropagation();
 
-            var request = document.createElement('iron-request'),
+            const request = document.createElement('iron-request'),
                 options = {
                     url: this.imageSettingsApi,
                     method: 'DELETE',
                     handleAs: 'json',
                     headers: {
-                        'Authorization': this._computedHeaders
+                        'Authorization': this._computedAuthorizationHeader
                     }
                 };
 

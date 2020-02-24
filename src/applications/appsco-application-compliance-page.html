@@ -13,6 +13,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-application-compliance-page">
     <template>
         <style include="webkit-scrollbar-style">
@@ -55,61 +57,61 @@
 
                 <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color></appsco-loader>
 
-                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
-                <form is="iron-form"
-                      id="form"
-                      action="[[ _complianceUpdateApi ]]"
-                      method="POST"
-                      headers="[[ _computedHeaders ]]"
-                      on-iron-form-presubmit="_onFormPresubmit"
-                      on-iron-form-error="_onFormError"
-                      on-iron-form-response="_onFormResponse">
+                <iron-form
+                        id="form"
+                        headers="[[ _headers ]]"
+                        on-iron-form-presubmit="_onFormPresubmit"
+                        on-iron-form-error="_onFormError"
+                        on-iron-form-response="_onFormResponse">
+                    <form
+                            action="[[ _complianceUpdateApi ]]"
+                            method="POST">
 
-                <p class="info">
-                    Enter description about this resource and its purpose.
-                </p>
+                        <p class="info">
+                            Enter description about this resource and its purpose.
+                        </p>
 
-                <div class="input-container">
-                    <paper-input id="description"
-                                 name="compliance[description]"
-                                 value="[[ _descriptionValue ]]"
-                                 label="Description"
-                                 data-stripe="name"></paper-input>
-                </div>
+                        <div class="input-container">
+                            <paper-input id="description"
+                                         name="compliance[description]"
+                                         value="[[ _descriptionValue ]]"
+                                         label="Description"
+                                         data-stripe="name"></paper-input>
+                        </div>
 
-                <p class="info">
-                    Enter coma-separated user information stored by this resource.
-                </p>
+                        <p class="info">
+                            Enter coma-separated user information stored by this resource.
+                        </p>
 
-                <div class="input-container">
-                    <paper-input id="fields"
-                                 name="compliance[fields]"
-                                 value="[[ _fieldsValue ]]"
-                                 label="Fields"
-                                 data-stripe="name"></paper-input>
-                </div>
-
+                        <div class="input-container">
+                            <paper-input id="fields"
+                                         name="compliance[fields]"
+                                         value="[[ _fieldsValue ]]"
+                                         label="Fields"
+                                         data-stripe="name"></paper-input>
+                        </div>
                     </form>
+                </iron-form>
 
                 <paper-button id="submit"
                               class="submit-button"
                               on-tap="_onSaveAction">Save</paper-button>
-
             </div>
         </paper-card>
 
     </template>
 
     <script>
-        class AppscoApplicationCompliancePage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+        class AppscoApplicationCompliancePage extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-application-compliance-page'; }
 
             static get properties() {
                 return {
-                    /**
-                     * Application
-                     */
                     application: {
                         type: Object,
                         value: function () {
@@ -126,15 +128,6 @@
                         }
                     },
 
-                    authorizationToken: {
-                        type: String
-                    },
-
-                    _computedHeaders: {
-                        type: Object,
-                        computed: '_computeHeaders(authorizationToken)'
-                    },
-
                     _complianceUpdateApi: {
                         type: String,
                         computed: '_computeComplianceUpdateApi(application)'
@@ -145,7 +138,7 @@
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -206,13 +199,6 @@
                 };
             }
 
-            _computeHeaders(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-
             _computeComplianceUpdateApi(application) {
                 return application ? application.self + '/compliance' : null;
             }
@@ -226,11 +212,11 @@
             }
 
             _showError(message) {
-                this._error = message;
+                this._errorMessage = message;
             }
 
             _hideError() {
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _onBack() {

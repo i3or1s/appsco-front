@@ -179,7 +179,10 @@ Custom property | Description | Default
     </template>
 
     <script>
-        class AppscoCustomerPartnerAdmins extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+        class AppscoCustomerPartnerAdmins extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
             static get is() { return 'appsco-customer-partner-admins'; }
 
             static get properties() {

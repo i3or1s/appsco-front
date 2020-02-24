@@ -23,7 +23,7 @@
         },
 
         selectAllItems: function() {
-            var rolesComponent = this._itemsComponent;
+            const rolesComponent = this._itemsComponent;
 
             this._selectedAll = !this._selectedAll;
 
@@ -46,7 +46,7 @@
         },
 
         _handleItemsSelectedState: function() {
-            var itemsComponent = this._itemsComponent,
+            const itemsComponent = this._itemsComponent,
                 totalCount = itemsComponent.getTotalCount(),
                 selectedItemsCount = itemsComponent.getSelectedItems().length;
 

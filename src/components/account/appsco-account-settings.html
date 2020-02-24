@@ -100,7 +100,7 @@ Custom property | Description | Default
 
         <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is saving application" multi-color></appsco-loader>
 
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
         <iron-form
                 id="accountSettingsForm"
@@ -389,7 +389,7 @@ Custom property | Description | Default
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String
                     },
 
@@ -519,7 +519,7 @@ Custom property | Description | Default
             }
 
             _onFormError(event) {
-                this._error = event.detail.error.message;
+                this._errorMessage = event.detail.error.message;
                 this._loader = false;
             }
 
@@ -556,7 +556,7 @@ Custom property | Description | Default
                 this.account = {};
                 this.account = account;
 
-                this._error = '';
+                this._errorMessage = '';
             }
 
             _computeCompaniesList(changedAccount) {

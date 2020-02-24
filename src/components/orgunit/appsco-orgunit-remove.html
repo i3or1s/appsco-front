@@ -52,7 +52,6 @@ Custom property | Description | Default
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="removeDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -64,8 +63,8 @@ Custom property | Description | Default
 
                 <h2>Remove organization unit [[ orgUnit.name ]]</h2>
 
-                <template is="dom-if" if="[[ _error ]]">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <template is="dom-if" if="[[ _errorMessage ]]">
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                 </template>
 
                 <p>Your users that are assigned to [[ orgUnit.name ]] will not be removed.</p>
@@ -97,7 +96,7 @@ Custom property | Description | Default
                         value: false
                     },
 
-                    _error: {
+                    _errorMessage: {
                         type: String,
                         value: ''
                     }
@@ -109,7 +108,7 @@ Custom property | Description | Default
             }
 
             _onDialogClosed() {
-                this._error = '';
+                this._errorMessage = '';
                 this._loader = false;
             }
 
@@ -135,7 +134,7 @@ Custom property | Description | Default
                     this.$.removeDialog.close();
                 }.bind(this), function() {
                     this._loader = false;
-                    this._error = 'It is not allowed to remove organization unit which have applications or accounts assigned to it.';
+                    this._errorMessage = 'It is not allowed to remove organization unit which have applications or accounts assigned to it.';
                 }.bind(this));
             }
         }

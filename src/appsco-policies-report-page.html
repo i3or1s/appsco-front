@@ -11,8 +11,10 @@
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="components/report/appsco-policy-report-roles.html">
 <link rel="import" href="components/report/appsco-policy-report-page-filters.html">
-
+<link rel="import" href="components/report/appsco-policy-report-page-actions.html">
 <link rel="import" href="components/components/appsco-behavior-report-page.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-policies-report-page">
     <template>
@@ -47,10 +49,12 @@
         <appsco-content id="appscoContent" resource-active>
             <div class="flex-vertical" resource slot="resource">
                 <div class="resource-content">
-                    <appsco-policy-report-page-filters id="policyReportPageFilters"
-                                                       policies-api="[[ policiesApi ]]"
-                                                       authorization-token="[[ authorizationToken ]]"
-                                                       on-filter-policies-report="_onFilterReportAction"></appsco-policy-report-page-filters>
+                    <appsco-policy-report-page-filters
+                            id="policyReportPageFilters"
+                            policies-api="[[ policiesApi ]]"
+                            authorization-token="[[ authorizationToken ]]"
+                            on-filter-policies-report="_onFilterReportAction">
+                    </appsco-policy-report-page-filters>
                 </div>
             </div>
 
@@ -79,7 +83,8 @@
     <script>
         class AppscoPoliciesReportPage extends Polymer.mixinBehaviors([
             Polymer.NeonAnimatableBehavior,
-            Polymer.AppscoBehaviourReportPage
+            Polymer.AppscoBehaviourReportPage,
+            Appsco.PageMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-policies-report-page'; }
 
@@ -174,6 +179,14 @@
                         this.updateStyles();
                     }
                 });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
             }
 
             hideResource() {
@@ -273,6 +286,7 @@
 
             _onFilterReportAction(event) {
                 this.$.appscoPolicyReportRoles.filterRoles(event.detail.filters);
+                this._showProgressBar();
             }
         }
         window.customElements.define(AppscoPoliciesReportPage.is, AppscoPoliciesReportPage);
