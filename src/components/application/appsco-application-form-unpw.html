@@ -36,19 +36,18 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'appsco-application-form-unpw',
+        class AppscoApplicationFormUnpw extends Polymer.mixinBehaviors([Polymer.AppscoApplicationFormBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-form-unpw'; }
 
-            properties: {
-                claimsNamePrefix: {
-                    type: String,
-                    value: "claims_unpw"
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoApplicationFormBehavior
-            ]
-        });
+            static get properties() {
+                return {
+                    claimsNamePrefix: {
+                        type: String,
+                        value: "claims_unpw"
+                    }
+                };
+            }
+        }
+        window.customElements.define(AppscoApplicationFormUnpw.is, AppscoApplicationFormUnpw);
     </script>
 </dom-module>

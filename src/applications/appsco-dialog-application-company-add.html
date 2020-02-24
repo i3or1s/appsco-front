@@ -11,6 +11,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/application/company/appsco-company-application-add-settings.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-dialog-application-company-add">
     <template>
         <style>
@@ -20,21 +22,21 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             appsco-application-settings {
                 --form-action: {
@@ -44,7 +46,6 @@
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-closed="_onDialogClosed">
@@ -80,113 +81,92 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoDialogApplicationCompanyAdd extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-dialog-application-company-add'; }
 
-            is: 'appsco-dialog-application-company-add',
-
-            properties: {
-
-                applicationTemplate: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                addApplicationApi: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            listeners: {
-                "application-added": "toggle",
-                "form-error": "_hideLoader"
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    applicationTemplate: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            setAction: function (action) {
+                    addApplicationApi: {
+                        type: String
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            ready(){
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('application-added', this.toggle);
+                this.addEventListener('form-error', this._hideLoader);
+            }
+
+            setAction(action) {
                 this.$.appscoApplicationAddSettings.setAction(action);
-            },
+            }
 
-            setApplicationTemplate: function(applicationTpl) {
+            setApplicationTemplate(applicationTpl) {
                 this.applicationTemplate = applicationTpl;
-            },
+            }
 
             /**
              * Toggles add applications dialog.
              */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
             /**
              * Called after dialog has been closed.
              *
              * @private
              */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this.reset();
-            },
+            }
 
-            _onSelectInputClosed: function (event) {
+            _onSelectInputClosed (event) {
                 event.stopPropagation();
-            },
+            }
 
-            _onSave: function() {
+            _onSave() {
                 this._showLoader();
                 this.$.appscoApplicationAddSettings.addApplication();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _onFormError: function() {
+            _onFormError() {
                 this._hideLoader();
-            },
+            }
 
-            reset: function() {
+            reset() {
                 this.$.appscoApplicationAddSettings.reset();
             }
-        });
+        }
+        window.customElements.define(AppscoDialogApplicationCompanyAdd.is, AppscoDialogApplicationCompanyAdd);
     </script>
 </dom-module>

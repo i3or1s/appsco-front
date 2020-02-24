@@ -17,11 +17,11 @@
 <link rel="import" href="../components/appsco-list-item-styles.html">
 <link rel="import" href="appsco-access-report-account-resource-item.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-access-report-account-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 --appsco-access-report-account-resource: {
                     width: calc(100% / 3);
@@ -34,22 +34,22 @@
                 --account-initials-background-color: var(--report-account-initials-background-color);
             }
             iron-collapse {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
             }
             .resources-container {
                 padding: 20px;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
+                @apply --layout-vertical;
+                @apply --layout-center;
                 background-color: var(--collapsible-content-background-color);
             }
             .resource-list {
                 width: 100%;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-wrap;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             .load-more-box {
                 margin-top: 10px;
@@ -67,7 +67,7 @@
                 width: 120px;
                 margin: 10px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             :host([screen1300]) {
                 --appsco-access-report-account-resource: {
@@ -151,148 +151,129 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessReportAccountItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-access-report-account-item'; }
 
-            is: 'appsco-access-report-account-item',
-
-            properties: {
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                numberOfResourcesToDisplay: {
-                    type: Number,
-                    value: 15
-                },
-
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                screen800: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                screen1300: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                _resources: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _getResourcesApiUrl: {
-                    type: String,
-                    computed: '_computeGetResourcesApiUrl(item, numberOfResourcesToDisplay)'
-                },
-
-                _secondResourcesPageApiUrl: {
-                    type: String,
-                    value: ''
-                },
-
-                _nextResourcesPageApiUrl: {
-                    type: String,
-                    value: ''
-                },
-
-                _loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _resourcesCount: {
-                    type: Number,
-                    value: 0
-                },
-
-                _resourcesVisible: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            observers: [
-                '_updateScreen(screen800, screen1300)'
-            ],
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    numberOfResourcesToDisplay: {
+                        type: Number,
+                        value: 15
+                    },
 
-            _computeGetResourcesApiUrl: function(item, numberOfResourcesToDisplay) {
-                return (item.meta && numberOfResourcesToDisplay) ? (item.meta.applications + '?extended=1&limit=' + numberOfResourcesToDisplay) : '';
-            },
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            _updateScreen: function() {
+                    screen800: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    screen1300: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    _resources: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _getResourcesApiUrl: {
+                        type: String,
+                        computed: '_computeGetResourcesApiUrl(item, numberOfResourcesToDisplay)'
+                    },
+
+                    _secondResourcesPageApiUrl: {
+                        type: String
+                    },
+
+                    _nextResourcesPageApiUrl: {
+                        type: String
+                    },
+
+                    _loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _resourcesCount: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _resourcesVisible: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_updateScreen(screen800, screen1300)'
+                ];
+            }
+
+            _computeGetResourcesApiUrl(item, numberOfResourcesToDisplay) {
+                return (item.meta && numberOfResourcesToDisplay) ? (item.meta.applications + '?extended=1&limit=' + numberOfResourcesToDisplay) : null;
+            }
+
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _setLoadMoreAction: function() {
+            _setLoadMoreAction() {
                 this._hideLoadMoreProgressBar();
                 this._loadMore = (this.loadMore && this._resources.length < this._resourcesCount);
-            },
+            }
 
-            _showLoadMoreAction: function() {
+            _showLoadMoreAction() {
                 this._hideLoadMoreProgressBar();
                 this._loadMore = true;
-            },
+            }
 
-            _hideLoadMoreAction: function() {
+            _hideLoadMoreAction() {
                 this._hideLoadMoreProgressBar();
                 this._loadMore = false;
-            },
+            }
 
-            _showLoadMoreProgressBar: function() {
-                this.$$('#loadMoreProgress').hidden = false;
-            },
+            _showLoadMoreProgressBar() {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+            }
 
-            _hideLoadMoreProgressBar: function() {
-
+            _hideLoadMoreProgressBar() {
                 setTimeout(function() {
-                    this.$$('#loadMoreProgress').hidden = true;
+                    this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                 }.bind(this), 300);
+            }
 
-            },
-
-            _setApiRequestUrl: function(url) {
+            _setApiRequestUrl(url) {
                 this.$.getResourcesApiRequest.url = url;
-            },
+            }
 
-            _onGetResourcesError: function() {
+            _onGetResourcesError() {
                 this.set('_resources', []);
                 this._resourcesCount = 0;
                 this._hideLoadMoreAction();
-            },
+            }
 
-            _onGetResourcesResponse: function(event) {
-                var response = event.detail.response;
+            _onGetResourcesResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.applications) {
-                    var resources = response.applications,
-                            listCount = resources.length - 1;
+                    const resources = response.applications,
+                        listCount = resources.length - 1;
 
                     this._resourcesCount = response.meta ? response.meta.total : 0;
                     this._nextResourcesPageApiUrl = response.meta.next + '&limit=' + this.numberOfResourcesToDisplay;
@@ -302,43 +283,35 @@
                     }
 
                     resources.forEach(function(el, index) {
-
                         setTimeout(function() {
-
                             this.push('_resources', el);
 
-                            if (index == listCount) {
+                            if (index === listCount) {
                                 this._hideLoadMoreProgressBar();
                                 this._setLoadMoreAction();
                             }
-
                         }.bind(this), (index + 1) * 30 );
-
                     }.bind(this));
-
-
-//                    this._setLoadMoreAction();
                 }
-            },
+            }
 
-            _onShowResources: function() {
+            _onShowResources() {
                 this.$.resources.show();
                 this._resourcesVisible = true;
-            },
+            }
 
-            _onHideResources: function() {
+            _onHideResources() {
                 this.$.resources.hide();
                 this._resourcesVisible = false;
-            },
+            }
 
-            _onLoadMoreAction: function() {
+            _onLoadMoreAction() {
                 this._showLoadMoreProgressBar();
-                this._setApiRequestUrl('');
+                this._setApiRequestUrl(null);
                 this._setApiRequestUrl(this._nextResourcesPageApiUrl);
-            },
+            }
 
-            _onCollapseTransitionChanged: function(event) {
-
+            _onCollapseTransitionChanged(event) {
                 if (!event.detail.value && this._resources) {
                     this._nextResourcesPageApiUrl = this._secondResourcesPageApiUrl;
 
@@ -348,6 +321,7 @@
                     }
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoAccessReportAccountItem.is, AppscoAccessReportAccountItem);
     </script>
 </dom-module>

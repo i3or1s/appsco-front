@@ -8,12 +8,14 @@
 
 <link rel="import" href="appsco-application-assignee.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-resource-admins">
     <template>
         <style>
             :host {
-                @apply(--layout-vertical);
-                @apply(--layout-center);
+                @apply --layout-vertical;
+                @apply --layout-center;
                 position: relative;
                 color: var(--primary-text-color);
             }
@@ -22,18 +24,18 @@
             }
             :host paper-progress {
                 width: 100%;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             :host .info-total {
                 margin-bottom: 10px;
             }
             :host .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 opacity: 0.6;
             }
             :host .assignees {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
                 width: 100%;
             }
             :host .load-more-box {
@@ -52,28 +54,28 @@
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             :host .message {
                 width: 100%;
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host appsco-application-assignee {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-application-assignee);
+                @apply --appsco-application-assignee;
             }
             :host([preview]) {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
                 display: block;
             }
             :host([preview]) appsco-application-assignee {
                 width: auto;
                 margin: 0 2px 0 0;
-                @apply(--appsco-application-assignee-preview);
+                @apply --appsco-application-assignee-preview;
             }
         </style>
 
@@ -129,166 +131,137 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoResourceAdmins extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-resource-admins'; }
 
-            is: 'appsco-resource-admins',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    /**
+                     * Number of assignees to load.
+                     */
+                    size: {
+                        type: Number,
+                        value: 5
+                    },
 
-                /**
-                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    /**
+                     * Indicates if assignees should be loaded on API change or manually by calling 'load' method.
+                     */
+                    autoLoad: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _infoSection: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _listApi: {
+                        type: String,
+                        computed: '_computeListApi(application, size)'
+                    },
+
+                    _searchListApi: {
+                        type: String,
+                        computed: '_computeSearchListApi(application)'
+                    },
+
+                    _nextListPageApiUrl: {
+                        type: String,
+                        value: ''
+                    },
+
+                    /**
+                     * [Accounts](https://developers.appsco.com/api/accounts/id) that is to be rendered.
+                     */
+                    _admins: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _allAdmins: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _totalAssignees: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _message: {
+                        type: String,
+                        value: ''
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+            static get observers() {
+                return [
+                    '_onListApiChanged(_listApi, autoLoad)'
+                ];
+            }
 
-                /**
-                 * Number of assignees to load.
-                 */
-                size: {
-                    type: Number,
-                    value: 5
-                },
-
-                /**
-                 * Indicates if load more action should be available or not.
-                 */
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if assignees should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Indicates if assignees should be loaded on API change or manually by calling 'load' method.
-                 */
-                autoLoad: {
-                    type: Boolean,
-                    value: false
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _infoSection: {
-                    type: Boolean,
-                    value: false
-                },
-
-
-                /**
-                 * API link to load list from.
-                 */
-                _listApi: {
-                    type: String,
-                    computed: '_computeListApi(application, size)'
-                },
-
-                /**
-                 * Computed headers.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _searchListApi: {
-                    type: String,
-                    computed: '_computeSearchListApi(application)'
-                },
-
-                /**
-                 * Next page of assignees to load.
-                 */
-                _nextListPageApiUrl: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * [Accounts](https://developers.appsco.com/api/accounts/id) that is to be rendered.
-                 */
-                _admins: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
-
-                _allAdmins: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
-
-                _totalAssignees: {
-                    type: Number,
-                    value: 0
-                },
-
-                _loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _message: {
-                    type: String,
-                    value: ''
-                }
-            },
-
-            observers: [
-                '_onListApiChanged(_listApi, autoLoad)'
-            ],
-
-            load: function() {
+            load() {
                 this._clearList();
                 this._hideMessage();
                 this._showProgressBar();
                 this._generateNewRequest();
-            },
+            }
 
-            reload: function() {
+            reload() {
                 this.load();
-            },
+            }
 
-            removeAssignee: function(assignee) {
-                var assignees = this._admins,
+            removeAssignee(assignee) {
+                const assignees = this._admins,
                     length = assignees.length,
                     allAssignees = this._allAdmins,
                     allLength = allAssignees.length;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (assignee.self === assignees[i].self) {
                         this.splice('_admins', i, 1);
                         break;
                     }
                 }
 
-                for (var j = 0; j < allLength; j++) {
-
+                for (let j = 0; j < allLength; j++) {
                     if (assignee.self === allAssignees[j].self) {
                         this.splice('_allAdmins', j, 1);
                         break;
@@ -302,14 +275,13 @@
                     this._showMessage('You haven\'t shared this resource to anyone yet.');
                     this._handleEmptyLoad();
                 }
-            },
+            }
 
-            search: function(term) {
-
+            search(term) {
                 if (term.length < 3) {
                     this._hideMessage();
                     this.set('_admins', JSON.parse(JSON.stringify(this._allAdmins)));
-                    this.fire('filter-done');
+                    this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                     this._setLoadMoreAction();
                     return false;
                 }
@@ -319,7 +291,7 @@
                 this._hideLoadMoreAction();
 
                 this._searchAssignees(term).then(function(assignees) {
-                    var length = assignees.length;
+                    const length = assignees.length;
 
                     if (length > 0) {
                         assignees.forEach(function(assignee, index) {
@@ -327,138 +299,119 @@
 
                             if (index === (length - 1)) {
                                 this._hideProgressBar();
-                                this.fire('assignees-loaded');
+                                this.dispatchEvent(new CustomEvent('assignees-loaded', { bubbles: true, composed: true }));
                             }
 
                         }.bind(this));
-
                     }
                     else {
                         this._showMessage('There are no assignees with asked term.');
-                        this.fire('assignees-empty');
+                        this.dispatchEvent(new CustomEvent('assignees-empty', { bubbles: true, composed: true }));
                     }
-
                 }.bind(this), function(message) {
                     this._showMessage(message);
                 }.bind(this));
-            },
+            }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _computeListApi: function(application, size) {
-
-                for (key in application) {
-                    return (application.meta && size) ? application.meta.resource_admins + '?page=1' + '&limit=' + this.size + '&extended=1' : '';
+            _computeListApi(application, size) {
+                for (let key in application) {
+                    return (application.meta && size) ? application.meta.resource_admins + '?page=1' + '&limit=' + this.size + '&extended=1' : null
                 }
 
-                return '';
-            },
+                return null;
+            }
 
-            _computeSearchListApi: function(application) {
-
-                for (key in application) {
-                    return application.meta ? application.meta.resource_admins + '?page=1&limit=100&extended=1' : '';
+            _computeSearchListApi(application) {
+                for (let key in application) {
+                    return application.meta ? application.meta.resource_admins + '?page=1&limit=100&extended=1' : null;
                 }
 
-                return '';
-            },
+                return null;
+            }
 
-            _clearList: function() {
+            _clearList() {
                 this.set('_admins', []);
                 this.set('_allAdmins', []);
                 this._nextListPageApiUrl = '';
                 this._totalAssignees = 0;
-            },
+            }
 
-            _showMessage: function(message) {
+            _showMessage(message) {
                 this._message = message;
-            },
+            }
 
-            _hideMessage: function() {
+            _hideMessage() {
                 this._message = '';
-            },
+            }
 
-            _showProgressBar: function() {
+            _showProgressBar() {
                 this.$.progress.hidden = false;
-            },
+            }
 
-            _hideProgressBar: function() {
+            _hideProgressBar() {
                 setTimeout(function() {
                     this.$.progress.hidden = true;
                 }.bind(this), 500);
-            },
+            }
 
-            _showLoadMoreAction: function() {
+            _showLoadMoreAction() {
                 this._loadMore = true;
-            },
+            }
 
-            _hideLoadMoreAction: function() {
+            _hideLoadMoreAction() {
                 this._loadMore = false;
-            },
+            }
 
-            _showLoadMoreProgressBar: function() {
-                this.$$('#loadMoreProgress').hidden = false;
-            },
+            _showLoadMoreProgressBar() {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+            }
 
-            _hideLoadMoreProgressBar: function() {
-
+            _hideLoadMoreProgressBar() {
                 setTimeout(function() {
-                    if (this.$$('#loadMoreProgress')) {
-                        this.$$('#loadMoreProgress').hidden = true;
+                    if (this.shadowRoot.getElementById('loadMoreProgress')) {
+                        this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                     }
                 }.bind(this), 300);
+            }
 
-            },
-
-            _setLoadMoreAction: function() {
+            _setLoadMoreAction() {
                 (this.loadMore && this._allAdmins.length < this._totalAssignees) ?
                     this._showLoadMoreAction() :
                     this._hideLoadMoreAction();
-            },
+            }
 
-            _setListApiRequestUrl: function(url) {
+            _setListApiRequestUrl(url) {
                 this.$.getAssigneesCall.url = url;
-            },
+            }
 
-            _handleEmptyLoad: function() {
+            _handleEmptyLoad() {
                 this._hideProgressBar();
                 this._hideLoadMoreProgressBar();
-                this.fire('assignees-empty');
-            },
+                this.dispatchEvent(new CustomEvent('assignees-empty', { bubbles: true, composed: true }));
+            }
 
             /**
              * Aborts previous request in order to get only one and valid response (from next request)
              *
              * @private
              */
-            _abortPreviousRequest: function() {
-                var assigneesCall = this.$.getAssigneesCall;
+            _abortPreviousRequest() {
+                const assigneesCall = this.$.getAssigneesCall;
                 if (assigneesCall.lastRequest) {
                     assigneesCall.lastRequest.abort();
                 }
-            },
+            }
 
-            _generateNewRequest: function() {
+            _generateNewRequest() {
                 this._abortPreviousRequest();
                 this.$.getAssigneesCall.generateRequest();
-            },
+            }
 
-            _onLoadMoreAction: function() {
+            _onLoadMoreAction() {
                 this._showLoadMoreProgressBar();
                 this._setListApiRequestUrl(this._nextListPageApiUrl);
                 this._generateNewRequest();
-            },
+            }
 
             /**
              * Handles error on get assignees API request.
@@ -466,15 +419,14 @@
              *
              * @private
              */
-            _onError: function(event) {
-
+            _onError(event) {
                 if (!event.detail.request.aborted) {
                     this._showMessage(this.apiErrors.getError(event.detail.request.response.code));
                 }
 
                 this._totalAssignees = 0;
                 this._handleEmptyLoad();
-            },
+            }
 
             /**
              * Handles response on get log API request.
@@ -482,11 +434,11 @@
              *
              * @private
              */
-            _onResponse: function(event) {
-                var response = event.detail.response;
+            _onResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.resource_admins) {
-                    var assignees = response.resource_admins,
+                    const assignees = response.resource_admins,
                         meta = response.meta;
 
                     this._hideMessage();
@@ -501,29 +453,28 @@
                     }
 
                     if (assignees && assignees.length > 0) {
-                        var assigneesCount = assignees.length - 1;
+                        const assigneesCount = assignees.length - 1;
 
                         assignees.forEach(function(el, index) {
-
                             setTimeout( function() {
-
                                 this.push('_admins', el);
                                 this.push('_allAdmins', el);
 
-                                if (index == assigneesCount) {
+                                if (index === assigneesCount) {
                                     this._hideProgressBar();
                                     this._hideLoadMoreProgressBar();
                                     this._setLoadMoreAction();
 
-                                    this.fire('assignees-loaded', {
-                                        assignees: assignees
-                                    });
+                                    this.dispatchEvent(new CustomEvent('assignees-loaded', {
+                                        bubbles: true,
+                                        composed: true,
+                                        detail: {
+                                            assignees: assignees
+                                        }
+                                    }));
                                 }
-
                             }.bind(this), (index + 1) * 30 );
-
                         }.bind(this));
-
                     }
                     else {
                         (assignees && !assignees.length) ?
@@ -534,19 +485,17 @@
                         this._handleEmptyLoad();
                     }
                 }
-            },
+            }
 
-            _onListApiChanged: function(api, auto) {
-
+            _onListApiChanged(api, auto) {
                 if (api && auto) {
                     this.load();
                 }
-            },
+            }
 
-            _searchAssignees: function(term) {
-
+            _searchAssignees(term) {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         options = {
                             url: this._searchListApi + '&term=' + term,
                             method: 'GET',
@@ -555,7 +504,6 @@
                         };
 
                     request.send(options).then(function() {
-
                         if (200 === request.status) {
                             resolve(request.response.resource_admins);
                         }
@@ -565,6 +513,7 @@
                     });
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoResourceAdmins.is, AppscoResourceAdmins);
     </script>
 </dom-module>

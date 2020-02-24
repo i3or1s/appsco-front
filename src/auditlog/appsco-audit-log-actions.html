@@ -9,21 +9,21 @@
                 display: inline-block;
                 position: relative;
                 margin-right: -10px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-access-report-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-access-report-actions;
             }
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--layout-flex-none);
-                @apply(--access-report-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --layout-flex-none;
+                @apply --access-report-action;
             }
             :host .export-action {
-                @apply(--primary-button);
+                @apply --primary-button;
                 min-width: 100px;
             }
         </style>
@@ -35,19 +35,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAuditLogActions extends Polymer.Element {
+            static get is() { return 'appsco-audit-log-actions'; }
 
-            is: 'appsco-audit-log-actions',
-
-            _onExportAction: function() {
-                /**
-                 * Fired when export action is tapped.
-                 *
-                 * @event export-audit-log
-                 */
-                this.fire('export-audit-log');
+            _onExportAction() {
+                this.dispatchEvent(new CustomEvent('export-audit-log', { bubbles: true, composed: true }));
             }
-
-        });
+        }
+        window.customElements.define(AppscoAuditLogActions.is, AppscoAuditLogActions);
     </script>
 </dom-module>

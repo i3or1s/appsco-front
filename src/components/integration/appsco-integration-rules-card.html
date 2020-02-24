@@ -8,10 +8,10 @@
         <style>
             :host {
                 display: none;
-                @apply(--appsco-integration-rules-card);
+                @apply --appsco-integration-rules-card;
             }
             .info {
-                @apply(--info-message);
+                @apply --info-message;
             }
         </style>
 
@@ -39,49 +39,46 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoIntegrationRulesCard extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-integration-rules-card'; }
 
-            is: 'appsco-integration-rules-card',
+            static get properties() {
+                return {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-            properties: {
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._showRulesDetails();
+                });
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            attached: function() {
-                this._showRulesDetails();
-            },
-
-            _showRulesDetails: function() {
+            _showRulesDetails() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
             }
-        });
+        }
+        window.customElements.define(AppscoIntegrationRulesCard.is, AppscoIntegrationRulesCard);
     </script>
 </dom-module>

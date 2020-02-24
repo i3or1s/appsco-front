@@ -13,9 +13,7 @@
 
 <dom-module id="appsco-account-devices-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 padding-bottom: 10px;
             }
@@ -25,6 +23,9 @@
             }
             :host .item-info {
                 padding: 0;
+                @apply --layout-horizontal;
+                width: 100%;
+                align-items: center;
             }
             :host .info-additional {
                 font-size: 12px;
@@ -49,15 +50,15 @@
             }
             .resources-container {
                 padding: 20px;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
+                @apply --layout-vertical;
+                @apply --layout-center;
                 background-color: var(--collapsible-content-background-color);
             }
             .resource-list {
                 width: 100%;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-wrap;
             }
             .full-width {
                 width: 100%;
@@ -68,6 +69,9 @@
             }
             table > tbody > tr > td {
                 border-top: 1px dashed var(--header-background-color);
+            }
+            .icon-container {
+                margin-left: 10px;
             }
             .icon-container, .icon {
                 height: 80px;
@@ -155,202 +159,183 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountDevicesItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-account-devices-item'; }
 
-            is: 'appsco-account-devices-item',
-
-            properties: {
-
-                /**
-                 * Group that is to be rendered
-                 */
-                device: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    device: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                devices: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    devices: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                _deviceName: {
-                    type: String,
-                    computed: "_computeDeviceName(device)"
-                },
+                    _deviceName: {
+                        type: String,
+                        computed: "_computeDeviceName(device)"
+                    },
 
-                _deviceImg: {
-                    type: String,
-                    computed: "_computeDeviceImg(device)"
-                },
+                    _deviceImg: {
+                        type: String,
+                        computed: "_computeDeviceImg(device)"
+                    },
 
-                _isADevice: {
-                    type: Boolean,
-                    computed: "_computeIsADevice(device)"
-                },
+                    _isADevice: {
+                        type: Boolean,
+                        computed: "_computeIsADevice(device)"
+                    },
 
-                dateOptions: {
-                    type: Object,
-                    value: { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute:"numeric" }
-                },
+                    dateOptions: {
+                        type: Object,
+                        value: {year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric"}
+                    },
 
-                /**
-                 * Account
-                 */
-                account: {
-                    type: Object,
-                    value: function () {
-                        return {};
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _resourcesVisible: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _approved: {
+                        type: Boolean,
+                        computed: '_computeApproved(device)'
+                    },
+
+                    _showTrustedIPs: {
+                        type: Boolean,
+                        computed: '_computeShowTrustedIPs(device)'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _resourcesVisible: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                _approved: {
-                    type: Boolean,
-                    computed: '_computeApproved(device)'
-                },
-
-                _showTrustedIPs: {
-                    type: Boolean,
-                    computed: '_computeShowTrustedIPs(device)'
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                            node: this,
+                            timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                            node: this,
+                            timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'block';
+                });
 
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
 
-            _computeApproved: function(device) {
+            _computeApproved(device) {
                 return device.approved;
-            },
+            }
 
-            _computeShowTrustedIPs: function(device) {
+            _computeShowTrustedIPs(device) {
                 return device && device.trustedIpList && device.trustedIpList.length > 0;
-            },
+            }
 
-            _computeIsADevice: function(device) {
+            _computeIsADevice(device) {
                 return device.vendor !== "unavailable";
-            },
+            }
 
-            _computeDeviceName: function(device) {
+            _computeDeviceName(device) {
                 if(this._computeIsADevice(device)) {
                     return device.browser + " on " + device.vendor + " " + device.device;
                 }
 
                 return device.browser + " on " + device.operatingSystem;
-            },
+            }
 
-            _computeDeviceImg: function(device) {
+            _computeDeviceImg(device) {
                 if (this._computeIsADevice(device)) {
-
                     // It is a mobile
                     if ('android' === device.operatingSystem.toLowerCase())
                         return '/images/devices/mobile-android.png';
-
                     if ('windows' === device.operatingSystem.toLowerCase())
                         return '/images/devices/mobile-windows.png';
-
                     return '/images/devices/mobile-ios.png';
                 }
                 else {
-
                     // It is a desktop
                     if ('windows' === device.operatingSystem.toLowerCase())
                         return '/images/devices/desktop-windows.png';
-
                     if ('mac' === device.operatingSystem.toLowerCase())
                         return '/images/devices/desktop-mac.png';
-
                     if ('linux' === device.operatingSystem.toLowerCase())
                         return '/images/devices/desktop-linux.png';
-
                     return '/images/devices/desktop-windows.png';
                 }
-            },
+            }
 
-            _onApproveAction: function(event) {
+            _onApproveAction(event) {
                 this.device.approved = true;
                 event.stopPropagation();
 
-                /**
-                 * Fired when `Approve` action is tapped.
-                 *
-                 * @event approve-device
-                 * @param {Object} device
-                 * @param {Object} account
-                 */
-                this.fire('approve-device', {
-                    device: this.device,
-                    account: this.account
-                });
-            },
+                this.dispatchEvent(new CustomEvent('approve-device', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        device: this.device,
+                        account: this.account
+                    }
+                }));
+            }
 
-            _onDisapproveAction: function(event) {
+            _onDisapproveAction(event) {
                 this.device.approved = false;
                 event.stopPropagation();
 
-                /**
-                 * Fired when `disapprove` action is tapped.
-                 *
-                 * @event disapprove-device
-                 * @param {Object} device
-                 * @param {Object} account
-                 */
-                this.fire('disapprove-device', {
-                    device: this.device,
-                    account: this.account
-                });
-            },
+                this.dispatchEvent(new CustomEvent('disapprove-device', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        device: this.device,
+                        account: this.account
+                    }
+                }));
+            }
 
-            _onShowResources: function() {
+            _onShowResources() {
                 this.$.resources.show();
                 this._resourcesVisible = true;
-            },
+            }
 
-            _onHideResources: function() {
+            _onHideResources() {
                 this.$.resources.hide();
                 this._resourcesVisible = false;
-            },
-
-        });
+            }
+        }
+        window.customElements.define(AppscoAccountDevicesItem.is, AppscoAccountDevicesItem);
     </script>
 </dom-module>

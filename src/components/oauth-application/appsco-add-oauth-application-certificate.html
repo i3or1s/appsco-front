@@ -12,6 +12,8 @@
 <link rel="import" href="../../components/components/appsco-loader.html">
 <link rel="import" href="../../components/components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-add-oauth-application-certificate">
     <template>
         <style>
@@ -21,35 +23,34 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host .horizontal-align {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             :host .flex {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host .no-flex {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -64,27 +65,28 @@
             <paper-dialog-scrollable>
                 <div class="dialog-container">
 
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
-                    <form is="iron-form"
-                          id="form"
-                          method="POST"
-                          action="[[ _oauthApplicationCertificateApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
-
-                        <div class="input-container">
-                            <paper-textarea id="csr"
-                                            label="CSR"
-                                            name="oauth_certificate[csr]"
-                                            value=""
-                                            rows="3"
-                                            required
-                                            auto-validate
-                                            error-message="Please enter certificate signing request."></paper-textarea>
-                        </div>
-                    </form>
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
+                              method="POST"
+                              action="[[ _oauthApplicationCertificateApi ]]">
+                            <div class="input-container">
+                                <paper-textarea id="csr"
+                                                label="CSR"
+                                                name="oauth_certificate[csr]"
+                                                value=""
+                                                rows="3"
+                                                required
+                                                auto-validate
+                                                error-message="Please enter certificate signing request."></paper-textarea>
+                            </div>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -100,145 +102,136 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAddOAuthApplicationCertificate extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-add-oauth-application-certificate'; }
 
-            is: 'appsco-add-oauth-application-certificate',
-
-            properties: {
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _oauthApplicationCertificateApi: {
-                    type: String,
-                    computed: '_computeCertificateApi(application)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.form
-                    }
-                }
-            },
-
-            setApplication: function(application) {
-                this.set('application', application);
-            },
-
-            open: function() {
-                this.$.dialog.open();
-            },
-
-            close: function() {
-                this.$.dialog.close();
-            },
-
-            toggle: function() {
-                this.$.dialog.toggle();
-            },
-
-            _showLoader: function() {
-                this._loader = true;
-            },
-
-            _hideLoader: function() {
-                this._loader = false;
-            },
-
-            _showError: function(message) {
-                this._error = message;
-            },
-
-            _hideError: function() {
-                this._error = '';
-            },
-
-            _initialize: function() {
-                this.$.csr.focus();
-            },
-
-            _reset: function() {
-                this._target.reset();
-            },
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _oauthApplicationCertificateApi: {
+                        type: String,
+                        computed: '_computeCertificateApi(application)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
+                    }
                 };
-            },
+            }
 
-            _computeCertificateApi: function(application) {
-                return application.self ? (application.self + '/certificates') : '';
-            },
+            ready() {
+                super.ready();
 
-            _onDialogOpened: function() {
+                this._target = this.$.form;
+            }
+
+            setApplication(application) {
+                this.set('application', application);
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _showLoader() {
+                this._loader = true;
+            }
+
+            _hideLoader() {
+                this._loader = false;
+            }
+
+            _showError(message) {
+                this._errorMessage = message;
+            }
+
+            _hideError() {
+                this._errorMessage = '';
+            }
+
+            _initialize() {
+                this.$.csr.focus();
+            }
+
+            _reset() {
+                this._target.reset();
+            }
+
+            _computeCertificateApi(application) {
+                return application.self ? (application.self + '/certificates') : null;
+            }
+
+            _onDialogOpened() {
                 this._initialize();
-            },
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this._reset();
-            },
+            }
 
-            _onEnterAction: function() {
+            _onEnterAction() {
                 this._onAddAction();
-            },
+            }
 
-            _onAddAction: function() {
+            _onAddAction() {
                 this._hideError();
 
                 if (this._target.validate()) {
                     this._showLoader();
                     this._target.submit();
                 }
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 this.close();
 
-                this.fire('oauth-application-certificate-added', {
-                    certificate: event.detail.response,
-                    application: this.application
-                });
+                this.dispatchEvent(new CustomEvent('oauth-application-certificate-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        certificate: event.detail.response,
+                        application: this.application
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoAddOAuthApplicationCertificate.is, AppscoAddOAuthApplicationCertificate);
     </script>
 </dom-module>

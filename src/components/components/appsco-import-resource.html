@@ -11,6 +11,7 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-import-resource">
     <template>
@@ -18,44 +19,43 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-import-resource);
+                @apply --appsco-import-resource;
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-                @apply(--paper-dialog-confirm-button);
+                @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             vaadin-upload {
                 --vaadin-upload-button-add: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                 }
             }
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
                       on-iron-overlay-closed="_onDialogClosed">
 
-            <content select="[title]"></content>
+            <slot name="title" old-content-selector="[title]"></slot>
 
             <appsco-loader active="[[ _loader ]]"
                            loader-alt="Appsco is processing request"
@@ -64,9 +64,9 @@
             <paper-dialog-scrollable>
                 <div class="dialog-container">
 
-                    <content select="[info]"></content>
+                    <slot name="info" old-content-selector="[info]"></slot>
 
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <div>
                         <vaadin-upload id="uploadCsv"
@@ -77,11 +77,9 @@
                                        on-file-reject="_fileRejected"
                                        on-upload-error="_uploadErrorResponse"
                                        on-upload-success="_uploadSuccess"
-                                       headers="[[ _headers ]]">
-                            <div class="drop-label">
-                                <iron-icon icon="file-upload"></iron-icon>
-                                Upload resource
-                            </div>
+                                       headers="[[ _authorizationHeaders ]]">
+                            <iron-icon icon="file-upload" slot="drop-label-icon"></iron-icon>
+                            <span class="drop-label" slot="drop-label">Upload resource</span>
                         </vaadin-upload>
                     </div>
                 </div>
@@ -94,131 +92,80 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportResource extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-import-resource'; }
 
-            is: 'appsco-import-resource',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * API for resource import.
-                 */
-                importApi: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Indicates if loader should be displayed or not.
-                 */
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message to display.
-                 */
-                _error: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                }
-            },
-
-            ready: function() {
-                this.$.uploadCsv.set('i18n.addFiles.many', 'Upload file');
-            },
-
-            /**
-             * Toggles dialog.
-             */
-            toggle: function() {
-                this.$.dialog.toggle();
-            },
-
-            /**
-             * Opens dialog.
-             */
-            open: function() {
-                this.$.dialog.open();
-            },
-
-            /**
-             * Closes dialog.
-             */
-            close: function() {
-                this.$.dialog.close();
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    importApi: {
+                        type: String
+                    },
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.$.uploadCsv.set('i18n.addFiles.many', 'Upload file');
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            _onDialogOpened() {
                 this._loader = false;
-                this._error = '';
+                this._errorMessage = '';
                 this.$.uploadCsv.files = [];
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._loader = false;
-                this._error = '';
+                this._errorMessage = '';
                 this.$.uploadCsv.files = [];
-            },
+            }
 
-            _uploadStarted: function(e) {},
+            _uploadStarted(e) {}
 
-            _fileRejected: function(e) {
-                this._error = e.detail.error;
-            },
+            _fileRejected(e) {
+                this._errorMessage = e.detail.error;
+            }
 
-            _uploadErrorResponse: function(e) {
-                if (e.detail.xhr.status == 402) {
+            _uploadErrorResponse(e) {
+                if (e.detail.xhr.status === 402) {
                     e.detail.file.error = "Maximum subscription reached. Please upgrade before import.";
                 }
-            },
+            }
 
-            _uploadSuccess: function(event) {
+            _uploadSuccess(event) {
                 this.close();
 
-                this.fire('import-finished', {
-                    response: JSON.parse(event.detail.xhr.response)
-                });
+                this.dispatchEvent(new CustomEvent('import-finished', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        response: JSON.parse(event.detail.xhr.response)
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoImportResource.is, AppscoImportResource);
     </script>
 </dom-module>

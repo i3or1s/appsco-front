@@ -14,10 +14,29 @@
 <link rel="import" href="provisioning/appsco-integration-rules-page.html">
 <link rel="import" href="provisioning/appsco-integration-webhooks-page.html">
 <link rel="import" href="components/integration/appsco-integration-templates.html">
+<link rel="import" href="provisioning/appsco-manage-integration-page-actions.html">
+
+<link rel="import" href="components/integration/appsco-remove-integration.html">
+<link rel="import" href="components/integration/appsco-register-integration-webhook.html">
+<link rel="import" href="components/integration/appsco-unregister-integration-webhook.html">
+<link rel="import" href="components/integration/appsco-add-integration-rule.html">
+<link rel="import" href="components/integration/appsco-edit-integration-rule.html">
+<link rel="import" href="components/integration/appsco-run-integration-rule.html">
+<link rel="import" href="components/integration/appsco-remove-integration-rule.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-manage-integration-page">
     <template>
         <style include="appsco-manage-page-styles">
+            :host {
+                --paper-dropdown-menu-icon: {
+                    color: var(--primary-text-color);
+                    width: 22px;
+                    height: 22px;
+                };
+            }
             :host div[resource] {
                 height: calc(100% - 32px - 20px);
             }
@@ -50,7 +69,7 @@
                 margin-top: 10px;
             }
             :host .info {
-                @apply(--info-message);
+                @apply --info-message;
             }
             :host .kind-info {
                 font-size: 12px;
@@ -94,7 +113,7 @@
                 margin-top: 20px;
 
                 --appsco-list-item: {
-                    @apply(--shadow-none);
+                    @apply --shadow-none;
                     height: auto;
                     padding-top: 10px;
                     padding-bottom: 26px;
@@ -102,7 +121,7 @@
                     border-top: 1px solid var(--divider-color);
                 };
                 --appsco-list-item-activated: {
-                    @apply(--shadow-none);
+                    @apply --shadow-none;
                 };
                 --item-actions: {
                     right: 0;
@@ -131,7 +150,7 @@
 
         <appsco-content id="appscoContent" resource-active info-active$="[[ _infoSectionActive ]]">
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     <div class="integration-image">
@@ -222,7 +241,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <neon-animated-pages class="flex"
                                          selected="{{ _selected }}"
@@ -255,6 +274,10 @@
                                 integration="[[ integration ]]"
                                 authorization-token="[[ authorizationToken ]]"
                                 api-errors="[[ apiErrors ]]"
+                                on-add-integration-rule="_onAddIntegrationRuleAction"
+                                on-edit-integration-rule="_onEditIntegrationRuleAction"
+                                on-run-integration-rule="_onRunIntegrationRuleAction"
+                                on-remove-integration-rule="_onRemoveIntegrationRuleAction"
                                 on-back="_onResourceBack">
                         </appsco-integration-rules-page>
 
@@ -263,6 +286,8 @@
                                 name="appsco-integration-webhooks-page"
                                 integration="[[ integration ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-register-integration-webhook="_onRegisterIntegrationWebhook"
+                                on-unregister-integration-webhook="_onUnregisterIntegrationWebhook"
                                 api-errors="[[ apiErrors ]]"
                                 on-back="_onResourceBack">
                         </appsco-integration-webhooks-page>
@@ -271,7 +296,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <span class="info-title">Integration templates</span>
                 </div>
@@ -287,6 +312,7 @@
                             api-errors="[[ apiErrors ]]"
                             type="integration-template"
                             size="1000"
+                            on-integration-rule-added="_onIntegrationRuleAdded"
                             on-list-loaded="_evaluateInfoSectionActive"
                             on-list-empty="_evaluateInfoSectionActive">
                     </appsco-integration-templates>
@@ -294,167 +320,203 @@
             </div>
         </appsco-content>
 
+        <appsco-remove-integration
+                id="appscoRemoveIntegration"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-remove-integration>
+
+        <appsco-register-integration-webhook
+                id="appscoRegisterIntegrationWebhook"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-webhook-registered="_onIntegrationWebhookRegistered">
+        </appsco-register-integration-webhook>
+
+        <appsco-unregister-integration-webhook
+                id="appscoUnegisterIntegrationWebhook"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-webhook-unregistered="_onIntegrationWebhookUnregistered">
+        </appsco-unregister-integration-webhook>
+
+        <appsco-add-integration-rule
+                id="appscoAddIntegrationRule"
+                authorization-token="[[ authorizationToken ]]"
+                on-integration-rule-added="_onIntegrationRuleAdded"
+                api-errors="[[ apiErrors ]]">
+        </appsco-add-integration-rule>
+
+        <appsco-edit-integration-rule
+                id="appscoEditIntegrationRule"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-rule-edited="_onIntegrationRuleEdited">
+        </appsco-edit-integration-rule>
+
+        <appsco-run-integration-rule
+                id="appscoRunIntegrationRule"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-rule-run="_onIntegrationRuleRun">
+        </appsco-run-integration-rule>
+
+        <appsco-remove-integration-rule
+                id="appscoRemoveIntegrationRule"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-rule-removed="_onIntegrationRuleRemoved">
+        </appsco-remove-integration-rule>
+
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-manage-integration-page',
+        class AppscoManageIntegrationPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-manage-integration-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    route: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                route: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _selected: {
+                        type: String,
+                        value: 'appsco-manage-integration-components-page',
+                        notify: true
+                    },
+
+                    integrationApi: {
+                        type: String,
+                        observer: '_onIntegrationApiChanged'
+                    },
+
+                    _webhookApi: {
+                        type: String,
+                        computed: '_computeWebhookApi(integration)'
+                    },
+
+                    _integrationTemplatesApi: {
+                        type: String,
+                        computed: '_computeIntegrationTemplatesApi(integration)'
+                    },
+
+                    _isIntegrationRA: {
+                        type: Boolean,
+                        computed: '_computeIsIntegrationRA(integration)'
+                    },
+
+                    _isIntegrationPST: {
+                        type: Boolean,
+                        computed: '_computeIsIntegrationPST(integration)'
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _hasDownloadableConfig: {
+                        type: Boolean,
+                        computed: '_computeHasDownloadableConfig(integration)'
+                    },
+
+                    _authorizedDate: {
+                        type: String,
+                        computed: '_computeAuthorizedDate(integration)'
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _infoSectionActive: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+                ];
+            }
 
-                _selected: {
-                    type: String,
-                    value: 'appsco-manage-integration-components-page',
-                    notify: true
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Get integration link.
-                 */
-                integrationApi: {
-                    type: String,
-                    value: '',
-                    observer: '_onIntegrationApiChanged'
-                },
-
-                _webhookApi: {
-                    type: String,
-                    computed: '_computeWebhookApi(integration)'
-                },
-
-                _integrationTemplatesApi: {
-                    type: String,
-                    computed: '_computeIntegrationTemplatesApi(integration)'
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _isIntegrationRA: {
-                    type: Boolean,
-                    computed: '_computeIsIntegrationRA(integration)'
-                },
-
-                _isIntegrationPST: {
-                    type: Boolean,
-                    computed: '_computeIsIntegrationPST(integration)'
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _hasDownloadableConfig: {
-                    type: Boolean,
-                    computed: '_computeHasDownloadableConfig(integration)'
-                },
-
-                _authorizedDate: {
-                    type: String,
-                    computed: '_computeAuthorizedDate(integration)'
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-                _infoSectionActive: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._getIntegration();
+                });
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-            ],
-
-            attached: function() {
-                this.pageLoaded = false;
-
-                if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
-                this._getIntegration();
-            },
-
-            _computeAuthorizedDate: function(integration) {
+            _computeAuthorizedDate(integration) {
                 return (integration && integration.authorized_at) ? this._dateFormat(integration.authorized_at.date) : '';
-            },
+            }
 
             /**
              * Formats date and returns formatted date as string.
@@ -463,89 +525,87 @@
              * @returns {string}
              * @private
              */
-            _dateFormat: function(value) {
-
+            _dateFormat(value) {
                 if (value) {
-                    var options = {
+                    const options = {
                         year: 'numeric', month: 'short', day: 'numeric',
                         hour: 'numeric', minute: 'numeric', second: 'numeric'
                     };
 
                     return (new Date(value)).toLocaleDateString('en', options);
                 }
+            }
 
-            },
-
-            setIntegration: function(integration) {
+            setIntegration(integration) {
                 this.set('integration', integration);
-            },
+            }
 
-            addIntegrationRule: function(rule) {
+            addIntegrationRule(rule) {
                 this.$.appscoIntegrationRulesPage.addIntegrationRule(rule);
-            },
+            }
 
-            modifyIntegrationRule: function(rule) {
+            modifyIntegrationRule(rule) {
                 this.$.appscoIntegrationRulesPage.modifyIntegrationRule(rule);
-            },
+            }
 
-            removeIntegrationRule: function(rule) {
+            removeIntegrationRule(rule) {
                 this.$.appscoIntegrationRulesPage.removeIntegrationRule(rule);
-            },
+            }
 
-            addIntegrationWatcher: function(watcher) {
+            addIntegrationWatcher(watcher) {
                 this.$.appscoIntegrationWebhooksPage.addIntegrationWatcher(watcher);
-            },
+            }
 
-            removeIntegrationWatcher: function(watcher) {
+            removeIntegrationWatcher(watcher) {
                 this.$.appscoIntegrationWebhooksPage.removeIntegrationWatcher(watcher);
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._showComponentsPage();
-            },
+            }
 
-            _hideInfoSection: function() {
+            _hideInfoSection() {
                 this._infoSectionActive = false;
-            },
+            }
 
-            _evaluateInfoSectionActive: function() {
-                var appscoIntegrationTemplatesComponent = this.$$('#appscoIntegrationTemplates');
+            _evaluateInfoSectionActive() {
+                const appscoIntegrationTemplatesComponent = this.shadowRoot.getElementById('appscoIntegrationTemplates');
 
                 this._infoSectionActive = (appscoIntegrationTemplatesComponent &&
                 (0 < appscoIntegrationTemplatesComponent.getCurrentCount()) &&
                 appscoIntegrationTemplatesComponent.getAvailableTemplatesExist());
-            }, 
+            }
 
-            _showIntegrationSettingsPage: function() {
+            _showIntegrationSettingsPage() {
                 this._hideInfoSection();
                 this._selected = 'appsco-integration-settings-page';
-            },
+            }
 
-            _showIntegrationRulesPage: function() {
+            _showIntegrationRulesPage() {
                 this._hideInfoSection();
                 this._selected = 'appsco-integration-rules-page';
-            },
+            }
 
-            _showIntegrationWebhooksPage: function() {
+            _showIntegrationWebhooksPage() {
                 this._hideInfoSection();
                 this._selected = 'appsco-integration-webhooks-page';
-            },
+            }
 
-            _showComponentsPage: function() {
+            _showComponentsPage() {
                 this._selected = 'appsco-manage-integration-components-page';
                 this._evaluateInfoSectionActive();
-            },
+            }
 
-            _updateScreen: function(medium, tablet, mobile) {
+            _updateScreen(medium, tablet, mobile) {
                 this.updateStyles();
 
                 if (mobile) {
@@ -554,140 +614,203 @@
                 else if(!this.$.appscoContent.resourceActive) {
                     this.$.appscoContent.showSection('resource');
                 }
-            },
+            }
 
-            _getIntegration: function() {
+            _getIntegration() {
                 if (!this.integration.self && this.integrationApi && this._headers) {
                     if (!this.route.path) {
-                        this.fire('page-error');
+                        this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
                     }
                     this.$.ironAjaxGetIntegration.url = this.integrationApi + '/active' + this.route.path;
                     this.$.ironAjaxGetIntegration.generateRequest();
                 }
-            },
+            }
 
-            _onIntegrationApiChanged: function() {
+            _onIntegrationApiChanged() {
                 this._getIntegration();
-            },
+            }
 
-            _onIntegrationResponse: function(event) {
+            _onIntegrationResponse(event) {
                 if (200 === event.detail.status && event.detail.response && event.detail.response.integration_active) {
                     this.set('integration', event.detail.response.integration_active);
                 }
                 this._onPageLoaded();
-            },
+            }
 
-            _onIntegrationError: function(event) {
+            _onIntegrationError(event) {
                 if (!event.detail.request.aborted) {
-                    this.fire('page-error');
+                    this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
                 }
-            },
+            }
 
-            _onIntegrationSettingsChanged: function(event) {
+            _onIntegrationSettingsChanged(event) {
                 this.set('integration', {});
                 this.set('integration', event.detail.integration);
                 this._showComponentsPage();
-            },
+                this._hideProgressBar();
+            }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+            _computeWebhookApi(integration) {
+                return integration && integration.meta && integration.meta.webHooks ? integration.meta.webHooks : null;
+            }
 
-            _computeWebhookApi: function(integration) {
-                return integration && integration.meta && integration.meta.webHooks ? integration.meta.webHooks : '';
-            },
-
-            _computeIntegrationTemplatesApi: function(integration) {
-                return (integration && integration.meta && integration.meta.templates) ? integration.meta.templates : '';
-            },
+            _computeIntegrationTemplatesApi(integration) {
+                return (integration && integration.meta && integration.meta.templates) ? integration.meta.templates : null;
+            }
             
-            _computeIsIntegrationRA: function(integration) {
-                return integration && integration.integration && integration.kind == 'ra';
-            },
+            _computeIsIntegrationRA(integration) {
+                return integration && integration.integration && integration.kind === 'ra';
+            }
 
-            _computeIsIntegrationPST: function(integration) {
-                return integration && integration.integration && integration.kind == 'pst';
-            },
+            _computeIsIntegrationPST(integration) {
+                return integration && integration.integration && integration.kind === 'pst';
+            }
 
-            _onResourceBack: function() {
+            _onResourceBack() {
                 this._showComponentsPage();
-            },
+            }
 
-            _onRemoveIntegration: function() {
-                this.fire('remove-integration', {
-                    integration: this.integration
-                });
-            },
+            _onRemoveIntegration(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRemoveIntegration');
+                dialog.setIntegration(event.detail.integration);
+                dialog.open();
+            }
 
-            _onReauthorizeIntegration: function() {
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this.integration.integration.self + '?reauthorize_integration='+ this.integration.alias,
-                            method: 'POST',
-                            body: {
-                                "activate_integration[name]": this.integration.name,
-                                "activate_integration[kind]": this.integration.kind,
-                                "activate_integration[scheduleSyncInterval]":this.integration.scheduleSyncInterval
-                            },
-                            handleAs: 'text',
-                            headers: this._headers
-                        };
+            _onReauthorizeIntegration() {
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this.integration.integration.self + '?reauthorize_integration=' + this.integration.alias,
+                        method: 'POST',
+                        body: {
+                            "activate_integration[name]": this.integration.name,
+                            "activate_integration[kind]": this.integration.kind,
+                            "activate_integration[scheduleSyncInterval]": this.integration.scheduleSyncInterval
+                        },
+                        handleAs: 'text',
+                        headers: this._headers
+                    };
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-                        var response = JSON.parse(request.response);
-                        this.fire('integration-reauthorized', {
-                            authorizationUrl: response.authorization_url
-                        });
+                        const response = JSON.parse(request.response);
+                        if (response.authorization_url) {
+                            window.location.href = response.authorization_url;
+                        }
                     }
-
                 }.bind(this), function() {
-                    this.fire('page-error');
+                    this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
                 }.bind(this));
-            },
+            }
 
-            _onManageIntegrationSettings: function() {
+            _onManageIntegrationSettings() {
                 this._showIntegrationSettingsPage();
-            },
+            }
 
-            _onManageIntegrationRules: function() {
+            _onManageIntegrationRules() {
                 this._showIntegrationRulesPage();
-            },
+            }
 
-            _onManageIntegrationWebhooks: function() {
+            _onManageIntegrationWebhooks() {
                 this._showIntegrationWebhooksPage();
-            },
+            }
 
-            _computeHasDownloadableConfig: function(integration) {
+            _computeHasDownloadableConfig(integration) {
                 return integration
                     && integration.integration
-                    && (integration.integration.alias == 3 || integration.integration.alias == 11) ;
-            },
+                    && (integration.integration.alias === 3 || integration.integration.alias === 11) ;
+            }
 
-            _downloadConfig: function() {
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this.integration.meta.config,
-                            method: 'GET',
-                            handleAs: 'text',
-                            headers: this._headers
-                        };
+            _downloadConfig() {
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this.integration.meta.config,
+                        method: 'GET',
+                        handleAs: 'text',
+                        headers: this._headers
+                    };
 
                 request.send(options).then(function() {
                     window.location = 'data:application/octet-stream;charset=utf-16le;base64,' + request.response;
                 }.bind(this));
             }
-        });
+
+            _onIntegrationRequested(event) {
+                if (event.detail.authorizationUrl) {
+                    window.location.href = event.detail.authorizationUrl;
+                }
+            }
+
+            _onRegisterIntegrationWebhook(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRegisterIntegrationWebhook');
+
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationWebhook(event.detail.webhook);
+                dialog.open();
+            }
+
+            _onIntegrationWebhookRegistered(event) {
+                this.addIntegrationWatcher(event.detail.watcher);
+                this._notify('Web hook for ' + event.detail.integration.name + ' has been registered.');
+            }
+
+            _onUnregisterIntegrationWebhook(event) {
+                const dialog = this.shadowRoot.getElementById('appscoUnegisterIntegrationWebhook');
+
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationWebhook(event.detail.webhook);
+                dialog.open();
+            }
+
+            _onIntegrationWebhookUnregistered(event) {
+                this.removeIntegrationWatcher(event.detail.watcher);
+                this._notify('Web hook for ' + event.detail.integration.name + ' has been unregistered.');
+            }
+
+            _onAddIntegrationRuleAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAddIntegrationRule');
+                dialog.setIntegration(event.detail.integration);
+                dialog.open();
+            }
+
+            _onIntegrationRuleAdded(event) {
+                this.addIntegrationRule(event.detail.rule);
+                this._notify('Rule for ' + event.detail.integration.name + ' has been successfully added.');
+            }
+
+            _onEditIntegrationRuleAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoEditIntegrationRule');
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationRule(event.detail.rule);
+                dialog.open();
+            }
+
+            _onIntegrationRuleEdited(event) {
+                this.modifyIntegrationRule(event.detail.rule);
+                this._notify('Rule for ' + event.detail.integration.name + ' has been successfully modified.');
+            }
+            _onRunIntegrationRuleAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRunIntegrationRule');
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationRule(event.detail.rule);
+                dialog.open();
+            }
+
+            _onIntegrationRuleRun(event) {
+                this._notify('Rule for ' + event.detail.integration.name + ' has been applied.');
+            }
+
+            _onRemoveIntegrationRuleAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRemoveIntegrationRule');
+                dialog.setIntegration(event.detail.integration);
+                dialog.setIntegrationRule(event.detail.rule);
+                dialog.open();
+            }
+
+            _onIntegrationRuleRemoved(event) {
+                this.removeIntegrationRule(event.detail.rule);
+                this._notify('Rule for ' + event.detail.integration.name + ' has been removed.');
+            }
+        }
+        window.customElements.define(AppscoManageIntegrationPage.is, AppscoManageIntegrationPage);
     </script>
 </dom-module>

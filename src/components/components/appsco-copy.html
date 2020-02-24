@@ -15,49 +15,60 @@ Used to copy value to the clipboard
                 display: inline-block;
             }
             :host paper-icon-button {
-                @apply(--appsco-copy-action);
+                @apply --appsco-copy-action;
             }
         </style>
         <paper-icon-button icon="icons:content-copy" id="icon" hidden="[[ !value ]]"></paper-icon-button>
     </template>
 
     <script>
-        Polymer({
+        class AppscoCopy extends Polymer.Element {
+            static get is() { return 'appsco-copy'; }
 
-            is: 'appsco-copy',
+            static get properties() {
+                return {
+                    value: {
+                        type: String,
+                        value: null
+                    },
 
-            _iconSet: undefined,
+                    name: {
+                        type: String,
+                        value: ''
+                    }
+                };
+            }
 
-            properties: {
-                value: {
-                    type: String,
-                    value: null
-                },
+            constructor() {
+                super();
+                this._iconSet = undefined;
+            }
 
-                name: {
-                    type: String,
-                    value: ''
-                }
+            ready() {
+                super.ready();
 
-            },
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                "tap": "_copy"
-            },
+            _addListeners() {
+                this.addEventListener('tap', this._copy);
+            }
 
-            _setSuccessIcon: function () {
-                var me = this;
+            _setSuccessIcon() {
+                const me = this;
                 clearTimeout(this._iconSet);
                 this._iconSet = setTimeout(function () {
                     me.$.icon.setAttribute('icon', 'content-copy');
                 }, 1000);
                 this.$.icon.setAttribute('icon', 'icons:done');
-            },
+            }
 
-            _copy: function () {
-                var input = document.createElement('span'),
-                        textNodeValue = document.createTextNode(this.value),
-                        range = document.createRange();
+            _copy() {
+                const input = document.createElement('span'),
+                    textNodeValue = document.createTextNode(this.value),
+                    range = document.createRange();
 
                 input.appendChild(textNodeValue);
 
@@ -80,13 +91,17 @@ Used to copy value to the clipboard
 
                 input.remove();
 
-                this.fire('copied', {
-                    name: this.name
-                });
+                this.dispatchEvent(new CustomEvent('copied', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        name: this.name
+                    }
+                }));
 
                 this._setSuccessIcon();
             }
-
-        });
+        }
+        window.customElements.define(AppscoCopy.is, AppscoCopy);
     </script>
 </dom-module>

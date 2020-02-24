@@ -23,10 +23,10 @@
                 display: inline-block;
                 position: relative;
                 margin-right: -10px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-customers-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-customers-actions;
             }
             appsco-search {
                 max-width: 200px;
@@ -34,43 +34,43 @@
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--customers-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --customers-action;
             }
             :host .flex-none {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host .bulk-action {
                 display: none;
             }
             :host .add-action {
-                @apply(--add-item-action);
+                @apply --add-item-action;
             }
             :host .bulk-action[hidden] {
                 display: none !important;
             }
             :host .import-action {
-                @apply(--import-action);
+                @apply --import-action;
             }
             :host .export-action {
-                @apply(--export-action);
+                @apply --export-action;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             .item-action-list {
                 position: absolute;
                 top: 34px;
                 right: 0;
                 width: 200px;
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 opacity: 0;
                 visibility: hidden;
                 transform: scale(1, 0.6);
                 transform-origin: top center;
                 transition: all 0.1s linear;
-                @apply(--item-action-list);
+                @apply --item-action-list;
 
             }
             :host([_import-actions-visible]) .item-action-list {
@@ -96,7 +96,7 @@
                 font-weight: 500;
                 min-width: 100px;
                 text-align: center;
-                @apply(--customer-actions-tooltip);
+                @apply --customer-actions-tooltip;
             }
             :host([tablet-screen]) .removable-button {
                 display: none;
@@ -172,213 +172,168 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCustomersActions extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-customers-actions'; }
 
-            is: 'appsco-customers-actions',
+            static get properties() {
+                return {
+                    _importActionsVisible: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    _actionList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    value: 'import-customers',
+                                    name: 'Customers',
+                                    icon: 'icons:social:domain'
+                                },
+                                {
+                                    value: 'import-customer-resources',
+                                    name: 'Resources',
+                                    icon: 'icons:apps'
+                                }
+                            ]
+                        }
+                    },
 
-                _importActionsVisible: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _bulkActions: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onBulkActionsChanged'
+                    },
 
-                _actionList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                value: 'import-customers',
-                                name: 'Customers',
-                                icon: 'icons:social:domain'
-                            },
-                            {
-                                value: 'import-customer-resources',
-                                name: 'Resources',
-                                icon: 'icons:apps'
-                            }
-                        ]
+                    _bulkSelectAll: {
+                        type: Boolean,
+                        value: true,
+                        observer: '_onBulkSelectAllChanged'
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _bulkActions: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onBulkActionsChanged'
-                },
+            ready() {
+                super.ready();
 
-                _bulkSelectAll: {
-                    type: Boolean,
-                    value: true,
-                    observer: '_onBulkSelectAllChanged'
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config for bulk actions.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-in-animation',
-                                nodes: [],
-                                nodeDelay: 50,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-out-animation',
-                                nodes: [],
-                                nodeDelay: 0,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-in-animation',
+                        nodes: [],
+                        nodeDelay: 50,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-out-animation',
+                        nodes: [],
+                        nodeDelay: 0,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
 
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinish'
-            },
+            }
 
-            ready: function() {
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
                 Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-            },
+            }
 
             /**
              * Evaluates if item is in given path.
              *
              * @param {HTMLElement} element The element to be evaluated.
-             * @param {Array<HTMLElements>=} path Elements in path to be checked against item element.
+             * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
              * @return {Boolean}
              *
              * @private
              */
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
-                    if (path[i] == element) {
+                for (let i = 0; i < path.length; i++) {
+                    if (path[i] === element) {
                         return true;
-
-                        break;
                     }
                 }
 
                 return false;
-            },
+            }
 
             /**
              * Listens for click outside import drop-down.
              * @private
              */
-            _handleDocumentClick: function(event) {
-                var path = Polymer.dom(event).path;
+            _handleDocumentClick(event) {
+                const path = Polymer.dom(event).path;
 
                 if (!this._isInPath(path, this.$.importAction)) {
                     this._importActionsVisible = false;
                 }
-            },
+            }
 
-            reset: function() {
+            reset() {
                 this.resetActions();
-            },
+            }
 
-            resetActions: function() {
+            resetActions() {
                 this.$.appscoSearch.reset();
                 this.hideBulkActions();
-            },
+            }
 
-            _onAddAction: function() {
+            _onAddAction() {
+                this.dispatchEvent(new CustomEvent('add-customer', { bubbles: true, composed: true }));
+            }
 
-                /**
-                 * Fired when add customer action is tapped.
-                 *
-                 * @event add-customer
-                 */
-                this.fire('add-customer');
-            },
+            _onSelectAllAction() {
+                this.dispatchEvent(new CustomEvent('select-all-customers', { bubbles: true, composed: true }));
+            }
 
-            /**
-             * Called on select all action.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onSelectAllAction: function() {
+            _onRemoveCustomersAction() {
+                this.dispatchEvent(new CustomEvent('remove-customers', { bubbles: true, composed: true }));
+            }
 
-                /**
-                 * Fired when select all action is called.
-                 *
-                 * @event select-all-customers
-                 */
-                this.fire('select-all-customers');
-            },
+            _onAddPartnerAdmin () {
+                this.dispatchEvent(new CustomEvent('add-partner-admin', { bubbles: true, composed: true }));
+            }
 
-            /**
-             * Called on remove action.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onRemoveCustomersAction: function() {
-
-                /**
-                 * Fired when delete action is called.
-                 *
-                 * @event remove-customers
-                 */
-                this.fire('remove-customers');
-            },
-
-            /**
-             * Called on add action.
-             * It fires an event.
-             *
-             * @private
-             */
-            _onAddPartnerAdmin: function () {
-                /**
-                 * Fired when add partner admin action is called.
-                 *
-                 * @event add-partner-admin
-                 */
-                this.fire('add-partner-admin');
-            },
-
-            showBulkActions: function () {
+            showBulkActions () {
                 this._bulkActions = true;
-            },
+            }
 
-            hideBulkActions: function () {
+            hideBulkActions () {
                 this._bulkActions = false;
-            },
+            }
 
-            _onBulkActionsChanged: function () {
-                var bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action');
+            _onBulkActionsChanged () {
+                const bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action');
 
                 if (this.animationConfig) {
                     this.animationConfig.entry.nodes = bulkActions;
@@ -386,9 +341,9 @@
                 }
 
                 if (this._bulkActions) {
-                    var length = bulkActions.length;
+                    const length = bulkActions.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         bulkActions[i].style.display = 'flex';
                     }
 
@@ -397,63 +352,55 @@
                 else {
                     this.playAnimation('exit');
                 }
+            }
 
-            },
-
-            showBulkSelectAll: function() {
+            showBulkSelectAll() {
                 this._bulkSelectAll = true;
-            },
+            }
 
-            hideBulkSelectAll: function() {
+            hideBulkSelectAll() {
                 this._bulkSelectAll = false;
-            },
+            }
 
-            _onBulkSelectAllChanged: function () {
-                var bulkSelectAll = Polymer.dom(this.root).querySelectorAll('.bulk-select-all');
+            _onBulkSelectAllChanged () {
+                const bulkSelectAll = Polymer.dom(this.root).querySelectorAll('.bulk-select-all');
                 if (this._bulkSelectAll) {
                     bulkSelectAll[0].style.display = 'block';
                 }else {
                     bulkSelectAll[0].style.display = 'none';
                 }
-            },
+            }
 
-            _onNeonAnimationFinish: function() {
-
+            _onNeonAnimationFinish() {
                 if (!this._bulkActions) {
-                    var bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action'),
-                            length = bulkActions.length;
+                    const bulkActions = Polymer.dom(this.root).querySelectorAll('.bulk-action'),
+                        length = bulkActions.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         bulkActions[i].style.display = 'none';
                     }
                 }
-
-            },
-
-            _onImportAction: function() {
-                this._toggleActionList();
-            },
-
-            _toggleActionList: function() {
-                this._importActionsVisible = !this._importActionsVisible;
-            },
-
-            _onImportActionItemSelect: function(event) {
-                this.fire(event.detail.item.value);
-
-                this._importActionsVisible = false;
-                this.$$('#actionList').selected = -1;
-            },
-
-            _onExportToCsvAction: function() {
-                /**
-                 * Fired when export to CSV action is tapped.
-                 *
-                 * @event export-customers
-                 */
-                this.fire('export-customers');
             }
 
-        });
+            _onImportAction() {
+                this._toggleActionList();
+            }
+
+            _toggleActionList() {
+                this._importActionsVisible = !this._importActionsVisible;
+            }
+
+            _onImportActionItemSelect(event) {
+                this.dispatchEvent(new CustomEvent(event.detail.item.value, { bubbles: true, composed: true }));
+
+                this._importActionsVisible = false;
+                this.shadowRoot.getElementById('actionList').selected = -1;
+            }
+
+            _onExportToCsvAction() {
+                this.dispatchEvent(new CustomEvent('export-customers', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoCustomersActions.is, AppscoCustomersActions);
     </script>
 </dom-module>

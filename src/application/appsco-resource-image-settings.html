@@ -15,7 +15,7 @@
             :host .upload-container {
                 width: 64px;
                 height: 64px;
-                @apply(--image-upload-container);
+                @apply --image-upload-container;
             }
         </style>
 
@@ -51,51 +51,48 @@
             </template>
         </template>
 
-        <content select="[info]"></content>
+        <slot name="info" old-content-selector="[info]"></slot>
 
     </template>
     <script>
-        Polymer({
+        class AppscoResourceImageSettings extends Polymer.mixinBehaviors([Polymer.AppscoUploadImageBehavior], Polymer.Element) {
+            static get is() { return 'appsco-resource-image-settings'; }
 
-            is: 'appsco-resource-image-settings',
-
-            properties: {
-                /**
-                 * resource to update.
-                 */
-                resource: {
-                    type: Object,
-                    value: function() {
-                        return {}
+            static get properties() {
+                return {
+                    /**
+                     * resource to update.
+                     */
+                    resource: {
+                        type: Object,
+                        value: function () {
+                            return {}
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                _imagePreview: {
-                    type: String,
-                    computed: '_computeImagePreviewClass(resource)'
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoUploadImageBehavior
-            ],
+                    _imagePreview: {
+                        type: String,
+                        computed: '_computeImagePreviewClass(resource)'
+                    }
+                };
+            }
 
             /**
              * Resets component.
              */
-            reset: function() {
+            reset() {
                 var resource = JSON.parse(JSON.stringify(this.resource));
 
                 this.set('resource', {});
                 this.set('resource', resource);
-            },
+            }
 
-            _computeImagePreviewClass: function(resource) {
+            _computeImagePreviewClass(resource) {
                 return (resource && resource.application_url) ? 'has-image' : 'no-image';
-            },
+            }
 
-            _setNewImage: function(file) {
+            _setNewImage(file) {
                 var reader = new FileReader();
 
                 reader.onload = function(e) {
@@ -103,17 +100,18 @@
                 }.bind(this);
 
                 reader.readAsDataURL(file);
-            },
+            }
 
-            _fireChangeEvent: function() {
-                this.fire('resource-image-changed');
-            },
+            _fireChangeEvent() {
+                this.dispatchEvent(new CustomEvent('resource-image-changed', { bubbles: true, composed: true }));
+            }
 
-            _setStateAfterImageIsRemoved: function(response) {
+            _setStateAfterImageIsRemoved(response) {
                 this.set('resource', response);
                 this._fireChangeEvent();
                 this._hideLoader();
             }
-        });
+        }
+        window.customElements.define(AppscoResourceImageSettings.is, AppscoResourceImageSettings);
     </script>
 </dom-module>

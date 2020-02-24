@@ -14,6 +14,9 @@
 <link rel="import" href="components/report/appsco-reports-list.html">
 <link rel="import" href="components/components/appsco-page-behavior.html">
 <link rel="import" href="components/components/appsco-list-observer-behavior.html">
+<link rel="import" href="components/report/appsco-reports-page-actions.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-reports-page">
     <template>
@@ -27,7 +30,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent">
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-reports-list id="reportsList"
                                          type="reports"
@@ -42,7 +45,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <iron-icon icon="icons:description"
                                class="info-icon"></iron-icon>
@@ -77,151 +80,153 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-reports-page',
+        class AppscoReportsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppscoPageBehavior,
+            Polymer.AppscoListObserverBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-reports-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    report: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                report: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    getAccessReportApi: {
+                        type: String
+                    },
 
-                getAccessReportApi: {
-                    type: String,
-                    value: ''
-                },
+                    getPoliciesApi: {
+                        type: String
+                    },
 
-                getPoliciesApi: {
-                    type: String,
-                    value: ''
-                },
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    animationConfig: {
+                        type: Object
+                    },
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _showAuthTypes: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _infoVisible: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    items: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    type: 'access-report',
+                                    icon: 'icons:description',
+                                    title: 'Access report',
+                                    description: 'This report shows which users and contacts have access to which resources.',
+                                    activated: false,
+                                    openEvent: 'open-access-report',
+                                    exportEvent: 'export-access-report',
+                                    self: 'access-report'
+                                },
+                                {
+                                    type: 'compliance-report',
+                                    icon: 'icons:description',
+                                    title: 'Compliance report',
+                                    description: 'This report shows which fields with personal data are used in each shared resource.',
+                                    activated: false,
+                                    openEvent: 'open-compliance-report',
+                                    exportEvent: 'export-compliance-report',
+                                    self: 'compliance-report'
+                                },
+                                {
+                                    type: 'policies-report',
+                                    icon: 'icons:description',
+                                    title: 'Policies report',
+                                    description: 'This report shows which policies are breached or broken.',
+                                    activated: false,
+                                    openEvent: 'open-policies-report',
+                                    exportEvent: 'export-policies-report',
+                                    self: 'policies-report'
                                 }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                            ]
                         }
                     }
-                },
+                };
+            }
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen)'
+                ];
+            }
 
-                _showAuthTypes: {
-                    type: Boolean,
-                    value: true
-                },
+            ready() {
+                super.ready();
 
-                _infoVisible: {
-                    type: Boolean,
-                    value: false
-                },
-
-                items: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                type: 'access-report',
-                                icon: 'icons:description',
-                                title: 'Access report',
-                                description: 'This report shows which users and contacts have access to which resources.',
-                                activated: false,
-                                openEvent: 'open-access-report',
-                                exportEvent: 'export-access-report',
-                                self: 'access-report'
-                            },
-                            {
-                                type: 'compliance-report',
-                                icon: 'icons:description',
-                                title: 'Compliance report',
-                                description: 'This report shows which fields with personal data are used in each shared resource.',
-                                activated: false,
-                                openEvent: 'open-compliance-report',
-                                exportEvent: 'export-compliance-report',
-                                self: 'compliance-report'
-                            },
-                            {
-                                type: 'policies-report',
-                                icon: 'icons:description',
-                                title: 'Policies report',
-                                description: 'This report shows which policies are breached or broken.',
-                                activated: false,
-                                openEvent: 'open-policies-report',
-                                exportEvent: 'export-policies-report',
-                                self: 'policies-report'
-                            }
-                        ]
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.AppscoPageBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen)'
-            ],
-
-            attached: function() {
                 this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-                if (this.mobileScreen) {
-                    this.updateStyles();
-                }
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-                this.initializePage();
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.initializePage();
+                });
+            }
 
-            toggleInfo: function() {
+            toggleInfo() {
                 this.$.appscoContent.toggleSection('info');
                 this._infoVisible = !this._infoVisible;
 
@@ -237,66 +242,63 @@
                     this.$.reportsList.deactivateItem(this.report);
                     this._setDefaultReport();
                 }
-            },
+            }
 
-            hideInfo: function() {
+            hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoVisible = false;
                 this.$.reportsList.deactivateItem(this.report);
-            },
+            }
 
-            initializePage: function() {
+            initializePage() {
                 this._setDefaultReport();
                 this.$.reportsList.addItems(this.items);
                 this._setReportApi();
                 this._reloadReportDetails();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._resetPageActions();
                 this.hideInfo();
-            },
+            }
 
-            _setReportApi: function() {
-                var reportDetailsComponent = this.$.appscoReportDetails;
+            _setReportApi() {
+                const reportDetailsComponent = this.$.appscoReportDetails;
 
-                switch (this.report.type) {
-                    case 'policies-report':
-                        reportDetailsComponent.setReportApi(this.getPoliciesApi + '?page=1&extended=1&limit=1000');
-                        break;
-
-                    default:
-                        reportDetailsComponent.setReportApi(this.getAccessReportApi);
+                if (this.report.type === 'policies-report') {
+                    reportDetailsComponent.setReportApi(this.getPoliciesApi + '?page=1&extended=1&limit=1000');
+                } else {
+                    reportDetailsComponent.setReportApi(this.getAccessReportApi);
                 }
-            },
+            }
 
-            _resetPageActions: function() {
-                this.fire('reset-page-actions');
-            },
+            _resetPageActions() {
+                this.toolbar.resetPageActions();
+            }
 
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _reloadReportDetails: function() {
+            _reloadReportDetails() {
                 this.$.appscoReportDetails.reload();
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _setDefaultReport: function() {
+            _setDefaultReport() {
                 this.set('report', JSON.parse(JSON.stringify(this.items[0])));
-            },
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
                 this._infoVisible = true;
-            },
+            }
 
-            _handleInfo: function(report) {
+            _handleInfo(report) {
                 this.set('report', report);
                 this._setReportApi();
                 this.set('_showAuthTypes', 'access-report' === report.type);
@@ -304,14 +306,13 @@
                 if (!this._infoVisible) {
                     this._showInfo();
                 }
-            },
+            }
 
-            _onViewInfo: function(event) {
+            _onViewInfo(event) {
                 this._handleInfo(event.detail.item);
-            },
+            }
 
-            _onReportAction: function(event) {
-
+            _onReportAction(event) {
                 if (event.detail.item.activated) {
                     this._onViewInfo(event);
                 }
@@ -319,25 +320,24 @@
                     this.hideInfo();
                     this._setDefaultReport();
                 }
-            },
+            }
 
-            _onOpenReportAction: function() {
-                this.fire(this.report.openEvent);
-            },
+            _onOpenReportAction() {
+                this.dispatchEvent(new CustomEvent(this.report.openEvent, { bubbles: true, composed: true }));
+            }
 
-            _onExportReportAction: function() {
-                this.fire(this.report.exportEvent);
-            },
+            _onExportReportAction() {
+                this.dispatchEvent(new CustomEvent(this.report.exportEvent, { bubbles: true, composed: true }));
+            }
 
-            _onObservableItemListChange: function(event, data) {
+            _onObservableItemListChange(event, data) {
                 if(data.type === 'reports') {
                     this.setObservableType('reports-page');
                     this.populateItems(data.items);
                 }
                 event.stopPropagation();
             }
-
-        });
-
+        }
+        window.customElements.define(AppscoReportsPage.is, AppscoReportsPage);
     </script>
 </dom-module>

@@ -8,12 +8,14 @@
 
 <link rel="import" href="../components/appsco-search.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-access-on-boarding-page-filters">
     <template>
         <style>
             :host {
-                @apply(--layout-vertical);
-                @apply(--appsco-access-on-boarding-page-filters);
+                @apply --layout-vertical;
+                @apply --appsco-access-on-boarding-page-filters;
 
                 --paper-dropdown-menu: {
                     width: 100%;
@@ -34,7 +36,7 @@
                 box-sizing: border-box;
             }
             .suggested-groups {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 width: 100%;
                 min-height: 100px;
                 max-height: calc(100vh - 2*64px - 30px - 10px - 3*54px);
@@ -62,7 +64,7 @@
                 line-height: 18px;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
         </style>
 
@@ -105,104 +107,91 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessOnBoardingPageFilters extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-access-on-boarding-page-filters'; }
 
-            is: 'appsco-access-on-boarding-page-filters',
+            static get properties() {
+                return {
+                    groupsApi: {
+                        type: String
+                    },
 
-            properties: {
+                    _groupsApi: {
+                        type: String,
+                        computed: '_computeGroupsApi(groupsApi)'
+                    },
 
-                groupsApi: {
-                    type: String,
-                    value: ''
-                },
+                    _searchGroupsApi: {
+                        type: String,
+                        computed: '_computeSearchGroupsApi(groupsApi, _groupTerm)'
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _groupList: {
+                        type: Array,
+                        value: function () {
+                            return [{
+                                alias: 'all',
+                                name: 'All groups'
+                            }];
+                        }
+                    },
 
-                _groupsApi: {
-                    type: String,
-                    computed: '_computeGroupsApi(groupsApi)'
-                },
+                    _groupListDisplay: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                _searchGroupsApi: {
-                    type: String,
-                    computed: '_computeSearchGroupsApi(groupsApi, _groupTerm)'
-                },
+                    _groupTerm: {
+                        type: String,
+                        value: ''
+                    },
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _filterTerm: {
+                        type: String,
+                        value: ''
+                    },
 
-                _groupList: {
-                    type: Array,
-                    value: function() {
-                        return [{
-                            alias: 'all',
-                            name: 'All groups'
-                        }];
+                    _filterGroup: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     }
-                },
+                };
+            }
 
-                _groupListDisplay: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
+            ready() {
+                super.ready();
 
-                _groupTerm: {
-                    type: String,
-                    value: ''
-                },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+                });
+            }
 
-                _filterTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterGroup: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                }
-            },
-            
-            attached: function() {
-                Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-            },
-
-            reset: function() {
+            reset() {
                 this.$.appscoSearch.reset();
                 this.$.filterListGroups.selected = 0;
                 this._hideGroupList();
-            },
+            }
 
-            getFilters: function() {
+            getFilters() {
                 return {
                     term: this._filterTerm,
                     group: this._filterGroup
                 };
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+            _computeGroupsApi(groupsApi) {
+                return groupsApi ? groupsApi + '?extended=1' : null;
+            }
 
-            _computeGroupsApi: function(groupsApi) {
-                return groupsApi ? groupsApi + '?extended=1' : '';
-            },
+            _computeSearchGroupsApi(groupsApi, term) {
+                return (groupsApi && term) ? (groupsApi + '?extended=1&limit=10&term=' + term) : null;
+            }
 
-            _computeSearchGroupsApi: function(groupsApi, term) {
-                return (groupsApi && term) ? (groupsApi + '?extended=1&limit=10&term=' + term) : '';
-            },
-
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
                 for (var i = 0; i < path.length; i++) {
@@ -213,41 +202,43 @@
                 }
 
                 return false;
-            },
+            }
 
-            _handleDocumentClick: function(event) {
-                var path = Polymer.dom(event).path;
+            _handleDocumentClick(event) {
+                const path = Polymer.dom(event).path;
 
                 if (!this._isInPath(path, this.$.filterGroup)) {
                     this._hideGroupList();
                 }
-            },
+            }
 
-            _filter: function() {
+            _filter() {
+                this.dispatchEvent(new CustomEvent('filter-access-on-boarding', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        filters: this.getFilters()
+                    }
+                }));
+            }
 
-                this.fire('filter-access-on-boarding', {
-                    filters: this.getFilters()
-                });
-            },
-
-            _filterRolesByTermAction: function(term) {
+            _filterRolesByTermAction(term) {
                 this._filterTerm = term;
                 this._filter();
-            },
+            }
 
-            _onSearchRoles: function(event) {
+            _onSearchRoles(event) {
                 this._filterRolesByTermAction(event.detail.term);
-            },
+            }
 
-            _onSearchRolesClear: function() {
+            _onSearchRolesClear() {
                 this._filterRolesByTermAction('');
-            },
+            }
 
-            _onGroupsResponse: function(event) {
-                var response = event.detail.response;
+            _onGroupsResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.company_groups) {
-
                     response.company_groups.forEach(function(item, index) {
                         this.push('_groupList', item);
                     }.bind(this));
@@ -255,10 +246,10 @@
                     this.set('_groupListDisplay', this._groupList);
                     this._setDefaultGroup();
                 }
-            },
+            }
 
-            _filterGroupListByTerm: function(term) {
-                var termLength = term.length,
+            _filterGroupListByTerm(term) {
+                const termLength = term.length,
                     groups = this._groupList,
                     length = groups.length;
 
@@ -268,8 +259,8 @@
                     term = '';
                 }
 
-                for (var i = 0; i < length; i++) {
-                    var group = groups[i];
+                for (let i = 0; i < length; i++) {
+                    const group = groups[i];
 
                     if (group && group.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
                         this.push('_groupListDisplay', group);
@@ -283,20 +274,20 @@
                         name: 'There is no accounts in asked group.'
                     });
                 }
-            },
+            }
 
-            _setDefaultGroup: function() {
+            _setDefaultGroup() {
                 this.$.appscoSearchGroup.setValue(this._groupList[0].name);
                 this.$.filterListGroups.selected = 0;
-            },
+            }
 
-            _showGroupList: function() {
+            _showGroupList() {
                 this.$.filterListGroups.hidden = false;
-            },
+            }
 
-            _hideGroupList: function() {
-                var groupFilter = this.$.filterListGroups,
-                    appscoGroupSearch = this.$.appscoSearchGroup
+            _hideGroupList() {
+                const groupFilter = this.$.filterListGroups,
+                    appscoGroupSearch = this.$.appscoSearchGroup,
                     value = appscoGroupSearch.getValue() || '';
 
                 if (0 === value.length && groupFilter.selectedItem) {
@@ -304,41 +295,40 @@
                 }
 
                 this.$.filterListGroups.hidden = true;
-            },
+            }
 
-            _onFilterGroupFocus: function() {
+            _onFilterGroupFocus() {
                 this._showGroupList();
-            },
+            }
 
-            _onFilterGroupKeyup: function(event) {
+            _onFilterGroupKeyup(event) {
                 var keyCode = event.keyCode;
 
                 if (40 === keyCode) {
                     event.target.blur();
                     this._selectFirstGroup();
                 }
+            }
 
-            },
-
-            _onFilterGroupSearch: function(event) {
+            _onFilterGroupSearch(event) {
                 this._filterGroupListByTerm(event.detail.term);
-            },
+            }
 
-            _onClearGroupSearch: function(event) {
+            _onClearGroupSearch(event) {
                 this._filterGroupListByTerm('');
-            },
+            }
 
-            _selectFirstGroup: function() {
-                var groupFilter = this.$.filterListGroups;
+            _selectFirstGroup() {
+                const groupFilter = this.$.filterListGroups;
 
                 if (!groupFilter.selectedItem) {
                     groupFilter.selected = this._groupListDisplay[0].value;
                 }
 
                 groupFilter.selectedItem.focus();
-            },
+            }
 
-            _onFilterByGroupAction: function(event) {
+            _onFilterByGroupAction(event) {
                 var alias = event.detail.item.getAttribute('value'),
                     groups = this._groupListDisplay,
                     length = groups.length,
@@ -351,9 +341,7 @@
                     };
                 }
                 else {
-
-                    for (var i = 0; i < length; i++) {
-
+                    for (let i = 0; i < length; i++) {
                         if (alias === groups[i].alias) {
                             selectedGroup = groups[i];
                             break;
@@ -368,10 +356,10 @@
                 this._hideGroupList();
 
                 this._filter();
-            },
+            }
 
-            _format: function(value) {
-                var result = '';
+            _format(value) {
+                let result = '';
 
                 if (value) {
                     result = value;
@@ -383,6 +371,7 @@
 
                 return result;
             }
-        });
+        }
+        window.customElements.define(AppscoAccessOnBoardingPageFilters.is, AppscoAccessOnBoardingPageFilters);
     </script>
 </dom-module>

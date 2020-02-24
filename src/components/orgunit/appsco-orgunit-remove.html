@@ -10,6 +10,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-orgunit-remove`
 Shows dialog screen with confirmation for removal of orgunit.
@@ -34,23 +36,22 @@ Custom property | Description | Default
             :host {
                 display: block;
                 position: relative;
-            @apply(--appsco-orgunit-remove);
+            @apply --appsco-orgunit-remove;
             }
             :host paper-dialog {
                 width: 670px;
             }
             :host .buttons paper-button {
-            @apply(--paper-dialog-button);
+            @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-            @apply(--paper-dialog-confirm-button);
+            @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-            @apply(--paper-dialog-dismiss-button);
+            @apply --paper-dialog-dismiss-button;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="removeDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -62,8 +63,8 @@ Custom property | Description | Default
 
                 <h2>Remove organization unit [[ orgUnit.name ]]</h2>
 
-                <template is="dom-if" if="[[ _error ]]">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <template is="dom-if" if="[[ _errorMessage ]]">
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                 </template>
 
                 <p>Your users that are assigned to [[ orgUnit.name ]] will not be removed.</p>
@@ -77,66 +78,42 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoOrgUnitRemove extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-orgunit-remove'; }
 
-            is: 'appsco-orgunit-remove',
+            static get properties() {
+                return {
+                    orgUnit: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
 
-            properties: {
-                /**
-                 * Authorization token that is used to preform remove operation
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * [OrgUnit]() that is to be removed
-                 */
-                orgUnit: {
-                    type: Object,
-                    value: function() { return {}; },
-                    notify: true
-                },
+                    _errorMessage: {
+                        type: String,
+                        value: ''
+                    }
+                };
+            }
 
-                /**
-                 * Display loader icon
-                 *
-                 * @private
-                 */
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String,
-                    value: ''
-                }
-            },
-
-            /**
-             * Open dialog
-             */
-            open: function () {
+            open() {
                 this.$.removeDialog.open();
-            },
+            }
 
-            /**
-             * Open dialog
-             */
-            _onDialogClosed: function () {
-                this._error = '';
+            _onDialogClosed() {
+                this._errorMessage = '';
                 this._loader = false;
-            },
+            }
 
-            /**
-             * Preform remove operation
-             *
-             * @private
-             */
-            _remove: function() {
-                var appRequest = document.createElement('iron-request');
+            _remove() {
+                const appRequest = document.createElement('iron-request');
 
                 this._loader = true;
 
@@ -144,28 +121,23 @@ Custom property | Description | Default
                     url: this.orgUnit.self,
                     method: "DELETE",
                     handleAs: 'json',
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken
-                    }
+                    headers: this._headers
                 }).then(function() {
-
-                    /**
-                     * Fired when organization unit is removed
-                     *
-                     * @event orgunit-removed
-                     * @param {Object} orgUnit [orgUnit]()
-                     *                              for which event is fired
-                     */
-                    this.fire('orgunit-removed', {
-                        orgUnit: this.orgUnit
-                    });
+                    this.dispatchEvent(new CustomEvent('orgunit-removed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            orgUnit: this.orgUnit
+                        }
+                    }));
 
                     this.$.removeDialog.close();
                 }.bind(this), function() {
                     this._loader = false;
-                    this._error = 'It is not allowed to remove organization unit which have applications or accounts assigned to it.';
+                    this._errorMessage = 'It is not allowed to remove organization unit which have applications or accounts assigned to it.';
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoOrgUnitRemove.is, AppscoOrgUnitRemove);
     </script>
 </dom-module>

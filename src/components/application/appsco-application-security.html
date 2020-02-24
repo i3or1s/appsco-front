@@ -35,7 +35,7 @@ Custom property | Description | Default
         <style>
             :host {
                 display: block;
-            @apply(--appsco-application-security);
+            @apply --appsco-application-security;
 
                 --iron-icon-height: 20px;
                 --iron-icon-width: 20px;
@@ -44,16 +44,16 @@ Custom property | Description | Default
              };
             }
             .security-score {
-            @apply(--paper-font-code1);
-            @apply(--layout);
-            @apply(--layout-center);
-            @apply(--layout-center-justified);
+            @apply --paper-font-code1;
+            @apply --layout;
+            @apply --layout-center;
+            @apply --layout-center-justified;
                 width: 40px;
                 height: 40px;
                 box-sizing: border-box;
                 border-radius: 50%;
                 color: #ffffff;
-            @apply(--security-score);
+            @apply --security-score;
             }
             :host([strong]) .security-score {
                 background-color: var(--strong-color, #0f9d58);
@@ -151,53 +151,52 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationSecurity extends Polymer.Element {
+            static get is() { return 'appsco-application-security'; }
 
-            is: 'appsco-application-security',
-
-            properties: {
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_applicationChanged'
                     },
-                    observer: '_applicationChanged'
-                },
 
-                info: {
-                    type: Boolean,
-                    value: false
-                },
+                    info: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _score: {
-                    type: Number,
-                    value: 0
-                },
+                    _score: {
+                        type: Number,
+                        value: 0
+                    },
 
-                strong: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    strong: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                medium: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    medium: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                weak: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
+                    weak: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-            _applicationChanged: function () {
-
+            _applicationChanged() {
                 if (this.application && this.application.security) {
-                    var score = this.application.security.score;
+                    const score = this.application.security.score;
 
                     this._score = Math.round(score);
                     this.weak = false;
@@ -216,8 +215,8 @@ Custom property | Description | Default
 
                     this.weak = true;
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationSecurity.is, AppscoApplicationSecurity);
     </script>
 </dom-module>

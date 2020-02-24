@@ -15,6 +15,10 @@
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="components/components/appsco-search.html">
 <link rel="import" href="auditlog/appsco-audit-log.html">
+<link rel="import" href="auditlog/appsco-audit-log-page-actions.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-audit-log-page">
     <template>
@@ -49,7 +53,7 @@
                 position: relative;
             }
             paper-listbox {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 width: 100%;
                 min-height: 100px;
                 max-height: calc(100vh - 2*64px - 20px - 45px - 2*54px);
@@ -108,7 +112,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-header">
                     Filters
                 </div>
@@ -172,7 +176,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-audit-log id="appscoAuditLog"
                                       authorization-token="[[ authorizationToken ]]"
@@ -189,239 +193,232 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-audit-log-page',
+        class AppscoAuditLogPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppLocalizeBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-audit-log-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    companyApi: {
+                        type: String
+                    },
 
-                authorizationToken: {
-                    type: String
-                },
-                
-                companyApi: {
-                    type: String
-                },
+                    auditLogApi: {
+                        type: String
+                    },
 
-                /**
-                 * Get audit log link.
-                 */
-                auditLogApi: {
-                    type: String,
-                    value: ''
-                },
+                    auditLogEventTypesApi: {
+                        type: String,
+                        computed: '_computeAuditLogEventTypesApi(companyApi)'
+                    },
 
-                /**
-                 * Get audit log event types link.
-                 */
-                auditLogEventTypesApi: {
-                    type: String,
-                    computed: '_computeAuditLogEventTypesApi(companyApi)'
-                },
+                    _searchAccountsApi: {
+                        type: String,
+                        computed: '_computeSearchAccountsApi(companyApi, _accountTerm)'
+                    },
 
-                _searchAccountsApi: {
-                    type: String,
-                    computed: '_computeSearchAccountsApi(companyApi, _accountTerm)'
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _eventTypeList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            this._defaultEventType
-                        ];
-                    }
-                },
-
-                _defaultEventType: {
-                    type: Object,
-                    value: function () {
-                        return {
-                            value: '',
-                            text: 'All event types'
+                    _eventTypeList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                this._defaultEventType
+                            ];
                         }
-                    }
-                },
+                    },
 
-                _eventTypeListDisplay: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _accountList: {
-                    type: Array,
-                    value: function() {
-                        return []
-                    }
-                },
-
-                _logListForExport: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _accountTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterAccount: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterAccountDisplay: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterEventType: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterFromDate: {
-                    type: String,
-                    value: ''
-                },
-
-                _defaultFromDateValue: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterToDate: {
-                    type: String,
-                    value: ''
-                },
-
-                _defaultToDateValue: {
-                    type: String,
-                    value: ''
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen900: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
+                    _defaultEventType: {
+                        type: Object,
+                        value: function () {
+                            return {
+                                value: '',
+                                text: 'All event types'
                             }
                         }
+                    },
+
+                    _eventTypeListDisplay: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _accountList: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        }
+                    },
+
+                    _logListForExport: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _accountTerm: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _filterAccount: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _filterAccountDisplay: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _filterEventType: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _filterFromDate: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _defaultFromDateValue: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _filterToDate: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _defaultToDateValue: {
+                        type: String,
+                        value: ''
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen900: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _attached: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    language: {
+                        value: 'en',
+                        type: String
                     }
-                },
+                };
+            }
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen, tabletScreen900)',
+                    '_hideFilters(mobileScreen)'
+                ];
+            }
 
-                _attached: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                language: {
-                    value: 'en',
-                    type: String
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior, Polymer.AppLocalizeBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, tabletScreen900)',
-                '_hideFilters(mobileScreen)'
-            ],
-
-            attached: function() {
                 this.pageLoaded = false;
                 this._attached = true;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-                if (this.mobileScreen || this.tabletScreen || this.tabletScreen900) {
-                    this.updateStyles();
-                }
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.tabletScreen900) {
+                        this.updateStyles();
+                    }
+                });
 
-                this._setupDatePicker();
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._setupDatePicker();
+                    Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+                    this.loadResources(this.resolveUrl('./components/components/data/event-types.json'));
+                    this._addListeners();
+                });
+            }
 
-                Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+                this.toolbar.addEventListener('export-audit-log', this._onExportAuditLogAction.bind(this));
+            }
 
-                this.loadResources(this.resolveUrl('./components/components/data/event-types.json'));
-            },
-
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _hideFilters: function(mobile) {
+            _hideFilters(mobile) {
                 if (mobile) {
                     this.hideResource();
                 }
-            },
+            }
 
-            hideResource: function() {
+            hideResource() {
                 this.$.appscoContent.hideSection('resource');
-            },
+            }
 
-            _onLogLoaded: function() {
+            _onLogLoaded() {
                 this._pageLoaded();
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            initializePage: function() {
-
+            initializePage() {
                 if (this.pageLoaded) {
                     this.$.filterAccount.setValue(this._filterAccountDisplay);
                     this._filterLog();
                 }
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.$.filterAccount.reset();
                 this._hideAccountList();
                 this.$.suggestedAccounts.selected = 0;
@@ -432,25 +429,22 @@
                 this.$.filterDateFrom.value = this._defaultFromDateValue;
                 this._filterToDate = this._defaultToDateValue;
                 this.$.filterDateTo.value = this._defaultToDateValue;
-            },
+            }
 
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
+                for (let i = 0; i < path.length; i++) {
                     if (path[i] == element) {
                         return true;
-
-                        break;
                     }
                 }
 
                 return false;
-            },
+            }
 
-            _handleDocumentClick: function(event) {
-                var path = Polymer.dom(event).path;
+            _handleDocumentClick(event) {
+                const path = Polymer.dom(event).path;
 
                 if (!this._isInPath(path, this.$.filterEventType)) {
                     this._hideEventTypeList();
@@ -458,37 +452,30 @@
                 if (!this._isInPath(path, this.$.filterAccount)) {
                     this._hideAccountList();
                 }
+            }
 
-            },
+            _computeAuditLogEventTypesApi(companyApi) {
+                return companyApi ? companyApi + '/log/events' : null;
+            }
 
-            _computeAuditLogEventTypesApi: function(companyApi) {
-                return companyApi ? companyApi + '/log/events' : '';
-            },
+            _computeSearchAccountsApi(companyApi, term) {
+                return (companyApi && term) ? companyApi + '/directory/roles?extended=1&limit=50&term=' + term : null;
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
-
-            _computeSearchAccountsApi: function(companyApi, term) {
-                return (companyApi && term) ? companyApi + '/directory/roles?extended=1&limit=50&term=' + term : '';
-            },
-
-            _setupDatePicker: function() {
+            _setupDatePicker() {
                 this._setValidDates();
-            },
+            }
 
-            _setValidDates: function() {
-                var date = new Date(),
-                    day = date.getDate(),
+            _setValidDates() {
+                const date = new Date(),
+                    filterDateFromComponent = this.$.filterDateFrom,
+                    filterDateToComponent = this.$.filterDateTo;
+
+                let day = date.getDate(),
                     month = date.getMonth(),
                     year = date.getFullYear(),
                     fromMonth = month,
-                    fromYear = year,
-                    filterDateFromComponent = this.$.filterDateFrom,
-                    filterDateToComponent = this.$.filterDateTo;
+                    fromYear = year;
 
                 if (10 > day) {
                     day = '0' + day;
@@ -521,15 +508,15 @@
 
                 this._defaultFromDateValue = this._defaultFromDateValue + ' 00:00:00';
                 this._defaultToDateValue = this._defaultToDateValue + ' 23:59:59';
-            },
+            }
 
-            _setValidToDate: function(date) {
+            _setValidToDate(date) {
                 this.$.filterDateTo.min = date ? date.split(' ')[0] : null;
-            },
+            }
 
-            _onFilterDateFrom: function(event) {
-                var fromDate = event.detail.value,
-                    filterDateFromComponent = this.$.filterDateFrom;
+            _onFilterDateFrom(event) {
+                let fromDate = event.detail.value;
+                const filterDateFromComponent = this.$.filterDateFrom;
 
                 if (!fromDate) {
                     fromDate = this._defaultFromDateValue;
@@ -542,11 +529,11 @@
                 if (this._attached) {
                     this._filterLog();
                 }
-            },
+            }
 
-            _onFilterDateTo: function(event) {
-                var toDate = event.detail.value,
-                    filterDateToComponent = this.$.filterDateTo;
+            _onFilterDateTo(event) {
+                let toDate = event.detail.value;
+                const filterDateToComponent = this.$.filterDateTo;
 
                 if (!toDate) {
                     toDate = this._defaultToDateValue;
@@ -558,17 +545,17 @@
                 if (this._attached) {
                     this._filterLog();
                 }
-            },
+            }
 
-            _onFilterEventType: function(event) {
+            _onFilterEventType(event) {
                 this._filterEventType = event.detail.selected;
                 this.$.appscoSearchEventType.setValue(event.detail.item.label);
                 this._filterLog();
                 this._hideEventTypeList();
-            },
+            }
 
-            _formatEventType: function(item) {
-                var localized = this.localize(item);
+            _formatEventType(item) {
+                const localized = this.localize(item);
 
                 if (!localized) {
                     return false;
@@ -578,10 +565,9 @@
                     value: item,
                     text: localized
                 };
-            },
+            }
 
-
-            _formatApplication: function(item) {
+            _formatApplication(item) {
                 if (typeof item.data.application == 'undefined') {
                     return '';
                 }
@@ -592,40 +578,39 @@
                     return item.data.application.application_template.title;
                 }
                 return '';
-            },
+            }
 
-
-            _onEventTypesResponse: function(event) {
-                var response = event.detail.response;
+            _onEventTypesResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.length > 0) {
                     this.set('_eventTypeList', []);
                     response.forEach(function(item, index) {
-                        var eventType = this._formatEventType(item);
+                        const eventType = this._formatEventType(item);
                         if (eventType) {
                             this.push('_eventTypeList', eventType);
                         }
                     }.bind(this));
 
-                    var listSorted = this._eventTypeList.sort(this._sortEventTypesByText);
+                    const listSorted = this._eventTypeList.sort(this._sortEventTypesByText);
 
                     listSorted.unshift(this._defaultEventType);
                     this.set('_eventTypeListDisplay', listSorted);
                     this._setDefaultEventType();
                 }
-            },
+            }
 
-            _sortEventTypesByText: function(typeA, typeB) {
-                    return typeA.text < typeB.text ? -1 : typeA.text > typeB.text ? 1 : 0;
-            },
+            _sortEventTypesByText(typeA, typeB) {
+                return typeA.text < typeB.text ? -1 : typeA.text > typeB.text ? 1 : 0;
+            }
 
-            _setDefaultEventType: function() {
+            _setDefaultEventType() {
                 this.$.appscoSearchEventType.setValue(this._eventTypeList[0].text);
                 this.$.filterListEventTypes.selected = 0;
-            },
+            }
 
-            _filterEventTypeListByTerm: function(term) {
-                var termLength = term.length,
+            _filterEventTypeListByTerm(term) {
+                const termLength = term.length,
                     eventTypes = this._eventTypeList,
                     length = eventTypes.length;
 
@@ -635,15 +620,14 @@
                     term = '';
                 }
 
-                var termDecoded = decodeURIComponent(term.toLowerCase()).trim();
+                const termDecoded = decodeURIComponent(term.toLowerCase()).trim();
 
-                for (var i = 0; i < length; i++) {
-                    var eventType = eventTypes[i];
+                for (let i = 0; i < length; i++) {
+                    const eventType = eventTypes[i];
 
                     if (eventType && eventType.text.toLowerCase().indexOf(termDecoded) >= 0) {
                         this.push('_eventTypeListDisplay', eventType);
                     }
-
                 }
 
                 if (0 === this._eventTypeListDisplay.length && 3 < termLength) {
@@ -652,14 +636,14 @@
                         text: 'There is no log record of asked event type.'
                     });
                 }
-            },
+            }
 
-            _showEventTypeList: function() {
+            _showEventTypeList() {
                 this.$.filterListEventTypes.hidden = false;
-            },
+            }
 
-            _hideEventTypeList: function() {
-                var eventTypeFilter = this.$.filterListEventTypes,
+            _hideEventTypeList() {
+                const eventTypeFilter = this.$.filterListEventTypes,
                     appscoEventTypeSearch = this.$.appscoSearchEventType;
 
                 if (0 === appscoEventTypeSearch.getValue().length && eventTypeFilter.selectedItem) {
@@ -667,150 +651,139 @@
                 }
 
                 this.$.filterListEventTypes.hidden = true;
-            },
+            }
 
-            _onFilterEventTypeFocus: function() {
+            _onFilterEventTypeFocus() {
                 this._showEventTypeList();
-            },
+            }
 
-            _onFilterEventTypeKeyup: function(event) {
-                var keyCode = event.keyCode;
+            _onFilterEventTypeKeyup(event) {
+                const keyCode = event.keyCode;
 
                 if (40 === keyCode) {
                     event.target.blur();
                     this._selectFirstEventType();
                 }
 
-            },
+            }
 
-            _onFilterEventTypeSearch: function(event) {
+            _onFilterEventTypeSearch(event) {
                 this._filterEventTypeListByTerm(event.detail.term);
-            },
+            }
 
-            _onClearEventTypeSearch: function(event) {
+            _onClearEventTypeSearch(event) {
                 this._filterEventTypeListByTerm('');
-            },
+            }
 
-            _selectFirstEventType: function() {
-                var eventTypeFilter = this.$.filterListEventTypes;
+            _selectFirstEventType() {
+                const eventTypeFilter = this.$.filterListEventTypes;
 
                 if (!eventTypeFilter.selectedItem) {
                     eventTypeFilter.selected = this._eventTypeListDisplay[0].value;
                 }
 
                 eventTypeFilter.selectedItem.focus();
-            },
+            }
 
-            _onFilterAccountSearch: function(event) {
+            _onFilterAccountSearch(event) {
                 this._filterAccountListByTerm(event.detail.term);
-            },
+            }
 
-            _getAccountsByTerm: function() {
+            _getAccountsByTerm() {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
-                            options = {
-                                url: this._searchAccountsApi,
-                                method: 'GET',
-                                handleAs: 'json',
-                                headers: {'Authorization': 'token ' + this.authorizationToken}
-                            };
+                    const request = document.createElement('iron-request'),
+                        options = {
+                            url: this._searchAccountsApi,
+                            method: 'GET',
+                            handleAs: 'json',
+                            headers: this._headers
+                        };
 
                     request.send(options).then(function() {
-
                         if (request.response) {
                             resolve(request.response.company_roles);
                         }
-
                     }, function() {
                         reject(request.response.message);
                     });
                 }.bind(this));
-            },
+            }
 
-            _filterAccountListByTerm: function(term) {
-
+            _filterAccountListByTerm(term) {
                 this._accountTerm = term;
                 this.set('_accountList', []);
 
                  this._getAccountsByTerm().then(function(accounts) {
-
                         accounts.forEach(function(elem, index) {
                             this.push('_accountList', {
                                 value: elem.account.self,
                                 text: elem.account.display_name
                             });
-
-
                         }.bind(this));
-
                 }.bind(this));
-            },
+            }
 
-            exportToCSV: function() {
+            exportToCSV() {
                 this.set('_logListForExport', []);
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this.auditLogApi + '/export',
-                            method: 'POST',
-                            handleAs: 'text',
-                            body: {
-                                "from": this._filterFromDate,
-                                "to": this._filterToDate,
-                                "event":this._filterEventType,
-                                "account": this._filterAccount
-                            },
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        };
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this.auditLogApi + '/export',
+                        method: 'POST',
+                        handleAs: 'text',
+                        body: {
+                            "from": this._filterFromDate,
+                            "to": this._filterToDate,
+                            "event": this._filterEventType,
+                            "account": this._filterAccount
+                        },
+                        headers: this._headers
+                    };
                 request.send(options).then(function(response) {
                     if (response.response) {
-                        var responseObject = JSON.parse(response.response);
-                        var logs = responseObject.logs;
+                        const responseObject = JSON.parse(response.response);
+                        const logs = responseObject.logs;
                         logs.forEach(function(log, i) {
-                            var record =  this._formatLogItem(logs[i]),
-                                    exportRecord = [
-                                        this._formatDate(record.date),
-                                        record.event_type.text,
-                                        record.account.name + " - " + record.account.email,
-                                        record.role.name,
-                                        record.event,
-                                        record.application,
-                                        record.ip_address
-                                    ];
+                            const record = this._formatLogItem(logs[i]),
+                                exportRecord = [
+                                    this._formatDate(record.date),
+                                    record.event_type.text,
+                                    record.account.name + " - " + record.account.email,
+                                    record.role.name,
+                                    record.event,
+                                    record.application,
+                                    record.ip_address
+                                ];
                             this.push('_logListForExport', exportRecord);
                         }.bind(this));
 
                         this._setCSVReportHeader();
                         this._printCSV();
-
-                        this.fire('export-company-log-finished');
+                        this.dispatchEvent(new CustomEvent('export-company-log-finished', { bubbles: true, composed: true }));
                     }
                 }.bind(this));
-            },
+            }
 
-            _formatDate: function(date) {
-                var dateString = new Date(date).toString();
+            _formatDate(date) {
+                const dateString = new Date(date).toString();
                 return dateString.split('GMT')[0];
-            },
+            }
 
-            _setCSVReportHeader: function () {
-                var header = ['Date', 'Event type', 'Account', 'Role', 'Event', 'Application', 'IP Address'];
+            _setCSVReportHeader () {
+                const header = ['Date', 'Event type', 'Account', 'Role', 'Event', 'Application', 'IP Address'];
                 this._logListForExport.unshift(header);
-            },
+            }
 
-            _printCSV: function() {
-                var csvContent = "data:text/csv;charset=utf-8,",
-                        logs = this._logListForExport;
+            _printCSV() {
+                let csvContent = "data:text/csv;charset=utf-8,";
+                const logs = this._logListForExport;
 
                 logs.forEach(function(logElement){
                     let log = logElement.join(",");
                     csvContent += log + "\r\n";
                 });
 
-                var encodedUri = encodeURI(csvContent),
-                        link = document.createElement("a");
+                const encodedUri = encodeURI(csvContent),
+                    link = document.createElement("a");
                 link.setAttribute("href", encodedUri);
                 link.setAttribute("download", "company_log.csv");
                 document.body.appendChild(link);
@@ -819,60 +792,66 @@
                     link.click();
                 }
                 else if (document.createEvent) {
-                    var clickEvent = document.createEvent('MouseEvents');
+                    const clickEvent = document.createEvent('MouseEvents');
 
                     clickEvent.initEvent('click', true, true);
                     link.dispatchEvent(clickEvent);
                 }
 
                 document.body.removeChild(link);
-            },
+            }
 
-            _formatLogItem: function(log) {
-                var logItem = this.$.appscoAuditLog.formatLogItem(log);
+            _formatLogItem(log) {
+                const logItem = this.$.appscoAuditLog.formatLogItem(log);
                 logItem.event_type = this._formatEventType(log.type);
                 logItem.application = this._formatApplication(log);
                 return logItem;
-            },
+            }
 
-            _onFilterAccount: function(event) {
+            _onFilterAccount(event) {
                 this._filterAccount = event.detail.selected;
                 this._filterAccountDisplay = event.detail.item.label;
                 this.$.filterAccount.setValue(this._filterAccountDisplay);
                 this._filterLog();
                 this._hideAccountList();
-            },
+            }
 
-            _onClearAccountSearch: function () {
+            _onClearAccountSearch () {
                 this.$.filterAccount.reset();
                 this.$.suggestedAccounts.selected = 0;
                 this._filterAccount = '';
                 this._filterLog();
-            },
+            }
 
-            _onFilterAccountKeyup: function() {
+            _onFilterAccountKeyup() {
                 this._showAccountList();
-            },
+            }
 
-            _showAccountList: function () {
+            _showAccountList () {
                 this.$.suggestedAccounts.hidden = false;
-            },
+            }
 
-            _hideAccountList: function() {
+            _hideAccountList() {
                 this.$.suggestedAccounts.hidden = true;
-            },
+            }
 
-            reloadLog: function() {
+            reloadLog() {
                 this.$.appscoAuditLog.reloadLog();
-            },
+            }
 
-            _filterLog: function() {
+            _filterLog() {
                 this.$.appscoAuditLog.filter(this._filterEventType, this._filterFromDate, this._filterToDate, this._filterAccount);
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
             }
-        });
+
+            _onExportAuditLogAction() {
+                this._showProgressBar();
+                this.exportToCSV();
+            }
+        }
+        window.customElements.define(AppscoAuditLogPage.is, AppscoAuditLogPage);
     </script>
 </dom-module>

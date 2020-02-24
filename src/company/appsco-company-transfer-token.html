@@ -16,6 +16,8 @@
 <link rel="import" href="../components/components/appsco-form-error.html">
 <link rel="import" href="../components/components/appsco-copy.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-company-transfer-token">
     <template>
         <style>
@@ -28,7 +30,7 @@
                 margin: 8px 0;
             }
             :host .action-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 margin: 10px 0;
                 min-width: 130px;
                 display: inline-block;
@@ -37,8 +39,8 @@
                 max-width: 500px;
                 padding: 6px 30px 6px 6px;
                 height: 18px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--shadow-elevation-2dp);
+                @apply --paper-font-common-nowrap;
+                @apply --shadow-elevation-2dp;
                 color: var(--secondary-text-color, #eeeeee);
                 font-size: 14px;
                 font-style: italic;
@@ -80,7 +82,7 @@
             Once transfer token is used it will become inactive.
         </p>
 
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
         <div class="token-section">
             <paper-button class="action-button"
@@ -112,7 +114,7 @@
                                  disabled$="[[ !_tokenGenerated ]]">
                 <paper-listbox id="paperListboxPartners"
                                class="dropdown-content filter"
-                               attr-for-selected="value">
+                               attr-for-selected="value" slot="dropdown-content">
                     <template is="dom-repeat" items="[[ _partnerList ]]">
                         <paper-item value="[[ item.self ]]" >[[ item.name ]]</paper-item>
                     </template>
@@ -128,111 +130,102 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyTransferToken extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior, Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-transfer-token'; }
 
-            is: 'appsco-company-transfer-token',
+            static get properties() {
+                return {
+                    transferTokenApi: {
+                        type: String
+                    },
 
-            properties: {
+                    sendTransferTokenApi: {
+                        type: String
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    partnersApiUrl: {
+                        type: String
+                    },
 
-                transferTokenApi: {
-                    type: String,
-                    value: ''
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                sendTransferTokenApi: {
-                    type: String,
-                    value: ''
-                },
+                    _partnersApiUrl: {
+                        type: String,
+                        computed: '_computePartnersApiUrl(partnersApiUrl)'
+                    },
 
-                partnersApiUrl: {
-                    type: String,
-                    value: ''
-                },
+                    _token: {
+                        type: String,
+                        value: ''
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _tokenGenerated: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _partnerList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _generateTokenLoader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+            ready() {
+                super.ready();
 
-                _partnersApiUrl: {
-                    type: String,
-                    computed: '_computePartnersApiUrl(partnersApiUrl)'
-                },
-
-                _token: {
-                    type: String,
-                    value: ''
-                },
-
-                _tokenGenerated: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _partnerList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _generateTokenLoader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this.$.token,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this.$.token,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this.$.token,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this.$.token,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinished'
-            },
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinished);
+            }
 
-            reset: function() {
+            reset() {
                 this._hideToken();
                 this._token = '';
                 this._tokenGenerated = false;
@@ -240,48 +233,41 @@
                 this._hideError();
                 this._hideGenerateTokenLoader();
                 this._hideLoader();
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                };
-            },
+            _computePartnersApiUrl(partnersApiUrl) {
+                return partnersApiUrl ? (partnersApiUrl + '?extended=1') : null;
+            }
 
-            _computePartnersApiUrl: function(partnersApiUrl) {
-                return partnersApiUrl ? (partnersApiUrl + '?extended=1') : '';
-            },
-
-            _showGenerateTokenLoader: function() {
+            _showGenerateTokenLoader() {
                 this._generateTokenLoader = true;
-            },
+            }
 
-            _hideGenerateTokenLoader: function() {
+            _hideGenerateTokenLoader() {
                 this._generateTokenLoader = false;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
 
-            _hideToken: function() {
+            _hideToken() {
                 this.$.token.style.display = 'none';
-            },
+            }
 
-            _transferTokenGenerateSuccess: function(token) {
-
+            _transferTokenGenerateSuccess(token) {
                 if (token) {
                     this._token = token;
 
@@ -294,28 +280,22 @@
                         }.bind(this), 200);
                     }
 
-                    /**
-                     * Fired after successful token generation.
-                     *
-                     * @event token-generated
-                     */
-                    this.fire('token-generated');
+                    this.dispatchEvent(new CustomEvent('token-generated', { bubbles: true, composed: true }));
                 }
                 else {
                     this._showError(this.apiErrors.getError(404));
                 }
-            },
+            }
 
-            _transferTokenGenerateFailure: function() {
+            _transferTokenGenerateFailure() {
                 this._token = '';
                 this._tokenGenerated = false;
                 this.playAnimation('exit');
-            },
+            }
 
-            _getTransferToken: function() {
-
+            _getTransferToken() {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         options = {
                             url: this.transferTokenApi,
                             method: 'GET',
@@ -324,19 +304,16 @@
                         };
 
                     request.send(options).then(function() {
-
                         if (request.response && request.response.transfer_token) {
                             resolve(request.response.transfer_token);
                         }
-
                     }, function() {
                         reject(request.response.code);
                     });
                 }.bind(this));
-            },
+            }
 
-            _onGenerateTokenAction: function() {
-
+            _onGenerateTokenAction() {
                 if (!this.transferTokenApi || !this._headers) {
                     this._showError(this.apiErrors.getError(404));
                     return false;
@@ -352,18 +329,18 @@
                     this._transferTokenGenerateFailure();
                     this._hideGenerateTokenLoader();
                 }.bind(this));
-            },
+            }
 
-            _onGetPartnersResponse: function(event) {
-                var response = event.detail.response;
+            _onGetPartnersResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.partners) {
                     this.set('_partnerList', response.partners);
                 }
-            },
+            }
 
-            _sendTokenToPartner: function() {
-                var selectedPartner = this.$.dropdownPartners.selectedItem;
+            _sendTokenToPartner() {
+                const selectedPartner = this.$.dropdownPartners.selectedItem;
 
                 if (!selectedPartner) {
                     this._showError('Please select partner from the list of available partners.');
@@ -371,7 +348,7 @@
                     return false;
                 }
 
-                var token = this._token,
+                const token = this._token,
                     partner = selectedPartner.value,
                     request = document.createElement('iron-request'),
                     headers = this._headers,
@@ -386,33 +363,31 @@
                 options.headers = headers;
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-                        this.fire('transfer-token-sent');
+                        this.dispatchEvent(new CustomEvent('transfer-token-sent', { bubbles: true, composed: true }));
                         this._hideLoader();
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
-            },
+            }
 
-            _onSendTokenAction: function() {
+            _onSendTokenAction() {
                 this._hideError();
                 this._showLoader();
 
                 if (this._token) {
                     this._sendTokenToPartner();
                 }
-            },
+            }
 
-            _onNeonAnimationFinished: function() {
-
+            _onNeonAnimationFinished() {
                 if (!this._tokenGenerated) {
                     this._hideToken();
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyTransferToken.is, AppscoCompanyTransferToken);
     </script>
 </dom-module>

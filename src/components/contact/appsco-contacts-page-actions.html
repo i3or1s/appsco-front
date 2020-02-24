@@ -36,16 +36,16 @@
                 };
             }
             :host .page-actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
                 height: 100%;
             }
             :host .page-actions * {
                 height: 100%;
             }
             :host appsco-contacts-actions {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
         </style>
 
@@ -62,105 +62,103 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoContactsPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-contacts-page-actions'; }
 
-            is: 'appsco-contacts-page-actions',
+            static get properties() {
+                return {
+                    _searchActive: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            properties: {
+                    _displayActions: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _searchActive: {
-                    type: Boolean,
-                    value: false
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                _displayActions: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 200,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 200,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
+            _showSearch() {
+                this.shadowRoot.getElementById('appscoContactsActions').focusSearch();
 
-            _showSearch: function() {
-                this.customStyle['--input-search-max-width'] = '100%';
-                this.customStyle['--paper-input-search-container-tablet'] = 'width: 100%;';
-                this.$$('#appscoContactsActions').focusSearch();
+                this.updateStyles({
+                    '--input-search-max-width': '100%',
+                    '--paper-input-search-container-tablet': 'width: 100%;'
+                });
+            }
 
-                this.updateStyles();
-            },
-
-            _closeSearch: function() {
+            _closeSearch() {
                 this._searchActive = false;
 
-                this.customStyle['--input-search-max-width'] = '22px';
+                this.updateStyles({'--input-search-max-width': '22px'});
 
                 // Wait for animation to finish.
                 setTimeout(function() {
-                    this.customStyle['--paper-input-search-container-tablet'] = 'width: auto';
-                    this.updateStyles();
+                    this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
                 }.bind(this), 200);
 
                 this.updateStyles();
-            },
+            }
 
-            _onSearchIcon: function() {
+            _onSearchIcon() {
                 this._searchActive = !this._searchActive;
                 this._searchActive ? this._showSearch() : this._closeSearch();
-            },
-
-            showBulkActions: function() {
-                this.$$('#appscoContactsActions').showBulkActions();
-            },
-
-            hideBulkActions: function() {
-                this.$$('#appscoContactsActions').hideBulkActions();
-            },
-
-            showBulkSelectAll: function() {
-                this.$$('#appscoContactsActions').showBulkSelectAll();
-            },
-
-            hideBulkSelectAll: function() {
-                this.$$('#appscoContactsActions').hideBulkSelectAll();
-            },
-
-            setupPage: function() {},
-
-            resetPage: function() {
-                this.$$('#appscoContactsActions').reset();
-            },
-
-            resetPageActions: function() {
-                this.$$('#appscoContactsActions').resetActions();
             }
-        });
+
+            showBulkActions() {
+                this.shadowRoot.getElementById('appscoContactsActions').showBulkActions();
+            }
+
+            hideBulkActions() {
+                this.shadowRoot.getElementById('appscoContactsActions').hideBulkActions();
+            }
+
+            showBulkSelectAll() {
+                this.shadowRoot.getElementById('appscoContactsActions').showBulkSelectAll();
+            }
+
+            hideBulkSelectAll() {
+                this.shadowRoot.getElementById('appscoContactsActions').hideBulkSelectAll();
+            }
+
+            setupPage() {}
+
+            resetPage() {
+                this.shadowRoot.getElementById('appscoContactsActions').reset();
+            }
+
+            resetPageActions() {
+                this.shadowRoot.getElementById('appscoContactsActions').resetActions();
+            }
+        }
+        window.customElements.define(AppscoContactsPageActions.is, AppscoContactsPageActions);
     </script>
 </dom-module>
 

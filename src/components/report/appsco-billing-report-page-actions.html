@@ -13,9 +13,9 @@
     <template>
         <style include="shared-styles">
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host > * {
                 height: 100%;
@@ -35,45 +35,46 @@
     </template>
 
     <script>
-        Polymer ({
+        class AppscoBillingReportPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-billing-report-page-actions'; }
 
-            is: 'appsco-billing-report-page-actions',
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
-
-                behaviors: [
-                    Polymer.NeonAnimatableBehavior
-                ]
+                };
             }
-        });
+        }
+        window.customElements.define(AppscoBillingReportPageActions.is, AppscoBillingReportPageActions);
     </script>
 
 </dom-module>

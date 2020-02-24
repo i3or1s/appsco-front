@@ -10,6 +10,8 @@
 
 <link rel="import" href="../components/components/appsco-date-format.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-domain-item`
 Presents domain in form of an item.
@@ -40,7 +42,7 @@ Custom property | Description | Default
     <template>
         <style>
             :host {
-                display: none;
+                display: block;
                 color: var(--primary-text-color);
                 font-size: 14px;
             }
@@ -50,7 +52,7 @@ Custom property | Description | Default
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--item-progress-bar);
+                @apply --item-progress-bar;
             }
             .item {
                 width: 100%;
@@ -61,34 +63,34 @@ Custom property | Description | Default
                 position: relative;
                 background-color: var(--item-background-color, #ffffff);
                 border-radius: 3px;
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 transition: all 0.1s ease-out;
-                @apply(--appsco-company-domain-item);
+                @apply --appsco-company-domain-item;
             }
             .item:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             .domain-title {
                 display: block;
                 height: 32px;
                 line-height: 16px;
-            @apply(--paper-font-common-base);
+            @apply --paper-font-common-base;
                 font-size: 14px;
                 font-weight: 400;
                 overflow: hidden;
             }
             .actions {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --layout-horizontal;
+            @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             paper-button {
-            @apply(--paper-font-common-base);
-            @apply(--paper-font-common-nowrap);
+            @apply --paper-font-common-base;
+            @apply --paper-font-common-nowrap;
 
                 padding: 4px;
                 font-size: 12px;
@@ -106,27 +108,27 @@ Custom property | Description | Default
             }
 
             .domain-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             .domain-basic-info {
                 width: 220px;
-                @apply(--domain-basic-info);
+                @apply --domain-basic-info;
             }
             .domain-status-info {
                 border-left: 1px solid var(--divider-color);
-                @apply(--domain-status-info);
+                @apply --domain-status-info;
             }
             .domain-basic-info .info-label, .domain-basic-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--domain-basic-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --domain-basic-info-values;
             }
             .domain-status-info .info-label, .domain-status-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--domain-status-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --domain-status-info-values;
             }
             .domain-status-info .info-label {
                 color: var(--app-primary-color);
@@ -147,7 +149,7 @@ Custom property | Description | Default
                 font-size: 12px;
             }
             :host([screen1000]) .actions {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             :host([screen1000]) .item {
                 height: 90px;
@@ -228,226 +230,199 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyDomainItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-domain-item'; }
 
-            is: 'appsco-company-domain-item',
-
-            properties: {
-
-                /**
-                 * Domain that is to be rendered
-                 */
-                domain: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    domain: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_domainChanged'
                     },
-                    observer: '_domainChanged'
-                },
 
-                domainsApi: {
-                    type: String,
-                    value: ''
-                },
+                    domainsApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    /**
+                     * Indicates if domain should be in preview mode rather then full detailed view.
+                     */
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Indicates if domain should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    screen1000: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                screen1000: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _verificationAction: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _verificationAction: {
-                    type: Boolean,
-                    value: false
-                },
+                    _verified: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _verified: {
-                    type: Boolean,
-                    value: false
-                },
+                    _domainStatusApiUrl: {
+                        type: String,
+                        computed: '_computeDomainStatusApi(domain)'
+                    },
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _progressBarDisplay: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _domainStatusApiUrl: {
-                    type: String,
-                    computed: '_computeDomainStatusApi(domain)'
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                _progressBarDisplay: {
-                    type: Boolean,
-                    value: false
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, screen1000)'
+                ];
+            }
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.screen1000) {
+                        this.style.display = 'inline-block';
+                        this.updateStyles();
+                    }
+                });
 
-            observers: [
-                '_updateScreen(mobileScreen, screen1000)'
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
 
-            attached: function() {
-
-                if (this.mobileScreen || this.screen1000) {
-                    this.updateStyles();
-                }
-
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _notifyDomainStatus: function() {
-                var verified = this._verified;
-
-                this.domain.verified = verified;
+            _notifyDomainStatus() {
+                this.domain.verified = this._verified;
 
                 if (this._verificationAction) {
-                    var eventType = this._verified ? 'domain-verified' : 'domain-not-verified';
-
-                    this.fire(eventType, {
-                        domain: this.domain
-                    });
+                    const eventType = this._verified ? 'domain-verified' : 'domain-not-verified';
+                    this.dispatchEvent(new CustomEvent(eventType, {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            domain: this.domain
+                        }
+                    }));
                 }
-            },
+            }
 
-            _domainChanged: function(domain) {
+            _domainChanged(domain) {
                 this._verified = domain.verified;
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                };
-            },
+            _computeDomainStatusApi(domain) {
+                return domain.self ? (domain.self + '/verify') : null;
+            }
 
-            _computeDomainStatusApi: function(domain) {
-                return domain.self ? (domain.self + '/verify') : '';
-            },
-
-            _showProgressBar: function() {
+            _showProgressBar() {
                 this._progressBarDisplay = true;
-            },
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
                     this._progressBarDisplay = false;
                 }.bind(this), 500);
-            },
+            }
 
-            _checkDomainStatus: function() {
+            _checkDomainStatus() {
                 this._showProgressBar();
                 this.$.getDomainStatus.generateRequest();
-            },
+            }
 
-            _onDomainStatusError: function(event) {
-
+            _onDomainStatusError(event) {
                 if (422 === event.detail.request.status) {
                     this._verified = false;
                     this._notifyDomainStatus();
                 }
 
                 this._hideProgressBar();
-            },
+            }
 
-            _onDomainStatusResponse: function(event) {
-
+            _onDomainStatusResponse(event) {
                 if (event.detail.response && 200 === event.detail.status) {
                     this._verified = true;
                     this._notifyDomainStatus();
                 }
 
                 this._hideProgressBar();
-            },
-
-            _onGetToken: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `get token` action is tapped.
-                 *
-                 * @event get-token
-                 * @param {Object} domain
-                 */
-                this.fire('get-token', {
-                    domain: this.domain
-                });
-            },
-
-            _onVerify: function() {
-                this._verificationAction = true;
-                this._checkDomainStatus();
-            },
-
-            _onRemove: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `remove` action is tapped.
-                 *
-                 * @event remove
-                 * @param {Object} domain
-                 */
-                this.fire('remove', {
-                    domain: this.domain
-                });
             }
 
-        });
+            _onGetToken(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('get-token', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: this.domain
+                    }
+                }));
+            }
+
+            _onVerify() {
+                this._verificationAction = true;
+                this._checkDomainStatus();
+            }
+
+            _onRemove(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('remove', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: this.domain
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyDomainItem.is, AppscoCompanyDomainItem);
     </script>
 </dom-module>

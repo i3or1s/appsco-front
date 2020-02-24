@@ -13,9 +13,10 @@
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 
-
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
+
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <!--
 `appsco-account-settings`
@@ -43,7 +44,7 @@ Custom property | Description | Default
             :host {
                 display: block;
                 position: relative;
-            @apply(--appsco-account-settings);
+            @apply --appsco-account-settings;
 
             --paper-dropdown-menu: {
                  display: block;
@@ -51,7 +52,7 @@ Custom property | Description | Default
             }
             :host .submit-button {
                 margin: 20px 0 0 0;
-                @apply(--form-action);
+                @apply --form-action;
             }
             :host paper-toggle-button {
                 cursor: pointer;
@@ -61,11 +62,11 @@ Custom property | Description | Default
             }
             .input-upload-image {
                 margin-top: 30px;
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --layout-horizontal;
+            @apply --layout-center;
             }
             .input-upload-image paper-input {
-            @apply(--layout-flex);
+            @apply --layout-flex;
 
             --paper-input-container-underline: {
                  display: none;
@@ -76,7 +77,7 @@ Custom property | Description | Default
             }
             .input-upload-image iron-image {
                 margin-left: 20px;
-            @apply(--layout-flex-none);
+            @apply --layout-flex-none;
             }
             .account-image {
                 width: 64px;
@@ -99,214 +100,178 @@ Custom property | Description | Default
 
         <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is saving application" multi-color></appsco-loader>
 
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
-        <form is="iron-form"
-              id="accountSettingsForm"
+        <iron-form
+                id="accountSettingsForm"
+                headers="{{ _headers }}"
+                on-iron-form-presubmit="_onFormPresubmit"
+                on-iron-form-error="_onFormError"
+                on-iron-form-response="_onFormResponse">
+            <form
               method="POST"
-              action="[[ accountSettingsApi ]]"
-              headers="{{ _computedHeaders }}"
-              on-iron-form-presubmit="_onFormPresubmit"
-              on-iron-form-error="_onFormError"
-              on-iron-form-response="_onFormResponse">
+              action="[[ accountSettingsApi ]]">
+                <div class="input-container">
+                    <paper-input
+                            id="firstName"
+                            name="profile[first_name]"
+                            label="First name"
+                            value="[[ account.first_name ]]"
+                            ></paper-input>
+                </div>
 
-            <div class="input-container">
-                <paper-input
-                        id="firstName"
-                        name="profile[first_name]"
-                        label="First name"
-                        value="[[ account.first_name ]]"
-                        ></paper-input>
-            </div>
+                <div class="input-container">
+                    <paper-input
+                            id="lastName"
+                            name="profile[last_name]"
+                            label="Last name"
+                            value="[[ account.last_name ]]"
+                            ></paper-input>
+                </div>
 
-            <div class="input-container">
-                <paper-input
-                        id="lastName"
-                        name="profile[last_name]"
-                        label="Last name"
-                        value="[[ account.last_name ]]"
-                        ></paper-input>
-            </div>
+                <div class="input-container">
+                    <iron-ajax
+                            auto
+                            url="[[ _timeZoneListUrl ]]"
+                            handle-as="json"
+                            on-response="_onTimezoneListResponse">
+                    </iron-ajax>
 
-            <!--<div class="input-container">-->
-            <!--<paper-dropdown-menu name="profile[locale]"-->
-            <!--label="Locale"-->
-            <!--horizontal-align="left">-->
-            <!--<paper-listbox id="paperListboxLocale"-->
-            <!--class="dropdown-content filter"-->
-            <!--attr-for-selected="value"-->
-            <!--selected="en">-->
-            <!--<template is="dom-repeat" items="[[ _localeList ]]">-->
-            <!--<paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>-->
-            <!--</template>-->
-            <!--</paper-listbox>-->
-            <!--</paper-dropdown-menu>-->
-            <!--</div>-->
+                    <paper-dropdown-menu id="dropdownTimezone"
+                                         name="profile[timezone]"
+                                         label="Timezone"
+                                         horizontal-align="left">
+                        <paper-listbox id="paperListboxTimezone"
+                                       class="dropdown-content filter"
+                                       attr-for-selected="value" slot="dropdown-content">
+                            <template is="dom-repeat" items="[[ _timezoneList ]]">
+                                <paper-item value="[[ item.value ]]" >[[ item.text ]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </div>
 
-            <div class="input-container">
-                <iron-ajax
-                        auto
-                        url="[[ _timeZoneListUrl ]]"
-                        handle-as="json"
-                        on-response="_onTimezoneListResponse">
-                </iron-ajax>
+                <div class="input-container">
+                    <iron-ajax
+                            auto
+                            url="[[ _countryListUrl ]]"
+                            handle-as="json"
+                            on-response="_onCountryListResponse">
+                    </iron-ajax>
 
-                <paper-dropdown-menu id="dropdownTimezone"
-                                     name="profile[timezone]"
-                                     label="Timezone"
-                                     horizontal-align="left">
-                    <paper-listbox id="paperListboxTimezone"
-                                   class="dropdown-content filter"
-                                   attr-for-selected="value">
-                        <template is="dom-repeat" items="[[ _timezoneList ]]">
-                            <paper-item value="[[ item.value ]]" >[[ item.text ]]</paper-item>
-                        </template>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-            </div>
+                    <paper-dropdown-menu id="dropdownCountry"
+                                         name="profile[country]"
+                                         label="Country"
+                                         horizontal-align="left">
+                        <paper-listbox id="paperListboxCountry"
+                                       class="dropdown-content filter"
+                                       attr-for-selected="value" slot="dropdown-content">
+                            <template is="dom-repeat" items="[[ _countryList ]]">
+                                <paper-item value="[[ item.code ]]">[[ item.name ]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </div>
 
-            <div class="input-container">
-                <iron-ajax
-                        auto
-                        url="[[ _countryListUrl ]]"
-                        handle-as="json"
-                        on-response="_onCountryListResponse">
-                </iron-ajax>
+                <div class="input-container">
+                    <paper-input
+                            id="phone"
+                            name="profile[phone]"
+                            label="Phone"
+                            value="[[ account.phone ]]"></paper-input>
+                </div>
 
-                <paper-dropdown-menu id="dropdownCountry"
-                                     name="profile[country]"
-                                     label="Country"
-                                     horizontal-align="left">
-                    <paper-listbox id="paperListboxCountry"
-                                   class="dropdown-content filter"
-                                   attr-for-selected="value">
-                        <template is="dom-repeat" items="[[ _countryList ]]">
-                            <paper-item value="[[ item.code ]]">[[ item.name ]]</paper-item>
-                        </template>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-            </div>
+                <div class="input-container">
+                    <paper-dropdown-menu id="dropdownGender"
+                                         name="profile[gender]"
+                                         label="Gender"
+                                         horizontal-align="left">
+                        <paper-listbox id="paperListboxGender"
+                                       class="dropdown-content filter"
+                                       attr-for-selected="value" slot="dropdown-content">
+                            <template is="dom-repeat" items="[[ _genderList ]]">
+                                <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </div>
 
-            <div class="input-container">
-                <paper-input
-                        id="phone"
-                        name="profile[phone]"
-                        label="Phone"
-                        value="[[ account.phone ]]"></paper-input>
-            </div>
-
-            <div class="input-container">
-                <paper-dropdown-menu id="dropdownGender"
-                                     name="profile[gender]"
-                                     label="Gender"
-                                     horizontal-align="left">
-                    <paper-listbox id="paperListboxGender"
-                                   class="dropdown-content filter"
-                                   attr-for-selected="value">
-                        <template is="dom-repeat" items="[[ _genderList ]]">
-                            <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
-                        </template>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-            </div>
-
-            <div class="input-container">
-                <paper-dropdown-menu id="dropdownCompanies"
-                                     name="profile[default_company]"
-                                     label="Default company dashboard"
-                                     horizontal-align="left">
-                    <paper-listbox id="paperListboxCompanies"
-                                   class="dropdown-content filter"
-                                   attr-for-selected="value">
-                        <template is="dom-repeat" items="[[ _companiesList ]]">
-                            <paper-item value="[[ item.company.alias ]]">[[ item.company.name ]]</paper-item>
-                        </template>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-                <p class="info">
-                    The dashboard you choose will be set as your default dashboard upon login.
-                </p>
-            </div>
-
-            <div class="input-container">
-                <paper-dropdown-menu id="dropdownDefaultPage"
-                                     name="profile[default_page]"
-                                     label="Default company page"
-                                     horizontal-align="left">
-                    <paper-listbox id="paperListboxPages"
-                                   class="dropdown-content filter"
-                                   attr-for-selected="value">
-                        <template is="dom-repeat" items="[[ _pagesList ]]">
-                            <paper-item value="[[ item.value ]]">[[ item.title ]]</paper-item>
-                        </template>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-                <p class="info">
-                    The page you choose will be set as the default page upon login.
-                </p>
-            </div>
-
-
-            <div class="input-container input-container-profile-public">
-                <paper-toggle-button id="publicAccountSwitch"
-                                     name="profile[public]"
-                                     checked$="[[ _public ]]">Public profile</paper-toggle-button>
-
-                <template is="dom-if" if="[[ _public ]]">
+                <div class="input-container">
+                    <paper-dropdown-menu id="dropdownCompanies"
+                                         name="profile[default_company]"
+                                         label="Default company dashboard"
+                                         horizontal-align="left">
+                        <paper-listbox id="paperListboxCompanies"
+                                       class="dropdown-content filter"
+                                       attr-for-selected="value" slot="dropdown-content">
+                            <template is="dom-repeat" items="[[ _companiesList ]]">
+                                <paper-item value="[[ item.company.alias ]]">[[ item.company.name ]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
                     <p class="info">
-                        It is allowed for other AppsCo users to search for your profile and share applications with you.
+                        The dashboard you choose will be set as your default dashboard upon login.
                     </p>
-                </template>
+                </div>
 
-                <template is="dom-if" if="[[ !_public ]]">
+                <div class="input-container">
+                    <paper-dropdown-menu id="dropdownDefaultPage"
+                                         name="profile[default_page]"
+                                         label="Default company page"
+                                         horizontal-align="left">
+                        <paper-listbox id="paperListboxPages"
+                                       class="dropdown-content filter"
+                                       attr-for-selected="value" slot="dropdown-content">
+                            <template is="dom-repeat" items="[[ _pagesList ]]">
+                                <paper-item value="[[ item.value ]]">[[ item.title ]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
                     <p class="info">
-                        Activate Public Profile option if you want to allow other AppsCo users to search for your profile and share applications with you.
+                        The page you choose will be set as the default page upon login.
                     </p>
-                </template>
-            </div>
+                </div>
 
-        </form>
 
-        <form is="iron-form"
-              id="accountEmailNotificationsForm"
-              method="PUT"
-              action="[[ accountEmailNotificationsApi ]]"
-              headers="{{ _computedHeaders }}"
-              on-iron-form-presubmit="_onEmailNotificationsFormPresubmit"
-              on-iron-form-response="_onEmailNotificationsFormResponse">
+                <div class="input-container input-container-profile-public">
+                    <paper-toggle-button id="publicAccountSwitch"
+                                         name="profile[public]"
+                                         checked$="[[ _public ]]">Public profile</paper-toggle-button>
 
-            <div class="input-container input-container-shared-resource">
-                <paper-toggle-button id="sharedResourceNotifications"
-                                    name="notification_settings[notifications][0]"
-                                    checked$="[[ _sharedResourceNotifications ]]">Shared resource notifications
-                </paper-toggle-button>
-                <p class="info">
-                    Receive email notifications when a resource is shared to you.
-                </p>
-            </div>
-        </form>
+                    <template is="dom-if" if="[[ _public ]]">
+                        <p class="info">
+                            It is allowed for other AppsCo users to search for your profile and share applications with you.
+                        </p>
+                    </template>
 
-            <!--<div class="input-container input-access">-->
-            <!--<paper-checkbox name="profile[profileOptions][public]">-->
-            <!--Allow other users to search & share apps with you-->
-            <!--</paper-checkbox>-->
-            <!--</div>-->
+                    <template is="dom-if" if="[[ !_public ]]">
+                        <p class="info">
+                            Activate Public Profile option if you want to allow other AppsCo users to search for your profile and share applications with you.
+                        </p>
+                    </template>
+                </div>
+            </form>
+        </iron-form>
 
-            <!--<div class="input-container input-upload-image">-->
-            <!--<paper-input type="file"-->
-            <!--name="profile[picture_blob][file]"-->
-            <!--label="Account image"-->
-            <!--on-change="_onUploadImage"></paper-input>-->
-
-            <!--<iron-image id="accountImage"-->
-            <!--class="account-image"-->
-            <!--preload-->
-            <!--fade-->
-            <!--src="[[ account.picture_url ]]"-->
-            <!--alt="Account image"-->
-            <!--class="sized"-->
-            <!--sizing="contain"></iron-image>-->
-            <!--</div>-->
+        <iron-form
+                id="accountEmailNotificationsForm"
+                headers="{{ _headers }}"
+                on-iron-form-presubmit="_onEmailNotificationsFormPresubmit"
+                on-iron-form-response="_onEmailNotificationsFormResponse">
+            <form
+                  method="PUT"
+                  action="[[ accountEmailNotificationsApi ]]">
+                <div class="input-container input-container-shared-resource">
+                    <paper-toggle-button id="sharedResourceNotifications"
+                                        name="notification_settings[notifications][0]"
+                                        checked$="[[ _sharedResourceNotifications ]]">Shared resource notifications
+                    </paper-toggle-button>
+                    <p class="info">
+                        Receive email notifications when a resource is shared to you.
+                    </p>
+                </div>
+            </form>
+        </iron-form>
 
         <paper-button id="submit"
                       class="submit-button"
@@ -320,173 +285,146 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountSettings extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-settings'; }
 
-            is: 'appsco-account-settings',
-
-            properties: {
-                /**
-                 * Account to update.
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {}
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {}
+                        },
+                        notify: true,
+                        observer: '_onAccountChange'
                     },
-                    notify: true,
-                    observer: '_onAccountChange'
-                },
 
-                _companiesList: {
-                    type: Array,
-                    computed: '_computeCompaniesList(account)'
-                },
+                    _companiesList: {
+                        type: Array,
+                        computed: '_computeCompaniesList(account)'
+                    },
 
-                _pagesList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            { title: 'Dashboard', value: 'dashboard' },
-                            { title: 'Resources', value: 'resources' }
-                        ]
+                    _pagesList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {title: 'Dashboard', value: 'dashboard'},
+                                {title: 'Resources', value: 'resources'}
+                            ]
+                        }
+                    },
+
+                    _localeList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'English',
+                                    value: 'en'
+                                },
+                                {
+                                    name: 'Norwegian',
+                                    value: 'no'
+                                }
+                            ];
+                        }
+                    },
+
+                    _timezoneList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _genderList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'Male',
+                                    value: 'm'
+                                },
+                                {
+                                    name: 'Female',
+                                    value: 'f'
+                                }
+                            ];
+                        }
+                    },
+
+                    _public: {
+                        type: Boolean,
+                        computed: '_computedPublicState(account)'
+                    },
+
+                    /**
+                     * Country list to get name of country from.
+                     * Country code = account.country.
+                     *
+                     * This is loaded from local data/country-list.json.
+                     */
+                    _countryList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _sharedResourceNotifications: {
+                        type: Boolean,
+                        computed: '_computeSharedResourceNotifications(account)'
+                    },
+
+                    accountSettingsApi: {
+                        type: String
+                    },
+
+                    accountEmailNotificationsApi: {
+                        computed: '_computeAccountEmailNotificationsApi(accountSettingsApi)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
+                    },
+
+                    _timeZoneListUrl: {
+                        type: String,
+                        value: function () {
+                            return this.resolveUrl('./data/timezone-list.json');
+                        }
+                    },
+
+                    _countryListUrl: {
+                        type: String,
+                        value: function () {
+                            return this.resolveUrl('./data/country-list.json');
+                        }
                     }
-                },
+                };
+            }
 
-                /**
-                 * Authorization token for the account.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+            ready() {
+                super.ready();
 
-                _localeList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                name: 'English',
-                                value: 'en'
-                            },
-                            {
-                                name: 'Norwegian',
-                                value: 'no'
-                            }
-                        ];
-                    }
-                },
+                this._target = this.$.accountSettingsForm;
+            }
 
-                _timezoneList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _genderList: {
-                    type: Array,
-                    value: function() {
-                        return [
-                            {
-                                name: 'Male',
-                                value: 'm'
-                            },
-                            {
-                                name: 'Female',
-                                value: 'f'
-                            }
-                        ];
-                    }
-                },
-
-                _public: {
-                    type: Boolean,
-                    computed: '_computedPublicState(account)'
-                },
-
-                /**
-                 * Country list to get name of country from.
-                 * Country code = account.country.
-                 *
-                 * This is loaded from local data/country-list.json.
-                 */
-                _countryList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _sharedResourceNotifications: {
-                    type: Boolean,
-                    computed: '_computeSharedResourceNotifications(account)'
-                },
-
-                /**
-                 * Account settings api link.
-                 */
-                accountSettingsApi: {
-                    type: String
-                },
-
-                accountEmailNotificationsApi: {
-                    computed: '_computeAccountEmailNotificationsApi(accountSettingsApi)'
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message for settings form.
-                 */
-                _error: {
-                    type: String
-                },
-
-                /**
-                 * Target for iron-a11y-keys component.
-                 * Submit form on enter.
-                 */
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.accountSettingsForm
-                    }
-                },
-
-                _timeZoneListUrl: {
-                    type: String,
-                    value: function() {
-                        return this.resolveUrl('./data/timezone-list.json');
-                    }
-                },
-
-                _countryListUrl: {
-                    type: String,
-                    value: function() {
-                        return this.resolveUrl('./data/country-list.json');
-                    }
-                }
-            },
-
-            _computedPublicState: function(account) {
+            _computedPublicState(account) {
                 return account.profile_options && account.profile_options.public;
-            },
+            }
 
-            _onAccountChange: function(account) {
+            _onAccountChange(account) {
                 if (account) {
-//                    this.$.paperListboxLocale.select(account.locale);
                     this.$.paperListboxTimezone.select(account.timezone);
                     this.$.paperListboxCountry.select(account.country);
                     this.$.paperListboxGender.select(account.gender);
@@ -497,10 +435,10 @@ Custom property | Description | Default
                             : ''
                     );
                 }
-            },
+            }
 
-            _onCountryListResponse: function(event, ironRequest) {
-                var response = ironRequest.response;
+            _onCountryListResponse(event, ironRequest) {
+                const response = ironRequest.response;
 
                 this._countryList = response.sort(function(countryA, countryB) {
                     countryA = countryA.name.toLowerCase();
@@ -508,26 +446,22 @@ Custom property | Description | Default
 
                     return countryA < countryB ? -1 : countryA > countryB ? 1 : 0;
                 });
-            },
+            }
 
-            _onTimezoneListResponse: function(event, ironRequest) {
-                var response = [];
+            _onTimezoneListResponse(event, ironRequest) {
+                const response = [];
 
                 ironRequest.response.forEach(function(zone, i) {
-
                     if (zone.utc) {
-
                         zone.utc.forEach(function(utc, index) {
-                            var item = {
+                            const item = {
                                 value: utc,
                                 text: utc.split('/')[1]
                             };
 
                             response.push(item);
                         }.bind(this));
-
                     }
-
                 }.bind(this));
 
                 this._timezoneList = response.sort(function(zoneA, zoneB) {
@@ -536,14 +470,13 @@ Custom property | Description | Default
 
                     return zoneA < zoneB ? -1 : zoneA > zoneB ? 1 : 0;
                 });
+            }
 
-            },
-
-            _onUploadImage: function(event) {
-                var input = event.target;
+            _onUploadImage(event) {
+                const input = event.target;
 
                 if (input.files && input.files[0]) {
-                    var reader = new FileReader();
+                    const reader = new FileReader();
 
                     reader.onload = function(e) {
                         this.$.accountImage.src = e.target.result;
@@ -551,37 +484,17 @@ Custom property | Description | Default
 
                     reader.readAsDataURL(input.files[0]);
                 }
-            },
+            }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
-
-            /**
-             * Submits signup form on ENTER key using iron-a11y-keys component.
-             *
-             * @private
-             */
-            _onEnter: function() {
+            _onEnter() {
                 this._submitAccountSettingsForm();
-            },
+            }
 
-            _submitAccountSettingsForm: function() {
+            _submitAccountSettingsForm() {
                 this.$.accountSettingsForm.submit();
-            },
+            }
 
-            _onFormPresubmit: function() {
-
+            _onFormPresubmit() {
                 this._loader = true;
 
                 this.$.accountSettingsForm.request.method = 'put';
@@ -594,106 +507,79 @@ Custom property | Description | Default
                 if (this.$.publicAccountSwitch.checked) {
                     this.$.accountSettingsForm.request.body['profile[public]'] = true;
                 }
-            },
+            }
 
-            _onEmailNotificationsFormPresubmit: function () {
-
+            _onEmailNotificationsFormPresubmit () {
                 this._loader = true;
                 this.$.accountEmailNotificationsForm.request.body = [];
 
                 if (this.$.sharedResourceNotifications.checked) {
                     this.$.accountEmailNotificationsForm.request.body['notification_settings[notifications][0]'] = true;
                 }
-            },
+            }
 
-            /**
-             * Called on form error when trying to save settings.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onFormError: function(event) {
-                this._error = event.detail.error.message;
+            _onFormError(event) {
+                this._errorMessage = event.detail.error.message;
                 this._loader = false;
-            },
+            }
 
-            /**
-             * Called after settings have been submited.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onFormResponse: function(event) {
-                var account = event.detail.response.account;
+            _onFormResponse(event) {
+                const account = event.detail.response.account;
                 this.set('account', account);
 
                 this.$.accountEmailNotificationsForm.submit();
-            },
+            }
 
-            /**
-             * Called after settings have been submited.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onEmailNotificationsFormResponse: function(event) {
+            _onEmailNotificationsFormResponse(event) {
                 this.account.notificationSettings = event.detail.response.notification_settings;
 
                 this.set('account', this.account);
 
-                /**
-                 * Fired after successful settings saving.
-                 *
-                 * @event settings-saved
-                 */
-                this.fire('settings-saved', {
-                    account: this.account
-                });
+                this.dispatchEvent(new CustomEvent('settings-saved', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        account: this.account
+                    }
+                }));
 
                 this._loader = false;
-            },
+            }
 
-            /**
-             * Sets up component.
-             */
-            setUp: function() {
+            setUp() {
                 this.$.firstName.focus();
-            },
+            }
 
-            /**
-             * Resets component.
-             */
-            reset: function() {
-                var account = JSON.parse(JSON.stringify(this.account));
+            reset() {
+                const account = JSON.parse(JSON.stringify(this.account));
 
                 this.account = {};
                 this.account = account;
 
-                this._error = '';
-
-            },
-
-            _computeCompaniesList: function(changedAccount) {
-                var account = JSON.parse(JSON.stringify(changedAccount));
-                var personal = {
-                    company : {
-                        alias : '',
-                        name : 'Default'
-                    }
-                };
-                var companies =  account && account.companies && account.companies.length > 0 ? account.companies : [];
-                companies.unshift(personal);
-                return companies;
-            },
-
-            _computeAccountEmailNotificationsApi: function(accountSettingsApi) {
-                return accountSettingsApi ? accountSettingsApi + '/notification-settings' : '';
-            },
-
-            _computeSharedResourceNotifications: function (account) {
-                return account.notificationSettings && account.notificationSettings['shared_resource'] ? account.notificationSettings['shared_resource'] : false;
+                this._errorMessage = '';
             }
 
-        });
+            _computeCompaniesList(changedAccount) {
+                const account = JSON.parse(JSON.stringify(changedAccount));
+                const personal = {
+                    company: {
+                        alias: '',
+                        name: 'Default'
+                    }
+                };
+                const companies = account && account.companies && account.companies.length > 0 ? account.companies : [];
+                companies.unshift(personal);
+                return companies;
+            }
+
+            _computeAccountEmailNotificationsApi(accountSettingsApi) {
+                return accountSettingsApi ? accountSettingsApi + '/notification-settings' : null;
+            }
+
+            _computeSharedResourceNotifications (account) {
+                return account.notificationSettings && account.notificationSettings['shared_resource'] ? account.notificationSettings['shared_resource'] : false;
+            }
+        }
+        window.customElements.define(AppscoAccountSettings.is, AppscoAccountSettings);
     </script>
 </dom-module>

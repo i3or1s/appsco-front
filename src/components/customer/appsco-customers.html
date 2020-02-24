@@ -10,13 +10,11 @@
 
 <dom-module id="appsco-customers">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host appsco-customer-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-customer-item);
+                @apply --appsco-customer-item;
             }
         </style>
 
@@ -67,33 +65,33 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCustomers extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-customers'; }
 
-            is: 'appsco-customers',
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
+            reloadInfo(group) {
+                const groups = JSON.parse(JSON.stringify(this._listItems));
 
-            observers: [
-                '_observeItems(_listItems)'
-            ],
-
-            reloadInfo: function(group) {
-                var groups = JSON.parse(JSON.stringify(this._listItems));
-
-                for (var idx in groups) {
+                for (let idx in groups) {
                     if (group.self === groups[idx].self) {
-                        this.$$('#appscoListItem_' + idx).reloadInfo(group);
+                        this.shadowRoot.getElementById('appscoListItem_' + idx).reloadInfo(group);
                     }
                 }
-            },
+            }
 
-            _observeItems: function(items) {
+            _observeItems(items) {
                 this.setObservableType('customers');
                 this.populateItems(items);
             }
-        });
+        }
+        window.customElements.define(AppscoCustomers.is, AppscoCustomers);
     </script>
 </dom-module>

@@ -61,82 +61,76 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoTutorialCard extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-tutorial-card'; }
 
-            is: 'appsco-tutorial-card',
+            static get properties() {
+                return {
+                    tutorial: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                tutorial: {
-                    type: Object,
-                    value: function() { return {}; }
-                },
+                    _isDone: {
+                        type: Boolean,
+                        value: false,
+                        computed: '_isTutorialDone(tutorial)'
+                    },
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    index: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _tutorialIcon: {
-                    type: String,
-                    value: '',
-                    computed: '_computeTutorialIcon(tutorial)'
-                },
+                    firstUnfinishedIndex: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _isDone: {
-                    type: Boolean,
-                    value: false,
-                    computed: '_isTutorialDone(tutorial)'
-                },
+                    _startCaption: {
+                        type: String,
+                        value: 'Start',
+                        computed: '_computeStartCaption(index, firstUnfinishedIndex)'
+                    }
+                };
+            }
 
-                index: {
-                    type: Number,
-                    value: 0
-                },
-
-                firstUnfinishedIndex: {
-                    type: Number,
-                    value: 0
-                },
-
-                _startCaption: {
-                    type: String,
-                    value: 'Start',
-                    computed: '_computeStartCaption(index, firstUnfinishedIndex)'
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            _computeTutorialIcon: function(tutorial) {
-                return tutorial.icon ? tutorial.icon : '';
-            },
-
-            _onStartAction: function(evt) {
-                var scrollElement = document.querySelector('* app-header-layout #contentContainer');
+            _onStartAction(evt) {
+                let scrollElement = document.querySelector('* app-header-layout #contentContainer');
                 if(null === scrollElement) {
                     scrollElement = document.querySelector('* /deep/ app-header-layout /deep/ #contentContainer');
                 }
                 if (scrollElement) {
                     scrollElement.scrollTop = 0;
                 }
-                this.fire('tutorial-start', {
-                    tutorialId: this.tutorial.id
-                });
-            },
-
-            _isTutorialDone: function(tutorial) {
-                return tutorial.isDone;
-            },
-
-            _computeStartCaption: function(index, firstUnfinishedIndex) {
-                return index == firstUnfinishedIndex ? 'Start' : 'Next up';
+                this.dispatchEvent(new CustomEvent('tutorial-start', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        tutorialId: this.tutorial.id
+                    }
+                }));
             }
 
-        });
+            _isTutorialDone(tutorial) {
+                return tutorial.isDone;
+            }
+
+            _computeStartCaption(index, firstUnfinishedIndex) {
+                return index == firstUnfinishedIndex ? 'Start' : 'Next up';
+            }
+        }
+        window.customElements.define(AppscoTutorialCard.is, AppscoTutorialCard);
     </script>
 </dom-module>

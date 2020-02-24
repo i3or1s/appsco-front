@@ -22,9 +22,7 @@ Presents report in form of an item.
 
 <dom-module id="appsco-report-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 width: 100%;
                 margin-bottom: 10px;
@@ -34,10 +32,10 @@ Presents report in form of an item.
                 height: 52px;
                 margin: 0;
                 border-radius: 50%;
-                background-color: var(--report-icon-background-color, --account-initials-background-color);
+                background-color: var(--report-icon-background-color, var(--account-initials-background-color));
                 position: relative;
-                @apply(--layout-flex-none);
-                @apply(--report-icon);
+                @apply --layout-flex-none;
+                @apply --report-icon;
             }
             .report-icon::shadow #sizedImgDiv, :host .report-icon::shadow #placeholder {
                 border-radius: 50%;
@@ -85,45 +83,46 @@ Presents report in form of an item.
     </template>
 
     <script>
-        Polymer({
+        class AppscoReportItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-report-item'; }
 
-            is: 'appsco-report-item',
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
+                    item: {
+                        type: Object,
+                        value:function() {
+                            return {};
+                        }
+                    }
+                };
+            }
 
-            item: {
-                type: Object,
-                value:function() {
-                    return {};
-                }
-            },
+            ready() {
+                super.ready();
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.dispatchEvent(new CustomEvent('component-ready', {bubbles: true, composed: true}));
+                });
+            }
 
-            ready: function() {
-                this.fire('component-ready');
-            },
+            openReport() {
+                this.dispatchEvent(new CustomEvent(this.item.openEvent, { bubbles: true, composed: true }));
+            }
 
-            openReport: function() {
-                /**
-                 * Fired when `open` is tapped.
-                 */
-                this.fire(this.item.openEvent);
-            },
-
-            _onOpenItemAction: function(event) {
+            _onOpenItemAction(event) {
                 event.stopPropagation();
                 this.openReport();
             }
-        });
+        }
+        window.customElements.define(AppscoReportItem.is, AppscoReportItem);
     </script>
 </dom-module>

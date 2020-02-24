@@ -9,13 +9,15 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-run-integration-force-sync">
     <template>
         <style>
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-run-integration-force-sync);
+                @apply --appsco-run-integration-force-sync;
 
                 --form-error-box: {
                      margin-top: 0;
@@ -24,26 +26,25 @@
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host appsco-loader {
-                @apply(--paper-dialog-appsco-loader);
+                @apply --paper-dialog-appsco-loader;
             }
             :host .error-box {
                 max-height: 250px;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -57,7 +58,7 @@
 
             <paper-dialog-scrollable>
                 <div>
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <div class="error-box">
                         <template is="dom-if" if="[[ _missingSource.accounts ]]">
@@ -105,158 +106,141 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoRunIntegrationForceSync extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-run-integration-force-sync'; }
 
-            is: 'appsco-run-integration-force-sync',
+            static get properties() {
+                return {
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    },
+
+                    _errorDetails: {
+                        type: Object,
+                        value: null
+                    },
+
+                    _accountsMissingSource: {
+                        type: Array,
+                        computed: '_computeAccountsMissingSource(_errorDetails)'
+                    },
+
+                    _contactsMissingSource: {
+                        type: Array,
+                        computed: '_computeContactsMissingSource(_errorDetails)'
+                    },
+
+                    _groupsMissingSource: {
+                        type: Array,
+                        computed: '_computeGroupsMissingSource(_errorDetails)'
+                    },
+
+                    _resourcesMissingSource: {
+                        type: Array,
+                        computed: '_computeResourcesMissingSource(_errorDetails)'
+                    },
+
+                    _missingSource: {
+                        type: Object,
+                        computed: '_computeMissingSource(_accountsMissingSource, _contactsMissingSource, _groupsMissingSource, _resourcesMissingSource)'
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                _errorDetails: {
-                    type: Object,
-                    value: null
-                },
-
-                _accountsMissingSource: {
-                    type: Array,
-                    computed: '_computeAccountsMissingSource(_errorDetails)'
-                },
-
-                _contactsMissingSource: {
-                    type: Array,
-                    computed: '_computeContactsMissingSource(_errorDetails)'
-                },
-
-                _groupsMissingSource: {
-                    type: Array,
-                    computed: '_computeGroupsMissingSource(_errorDetails)'
-                },
-
-                _resourcesMissingSource: {
-                    type: Array,
-                    computed: '_computeResourcesMissingSource(_errorDetails)'
-                },
-
-                _missingSource: {
-                    type: Object,
-                    computed: '_computeMissingSource(_accountsMissingSource, _contactsMissingSource, _groupsMissingSource, _resourcesMissingSource)'
-                }
-            },
-
-            setIntegration: function(integration) {
+            setIntegration(integration) {
                 this.set('integration', integration);
-            },
+            }
 
-            open: function () {
+            open() {
                 this._hideError();
                 this.$.dialog.open();
-            },
+            }
 
-            close: function () {
+            close() {
                 this._hideError();
                 this.$.dialog.close();
-            },
+            }
 
-            toggle: function () {
+            toggle() {
                 this._hideError();
                 this.$.dialog.toggle();
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                };
-            },
-
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._errorDetails = '';
-                this._error = '';
-            },
+                this._errorMessage = '';
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _computeAccountsMissingSource: function(errorDetails) {
+            _computeAccountsMissingSource(errorDetails) {
                 if (!errorDetails || !errorDetails.accounts) {
                     return [];
                 }
 
                 return errorDetails.accounts;
-            },
+            }
 
-            _computeContactsMissingSource: function(errorDetails) {
+            _computeContactsMissingSource(errorDetails) {
                 if (!errorDetails || !errorDetails.contacts) {
                     return [];
                 }
 
                 return errorDetails.contacts;
-            },
+            }
 
-            _computeGroupsMissingSource: function(errorDetails) {
+            _computeGroupsMissingSource(errorDetails) {
                 if (!errorDetails || !errorDetails.groups) {
                     return [];
                 }
 
                 return errorDetails.groups;
-            },
+            }
 
-            _computeResourcesMissingSource: function(errorDetails) {
+            _computeResourcesMissingSource(errorDetails) {
                 if (!errorDetails || !errorDetails.resources) {
                     return [];
                 }
 
                 return errorDetails.resources;
-            },
+            }
 
-            _onConfirmAction: function() {
-                var request = document.createElement('iron-request'),
+            _onConfirmAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this.integration.meta.forceSync,
                         method: 'POST',
@@ -269,23 +253,18 @@
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when rule is applied.
-                         *
-                         * @event integration-rule-run
-                         * @param {Object} integration, {Object} rule
-                         */
-                        this.fire('integration-force-sync-done', {
-                            integration: this.integration,
-                            rule: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('integration-force-sync-done', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                integration: this.integration,
+                                rule: request.response
+                            }
+                        }));
 
                         this.close();
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
@@ -294,15 +273,15 @@
                         this.set('_errorDetails', request.response.details);
                     }
                 }.bind(this));
-            },
+            }
 
-            _computeMissingSource: function (
+            _computeMissingSource (
                 accountsMissingSource,
                 contactsMissingSource,
                 groupsMissingSource,
                 resourcesMissingSource
             ) {
-                var result = {};
+                const result = {};
                 result.accounts = (accountsMissingSource && accountsMissingSource.length > 0);
                 result.contacts = (contactsMissingSource && contactsMissingSource.length > 0);
                 result.groups = (groupsMissingSource && groupsMissingSource.length > 0);
@@ -310,7 +289,7 @@
 
                 return result;
             }
-
-        });
+        }
+        window.customElements.define(AppscoRunIntegrationForceSync.is, AppscoRunIntegrationForceSync);
     </script>
 </dom-module>

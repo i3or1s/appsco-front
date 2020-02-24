@@ -6,8 +6,7 @@
 <dom-module id="shared-styles">
     <template>
         <style>
-            :root {
-
+            html, :host > * {
                 --paper-progress-active-color: var(--app-primary-color-dark);
                 --paper-tabs-selection-bar-color: var(--app-primary-color-dark);
                 --paper-tab-ink: transparent;
@@ -105,16 +104,17 @@
                 --appsco-page-global-action-color: var(--app-primary-color-dark);
                 --appsco-page-global: {
                     padding-left: 10px;
-                    padding-right: 14px;
+                    padding-right: 0;
                     margin-left: 10px;
+                    margin-right: 0;
                     border-left: 1px solid var(--divider-color);
                     text-align: right;
                 };
 
                 --manage-page-global-actions: {
-                    @apply(--layout-horizontal);
-                    @apply(--layout-center);
-                    @apply(--layout-end-justified);
+                    @apply --layout-horizontal;
+                    @apply --layout-center;
+                    @apply --layout-end-justified;
                     padding-right: 6px;
                 };
 
@@ -134,11 +134,11 @@
                  };
 
                 --appsco-list-item-message: {
-                    @apply(--text-wrap-break);
+                    @apply --text-wrap-break;
                 };
 
                 --application-title: {
-                    @apply(--text-wrap-break);
+                    @apply --text-wrap-break;
                 };
 
                 --appsco-account-info: {
@@ -178,16 +178,16 @@
                 };
 
                 --add-item-action: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                     min-width: 100px;
                 };
 
                 --import-action: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                 };
 
                 --export-action: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                 };
 
                 --paper-tooltip-background: var(--app-primary-color-dark);
@@ -210,6 +210,27 @@
                      background-color: #ffffff;
                      overflow-y: auto;
                  };
+
+                --full-page-paper-card-header-text: {
+                    padding-bottom: 16px;
+                    padding-top: 16px;
+                    padding-left: 16px;
+                    padding-right: 16px;
+                };
+
+                --page-paper-card-header-text: {
+                    padding-bottom: 8px;
+                    padding-top: 8px;
+                    padding-left: 16px;
+                    padding-right: 16px;
+                };
+
+
+                --paper-dropdown-menu-icon: {
+                    color: var(--primary-text-color);
+                    width: 22px;
+                    height: 22px;
+                };
 
                 --paper-card-header-color: var(--primary-text-color);
 
@@ -243,7 +264,7 @@
                  };
 
                 --form-action: {
-                    @apply(--primary-button);
+                    @apply --primary-button;
                     padding: 4px 8px;
                     margin-top: 20px;
                     display: inline-block;
@@ -262,7 +283,7 @@
                  };
 
                 --primary-button-active: {
-                     @apply(--shadow-elevation-2dp);
+                     @apply --shadow-elevation-2dp;
                      background-color: var(--success-color);
                      border-color: transparent;
                  };
@@ -280,7 +301,7 @@
                  };
 
                 --info-message: {
-                     @apply(--paper-font-body1);
+                     @apply --paper-font-body1;
                      color: var(--primary-text-color);
                      font-style: normal;
                  };

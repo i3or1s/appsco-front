@@ -21,8 +21,22 @@
 <link rel="import" href="directory/appsco-account-groups-page.html">
 <link rel="import" href="directory/appsco-account-devices-page.html">
 <link rel="import" href="directory/appsco-manage-account-twofa-page.html">
-
 <link rel="import" href="components/account/appsco-account-image.html">
+<link rel="import" href="directory/appsco-manage-account-page-actions.html">
+
+<link rel="import" href="components/company-role/appsco-role-reset-two-fa.html">
+<link rel="import" href="components/account/company/appsco-account-approve-device.html">
+<link rel="import" href="components/account/company/appsco-account-disapprove-device.html">
+<link rel="import" href="components/application/company/appsco-application-assignee-revoke.html">
+<link rel="import" href="components/application/company/appsco-application-assignee-claims.html">
+<link rel="import" href="components/account/company/appsco-account-orgunit.html">
+<link rel="import" href="components/account/company/appsco-account-remove-orgunit.html">
+<link rel="import" href="components/account/company/appsco-account-remove-group.html">
+<link rel="import" href="components/application/company/appsco-resource-admin-revoke.html">
+<link rel="import" href="components/resource/appsco-add-resource-to-resource-admin.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-manage-account-page">
     <template>
@@ -67,7 +81,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     <template is="dom-if" if="[[ account.picture_url ]]">
@@ -112,7 +126,7 @@
 
             </div>
 
-            <div content>
+            <div content slot="content">
 
                 <div class="content-container">
                     <neon-animated-pages class="flex"
@@ -173,6 +187,7 @@
                                 id="appscoManageAccountTwoFaPage"
                                 name="appsco-manage-account-twofa-page"
                                 role="[[ role ]]"
+                                on-reset-role-two-fa="_onResetRoleTwoFA"
                                 on-back="_onResourceBack">
                         </appsco-manage-account-twofa-page>
 
@@ -180,6 +195,8 @@
                                 name="appsco-account-orgunits-page"
                                 role="[[ role ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-add-to-orgunit="_onAddAccountToOrgunit"
+                                on-remove-from-orgunit="_onRemoveAccountFromOrgunit"
                                 on-back="_onResourceBack">
                         </appsco-account-orgunits-page>
 
@@ -189,6 +206,7 @@
                                 account="[[ role ]]"
                                 groups-api="[[ _groupsApi ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-remove-from-group="_onRemoveAccountFromGroup"
                                 on-back="_onResourceBack">
                         </appsco-account-groups-page>
 
@@ -198,6 +216,8 @@
                                 account="[[ role ]]"
                                 devices-api="[[ _devicesApi ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-approve-device="_onApproveDevice"
+                                on-disapprove-device="_onDisapproveDevice"
                                 on-back="_onResourceBack">
                         </appsco-account-devices-page>
 
@@ -214,6 +234,8 @@
                                 name="appsco-directory-role-applications-page"
                                 role="[[ role ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-revoke-assignee="_onRevokeAssigneeAccess"
+                                on-change-assignee-claims="_onChangeAssigneeClaims"
                                 on-back="_onResourceBack">
                         </appsco-directory-role-applications-page>
 
@@ -222,6 +244,8 @@
                                 name="appsco-directory-role-resource-admin-applications-page"
                                 role="[[ role ]]"
                                 authorization-token="[[ authorizationToken ]]"
+                                on-add-resource-admin="_onAddResourceToResourceAdmin"
+                                on-revoke-resource-admin="_onRevokeResourceAdmin"
                                 on-back="_onResourceBack">
                         </appsco-directory-role-resource-admin-applications-page>
 
@@ -236,227 +260,273 @@
         <iron-ajax id="ironAjaxGetAccount"
                    on-error="_onAccountError"
                    on-response="_onAccountResponse"
-                   headers="[[ _computedHeaders ]]"></iron-ajax>
+                   headers="[[ _headers ]]"></iron-ajax>
 
         <iron-ajax auto
                    url="[[ _canBeManagedApi ]]"
                    on-error="_onCanBeManagedError"
                    on-response="_onCanBeManagedResponse"
-                   headers="[[ _computedHeaders ]]"></iron-ajax>
+                   headers="[[ _headers ]]"></iron-ajax>
+
+        <appsco-role-reset-two-fa
+                id="appscoRoleResetTwoFA"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-role-two-fa-reset="_onRoleTwoFAReset">
+        </appsco-role-reset-two-fa>
+
+        <appsco-account-approve-device
+                id="appscoAccountApproveDevice"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-device-approve-finished="_onDeviceApproveFinished">
+        </appsco-account-approve-device>
+
+        <appsco-account-disapprove-device
+                id="appscoAccountDisapproveDevice"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-device-disapprove-finished="_onDeviceDisapproveFinished">
+        </appsco-account-disapprove-device>
+
+        <appsco-application-assignee-revoke
+                id="appscoApplicationAssigneeRevoke"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-application-assignee-revoke>
+
+        <appsco-application-assignee-claims
+                id="appscoApplicationAssigneeClaims"
+                application="[[ _companyApplication ]]"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-application-assignee-claims>
+
+        <appsco-account-orgunit
+                id="appscoAccountOrgunit"
+                authorization-token="[[ authorizationToken ]]"
+                company-orgunits-api="[[ companyOrgunitsApi ]]">
+        </appsco-account-orgunit>
+
+        <appsco-account-remove-orgunit
+                id="appscoAccountRemoveOrgunit"
+                authorization-token="[[ authorizationToken ]]"
+                account="[[ _role ]]">
+        </appsco-account-remove-orgunit>
+
+        <appsco-account-remove-group
+                id="appscoAccountRemoveGroup"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-account-remove-group>
+
+        <appsco-add-resource-to-resource-admin
+                id="appscoAddResourceToResourceAdmin"
+                authorization-token="[[ authorizationToken ]]"
+                get-resources-api="[[ companyApplicationsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-resource-admin-assigned="_onResourceAdminAssigned">
+        </appsco-add-resource-to-resource-admin>
+
+        <appsco-resource-admin-revoke
+                id="appscoResourceAdminRevoke"
+                authorization-token="[[ authorizationToken ]]"
+                on-access-revoked="_onResourceAdminRevoked">
+        </appsco-resource-admin-revoke>
+
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-manage-account-page',
+        class AppscoManageAccountPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-manage-account-page'; }
 
-            properties: {
-
-                route: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                role: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    observer: '_onRoleChanged'
-                },
-
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                },
-
-                administrator: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                companyApi: {
-                    type: String,
-                    value: '',
-                    observer: '_onCompanyApiChanged'
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                },
-
-                /**
-                 * Get notifications link.
-                 */
-                _notificationsApi: {
-                    type: String,
-                    computed: '_computeNotificationsApi(role)'
-                },
-
-                /**
-                 * Get account log link.
-                 */
-                _logApi: {
-                    type: String,
-                    computed: '_computeLogApi(role)'
-                },
-
-                /**
-                 * Get 2fa status link.
-                 */
-                _twoFaApi: {
-                    type: String,
-                    computed: '_computeTwoFaApi(role)'
-                },
-
-                /**
-                 * Get company role groups link
-                 */
-                _groupsApi: {
-                    type: String,
-                    computed: '_computeGroupsForRole(role)'
-                },
-
-                /**
-                 * Get company role devices link
-                 */
-                _devicesApi: {
-                    type: String,
-                    computed: '_computeDevicesForRole(role)'
-                },
-
-                /**
-                 * Save account settings link.
-                 */
-                settingsApi: {
-                    type: String,
-                    computed: '_computeSettingsApi(role)'
-                },
-
-                /**
-                 * Save account image link.
-                 */
-                imageSettingsApi: {
-                    type: String
-                },
-
-                /**
-                 * Change account password link.
-                 */
-                _changePasswordApi: {
-                    type: String,
-                    computed: '_computeChangePasswordApi(role)'
-                },
-
-                _canBeManagedApi: {
-                    type: String,
-                    computed: '_computeCanBeManagedApi(role)'
-                },
-
-                _canManage: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Selected page.
-                 * It has value of component's 'name' attribute.
-                 */
-                _selected: {
-                    type: String,
-                    value: 'appsco-account-components-page',
-                    notify: true
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            static get properties() {
+                return {
+                    route: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onRoleChanged'
+                    },
+
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
+
+                    administrator: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    companyApi: {
+                        type: String,
+                        observer: '_onCompanyApiChanged'
+                    },
+
+                    _notificationsApi: {
+                        type: String,
+                        computed: '_computeNotificationsApi(role)'
+                    },
+
+                    _logApi: {
+                        type: String,
+                        computed: '_computeLogApi(role)'
+                    },
+
+                    _twoFaApi: {
+                        type: String,
+                        computed: '_computeTwoFaApi(role)'
+                    },
+
+                    _groupsApi: {
+                        type: String,
+                        computed: '_computeGroupsForRole(role)'
+                    },
+
+                    _devicesApi: {
+                        type: String,
+                        computed: '_computeDevicesForRole(role)'
+                    },
+
+                    settingsApi: {
+                        type: String,
+                        computed: '_computeSettingsApi(role)'
+                    },
+
+                    imageSettingsApi: {
+                        type: String
+                    },
+
+                    _changePasswordApi: {
+                        type: String,
+                        computed: '_computeChangePasswordApi(role)'
+                    },
+
+                    _canBeManagedApi: {
+                        type: String,
+                        computed: '_computeCanBeManagedApi(role)'
+                    },
+
+                    companyOrgunitsApi: {
+                        type: String
+                    },
+
+                    companyApplicationsApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object
+                    },
+
+                    _canManage: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Selected page.
+                     * It has value of component's 'name' attribute.
+                     */
+                    _selected: {
+                        type: String,
+                        value: 'appsco-account-components-page',
+                        notify: true
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+            static get observers() {
+                return [
+                    '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-            ],
-
-            attached: function() {
+            ready() {
+                super.ready();
 
                 this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-                if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                    this._getAccount();
+                });
 
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+                this.toolbar.addEventListener('advanced-settings', this._onShowAdvancedAction.bind(this));
+            }
+
+            _onCompanyApiChanged() {
                 this._getAccount();
+            }
 
-            },
-
-            _onCompanyApiChanged: function() {
-                this._getAccount();
-            },
-
-            _updateScreen: function(medium, tablet, mobile) {
+            _updateScreen(medium, tablet, mobile) {
                 this.updateStyles();
 
                 if (mobile) {
@@ -465,189 +535,168 @@
                 else if(!this.$.appscoContent.resourceActive) {
                     this.$.appscoContent.showSection('resource');
                 }
-            },
+            }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _computeSettingsApi: function(role) {
+            _computeSettingsApi(role) {
                 return role.self;
-            },
+            }
 
-            _computeNotificationsApi: function(role) {
+            _computeNotificationsApi(role) {
                 return role.self + '/notifications';
-            },
+            }
 
-            _computeLogApi: function(role) {
-                return role.meta ? role.meta.log : '';
-            },
+            _computeLogApi(role) {
+                return role.meta ? role.meta.log : null;
+            }
 
-            _computeTwoFaApi: function(role) {
+            _computeTwoFaApi(role) {
                 return role.self + '/2fa';
-            },
+            }
 
-            _computeGroupsForRole: function(role) {
-                return role.meta ? role.meta.groups + '?extended=1' : '';
-            },
+            _computeGroupsForRole(role) {
+                return role.meta ? role.meta.groups + '?extended=1' : null;
+            }
 
-            _computeDevicesForRole: function(role) {
-                return role.meta ? role.meta.devices + '?extended=1' : '';
-            },
+            _computeDevicesForRole(role) {
+                return role.meta ? role.meta.devices + '?extended=1' : null;
+            }
 
-            _computeChangePasswordApi: function(role) {
+            _computeChangePasswordApi(role) {
                 return role.self + '/change-password';
-            },
+            }
 
-            _computeCanBeManagedApi: function(role) {
-                return role.self ? role.self + '/can-be-managed' : '';
-            },
+            _computeCanBeManagedApi(role) {
+                return role.self ? role.self + '/can-be-managed' : null;
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _getAccount: function() {
-
-                if (!this.role.self && this.companyApi && this._computedHeaders) {
-                    var accountApi = this.companyApi + '/directory/roles' + this.route.path;
-
-                    this.$.ironAjaxGetAccount.url = accountApi;
+            _getAccount() {
+                if (!this.role.self && this.companyApi && this._headers) {
+                    this.$.ironAjaxGetAccount.url = this.companyApi + '/directory/roles' + this.route.path;
                     this.$.ironAjaxGetAccount.generateRequest();
                 }
+            }
 
-            },
-
-            _onAccountResponse: function(event) {
+            _onAccountResponse(event) {
                 this.set('role', event.detail.response);
-            },
+            }
 
-            _onAccountError: function() {
-                this.fire('page-error');
-            },
+            _onAccountError() {
+                this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
+            }
 
-            _onRoleChanged: function(role) {
-
+            _onRoleChanged(role) {
                 if (role.self) {
                     this.$.appscoManageAccountComponentsPage.load();
                     this.$.appscoAccountGroupsPage.loadGroups();
                     this.account = role.account;
                 }
-            },
+            }
 
-            /**
-             * Returns display name for account.
-             * @param {Object} account.
-             *
-             * @private
-             */
-            _onResourceBack: function() {
+            _onResourceBack() {
                 this._showAccountComponentsPage();
-            },
+            }
 
-            refreshLog: function() {
+            refreshLog() {
                 this.$.appscoManageAccountComponentsPage.loadLog();
                 this.$.appscoAccountLogPage.loadLog();
-            },
+            }
 
-            reloadAccountLog: function () {
+            reloadAccountLog () {
                 this.$.appscoManageAccountComponentsPage.loadLog();
-            },
+            }
 
-            removeGroup: function(group) {
+            removeGroup(group) {
                 this.$.appscoAccountGroupsPage.removeGroup(group);
-            },
+            }
 
-            reloadDevices: function() {
+            reloadDevices() {
                 this.$.appscoAccountDevicesPage.loadDevices();
-            },
+            }
 
-            _onSettingsSaved: function(event) {
+            _onSettingsSaved(event) {
                 this._showAccountComponentsPage();
                 this.refreshLog();
                 this.set('role.account', event.detail.account);
-            },
+            }
 
-            _onPasswordChanged: function(event) {
+            _onPasswordChanged(event) {
                 this._showAccountComponentsPage();
                 this.refreshLog();
 
                 event.stopPropagation();
-                this.fire(event.type, {
-                    account: this.account
-                });
-            },
+                this.dispatchEvent(new CustomEvent(event.type, {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        account: this.account
+                    }
+                }));
+            }
 
-            _showAccountComponentsPage: function() {
+            _showAccountComponentsPage() {
                 this._selected = 'appsco-account-components-page';
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._showAccountComponentsPage();
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            _onAccountSettings: function() {
+            _onAccountSettings() {
                 this._selected = 'appsco-account-settings-page';
-            },
+            }
 
-            _onAllNotifications: function() {
+            _onAllNotifications() {
                 this._selected = 'appsco-account-notifications-page';
-            },
+            }
 
-            _onWholeLog: function() {
+            _onWholeLog() {
                 this._selected = 'appsco-account-log-page';
-            },
+            }
 
-            _onManageTwoFA: function(event) {
+            _onManageTwoFA(event) {
                 this.$.appscoManageAccountTwoFaPage.setTwoFAEnabled(event.detail.twoFAEnabled);
                 this._selected = 'appsco-manage-account-twofa-page';
-            },
+            }
 
-            _onManageOrgunits: function() {
+            _onManageOrgunits() {
                 this._selected = 'appsco-account-orgunits-page';
-            },
+            }
 
-            _onManageGroups: function() {
+            _onManageGroups() {
                 this._selected = 'appsco-account-groups-page';
-            },
+            }
 
-            _onManageDevices: function() {
+            _onManageDevices() {
                 this._selected = 'appsco-account-devices-page';
-            },
+            }
 
-            _onManageApplications: function() {
+            _onManageApplications() {
                 this._selected = 'appsco-directory-role-applications-page';
-            },
+            }
 
-            _onManageResourceAdminApplications: function() {
+            _onManageResourceAdminApplications() {
                 this._selected = 'appsco-directory-role-resource-admin-applications-page';
-            },
+            }
 
-            _onChangePassword: function() {
-
+            _onChangePassword() {
                 this.$.appscoManageAccountComponentsPage.sharedElements = {
                     'hero': this.$.changePasswordHero
                 };
 
                 this._selected = 'appsco-manage-account-change-password-page';
-            },
+            }
 
-            _onPageAnimationFinish: function(event) {
-                var fromPage = event.detail.fromPage,
+            _onPageAnimationFinish(event) {
+                const fromPage = event.detail.fromPage,
                     toPage = event.detail.toPage;
 
                 switch(fromPage.getAttribute('name')) {
@@ -655,48 +704,149 @@
                     case 'appsco-manage-account-change-password-page':
                         fromPage.resetPage();
                         break;
-
                     default:
                         break;
                 }
-
                 switch(toPage.getAttribute('name')) {
                     case 'appsco-account-settings-page':
                     case 'appsco-manage-account-change-password-page':
                         toPage.setPage();
                         break;
-
                     default:
                         break;
                 }
+            }
 
-            },
-
-            _onCanBeManagedResponse: function(event) {
+            _onCanBeManagedResponse(event) {
                 this._canManage = (200 === event.detail.status);
-            },
+            }
 
-            _onCanBeManagedError: function(event) {
+            _onCanBeManagedError(event) {
                 this._canManage = false;
-            },
+            }
 
-            reloadApplications: function() {
+            reloadApplications() {
                 this.$.appscoManageAccountComponentsPage.reloadApplications();
                 this.$.appscoDirectoryRoleApplicationsPage.reloadApplications();
-            },
+            }
 
-            reloadResourceAdmins: function() {
+            reloadResourceAdmins() {
                 this.$.appscoDirectoryRoleResourceAdminApplicationsPage.reloadResourceAdmins();
-            },
+            }
 
-            showAdvanced: function() {
+            showAdvanced() {
                 this.$.appscoManageAccountComponentsPage.showAdvanced();
-            },
+            }
 
-            hideAdvanced: function() {
+            hideAdvanced() {
                 this.$.appscoManageAccountComponentsPage.hideAdvanced();
             }
 
-        });
+            _onShowAdvancedAction(event) {
+                if (event.detail.showAdvanced) {
+                    this.showAdvanced();
+                    return;
+                }
+
+                this.hideAdvanced();
+            }
+
+            _onResetRoleTwoFA(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRoleResetTwoFA');
+                dialog.setRole(event.detail.role);
+                dialog.open();
+            }
+
+            _onRoleTwoFAReset(event) {
+                this.resetPage();
+                this._notify('You have successfully reset two-factor authentication for ' + event.detail.role.account.name);
+            }
+
+            _onApproveDevice(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAccountApproveDevice');
+                dialog.setDevice(event.detail.device);
+                dialog.setAccount(event.detail.account);
+                dialog.open();
+            }
+
+            _onDeviceApproveFinished(event) {
+                const device = event.detail.device;
+                this.reloadDevices();
+                this._notify('Device ' + device.name + ' has been successfully approved.');
+            }
+
+            _onDisapproveDevice(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAccountDisapproveDevice');
+                dialog.setDevice(event.detail.device);
+                dialog.setAccount(event.detail.account);
+                dialog.open();
+            }
+
+            _onDeviceDisapproveFinished(event) {
+                const device = event.detail.device;
+                this.reloadDevices();
+                this._notify('Device ' + device.name + ' has been successfully disapproved.');
+            }
+
+            _onRevokeAssigneeAccess(event) {
+                const dialog = this.shadowRoot.getElementById('appscoApplicationAssigneeRevoke');
+                dialog.setAssignee(event.detail.assignee);
+                dialog.toggle();
+            }
+
+            _onChangeAssigneeClaims(event) {
+                const dialog = this.shadowRoot.getElementById('appscoApplicationAssigneeClaims');
+                dialog.setApplication(event.detail.application);
+                dialog.setAssignee(event.detail.assignee);
+                dialog.toggle();
+            }
+
+            _onAddAccountToOrgunit(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAccountOrgunit');
+                dialog.setAccounts([event.detail.role]);
+                dialog.toggle();
+            }
+
+            _onRemoveAccountFromOrgunit(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAccountRemoveOrgunit');
+                dialog.setOrgUnit(event.detail.orgunit);
+                dialog.setAccount(event.detail.account);
+                dialog.toggle();
+            }
+
+            _onRemoveAccountFromGroup(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAccountRemoveGroup');
+                dialog.setGroup(event.detail.group);
+                dialog.setAccount(event.detail.account);
+                dialog.toggle();
+            }
+
+            _onAddResourceToResourceAdmin(event) {
+                const dialog = this.shadowRoot.getElementById('appscoAddResourceToResourceAdmin');
+                dialog.setRole(event.detail.role);
+                dialog.toggle();
+            }
+
+            _onResourceAdminAssigned(event) {
+                this.reloadResourceAdmins();
+            }
+
+            _onRevokeResourceAdmin(event) {
+                const dialog = this.shadowRoot.getElementById('appscoResourceAdminRevoke');
+                dialog.setAssignee(event.detail.assignee);
+                dialog.setApplication(event.detail.application);
+                dialog.toggle();
+            }
+
+            _onResourceAdminRevoked(event) {
+                event.stopPropagation();
+                this.dispatchEvent(new CustomEvent('resource-admin-revoked', {
+                    bubbles: true,
+                    composed: true,
+                    detail: event.detail
+                }));
+            }
+        }
+        window.customElements.define(AppscoManageAccountPage.is, AppscoManageAccountPage);
     </script>
 </dom-module>

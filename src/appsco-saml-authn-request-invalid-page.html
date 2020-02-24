@@ -22,7 +22,7 @@
                 text-align: center;
             }
             .provisioning-action {
-                @apply(--primary-button);
+                @apply --primary-button;
                 display: inline-block;
                 margin-top: 20px;
                 margin-bottom: 40px;
@@ -34,7 +34,7 @@
 
         <appsco-content id="appscoContent">
 
-            <div content>
+            <div content slot="content">
                 <h2 class="title">Authentication Failed</h2>
 
                 <div class="active-integrations-info">
@@ -47,7 +47,7 @@
                                   on-tap="_onBackToDashboardAction">Back to dashboard</paper-button>
 
                     <div>
-                        <img src="../images/provisioning/provisioning-integration-failed.png" class="image">
+                        <img src$="[[rootPath]]images/provisioning/provisioning-integration-failed.png" class="image">
                     </div>
                 </div>
             </div>
@@ -55,30 +55,36 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-saml-authn-request-invalid-page',
+        class AppscoSamlAuthnRequestInvalidPage extends Polymer.Element {
+            static get is() { return 'appsco-saml-authn-request-invalid-page'; }
 
-            properties: {
-
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            attached: function() {
-                this.pageLoaded = false;
-                this._pageLoaded();
-            },
-
-            _pageLoaded: function() {
-                this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
-
-            _onBackToDashboardAction: function() {
-                this.fire('back-to-dashboard');
+            static get properties() {
+                return {
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
             }
-        });
+
+            ready() {
+                super.ready();
+
+                this.pageLoaded = false;
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._pageLoaded();
+                });
+            }
+
+            _pageLoaded() {
+                this.pageLoaded = true;
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
+
+            _onBackToDashboardAction() {
+                this.dispatchEvent(new CustomEvent('back-to-dashboard', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoSamlAuthnRequestInvalidPage.is, AppscoSamlAuthnRequestInvalidPage);
     </script>
 </dom-module>

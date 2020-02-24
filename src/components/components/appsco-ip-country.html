@@ -20,53 +20,59 @@ Date format
     </template>
 
     <script>
-        Polymer({
+        class AppscoIPCountry extends Polymer.Element {
+            static get is() { return 'appsco-ip-country'; }
 
-            is: 'appsco-ip-country',
+            static get properties() {
+                return {
+                    ip: {
+                        type: String,
+                        value: function () {
+                            return '';
+                        },
+                        observer: "_calculateCountry"
+                    },
 
-            properties: {
-                ip: {
-                    type: String,
-                    value: function() { return ''; },
-                    observer: "_calculateCountry"
-                },
-                _country: {
-                    type: String
-                },
-                _cache: {
-                    type: Array,
-                    value: []
-                }
-            },
+                    _country: {
+                        type: String
+                    },
 
-            attahced: function() {
+                    _cache: {
+                        type: Array,
+                        value: []
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
                 if(this._isLocalStorageSupported()) {
                     this._cache = JSON.parse(this._getStoredValue('appsco-ip-country-cache'));
                 }
-            },
+            }
 
             /**
              * @private
              */
-            _calculateCountry: function() {
+            _calculateCountry() {
                 if(this._cache && this._cache[this.ip]) {
                     this._country = this._cache[this.ip];
                     return;
                 }
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     options = {
-                        url: 'https://appsco.com/public/geoip?ip='+this.ip,
+                        url: 'https://appsco.com/public/geoip?ip=' + this.ip,
                         method: 'GET',
                         handleAs: 'json'
                     };
 
                 request.send(options).then(function() {
-
                     if (200 === parseInt(request.status)) {
                         this._country = request.response.geoplugin_countryName;
                         this._cache[this.ip] = this._country;
                         if(this._isLocalStorageSupported()) {
-                            var _cache = JSON.parse(this._getStoredValue('appsco-ip-country-cache'));
+                            const _cache = JSON.parse(this._getStoredValue('appsco-ip-country-cache'));
                             if(!_cache[this.ip]) {
                                 _cache[this.ip] = this._country;
                                 this._storeValue('appsco-ip-country-cache', JSON.stringify(_cache));
@@ -75,27 +81,28 @@ Date format
                     }
 
                 }.bind(this));
-            },
+            }
 
-            _isLocalStorageSupported: function () {
+            _isLocalStorageSupported () {
                 return window.localStorage
                     && typeof(window.localStorage.setItem) === 'function'
                     && typeof(window.localStorage.getItem) === 'function'
                     && typeof(window.localStorage.removeItem) === 'function';
-            },
+            }
 
-            _storeValue: function(key, value) {
+            _storeValue(key, value) {
                 if (this._isLocalStorageSupported()) {
                     window.localStorage.setItem(key, value);
                 } else {
-                    var secure_cookie = Boolean(Number(this.cookieSecure)) === true ? ';secure' : '';
+                    const secure_cookie = Boolean(Number(this.cookieSecure)) === true ? ';secure' : '';
                     document.cookie = key + '=' + value + secure_cookie;
                 }
-            },
+            }
 
-            _getStoredValue: function(key) {
+            _getStoredValue(key) {
                 return this._isLocalStorageSupported() ? window.localStorage.getItem(key) : this._getCookie(key);
-            },
-        });
+            }
+        }
+        window.customElements.define(AppscoIPCountry.is, AppscoIPCountry);
     </script>
 </dom-module>

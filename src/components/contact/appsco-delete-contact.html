@@ -26,7 +26,7 @@ Shows dialog screen with confirmation for contact deleting.
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-delete-contact);
+                @apply --appsco-delete-contact;
 
                 --form-error-box: {
                      margin-top: 0;
@@ -35,23 +35,22 @@ Shows dialog screen with confirmation for contact deleting.
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host appsco-loader {
-                @apply(--paper-dialog-appsco-loader);
+                @apply --paper-dialog-appsco-loader;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -63,7 +62,7 @@ Shows dialog screen with confirmation for contact deleting.
 
             <paper-dialog-scrollable>
                 <div class="delete-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Please confirm deleting of this contact.</p>
                 </div>
             </paper-dialog-scrollable>
@@ -76,110 +75,87 @@ Shows dialog screen with confirmation for contact deleting.
 
     </template>
     <script>
-        Polymer({
+        class AppscoDeleteContact extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-delete-contact'; }
 
-            is: 'appsco-delete-contact',
-
-            properties: {
-
-                /**
-                 * Contact to delete.
-                 */
-                contact: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _deleteContactApi: {
-                    type: String,
-                    computed: '_computeDeleteContactApi(contact)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            setContact: function(contact) {
-                this.contact = contact;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    /**
+                     * Contact to delete.
+                     */
+                    contact: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _deleteContactApi: {
+                        type: String,
+                        computed: '_computeDeleteContactApi(contact)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeDeleteContactApi: function(contact) {
-                return contact.self ? contact.self : '';
-            },
+            setContact(contact) {
+                this.contact = contact;
+            }
 
-            _showLoader: function() {
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            _computeDeleteContactApi(contact) {
+                return contact.self ? contact.self : null;
+            }
+
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onDeleteAction: function() {
-                var request = document.createElement('iron-request'),
+            _onDeleteAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._deleteContactApi,
                         method: 'DELETE',
@@ -193,23 +169,20 @@ Shows dialog screen with confirmation for contact deleting.
                     this.close();
 
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when contact is deleted.
-                         *
-                         * @event contact-deleted
-                         * @param [Object] contact
-                         */
-                        this.fire('contact-deleted', {
-                            contact: request.response
-                        });
+                        this.dispatchEvent(new CustomEvent('contact-deleted', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                contact: request.response
+                            }
+                        }));
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoDeleteContact.is, AppscoDeleteContact);
     </script>
 </dom-module>

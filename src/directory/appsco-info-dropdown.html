@@ -31,7 +31,7 @@ Example:
                 color: var(--primary-text-color, #414042);
 
                 --paper-card-content: {
-                    @apply(--layout-flex-vertical);
+                    @apply --layout-flex-vertical;
                     padding: 10px;
                     font-size: 14px;
                 };
@@ -44,12 +44,12 @@ Example:
             appsco-dropdown {
                 top: 12px;
                 right: 0;
-                @apply(--appsco-info-dropdown);
+                @apply --appsco-info-dropdown;
 
                 --dropdown-caret-background-color: var(--paper-orange-300);
             }
             :host paper-card {
-                @apply(--layout-flex-vertical);
+                @apply --layout-flex-vertical;
                 width: 100%;
                 background-color: var(--paper-orange-300);
                 color: #ffffff;
@@ -73,7 +73,7 @@ Example:
 
                 <div class="card-content">
 
-                    <content select="[content]"></content>
+                    <slot name="content" old-content-selector="[content]"></slot>
 
                 </div>
 
@@ -92,52 +92,42 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoInfoDropdown extends Polymer.Element {
+            static get is() { return 'appsco-info-dropdown'; }
 
-            is: 'appsco-info-dropdown',
+            static get properties() {
+                return {
+                    actionLabel: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
-
-                actionLabel: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * DOM element which triggers the dropdown.
-                 */
-                _triggerDropdown: {
-                    type: Object,
-                    notify: true
-                }
-            },
-
-            attached: function() {
-                this._triggerDropdown = this.$$('#dropdownActions');
-            },
-
-            toggle: function(target) {
-                this._triggerDropdown = target;
-                this.$.dropdown.toggle();
-            },
-
-            /**
-             * Fires event on dropdown Upgrade action.
-             *
-             * @private
-             */
-            _onDropdownAction: function() {
-
-                /**
-                 * Fired when user taps on Upgrade action.
-                 *
-                 * @event upgrade
-                 */
-                this.fire('info-action');
-
-                this.toggle();
+                    /**
+                     * DOM element which triggers the dropdown.
+                     */
+                    _triggerDropdown: {
+                        type: Object,
+                        notify: true
+                    }
+                };
             }
 
-        });
+            ready() {
+                super.ready();
+
+                this._triggerDropdown = this.shadowRoot.getElementById('dropdownActions');
+            }
+
+            toggle(target) {
+                this._triggerDropdown = target;
+                this.$.dropdown.toggle();
+            }
+
+            _onDropdownAction() {
+                this.dispatchEvent(new CustomEvent('info-action', { bubbles: true, composed: true }));
+                this.toggle();
+            }
+        }
+        window.customElements.define(AppscoInfoDropdown.is, AppscoInfoDropdown);
     </script>
 </dom-module>

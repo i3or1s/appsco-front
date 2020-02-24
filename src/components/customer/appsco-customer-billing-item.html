@@ -10,13 +10,10 @@
 
 <dom-module id="appsco-customer-billing-item">
     <template>
-
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host .customer-logo {
-                @apply(--layout-vertical);
-                @apply(--layout-center-justified);
+                @apply --layout-vertical;
+                @apply --layout-center-justified;
                 width: 52px;
                 height: 52px;
                 margin: 0;
@@ -45,13 +42,13 @@
             }
 
             iron-collapse {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
             }
 
             :host .reports-container {
                 padding: 20px;
-                @apply(--layout-horizontal);
-                @apply(--layout-vertical);
+                @apply --layout-horizontal;
+                @apply --layout-vertical;
                 background-color: var(--collapsible-content-background-color);
                 display: grid;
                 grid-template-columns: 45% 45%;
@@ -152,38 +149,37 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-customer-billing-item',
+        class AppscoCustomerBillingItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-customer-billing-item'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _customerInitials: {
+                        type: String,
+                        computed: "_computeInitials(item)"
+                    },
 
-                _customerInitials: {
-                    type: String,
-                    computed: "_computeInitials(item)"
-                },
+                    _licencesVisible: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
 
-                _licencesVisible: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            _computeInitials: function(item) {
-                var initials = '';
-                var name = item.name;
+            _computeInitials(item) {
+                let initials = '';
+                const name = item.name;
                 if (name) {
-                    var array = name.split(' ');
+                    const array = name.split(' ');
                     if (array.length > 1) {
                         initials = array[0].substring(0, 1) + array[1].substring(0, 1);
                     } else {
@@ -191,18 +187,18 @@
                     }
                 }
                 return initials;
-            },
+            }
 
-            _onShowLicences: function() {
+            _onShowLicences() {
                 this.$.licences.show();
                 this._licencesVisible = true;
-            },
+            }
 
-            _onHideLicences: function() {
+            _onHideLicences() {
                 this.$.licences.hide();
                 this._licencesVisible = false;
             }
-
-        });
+        }
+        window.customElements.define(AppscoCustomerBillingItem.is, AppscoCustomerBillingItem);
     </script>
 </dom-module>

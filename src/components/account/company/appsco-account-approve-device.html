@@ -9,13 +9,15 @@
 <link rel="import" href="../../components/appsco-loader.html">
 <link rel="import" href="../../components/appsco-form-error.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-account-approve-device">
     <template>
         <style>
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-account-approve-device);
+                @apply --appsco-account-approve-device;
 
                 --form-error-box: {
                      margin-top: 0;
@@ -24,23 +26,22 @@
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host appsco-loader {
-                @apply(--paper-dialog-appsco-loader);
+                @apply --paper-dialog-appsco-loader;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -54,7 +55,7 @@
 
             <paper-dialog-scrollable>
                 <div>
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Please confirm that you want to approve chosen device.</p>
                 </div>
             </paper-dialog-scrollable>
@@ -67,108 +68,91 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountApproveDevice extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-approve-device'; }
 
-            is: 'appsco-account-approve-device',
-
-            properties: {
-
-                device: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _approveDeviceApi: {
-                    type: String,
-                    computed: '_computeApproveApi(device)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            setDevice: function(device) {
-                this.set('device', device);
-            },
-
-            setAccount: function(account) {
-                this.set('account', account);
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    device: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _approveDeviceApi: {
+                        type: String,
+                        computed: '_computeApproveApi(device)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeApproveApi: function(device) {
+            setDevice(device) {
+                this.set('device', device);
+            }
+
+            setAccount(account) {
+                this.set('account', account);
+            }
+
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            _computeApproveApi(device) {
                 return device.meta ? device.meta.approve : '';
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onApproveAction: function() {
-                var request = document.createElement('iron-request'),
+            _onApproveAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._approveDeviceApi,
                         method: 'POST',
@@ -179,21 +163,23 @@
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('device-approve-finished', {
-                            device: this.device
-                        });
+                        this.dispatchEvent(new CustomEvent('device-approve-finished', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                device: this.device
+                            }
+                        }));
 
                         this.close();
                     }
-
                 }.bind(this), function() {
                     this._showError(this.apiErrors.getError(request.response.code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountApproveDevice.is, AppscoAccountApproveDevice);
     </script>
 </dom-module>

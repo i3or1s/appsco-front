@@ -5,16 +5,18 @@
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../../bower_components/paper-progress/paper-progress.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-integration-webhooks-card">
     <template>
         <style>
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--appsco-integration-webhooks-card);
+                @apply --appsco-integration-webhooks-card;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             .progress-bar {
                 min-width: 100px;
@@ -22,10 +24,10 @@
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             .info {
-                @apply(--info-message);
+                @apply --info-message;
             }
         </style>
 
@@ -33,7 +35,7 @@
             <iron-ajax
                     id="getIntegrationWebhooksApiRequest"
                     url="[[ webhookApi ]]"
-                    headers="[[ _computedHeaders ]]"
+                    headers="[[ _headers ]]"
                     debounce-duration="300"
                     on-error="_onError"
                     on-response="_onResponse"></iron-ajax>
@@ -57,157 +59,122 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoIntegrationWebhooksCard extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-integration-webhooks-card'; }
 
-            is: 'appsco-integration-webhooks-card',
+            static get properties() {
+                return {
+                    webhookApi: {
+                        type: String,
+                        observer: '_onWebhookApiChanged'
+                    },
 
-            properties: {
+                    _message: {
+                        type: String,
+                        value: ''
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _webhooks: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _loaders: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                /**
-                 * Route to retrieve webhooks
-                 */
-                webhookApi: {
-                    type: String,
-                    value: '',
-                    observer: '_onWebhookApiChanged'
-                },
-
-                 _message: {
-                    type: String,
-                    value: ''
-                },
-
-                _webhooks: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _loaders: {
-                    type: Array,
-                    value: function() { return []; }
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._showWebhookDetails();
+                });
+            }
 
-            attached: function() {
-                this._showWebhookDetails();
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _onWebhookApiChanged: function(url) {
+            _onWebhookApiChanged(url) {
                 if (url && url.length > 0) {
                     this._loadWebhooks();
                 } else {
                     this._onError();
                 }
-            },
+            }
 
-            _showWebhookDetails: function() {
+            _showWebhookDetails() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
-            },
+            }
 
-            _handleEmptyLoad: function() {
+            _handleEmptyLoad() {
                 this._hideProgressBar();
-                this.fire('empty-load');
-            },
+                this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
+            }
 
-            loadWebhooks: function() {
+            loadWebhooks() {
                 this._loadWebhooks();
-            },
+            }
 
-            _loadWebhooks: function() {
+            _loadWebhooks() {
                 this._showProgressBar();
                 this._clearWebhooks();
                 this.$.getIntegrationWebhooksApiRequest.generateRequest();
-            },
+            }
 
-            _onError: function() {
+            _onError() {
                 this._message = 'We couldn\'t load webhooks at the moment. Please try again in a minute.';
                 this._hideProgressBar();
-                this.fire('webhooks-load-error');
-            },
+                this.dispatchEvent(new CustomEvent('webhooks-load-error', { bubbles: true, composed: true }));
+            }
 
-            _clearWebhooks: function() {
+            _clearWebhooks() {
                 this._clearLoaders();
                 this.set('_webhooks', []);
                 this.set('_message', '');
-            },
+            }
 
-            _clearLoaders: function() {
-                for (var idx in this._loaders) {
+            _clearLoaders() {
+                for (const idx in this._loaders) {
                     clearTimeout(this._loaders[idx]);
                 }
                 this.set('_loaders', []);
-            },
+            }
 
-            _onResponse: function(event) {
-                var response = event.detail.response;
+            _onResponse(event) {
+                const response = event.detail.response;
                 if (response && response.web_hooks) {
-
-                    var webhooks = response.web_hooks,
+                    const webhooks = response.web_hooks,
                         meta = response.meta,
                         webhooksCount = webhooks.length - 1;
-
-
 
                     if (meta.total === 0) {
                         this._message = 'There are no webhooks for this integration.';
@@ -220,44 +187,45 @@
 
                     this._message = "";
                     webhooks.forEach(function(el, index) {
-
                         this._loaders.push(setTimeout(function() {
-
                             this.push('_webhooks', el);
 
                             if (index === webhooksCount) {
-
                                 this._hideProgressBar();
-                                this.fire('loaded', {
-                                    webhooks: webhooks
-                                });
+                                this.dispatchEvent(new CustomEvent('loaded', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        webhooks: webhooks
+                                    }
+                                }));
                             }
-
                         }.bind(this), (index + 1) * 30));
-
                     }.bind(this));
-
                     this._fireWebHooksLoadedEvent(webhooks);
                 }
-            },
+            }
 
-            _fireWebHooksLoadedEvent: function(webHooks) {
-                this.fire('web-hooks-loaded', {
-                    web_hooks: webHooks
-                });
-            },
+            _fireWebHooksLoadedEvent(webHooks) {
+                this.dispatchEvent(new CustomEvent('web-hooks-loaded', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        web_hooks: webHooks
+                    }
+                }));
+            }
 
-            _showProgressBar: function() {
-                this.$$('#paperProgress').hidden = false;
-            },
+            _showProgressBar() {
+                this.shadowRoot.getElementById('paperProgress').hidden = false;
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
-                    this.$$('#paperProgress').hidden = true;
+                    this.shadowRoot.getElementById('paperProgress').hidden = true;
                 }.bind(this), 300);
-
-            },
-        });
+            }
+        }
+        window.customElements.define(AppscoIntegrationWebhooksCard.is, AppscoIntegrationWebhooksCard);
     </script>
 </dom-module>

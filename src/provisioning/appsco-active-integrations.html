@@ -14,16 +14,16 @@
         <style>
             :host {
                 --appsco-list-item: {
-                    @apply(--appsco-active-integration-item);
+                    @apply --appsco-active-integration-item;
                 };
                 --appsco-list-item-activated: {
-                    @apply(--appsco-active-integration-item-activated);
+                    @apply --appsco-active-integration-item-activated;
                 };
             }
             :host appsco-active-integration-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-active-integration-item);
+                @apply --appsco-active-integration-item;
             }
         </style>
 
@@ -72,17 +72,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoActiveIntegrations extends Polymer.mixinBehaviors([Polymer.AppscoListBehavior], Polymer.Element) {
+            static get is() { return 'appsco-active-integrations'; }
 
-            is: 'appsco-active-integrations',
-
-            behaviors: [
-                Polymer.AppscoListBehavior
-            ],
-
-            reloadIntegrations: function() {
+            reloadIntegrations() {
                 this.reloadItems();
             }
-        });
+        }
+        window.customElements.define(AppscoActiveIntegrations.is, AppscoActiveIntegrations);
     </script>
 </dom-module>

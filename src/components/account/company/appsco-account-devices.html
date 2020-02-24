@@ -2,8 +2,9 @@
 <link rel="import" href="../../../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../../../bower_components/paper-progress/paper-progress.html">
 
-
 <link rel="import" href="appsco-account-devices-item.html">
+
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-account-devices">
     <template>
@@ -11,11 +12,11 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-account-devices);
+                @apply --appsco-account-devices;
             }
             :host .devices {
-                @apply(--layout-vertical);
-                @apply(--appsco-devices);
+                @apply --layout-vertical;
+                @apply --appsco-devices;
             }
             :host appsco-account-devices-item:first-of-type {
                 border-top: none;
@@ -23,21 +24,21 @@
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host paper-progress {
                 width: 100%;
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             .info-total {
                 margin-top: 10px;
             }
             .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 color: var(--secondary-text-color);
             }
 
@@ -48,7 +49,7 @@
                 url="[[ devicesApi ]]"
                 on-response="_onDeviceResponse"
                 on-error="_handleError"
-                headers="{{ _computedHeaders }}"></iron-ajax>
+                headers="{{ _headers }}"></iron-ajax>
 
         <paper-progress id="progress" indeterminate></paper-progress>
 
@@ -84,107 +85,76 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountDevices extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior, Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-devices'; }
 
-            is: 'appsco-account-devices',
-
-            properties: {
-
-                /**
-                 * Number of same devices to display
-                 *
-                 */
-                DISPLAY_DEVICE_SIZE: {
-                    type: Number,
-                    value: 3
-                },
-
-                /**
-                 * Account
-                 */
-                account: {
-                    type: Object,
-                    value: function () {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Get role devices link.
-                 */
-                devicesApi: {
-                    type: String
-                },
-
-                /**
-                 * Number of devices to load.
-                 */
-                size: {
-                    type: Number
-                },
-
-                /**
-                 * Indicates if device should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Authorization token
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                _devices: {
-                    type: Array,
-                    value: function () {
-                        return [];
+            static get properties() {
+                return {
+                    DISPLAY_DEVICE_SIZE: {
+                        type: Number,
+                        value: 3
                     },
-                    notify: true,
-                    observer: '_devicesChanged'
-                },
 
-                _uniqueDevices: {
-                    type: Array,
-                    value: function () {
-                        return [];
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     },
-                    notify: true
-                },
 
-                /**
-                 * Message to display instead of devices list.
-                 */
-                _message: {
-                    type: String
-                },
+                    devicesApi: {
+                        type: String
+                    },
 
-                _totalDevices: {
-                    type: Number
-                },
+                    /**
+                     * Number of devices to load.
+                     */
+                    size: {
+                        type: Number
+                    },
 
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                }
-            },
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            attached: function() {
-                this.fire('component-attached');
-            },
+                    _devices: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true,
+                        observer: '_devicesChanged'
+                    },
 
-            /**
-             * Triggers ajax request in order to get devices.
-             */
-            loadDevices: function() {
+                    _uniqueDevices: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
+                    },
+
+                    _message: {
+                        type: String
+                    },
+
+                    _totalDevices: {
+                        type: Number
+                    },
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.dispatchEvent(new CustomEvent('component-attached', { bubbles: true, composed: true }));
+                });
+            }
+
+            loadDevices() {
                 this.$.progress.hidden = false;
                 this.set('_devices', []);
                 this.set('_uniqueDevices', []);
@@ -193,14 +163,13 @@
 
                 this.$.ironAjaxGetDevices.url = this._computeUrl(this.devicesApi);
                 this.$.ironAjaxGetDevices.generateRequest();
-            },
+            }
 
-            approveDevice: function(device) {
-                var _devices = JSON.parse(JSON.stringify(this._devices)),
-                        _length = _devices.length;
+            approveDevice(device) {
+                const _devices = JSON.parse(JSON.stringify(this._devices)),
+                    _length = _devices.length;
 
-                for (var j = 0; j < _length; j++) {
-
+                for (let j = 0; j < _length; j++) {
                     if (device.alias === _devices[j].alias) {
                         this.splice('_devices', j, 1);
                         break;
@@ -208,38 +177,33 @@
                 }
 
                 this._totalDevices--;
-            },
+            }
 
-            _devicesChanged: function() {
-                var uniqueDevices = [];
-                for(var deviceIndex in this._devices) {
-                    var device = JSON.parse(JSON.stringify(this._devices[deviceIndex]));
-                    var key = btoa(device.browser + device.operatingSystem);
+            _devicesChanged() {
+                const uniqueDevices = [];
+                for(const deviceIndex in this._devices) {
+                    const device = JSON.parse(JSON.stringify(this._devices[deviceIndex]));
+                    const key = btoa(device.browser + device.operatingSystem);
                     if(!uniqueDevices[key]) {
                         uniqueDevices[key] = [];
                     }
                     if(uniqueDevices[key].length >= this.DISPLAY_DEVICE_SIZE) continue;
                     uniqueDevices[key].push(device);
                 }
-                for(var index in uniqueDevices) {
+                for(const index in uniqueDevices) {
                     uniqueDevices.push(JSON.parse(JSON.stringify(uniqueDevices[index])));
                     delete uniqueDevices[index];
                 }
                 this.set('_uniqueDevices', []);
                 this.set('_uniqueDevices', uniqueDevices);
-            },
+            }
 
-            _computeUrl: function(devicesApi) {
+            _computeUrl(devicesApi) {
                return this.size ? devicesApi + '&limit=' + this.size : devicesApi;
-            },
+            }
 
-            /**
-             * Handle response event
-             *
-             * @private
-             */
-            _onDeviceResponse: function(event) {
-                var response = event.detail.response;
+            _onDeviceResponse(event) {
+                const response = event.detail.response;
                 if (!response) {
                     return false;
                 }
@@ -250,31 +214,13 @@
                     this._message = "Account doesn't have any registered devices.";
                 }
                 this.$.progress.hidden = true;
-            },
-
-            /**
-             * Handle response error
-             *
-             * @private
-             */
-            _handleError: function(event) {
-                this._message = 'We couldn\'t load devices at the moment. Please try again in a minute. If error continues contact us.';
-                this.$.progress.hidden = true;
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
             }
 
-        });
+            _handleError(event) {
+                this._message = 'We couldn\'t load devices at the moment. Please try again in a minute. If error continues contact us.';
+                this.$.progress.hidden = true;
+            }
+        }
+        window.customElements.define(AppscoAccountDevices.is, AppscoAccountDevices);
     </script>
 </dom-module>

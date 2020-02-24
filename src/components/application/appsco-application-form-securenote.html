@@ -21,19 +21,18 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'appsco-application-form-securenote',
+        class AppscoApplicationFormSecurenote extends Polymer.mixinBehaviors([Polymer.AppscoApplicationFormBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-form-securenote'; }
 
-            properties: {
-                claimsNamePrefix: {
-                    type: String,
-                    value: "claims_securenote"
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoApplicationFormBehavior
-            ]
-        });
+            static get properties() {
+                return {
+                    claimsNamePrefix: {
+                        type: String,
+                        value: "claims_securenote"
+                    }
+                };
+            }
+        }
+        window.customElements.define(AppscoApplicationFormSecurenote.is, AppscoApplicationFormSecurenote);
     </script>
 </dom-module>

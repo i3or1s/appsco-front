@@ -9,7 +9,7 @@
     <template>
         <style>
             :host {
-                @apply(--appsco-oauth-application-details);
+                @apply --appsco-oauth-application-details;
                 display: none;
             }
             :host .attribute-container {
@@ -17,21 +17,21 @@
             }
             :host .label {
                 color: var(--secondary-text-color);
-                @apply(--paper-font-body1);
-                @apply(--application-details-label);
+                @apply --paper-font-body1;
+                @apply --application-details-label;
             }
             :host .content {
                 color: var(--primary-text-color);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--paper-font-subhead);
-                @apply(--application-details-value);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --paper-font-subhead;
+                @apply --application-details-value;
             }
             :host .value {
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-nowrap;
             }
             :host .flex {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
         </style>
 
@@ -69,61 +69,63 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoOAuthApplicationDetails extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-oauth-application-details'; }
 
-            is: 'appsco-oauth-application-details',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._showApplicationDetails();
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                'application-changed': '_onApplicationChanged'
-            },
+            _addListeners() {
+                this.addEventListener('application-changed', this._onApplicationChanged);
+            }
 
-            attached: function() {
+            _onApplicationChanged() {
                 this._showApplicationDetails();
-            },
+            }
 
-            _onApplicationChanged: function() {
-                this._showApplicationDetails();
-            },
-
-            _showApplicationDetails: function() {
+            _showApplicationDetails() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
             }
-        });
+        }
+        window.customElements.define(AppscoOAuthApplicationDetails.is, AppscoOAuthApplicationDetails);
     </script>
 </dom-module>

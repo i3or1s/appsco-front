@@ -45,148 +45,134 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyManageIdpSettingsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Polymer.NeonAnimatableBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-manage-idp-settings-page'; }
 
-            is: 'appsco-company-manage-idp-settings-page',
+            static get properties() {
+                return {
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    authorizationToken: {
+                        type: String
+                    },
 
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    idPIntegrationsApi: {
+                        type: String
+                    },
+
+                    domainsApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _selectedPage: {
+                        type: String,
+                        value: 'appsco-company-idp-domains-page'
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                idPIntegrationsApi: {
-                    type: String,
-                    value: ''
-                },
-
-                domainsApi: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _selectedPage: {
-                    type: String,
-                    value: 'appsco-company-idp-domains-page'
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
+                this.sharedElements = {
+                    'hero': this
+                };
+            }
 
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior,
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            reloadDomains: function() {
+            reloadDomains() {
                 this.$.appscoCompanyIdPDomainsPage.reloadDomains();
-            },
+            }
 
-            modifyDomain: function(domain) {
+            modifyDomain(domain) {
                 this.$.appscoCompanyIdPDomainsPage.modifyDomain(domain);
-            },
+            }
 
-            _showCompanyIdPDomainsPage: function() {
+            _showCompanyIdPDomainsPage() {
                 this._selectedPage = 'appsco-company-idp-domains-page';
-            },
+            }
 
-            _showCompanyIdPSettingsPage: function() {
+            _showCompanyIdPSettingsPage() {
                 this._selectedPage = 'appsco-company-idp-settings-page';
-            },
+            }
 
-            _onBackIdPSettingsPage: function(event) {
+            _onBackIdPSettingsPage(event) {
                 event.stopPropagation();
 
                 this._showCompanyIdPDomainsPage();
-            },
+            }
 
-            _onManageDomain: function(event) {
+            _onManageDomain(event) {
                 this._showCompanyIdPSettingsPage();
                 this.$.appscoCompanyIdPSettingsPage.setDomain(event.detail.domain);
-            },
+            }
 
-            _onIdPSettingsSaved: function(event) {
+            _onIdPSettingsSaved(event) {
                 this.$.appscoCompanyIdPDomainsPage.modifyDomain(event.detail.domain);
-            },
+            }
 
-            _onPageAnimationFinish: function(event) {
-                var fromPage = event.detail.fromPage,
+            _onPageAnimationFinish(event) {
+                const fromPage = event.detail.fromPage,
                     toPage = event.detail.toPage;
 
-                switch(fromPage.getAttribute('name')) {
-                    case 'appsco-company-idp-settings-page':
-                        fromPage.resetPage();
-                        break;
-
-                    default:
-                        break;
+                if('appsco-company-idp-settings-page' === fromPage.getAttribute('name')) {
+                    fromPage.resetPage();
                 }
 
-                switch(toPage.getAttribute('name')) {
-                    case 'appsco-company-idp-settings-page':
-                        toPage.setupPage();
-                        break;
-
-                    default:
-                        return false;
+                if('appsco-company-idp-settings-page' === toPage.getAttribute('name')) {
+                    toPage.setupPage();
+                    return;
                 }
 
+                return false;
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyManageIdpSettingsPage.is, AppscoCompanyManageIdpSettingsPage);
     </script>
 </dom-module>
 

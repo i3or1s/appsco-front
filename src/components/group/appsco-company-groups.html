@@ -8,15 +8,15 @@
 <link rel="import" href="../components/appsco-list-observer-behavior.html">
 <link rel="import" href="../components/appsco-list-styles.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-company-groups">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host appsco-company-group-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-company-group-item);
+                @apply --appsco-company-group-item;
             }
         </style>
 
@@ -67,91 +67,86 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroups extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-groups'; }
 
-            is: 'appsco-company-groups',
+            static get properties() {
+                return {
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            properties: {
+                    selectable: {
+                        type: Boolean,
+                        value: true
+                    }
+                };
+            }
 
-                /**
-                 * Indicates if group should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-                selectable: {
-                    type: Boolean,
-                    value: true
-                }
-            },
+            recalculateTotals(group) {
+                const groups = JSON.parse(JSON.stringify(this._listItems));
 
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_observeItems(_listItems)'
-            ],
-
-            recalculateTotals: function(group) {
-                var groups = JSON.parse(JSON.stringify(this._listItems));
-
-                for (var idx in groups) {
+                for (const idx in groups) {
                     if (group.self === groups[idx].self) {
-                        this.$$('#appscoListItem_' + idx).recalculateTotals(group);
+                        this.shadowRoot.getElementById('appscoListItem_' + idx).recalculateTotals(group);
                     }
                 }
-            },
+            }
 
-            addGroupsCompanyRoles: function(groups, roles) {
-                var length = groups.length;
-
+            addGroupsCompanyRoles(groups, roles) {
+                const length = groups.length;
                 this.modifyItems(groups);
-
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     this._increaseGroupRoleCount(groups[i], roles.length);
                 }
-            },
+            }
 
-            removeGroupCompanyRoles: function(group, roles) {
+            removeGroupCompanyRoles(group, roles) {
                 this._decreaseGroupRoleCount(group, roles.length);
-            },
+            }
 
-            _observeItems: function(items) {
+            _observeItems(items) {
                 if (this.preview === false) {
                     this.setObservableType('groups');
                     this.populateItems(items);
                 }
-            },
+            }
 
-            _increaseGroupRoleCount: function(group, count) {
-                var groups = JSON.parse(JSON.stringify(this._listItems)),
+            _increaseGroupRoleCount(group, count) {
+                const groups = JSON.parse(JSON.stringify(this._listItems)),
                     length = groups.length;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (group.self === groups[i].alias) {
-                        this.$$('#appscoListItem_' + i).increaseGroupRolesCount(count);
-                        break;
-                    }
-                }
-            },
-
-            _decreaseGroupRoleCount: function(group, count) {
-                var groups = JSON.parse(JSON.stringify(this._listItems)),
-                    length = groups.length;
-
-                for (var i = 0; i < length; i++) {
-
-                    if (group.self === groups[i].self) {
-                        this.$$('#appscoListItem_' + i).decreaseGroupRolesCount(count);
+                        this.shadowRoot.getElementById('appscoListItem_' + i).increaseGroupRolesCount(count);
                         break;
                     }
                 }
             }
-        });
+
+            _decreaseGroupRoleCount(group, count) {
+                const groups = JSON.parse(JSON.stringify(this._listItems)),
+                    length = groups.length;
+
+                for (let i = 0; i < length; i++) {
+                    if (group.self === groups[i].self) {
+                        this.shadowRoot.getElementById('appscoListItem_' + i).decreaseGroupRolesCount(count);
+                        break;
+                    }
+                }
+            }
+        }
+        window.customElements.define(AppscoCompanyGroups.is, AppscoCompanyGroups);
     </script>
 </dom-module>

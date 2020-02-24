@@ -33,12 +33,12 @@ Custom property | Description | Default
         <style>
             :host {
                 display: none;
-                @apply(--appsco-group-card);
+                @apply --appsco-group-card;
             }
             .group-card {
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 width: 142px;
                 height: 24px;
                 line-height: 24px;
@@ -47,13 +47,13 @@ Custom property | Description | Default
                 cursor: pointer;
                 position: relative;
                 border-radius: 3px;
-                @apply(--group-card);
+                @apply --group-card;
             }
             .group-name {
-                @apply(--layout-flex);
-                @apply(--paper-font-common-nowrap);
+                @apply --layout-flex;
+                @apply --paper-font-common-nowrap;
                 text-align: center;
-                @apply(--group-name);
+                @apply --group-name;
             }
             .clear-icon {
                 width: 14px;
@@ -76,82 +76,86 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoGroupCard extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-group-card'; }
 
-            is: 'appsco-group-card',
+            static get properties() {
+                return {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    removeAction: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Item that is to be rendered.
-                 */
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    animationConfig: {
+                        value: function () {
+                            return {
 
-                removeAction: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
                             }
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+            ready() {
+                super.ready();
 
-            listeners: {
-                'tap': '_onTap',
-                'neon-animation-finish': '_onAnimationFinish'
-            },
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
 
-            attached: function() {
-                this.style.display = 'flex';
-                this.playAnimation('entry');
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'flex';
+                });
 
-            _onTap: function() {
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                    this._addListeners();
+                })
+            }
 
+            _addListeners() {
+                this.addEventListener('tap', this._onTap);
+                this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+            }
+
+            _onTap() {
                 this.playAnimation('exit', {
                     exit: true
                 });
-            },
-
-            _onAnimationFinish: function(event) {
-
-                if (event.detail.exit) {
-                    this.fire('selected', {
-                        group: this.group
-                    });
-                }
             }
 
-        });
+            _onAnimationFinish(event) {
+                if (event.detail.exit) {
+                    this.dispatchEvent(new CustomEvent('selected', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            group: this.group
+                        }
+                    }));
+                }
+            }
+        }
+        window.customElements.define(AppscoGroupCard.is, AppscoGroupCard);
     </script>
 </dom-module>

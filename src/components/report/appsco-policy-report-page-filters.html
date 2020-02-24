@@ -9,12 +9,14 @@
 
 <link rel="import" href="../components/appsco-search.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-policy-report-page-filters">
     <template>
         <style>
             :host {
-                @apply(--layout-vertical);
-                @apply(--appsco-policy-report-page-filters);
+                @apply --layout-vertical;
+                @apply --appsco-policy-report-page-filters;
 
                 --paper-dropdown-menu: {
                     width: 100%;
@@ -35,7 +37,7 @@
                 box-sizing: border-box;
             }
             .suggested-policies {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 width: 100%;
                 min-height: 100px;
                 max-height: calc(100vh - 2*64px - 30px - 10px - 3*54px);
@@ -63,7 +65,7 @@
                 line-height: 18px;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             vaadin-date-picker {
                 --paper-input-container-label: {
@@ -128,104 +130,105 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoPolicyReportPageFilters extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-policy-report-page-filters'; }
 
-            is: 'appsco-policy-report-page-filters',
+            static get properties() {
+                return {
+                    policiesApi: {
+                        type: String
+                    },
 
-            properties: {
+                    _policiesApi: {
+                        type: String,
+                        computed: '_computePoliciesApi(policiesApi)'
+                    },
 
-                policiesApi: {
-                    type: String,
-                    value: ''
-                },
+                    _searchPoliciesApi: {
+                        type: String,
+                        computed: '_computeSearchPoliciesApi(_policiesApi, _policyTerm)'
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _policiesList: {
+                        type: Array,
+                        value: function () {
+                            return [{
+                                policy: 'all',
+                                name: 'All policies'
+                            }];
+                        }
+                    },
 
-                _policiesApi: {
-                    type: String,
-                    computed: '_computePoliciesApi(policiesApi)'
-                },
+                    _policiesListDisplay: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                _searchPoliciesApi: {
-                    type: String,
-                    computed: '_computeSearchPoliciesApi(_policiesApi, _policyTerm)'
-                },
+                    _policyTerm: {
+                        type: String,
+                        value: ''
+                    },
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _filterTerm: {
+                        type: String,
+                        value: ''
+                    },
 
-                _policiesList: {
-                    type: Array,
-                    value: function() {
-                        return [{
-                            policy: 'all',
-                            name: 'All policies'
-                        }];
+                    _filterPolicy: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _filterFromDate: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _defaultFromDateValue: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _filterToDate: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _defaultToDateValue: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _attached: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                _policiesListDisplay: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
+            connectedCallback() {
+                super.connectedCallback();
 
-                _policyTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterPolicy: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _filterFromDate: {
-                    type: String,
-                    value: ''
-                },
-
-                _defaultFromDateValue: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterToDate: {
-                    type: String,
-                    value: ''
-                },
-
-                _defaultToDateValue: {
-                    type: String,
-                    value: ''
-                },
-
-                _attached: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-            
-            attached: function() {
                 this._attached = true;
-                this._setupDatePicker();
-                Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-            },
+            }
 
-            reset: function() {
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this._setupDatePicker();
+                });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+                });
+            }
+
+            reset() {
                 this.$.appscoSearch.reset();
                 this.$.filterListPolicies.selected = 0;
                 this.$.filterList.selected = 0;
@@ -234,77 +237,72 @@
                 this.$.filterDateFrom.value = this._defaultFromDateValue;
                 this._filterToDate = this._defaultToDateValue;
                 this.$.filterDateTo.value = this._defaultToDateValue;
-            },
+            }
 
-            getFilters: function() {
+            getFilters() {
                 return {
                     term: this._filterTerm,
                     policy: this._filterPolicy,
                     dateFrom: this._filterFromDate,
                     dateTo: this._filterToDate
                 };
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+            _computePoliciesApi(policiesApi) {
+                return (policiesApi ? (policiesApi + '?page=1&extended=1&limit=1000') : null);
+            }
 
-            _computePoliciesApi: function(policiesApi) {
-                return (policiesApi ? (policiesApi + '?page=1&extended=1&limit=1000') : '');
-            },
+            _computeSearchPoliciesApi(policiesApi, term) {
+                return (policiesApi && term) ? (policiesApi + '&term=' + term) : null;
+            }
 
-            _computeSearchPoliciesApi: function(policiesApi, term) {
-                return (policiesApi && term) ? (policiesApi + '&term=' + term) : '';
-            },
-
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
+                for (let i = 0; i < path.length; i++) {
                     if (path[i] == element) {
                         return true;
                     }
                 }
 
                 return false;
-            },
+            }
 
-            _handleDocumentClick: function(event) {
-                var path = Polymer.dom(event).path;
+            _handleDocumentClick(event) {
+                const path = Polymer.dom(event).path;
 
                 if (!this._isInPath(path, this.$.filterPolicy)) {
                     this._hidePolicyList();
                 }
-            },
+            }
 
-            _filterPoliciesReport: function() {
+            _filterPoliciesReport() {
+                this.dispatchEvent(new CustomEvent('filter-policies-report', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        filters: this.getFilters()
+                    }
+                }));
+            }
 
-                this.fire('filter-policies-report', {
-                    filters: this.getFilters()
-                });
-            },
-
-            _filterRolesByTermAction: function(term) {
+            _filterRolesByTermAction(term) {
                 this._filterTerm = term;
                 this._filterPoliciesReport();
-            },
+            }
 
-            _onSearchRoles: function(event) {
+            _onSearchRoles(event) {
                 this._filterRolesByTermAction(event.detail.term);
-            },
+            }
 
-            _onSearchRolesClear: function() {
+            _onSearchRolesClear() {
                 this._filterRolesByTermAction('');
-            },
+            }
 
-            _onPoliciesResponse: function(event) {
-                var response = event.detail.response;
+            _onPoliciesResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.policies) {
-
                     response.policies.forEach(function(item) {
                         this.push('_policiesList', item);
                     }.bind(this));
@@ -312,10 +310,10 @@
                     this.set('_policiesListDisplay', this._policiesList);
                     this._setDefaultPolicy();
                 }
-            },
+            }
 
-            _filterPolicyListByTerm: function(term) {
-                var termLength = term.length,
+            _filterPolicyListByTerm(term) {
+                const termLength = term.length,
                     policies = this._policiesList,
                     length = policies.length;
 
@@ -325,8 +323,8 @@
                     term = '';
                 }
 
-                for (var i = 0; i < length; i++) {
-                    var policy = policies[i];
+                for (let i = 0; i < length; i++) {
+                    const policy = policies[i];
 
                     if (policy && 0 <= policy.name.toLowerCase().indexOf(term.toLowerCase())) {
                         this.push('_policiesListDisplay', policy);
@@ -339,19 +337,19 @@
                         name: 'There are no policies with asked term.'
                     });
                 }
-            },
+            }
 
-            _setDefaultPolicy: function() {
+            _setDefaultPolicy() {
                 this.$.appscoSearchPolicy.setValue(this._policiesList[0].name);
                 this.$.filterListPolicies.selected = 0;
-            },
+            }
 
-            _showPolicyList: function() {
+            _showPolicyList() {
                 this.$.filterListPolicies.hidden = false;
-            },
+            }
 
-            _hidePolicyList: function() {
-                var filter = this.$.filterListPolicies,
+            _hidePolicyList() {
+                const filter = this.$.filterListPolicies,
                     search = this.$.appscoSearchPolicy;
 
                 if (0 === search.getValue().length && filter.selectedItem) {
@@ -359,45 +357,43 @@
                 }
 
                 this.$.filterListPolicies.hidden = true;
-            },
+            }
 
-            _onFilterPolicyFocus: function() {
+            _onFilterPolicyFocus() {
                 this._showPolicyList();
-            },
+            }
 
-            _onFilterPolicyKeyup: function(event) {
-                var keyCode = event.keyCode;
-
-                if (40 === keyCode) {
+            _onFilterPolicyKeyup(event) {
+                if (40 === event.keyCode) {
                     event.target.blur();
                     this._selectFirstPolicy();
                 }
+            }
 
-            },
-
-            _onFilterPolicySearch: function(event) {
+            _onFilterPolicySearch(event) {
                 this._filterPolicyListByTerm(event.detail.term);
-            },
+            }
 
-            _onClearPolicySearch: function(event) {
+            _onClearPolicySearch(event) {
                 this._filterPolicyListByTerm('');
-            },
+            }
 
-            _selectFirstPolicy: function() {
-                var policyFilter = this.$.filterListPolicies;
+            _selectFirstPolicy() {
+                const policyFilter = this.$.filterListPolicies;
 
                 if (!policyFilter.selectedItem) {
                     policyFilter.selected = this._policiesListDisplay[0].value;
                 }
 
                 policyFilter.selectedItem.focus();
-            },
+            }
 
-            _onFilterByPolicyAction: function(event) {
-                var alias = event.detail.item.getAttribute('value'),
+            _onFilterByPolicyAction(event) {
+                const alias = event.detail.item.getAttribute('value'),
                     policies = this._policiesListDisplay,
-                    length = policies.length,
-                    selectedPolicy;
+                    length = policies.length;
+
+                let selectedPolicy;
 
                 if ('all' === alias) {
                     selectedPolicy = {
@@ -406,9 +402,7 @@
                     };
                 }
                 else {
-
-                    for (var i = 0; i < length; i++) {
-
+                    for (let i = 0; i < length; i++) {
                         if (alias === policies[i].policy) {
                             selectedPolicy = policies[i];
                             break;
@@ -422,10 +416,10 @@
                 this.$.appscoSearchPolicy.setValue(this._format(selectedPolicy.name));
                 this._hidePolicyList();
                 this._filterPoliciesReport();
-            },
+            }
 
-            _format: function(value) {
-                var result = '';
+            _format(value) {
+                let result = '';
 
                 if (value) {
                     result = value;
@@ -436,18 +430,19 @@
                 }
 
                 return result;
-            },
+            }
 
-            _setupDatePicker: function() {
+            _setupDatePicker() {
                 this._setValidDates();
-            },
+            }
 
-            _setValidDates: function() {
-                var date = new Date(),
+            _setValidDates() {
+                let date = new Date(),
                     day = date.getDate(),
                     month = date.getMonth(),
-                    year = date.getFullYear(),
-                    filterDateFromComponent = this.$.filterDateFrom;
+                    year = date.getFullYear();
+
+                const filterDateFromComponent = this.$.filterDateFrom;
 
                 if (10 > day) {
                     day = '0' + day;
@@ -462,15 +457,15 @@
                 }
 
                 filterDateFromComponent.max = year + '-' + month + '-' + day;
-            },
+            }
 
-            _setValidToDate: function(date) {
+            _setValidToDate(date) {
                 this.$.filterDateTo.min = date ? date.split(' ')[0] : null;
-            },
+            }
 
-            _onFilterDateFrom: function(event) {
-                var fromDate = event.detail.value,
-                    filterDateFromComponent = this.$.filterDateFrom;
+            _onFilterDateFrom(event) {
+                let fromDate = event.detail.value;
+                const filterDateFromComponent = this.$.filterDateFrom;
 
                 if (!fromDate) {
                     fromDate = this._defaultFromDateValue;
@@ -485,10 +480,10 @@
                 if (this._attached) {
                     this._filterPoliciesReport();
                 }
-            },
+            }
 
-            _onFilterDateTo: function(event) {
-                var toDate = event.detail.value,
+            _onFilterDateTo(event) {
+                let toDate = event.detail.value,
                     filterDateToComponent = this.$.filterDateTo;
 
                 if (!toDate) {
@@ -504,6 +499,7 @@
                     this._filterPoliciesReport();
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoPolicyReportPageFilters.is, AppscoPolicyReportPageFilters);
     </script>
 </dom-module>

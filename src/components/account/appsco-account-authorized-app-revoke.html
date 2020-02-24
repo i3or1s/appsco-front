@@ -7,6 +7,8 @@
 
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-authorized-app-revoke`
 Shows dialog screen with confirmation for application revoke.
@@ -31,25 +33,24 @@ Custom property | Description | Default
             :host {
                 display: block;
                 position: relative;
-                @apply(--account-authorized-app-revoke);
+                @apply --account-authorized-app-revoke;
             }
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-            @apply(--appsco-paper-dialog);
+            @apply --appsco-paper-dialog;
             }
             :host .buttons paper-button {
-            @apply(--paper-dialog-button);
+            @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-            @apply(--paper-dialog-confirm-button);
+            @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-            @apply(--paper-dialog-dismiss-button);
+            @apply --paper-dialog-dismiss-button;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="revokeDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation">
@@ -71,42 +72,36 @@ Custom property | Description | Default
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountAuthorizedAppRevoke extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-authorized-app-revoke'; }
 
-            is: 'appsco-account-authorized-app-revoke',
-
-            properties: {
-
-                /**
-                 * Application that is to be revoked.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            open: function () {
+            open() {
                 this.$.revokeDialog.open();
-            },
+            }
 
-            _revokeApplication: function() {
-                var appRequest = document.createElement('iron-request');
+            setApplication(application) {
+                this.application = application;
+            }
+
+            _revokeApplication() {
+                const appRequest = document.createElement('iron-request');
 
                 this._loader = true;
 
@@ -114,26 +109,21 @@ Custom property | Description | Default
                     url: this.application.revoke,
                     method: "DELETE",
                     handleAs: 'json',
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken
-                    }
+                    headers: this._headers
                 }).then(function() {
-
                     this._loader = false;
 
-                    /**
-                     * Fired when applicaiton is revoked
-                     *
-                     * @event application-revoked
-                     * @param {Object} application which is revoked
-                     */
-                    this.fire("application-revoked", {
-                        application: this.application
-                    });
-
+                    this.dispatchEvent(new CustomEvent('application-revoked', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application
+                        }
+                    }));
                     this.$.revokeDialog.close();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountAuthorizedAppRevoke.is, AppscoAccountAuthorizedAppRevoke);
     </script>
 </dom-module>

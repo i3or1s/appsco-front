@@ -20,15 +20,29 @@
 <link rel="import" href="components/account/appsco-account-image.html">
 <link rel="import" href="components/components/appsco-page-behavior.html">
 <link rel="import" href="components/components/appsco-list-observer-behavior.html">
+<link rel="import" href="directory/appsco-directory-page-actions.html">
+
+<link rel="import" href="components/orgunit/appsco-orgunit-modify.html">
+<link rel="import" href="components/orgunit/appsco-orgunit-remove.html">
+<link rel="import" href="components/account/company/appsco-account-remove.html">
+<link rel="import" href="directory/appsco-directory-add-account.html">
+<link rel="import" href="directory/appsco-import-accounts.html">
+<link rel="import" href="components/notifications/appsco-send-notification.html">
+<link rel="import" href="components/account/company/appsco-account-orgunit.html">
+<link rel="import" href="components/group/appsco-resource-add-groups.html">
+<link rel="import" href="upgrade/appsco-upgrade-action.html">
+<link rel="import" href="components/account/appsco-invitation-remove.html">
+
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-directory-page">
     <template>
         <style include="appsco-page-styles">
             :host {
-
                 --appsco-list-item-message: {
                     font-size: 14px;
-                    @apply(--paper-font-common-nowrap);
+                    @apply --paper-font-common-nowrap;
                 };
 
                 --account-log-appsco-list-item: {
@@ -59,14 +73,14 @@
             }
             paper-tabs {
                 height: 32px;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             .paper-tabs-pages {
-                @apply(--paper-tabs-pages);
+                @apply --paper-tabs-pages;
             }
             .tab-content {
                 margin-top: 20px;
-                @apply(--paper-tabs-content-style);
+                @apply --paper-tabs-content-style;
             }
             appsco-company-groups {
                 margin-top: 20px;
@@ -87,8 +101,8 @@
                 --account-initials-font-size: 14px;
             }
             :host .account-name {
-                @apply(--paper-font-subhead);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-subhead;
+                @apply --paper-font-common-nowrap;
                 font-size: 18px;
             }
             :host([mobile-screen]) {
@@ -117,28 +131,27 @@
 
         <iron-ajax auto
                    url="[[ companyOrgunitsApi ]]"
-                   headers="[[ computedHeaders ]]"
+                   headers="[[ _headers ]]"
                    handle-as="json"
                    on-response="_onOrgunitsResponse"></iron-ajax>
 
         <iron-ajax id="getDomainsCall"
                    auto
                    url="[[ domainsApi ]]"
-                   headers="[[ computedHeaders ]]"
+                   headers="[[ _headers ]]"
                    on-response="_onDomainResponse"></iron-ajax>
 
         <iron-ajax
                 id="companySubscriptionInfo"
                 url="[[ companySubscriptionApi ]]"
-                headers="[[ computedHeaders ]]"
+                headers="[[ _headers ]]"
                 handle-as="json"
                 auto
                 on-response="_onSubscriptionResponse"></iron-ajax>
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
-
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-content flex-vertical">
                     <paper-tabs id="paperTabs" selected="{{ _selectedFilter }}">
                         <paper-tab name="organization-units">Organization units</paper-tab>
@@ -154,6 +167,9 @@
                         <div name="organization-units" class="tab-content organization-units">
                             <appsco-orgunit-tree id="appscoOrgunitTree"
                                                  org-units="[[ _orgUnits ]]"
+                                                 on-add-orgunit="_onAddOrgunit"
+                                                 on-modify-orgunit="_onModifyOrgunit"
+                                                 on-remove-orgunit="_onRemoveOrgunit"
                                                  on-selected="_onOrgunitSelected"></appsco-orgunit-tree>
                         </div>
 
@@ -177,7 +193,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
 
                     <appsco-invitations
@@ -189,6 +205,7 @@
                             on-remove="_onRemoveInvitation"
                             on-loaded="_onInvitationsLoaded"
                             on-empty-load="_onInvitationsEmptyLoad"
+                            on-invitation-resent="_onInvitationResent"
                             on-observable-list-empty="_onObservableItemListChange"
                             on-observable-list-filled="_onObservableItemListChange"></appsco-invitations>
 
@@ -211,7 +228,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <appsco-account-image account="[[ role.account ]]"></appsco-account-image>
                     <span class="account-name flex">[[ role.account.name ]]</span>
@@ -259,328 +276,426 @@
             </div>
         </appsco-content>
 
+        <appsco-account-remove
+                id="appscoAccountsRemove"
+                accounts="[[ selectedAccounts ]]"
+                authorization-token="[[ authorizationToken ]]"
+                company-api="[[ companyApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-accounts-removed="_onAccountsRemoved">
+        </appsco-account-remove>
+
+        <appsco-directory-add-account
+                id="appscoDirectoryAccountAdd"
+                authorization-token="[[ authorizationToken ]]"
+                add-company-role-api="[[ companyDirectoryRolesApi]]"
+                add-invitation-api="[[ companyInvitationsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-company-role-created="_onCompanyRoleCreated"
+                on-invitation-created="_onInvitationCreated">
+        </appsco-directory-add-account>
+
+        <appsco-import-accounts
+                id="appscoDirectoryImportAccounts"
+                authorization-token="[[ authorizationToken ]]"
+                import-api="[[ companyImportAccountsApi ]]"
+                domain="[[ domain ]]"
+                on-import-finished="_onAccountImportFinished">
+        </appsco-import-accounts>
+
+        <appsco-orgunit-modify
+                id="appscoOrgunitModify"
+                on-orgunit-added="_onOrgunitAdded"
+                on-orgunit-modified="_onOrgunitModified"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-orgunit-modify>
+
+        <appsco-orgunit-remove
+                id="appscoOrgunitRemove"
+                on-orgunit-removed="_onOrgunitRemoved"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-orgunit-remove>
+
+        <appsco-send-notification
+                id="appscoSendNotification"
+                authorization-token="[[ authorizationToken ]]"
+                company-notifications-api="[[ companyNotificationsApi ]]"
+                get-roles-api="[[ companyDirectoryRolesApi ]]"
+                get-contacts-api="[[ companyContactsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-notification-sent="_onNotificationSent">
+        </appsco-send-notification>
+
+        <appsco-account-orgunit
+                id="appscoAccountOrgunit"
+                authorization-token="[[ authorizationToken ]]"
+                company-orgunits-api="[[ companyOrgunitsApi ]]"
+                accounts="[[ selectedAccounts ]]">
+        </appsco-account-orgunit>
+
+
+        <appsco-resource-add-groups
+                id="appscoShareToGroupDialog"
+                authorization-token="[[ authorizationToken ]]"
+                groups-api="[[ groupsApi ]]">
+        </appsco-resource-add-groups>
+
+        <appsco-upgrade-action
+                id="appscoUpgradeAction"
+                authorization-token="[[ authorizationToken ]]"
+                company-api="[[ companyApi ]]">
+        </appsco-upgrade-action>
+
+        <appsco-invitation-remove
+                id="appscoInvitationRemove"
+                authorization-token="[[ authorizationToken ]]"
+                on-invitation-removed="_onInvitationRemoved"
+                on-invitation-already-removed="_onInvitationAlreadyRemoved">
+        </appsco-invitation-remove>
+
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-directory-page',
+        class AppscoDirectoryPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppscoPageBehavior,
+            Polymer.AppscoListObserverBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-directory-page'; }
 
-            properties: {
-
-                selectedAccounts: {
-                    type: Array,
-                    value: function() {
-                        return [];
+            static get properties() {
+                return {
+                    selectedAccounts: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                _orgUnits: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _bulkActions: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                },
-
-                _infoShown: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _selectedTab: {
-                    type: Number
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                companySubscriptionApi: {
-                    type: String,
-                    value: ''
-                },
-
-                domainsApi: {
-                    type: String,
-                    value: ''
-                },
-
-                groupsApi: {
-                    type: String,
-                    value: ''
-                },
-
-                subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                subscriptionLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                computedHeaders: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Get company invitations.
-                 */
-                companyInvitationsApi: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Get company accounts.
-                 */
-                companyDirectoryRolesApi: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Get company organization units.
-                 */
-                companyOrgunitsApi: {
-                    type: String,
-                    value: ''
-                },
-
-                _roles: {
-                    type: Array,
-                    value: function () {
-                        return [];
-                    }
-                },
-
-                role: {
-                    type: Object,
-                    value: function () {
-                        return {};
+                    _orgUnits: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
                     },
-                    observer: '_onRoleChange'
-                },
 
-                _accountSelectAction: {
-                    type: Number,
-                    value: 0
-                },
+                    _bulkActions: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
 
-                _accountsLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+                    _infoShown: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _invitationsLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+                    _selectedTab: {
+                        type: Number
+                    },
 
-                _domainsLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+                    companySubscriptionApi: {
+                        type: String
+                    },
 
-                _verifiedDomain: {
-                    type: Boolean,
-                    value: true
-                },
+                    domainsApi: {
+                        type: String
+                    },
 
-                _verifiedDomains: {
-                    type: Number,
-                    value: 0
-                },
+                    groupsApi: {
+                        type: String
+                    },
 
-                _pageReady: {
-                    type: Boolean,
-                    computed: '_computePageReadyState(_accountsLoaded, _invitationsLoaded, _domainsLoaded, subscriptionLoaded)',
-                    observer: '_onPageReadyChanged'
-                },
+                    companyInvitationsApi: {
+                        type: String
+                    },
 
-                _subscriptionLimitInfoHandled: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_onSubscriptionLimitInfoHandled'
-                },
+                    companyDirectoryRolesApi: {
+                        type: String
+                    },
 
-                _selectedFilter: {
-                    type: Number,
-                    value: 0,
-                    observer: '_onSelectedFilterChanged'
-                },
+                    companyOrgunitsApi: {
+                        type: String
+                    },
 
-                _accountsVisible: {
-                    type: Boolean,
-                    value: true
-                },
+                    companyRolesApi: {
+                        type: String
+                    },
 
-                _invitationsVisible: {
-                    type: Boolean,
-                    value: false
-                },
+                    companyNotificationsApi: {
+                        type: String
+                    },
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    companyContactsApi: {
+                        type: String
+                    },
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    companyImportAccountsApi: {
+                        type: String
+                    },
 
-                screen992: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    companyApi: {
+                        type: String
+                    },
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                    subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    subscriptionLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _roles: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onRoleChange'
+                    },
+
+                    domain: {
+                        type: String
+                    },
+
+                    _accountSelectAction: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _accountsLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _invitationsLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _domainsLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _verifiedDomain: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _verifiedDomains: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _pageReady: {
+                        type: Boolean,
+                        computed: '_computePageReadyState(_accountsLoaded, _invitationsLoaded, _domainsLoaded, subscriptionLoaded)',
+                        observer: '_onPageReadyChanged'
+                    },
+
+                    _subscriptionLimitInfoHandled: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_onSubscriptionLimitInfoHandled'
+                    },
+
+                    _selectedFilter: {
+                        type: Number,
+                        value: 0,
+                        observer: '_onSelectedFilterChanged'
+                    },
+
+                    _accountsVisible: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _invitationsVisible: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    screen992: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    apiErrors: {
+                        type: Object
+                    },
+
+                    toolbar: {
+                        type: Object
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen, screen992)',
+                    '_hideFilters(mobileScreen)'
+                ];
+            }
+
+            ready() {
+                super.ready();
+
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen || this.screen992) {
+                        this.updateStyles();
+                    }
+                });
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.AppscoPageBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.set('_itemsComponent', this.shadowRoot.getElementById('appscoAccounts'));
+                    this._addListeners();
+                });
+            }
 
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, screen992)',
-                '_hideFilters(mobileScreen)'
-            ],
+            _addListeners() {
+                this.toolbar.addEventListener('add-account', this._onCompanyAddAccount.bind(this));
+                this.toolbar.addEventListener('search', this._onSearchAccounts.bind(this));
+                this.toolbar.addEventListener('search-clear', this._onSearchAccountsClear.bind(this));
+                this.toolbar.addEventListener('filter-roles', this._onFilterRoles.bind(this));
+                this.toolbar.addEventListener('send-notification', this._onSendNotificationToCompanyRoles.bind(this));
+                this.toolbar.addEventListener('orgunits', this._onAddAccountsToOrgunit.bind(this));
+                this.toolbar.addEventListener('remove', this._onRemoveAccounts.bind(this));
+                this.toolbar.addEventListener('select-all-company-roles', this._onSelectAllCompanyRolesAction.bind(this));
+                this.toolbar.addEventListener('import-accounts', this._onCompanyImportAccounts.bind(this));
+                this.toolbar.addEventListener('add-groups-to-company-roles', this._onAddGroupsToCompanyRoles.bind(this));
+                this.toolbar.addEventListener('upgrade', this._fireUpgrade.bind(this));
+            }
 
-            attached: function() {
-                this.pageLoaded = false;
-                this.set('_itemsComponent', this.$$('#appscoAccounts'));
-
-                if (this.mobileScreen || this.tabletScreen || this.screen992) {
-                    this.updateStyles();
-                }
-
-            },
-
-            initializePage: function() {
+            initializePage() {
                 this.setDefaultAccount();
-            },
+            }
 
-            _onObservableItemListChange: function(event, data) {
+            _onObservableItemListChange(event, data) {
                 if((data.type === 'accounts' && this._accountsVisible) || (data.type === 'invitations' && this._invitationsVisible)) {
                     this.setObservableType('account-page');
                     this.populateItems(data.items);
                 }
                 event.stopPropagation();
-            },
+            }
 
-            _hideFilters: function(mobile) {
+            _hideFilters(mobile) {
                 if (mobile) {
                     this.hideResource();
                 }
-            },
+            }
 
-            hideResource: function() {
+            hideResource() {
                 this.$.appscoContent.hideSection('resource');
-            },
+            }
 
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _computePageReadyState: function(accounts, invitations, domains, subscriptionLoaded) {
-                var ready = (accounts && invitations && domains);
+            _computePageReadyState(accounts, invitations, domains, subscriptionLoaded) {
+                const ready = (accounts && invitations && domains);
 
-                for (var key in this.subscription) {
+                for (const key in this.subscription) {
                     return ready && subscriptionLoaded;
                 }
 
                 return ready;
-            },
+            }
 
-            _onPageReadyChanged: function(pageReady) {
-
+            _onPageReadyChanged(pageReady) {
                 if (pageReady) {
                     this._pageLoaded();
                     this._handleSubscriptionLimitReachedInfo();
                 }
-            },
+            }
 
-            _onSelectedFilterChanged: function() {
-                this.resetPage();
-            },
+            _onSelectedFilterChanged(newValue, oldValue) {
+                if (undefined !== oldValue) {
+                    this.resetPage();
+                }
+            }
 
-            _resetFilters: function() {
+            _resetFilters() {
                 this.$.appscoCompanyGroups.reset();
                 this.$.appscoOrgunitTree.reset();
-            },
+            }
 
-            _resetTypeFilter: function() {
-                this.fire('reset-type-filter');
-            },
+            _resetTypeFilter() {
+                this.toolbar.resetTypeFilter();
+            }
 
-            _onSubscriptionLimitInfoHandled: function(handled) {
-
+            _onSubscriptionLimitInfoHandled(handled) {
                 if (handled) {
                     this._evaluateDomainVerification();
                 }
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            hideInfo: function() {
+            hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
-            },
+            }
 
-            toggleInfo: function() {
+            toggleInfo() {
                 this.$.appscoContent.toggleSection('info');
                 this._infoShown = !this._infoShown;
 
@@ -588,134 +703,127 @@
                     this._selectedTab = 0;
                 }
                 else {
-                    this.$$('#appscoAccounts').deactivateItem(this.role);
+                    this.shadowRoot.getElementById('appscoAccounts').deactivateItem(this.role);
                     this.setDefaultAccount();
                 }
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            pageSelected: function () {
+            pageSelected () {
                 this._showAccounts();
                 this._hideInvitations();
                 this.reloadInvitations();
                 this.reloadAccounts();
-            },
+            }
 
-            reloadAccounts: function() {
+            reloadAccounts() {
                 this._accountsLoaded = false;
-                this.$$('#appscoAccounts').reloadItems();
-            },
+                this.shadowRoot.getElementById('appscoAccounts').reloadItems();
+            }
 
-            setSubscription: function(subscription) {
+            setSubscription(subscription) {
                 this.subscription = subscription;
                 this.subscriptionLoaded = true;
-            },
+            }
 
-            addGroup: function(group) {
+            addGroup(group) {
                 this.$.appscoCompanyGroups.addItems([group]);
-            },
+            }
 
-            removeGroup: function (group) {
+            removeGroup (group) {
                 this.$.appscoCompanyGroups.removeItems([group]);
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.set('selectedAccounts', []);
                 this._resetPageLists();
                 this._resetFilters();
-                this._resetPageActions();
+                this.toolbar.resetPageActions();
                 this.hideInfo();
-            },
+            }
 
-            _resetPageActions: function() {
-                this.fire('reset-page-actions');
-            },
+            _resetPageActions() {
+                this.toolbar.resetPageActions();
+            }
 
-            _resetPageLists: function() {
+            _resetPageLists() {
                 this._deselectAllItems();
-                this.$$('#appscoAccounts').reset();
-                this.$$('#appscoInvitations').reset();
-            },
+                this.shadowRoot.getElementById('appscoAccounts').reset();
+                this.shadowRoot.getElementById('appscoInvitations').reset();
+            }
 
-            _onRoleChange: function(role) {
-
+            _onRoleChange(role) {
                 if (role && role.meta && role.meta.log) {
                     this._loadLog();
                 }
+            }
 
-            },
-
-            _loadLog: function() {
+            _loadLog() {
                 this.$.accountLog.loadLog();
-            },
+            }
 
-            _onInvitationsLoaded: function() {
+            _onInvitationsLoaded() {
                 this._invitationsLoaded = true;
-            },
+            }
 
-            _onInvitationsEmptyLoad: function() {
+            _onInvitationsEmptyLoad() {
                 this._invitationsLoaded = true;
-            },
+            }
 
-            _onRemoveInvitation: function(event) {
-                this.fire('remove-invitation', {
-                    invitation: event.detail.invitation
-                });
-            },
+            _onRemoveInvitation(event) {
+                const dialog = this.shadowRoot.getElementById('appscoInvitationRemove');
+                dialog.setInvitation(event.detail.invitation);
+                dialog.open();
+            }
 
-            _onAccountsLoaded: function() {
+            _onAccountsLoaded() {
                 this._accountsLoaded = true;
                 this.setDefaultAccount();
-            },
+            }
 
-            _onAccountsEmptyLoad: function() {
+            _onAccountsEmptyLoad() {
                 this._accountsLoaded = true;
-            },
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
                 this._infoShown = true;
                 this._selectedTab = 0;
-            },
+            }
 
-            _handleAccountInfo: function(role) {
+            _handleAccountInfo(role) {
                 this.set('role', role);
 
                 if (!this._infoShown) {
                     this._showInfo();
                 }
-            },
+            }
 
-            _onViewInfo: function(event) {
+            _onViewInfo(event) {
                 this._handleAccountInfo(event.detail.item);
-            },
+            }
 
-            setDefaultAccount: function() {
-                this.set('role', this.$$('#appscoAccounts').getFirstItem());
-            },
+            setDefaultAccount() {
+                this.set('role', this.shadowRoot.getElementById('appscoAccounts').getFirstItem());
+            }
 
-            _showBulkActions: function() {
-                this.fire('show-bulk-actions');
-            },
-
-            _hideBulkActions: function() {
-                this.fire('hide-bulk-actions');
-            },
-
-            _onAccountEditAction: function(event) {
-                var role = event.detail.item;
+            _onAccountEditAction(event) {
+                const role = event.detail.item;
 
                 this.set('role', role);
-                this.fire('edit-account', {
-                    role: role
-                });
-            },
+                this.dispatchEvent(new CustomEvent('edit-account', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        role: role
+                    }
+                }));
+            }
 
-            _onAccountAction: function(event) {
-
+            _onAccountAction(event) {
                 if (event.detail.item.activated) {
                     this._onViewInfo(event);
                 }
@@ -723,49 +831,50 @@
                     this.hideInfo();
                     this.setDefaultAccount();
                 }
-            },
+            }
 
-            _onAccountSelectAction: function(event) {
-                var account = event.detail.item;
+            _onAccountSelectAction(event) {
+                const account = event.detail.item;
 
                 clearTimeout(this._accountSelectAction);
 
                 this._accountSelectAction = setTimeout(function() {
-
                     if (account.selected) {
                         this._showBulkActions();
                     }
                     else {
-                        var selectedAccount = this.$$('#appscoAccounts').getFirstSelectedItem();
-
-                        for (var key in selectedAccount) {
+                        const selectedAccount = this.shadowRoot.getElementById('appscoAccounts').getFirstSelectedItem();
+                        for (const key in selectedAccount) {
                             return false;
                         }
 
                         this._hideBulkActions();
                     }
-
                 }.bind(this), 10);
 
                 this._handleItemsSelectedState();
-            },
+            }
 
-            _onAccountInfoEdit: function() {
-                this.fire('info-edit-account', {
-                    role: this.role
-                });
-            },
+            _onAccountInfoEdit() {
+                this.dispatchEvent(new CustomEvent('info-edit-account', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        role: this.role
+                    }
+                }));
+            }
 
-            _onOrgunitsResponse: function(event) {
+            _onOrgunitsResponse(event) {
                 if(null == event.detail.response) {
                     return;
                 }
 
                 this._orgUnits = event.detail.response.orgunits;
-            },
+            }
 
-            _onDomainResponse: function(event) {
-                var status = event.detail.status,
+            _onDomainResponse(event) {
+                const status = event.detail.status,
                     response = event.detail.response;
 
                 if (200 === status && response) {
@@ -773,12 +882,12 @@
                     this._domainsLoaded = true;
                     this._evaluateDomainVerification();
                 }
-            },
+            }
 
-            _handleSubscriptionLimitReachedInfo: function() {
-                var subscription = this.subscription,
+            _handleSubscriptionLimitReachedInfo() {
+                const subscription = this.subscription,
                     licencesTotal = subscription.quantity,
-                    accountsTotal = this.$$('#appscoAccounts').getTotalCount() + this.$$('#appscoInvitations').getTotalCount();
+                    accountsTotal = this.shadowRoot.getElementById('appscoAccounts').getTotalCount() + this.shadowRoot.getElementById('appscoInvitations').getTotalCount();
 
                 if (licencesTotal <= accountsTotal) {
                     this._showSubscriptionLimitReachedInfo(subscription);
@@ -788,122 +897,116 @@
                 }
 
                 this._subscriptionLimitInfoHandled = true;
-            },
+            }
 
-            _evaluateSubscriptionLicences: function() {
-
+            _evaluateSubscriptionLicences() {
                 if (this._pageReady) {
                     this._handleSubscriptionLimitReachedInfo();
                 }
-            },
+            }
 
-            evaluateSubscriptionLicences: function() {
+            evaluateSubscriptionLicences() {
                 this._evaluateSubscriptionLicences();
-            },
+            }
 
-            evaluateDomainVerification: function(config) {
-
+            evaluateDomainVerification(config) {
                 if (config.added && config.domain.verified) {
                     this._verifiedDomains++;
                 }
                 else if (config.removed && config.domain.verified) {
-
                     if (0 < this._verifiedDomains) {
                         this._verifiedDomains--;
                     }
                 }
 
                 this._evaluateDomainVerification();
-            },
+            }
 
-            _evaluateDomainVerification: function() {
+            _evaluateDomainVerification() {
                 (0 === this._verifiedDomains) ? this._showDomainNotVerifiedInfo() : this._hideDomainNotVerifiedInfo();
-            },
+            }
 
-            _showSubscriptionLimitReachedInfo: function(subscription) {
-                this.fire('show-subscription-limit-reached-info', {
-                    subscription: subscription
-                });
-            },
+            _showSubscriptionLimitReachedInfo(subscription) {
+                this.toolbar.showSubscriptionLimitReachedInfo(subscription);
+            }
 
-            _hideSubscriptionLimitReachedInfo: function() {
-                this.fire('hide-subscription-limit-reached-info');
-            },
+            _hideSubscriptionLimitReachedInfo() {
+                this.toolbar.hideSubscriptionLimitReachedInfo();
+            }
 
-            _showDomainNotVerifiedInfo: function() {
+            _showDomainNotVerifiedInfo() {
                 this._verifiedDomain = false;
-                this.fire('show-domain-not-verified-info');
-            },
+                this.toolbar.showDomainNotVerifiedInfo();
+            }
 
-            _hideDomainNotVerifiedInfo: function() {
+            _hideDomainNotVerifiedInfo() {
                 this._verifiedDomain = true;
-                this.fire('hide-domain-not-verified-info');
-            },
+                this.toolbar.hideDomainNotVerifiedInfo();
+            }
 
-            hideDomainNotVerifiedInfo: function() {
-
+            hideDomainNotVerifiedInfo() {
                 if (!this._verifiedDomain) {
                     this._hideDomainNotVerifiedInfo();
                 }
-            },
+            }
 
-            addOrgunit: function(orgunit) {
+            addOrgunit(orgunit) {
                 this.$.appscoOrgunitTree.addOrgunit(orgunit);
-            },
+            }
 
-            modifyOrgunit: function(orgunit) {
+            modifyOrgunit(orgunit) {
                 this.$.appscoOrgunitTree.setOrgunit(orgunit);
-                this.$$('#appscoAccounts').setOrgunit(orgunit);
-            },
+                this.shadowRoot.getElementById('appscoAccounts').setOrgunit(orgunit);
+            }
 
-            removeOrgunit: function(orgunit) {
+            removeOrgunit(orgunit) {
                 this.$.appscoOrgunitTree.removeOrgunit(orgunit);
-            },
+            }
 
-            addInvitations: function(invitations) {
-                this.$$('#appscoInvitations').addInvitations(invitations);
+            addInvitations(invitations) {
+                this.shadowRoot.getElementById('appscoInvitations').addInvitations(invitations);
                 this._evaluateSubscriptionLicences();
-            },
+            }
 
-            removeInvitations: function(invitations) {
-                this.$$('#appscoInvitations').removeInvitations(invitations);
+            removeInvitations(invitations) {
+                this.shadowRoot.getElementById('appscoInvitations').removeInvitations(invitations);
                 this._evaluateSubscriptionLicences();
-            },
+            }
 
-            reloadInvitations: function() {
+            reloadInvitations() {
                 this._invitationsLoaded = false;
-                this.$$('#appscoInvitations').reloadInvitations();
-            },
+                this.shadowRoot.getElementById('appscoInvitations').reloadInvitations();
+            }
 
-            addAccounts: function(accounts) {
-                this.$$('#appscoAccounts').addItems(accounts);
+            addAccounts(accounts) {
+                this.shadowRoot.getElementById('appscoAccounts').addItems(accounts);
                 this._evaluateSubscriptionLicences();
-            },
+            }
 
-            updateAccount: function(account) {
-                this.$$('#appscoAccounts').updateAccount(account);
-            },
+            updateAccount(account) {
+                this.shadowRoot.getElementById('appscoAccounts').updateAccount(account);
+            }
 
-            modifyAccounts: function(accounts) {
-                this.$$('#appscoAccounts').modifyItems(accounts);
-            },
+            modifyAccounts(accounts) {
+                this.shadowRoot.getElementById('appscoAccounts').modifyItems(accounts);
+            }
 
-            removeAccounts: function(accounts) {
-                this.$$('#appscoAccounts').removeItems(accounts);
+            removeAccounts(accounts) {
+                this.shadowRoot.getElementById('appscoAccounts').removeItems(accounts);
                 this.setDefaultAccount();
                 this._evaluateSubscriptionLicences();
-            },
+            }
 
-            getSelectedAccounts: function() {
-                return this.$$('#appscoAccounts').getSelectedItems();
-            },
+            getSelectedAccounts() {
+                return this.shadowRoot.getElementById('appscoAccounts').getSelectedItems();
+            }
 
-            filterDirectoryResourcesByTerm: function(term) {
-                this.$$('#appscoInvitations').filterByTerm(term);
-                this.$$('#appscoAccounts').filterByTerm(term);
-            },
+            filterDirectoryResourcesByTerm(term) {
+                this.shadowRoot.getElementById('appscoInvitations').filterByTerm(term);
+                this.shadowRoot.getElementById('appscoAccounts').filterByTerm(term);
+            }
 
-            filterAccounts: function(filter) {
+            filterAccounts(filter) {
                 this._resetFilters();
 
                 switch (filter) {
@@ -912,78 +1015,263 @@
                     case 'unmanaged':
                         this._hideInvitations();
                         this._showAccounts();
-                        this.$$('#appscoAccounts').filterByType(filter);
+                        this.shadowRoot.getElementById('appscoAccounts').filterByType(filter);
                         break;
-                        
                     case 'invitations':
                         this._invitationsLoaded = false;
                         this._hideAccounts();
                         this._showInvitations();
-                        this.$$('#appscoInvitations').filterInvitations();
+                        this.shadowRoot.getElementById('appscoInvitations').filterInvitations();
                         break;
-
                     default:
                         return false;
                 }
-            },
+            }
             
-            _showAccounts: function() {
+            _showAccounts() {
                 this._accountsVisible = true;
-            },
+            }
             
-            _hideAccounts: function() {
+            _hideAccounts() {
                 this._accountsVisible = false;
-            },
+            }
             
-            _showInvitations: function() {
+            _showInvitations() {
                 this._invitationsVisible = true;
-            },
+            }
             
-            _hideInvitations: function() {
+            _hideInvitations() {
                 this._invitationsVisible = false;
-            },
+            }
 
-            _onOrgunitSelected: function(event) {
-                this.$$('#appscoAccounts').filterByOrgunit(event.detail);
+            _onOrgunitSelected(event) {
+                this.shadowRoot.getElementById('appscoAccounts').filterByOrgunit(event.detail);
                 this._resetTypeFilter();
-            },
+            }
 
-            _searchGroups: function(term) {
+            _searchGroups(term) {
                 this.$.appscoCompanyGroups.filterByTerm(term);
-            },
+            }
 
-            _onSearchGroups: function(event) {
+            _onSearchGroups(event) {
                 this._searchGroups(event.detail.term);
-            },
+            }
 
-            _onSearchGroupsClear: function() {
+            _onSearchGroupsClear() {
                 this.$.appscoSearch.reset();
                 this._searchGroups('');
-            },
+            }
 
-            _loadCompanyRolesForGroup: function(group) {
-                this.$$('#appscoAccounts').filterByGroup(group);
-            },
+            _loadCompanyRolesForGroup(group) {
+                this.shadowRoot.getElementById('appscoAccounts').filterByGroup(group);
+            }
 
-            _onGroupSelected: function(event) {
+            _onGroupSelected(event) {
                 this._loadCompanyRolesForGroup(event.detail.item);
                 this._resetTypeFilter();
-            },
+            }
 
-            _onSubscriptionResponse: function(event) {
-                var status = event.detail.status,
-                        subscriptions = event.detail.response;
+            _onSubscriptionResponse(event) {
+                const status = event.detail.status,
+                    subscriptions = event.detail.response;
 
                 if (200 === status && subscriptions) {
                     subscriptions.forEach(function(element) {
                         if (element.type === 'company' && element.status === 'active') {
-                            this.fire('company-subscription-loaded', {
-                                subscription: element
-                            });
+                            this.dispatchEvent(new CustomEvent('company-subscription-loaded', {
+                                bubbles: true,
+                                composed: true,
+                                detail: {
+                                    subscription: element
+                                }
+                            }));
                         }
                     }.bind(this));
                 }
             }
-        });
+
+            _onCompanyAddAccount() {
+                this.shadowRoot.getElementById('appscoDirectoryAccountAdd').toggle();
+            }
+
+            _onInvitationCreated(event) {
+                const invitation = event.detail.invitation;
+                this.addInvitations([invitation]);
+                this._notify('Invitation for account ' + invitation.email + ' was successfully created and can be found under invitations.');
+            }
+
+            _onCompanyRoleCreated(event) {
+                this.addAccounts([event.detail.role]);
+                this._notify('Account ' + event.detail.role.account.email + ' was successfully added.');
+            }
+
+            _searchAccounts(term) {
+                this._showProgressBar();
+                this.filterDirectoryResourcesByTerm(term);
+            }
+
+            _onSearchAccounts(event) {
+                this._searchAccounts(event.detail.term);
+            }
+
+            _onSearchAccountsClear() {
+                this._searchAccounts('');
+            }
+
+            _onFilterRoles(event) {
+                const filter = event.detail.filter;
+
+                this._showProgressBar();
+                this.filterAccounts(filter);
+            }
+
+            _onSendNotificationToCompanyRoles() {
+                const dialog = this.shadowRoot.getElementById('appscoSendNotification');
+                dialog.setFilterType('user');
+                dialog.toggle();
+
+                this._hideProgressBar();
+            }
+
+            _onNotificationSent(event) {
+                this._notify('Notification successfully sent to '+ event.detail.counter +' accounts.');
+            }
+
+            _onAddAccountsToOrgunit() {
+                const selectedAccounts = this.getSelectedAccounts();
+                if (selectedAccounts.length > 0) {
+                    this.set('selectedAccounts', selectedAccounts);
+                    this.shadowRoot.getElementById('appscoAccountOrgunit').toggle();
+                }
+                else {
+                    this._hideBulkActions();
+                }
+            }
+
+            _onRemoveAccounts() {
+                const selectedAccounts = this.getSelectedAccounts();
+
+                if (selectedAccounts.length > 0) {
+                    this.set('selectedAccounts', selectedAccounts);
+                    this.shadowRoot.getElementById('appscoAccountsRemove').toggle();
+                }
+                else {
+                    this._hideBulkActions()
+                }
+            }
+
+            _onAccountsRemoved(event) {
+                this.removeAccounts(event.detail.accounts);
+                this._hideBulkActions();
+                this.set('selectedAccounts', []);
+                this._notify('Selected accounts were successfully removed from company.');
+            }
+
+            _onCompanyImportAccounts() {
+                this.shadowRoot.getElementById('appscoDirectoryImportAccounts').toggle();
+            }
+
+            _onAccountImportFinished(event) {
+                const response = event.detail.response;
+                let message = response.numberOfRoles + ' accounts imported out of ' + response.total + '.'
+                    + ' Number of invitations created: ' + response.numberOfInvitations + '.'
+                    + ' Number of failed imports: ' + response.numberOfFailed + '.';
+
+                if (0 < response.numberOfRoles) {
+                    this.reloadAccounts();
+                }
+
+                if (0 < response.numberOfInvitations) {
+                    this.reloadInvitations();
+                }
+
+                if (response.maxSubscriptionSizeReached) {
+                    this._showSubscriptionLimitReachedInfo(this._subscription);
+                }
+
+                this._notify(message, true);
+            }
+
+            _onSelectAllCompanyRolesAction() {
+                this.selectAllItems();
+            }
+
+            _onAddGroupsToCompanyRoles() {
+                const selectedRoles = this.getSelectedAccounts();
+
+                if (selectedRoles.length > 0) {
+                    const dialog = this.shadowRoot.getElementById('appscoShareToGroupDialog');
+                    dialog.setItems(selectedRoles);
+                    dialog.setType('role');
+                    dialog.open();
+                }
+            }
+
+            _onInvitationResent(event) {
+                this._notify('Invitation for account ' + event.detail.invitation.email + ' has been sent.');
+            }
+
+            _onAddOrgunit(event) {
+                const orgunitAddDialog = this.shadowRoot.getElementById('appscoOrgunitModify');
+
+                orgunitAddDialog.parent = event.detail.orgUnit;
+                orgunitAddDialog.orgUnit = {};
+                orgunitAddDialog.open();
+            }
+
+            _onOrgunitAdded(event) {
+                const orgunit = event.detail.orgUnit;
+                this.addOrgunit(orgunit);
+                this._notify('Organization unit ' + orgunit.name + ' successfully added.');
+            }
+
+            _onModifyOrgunit(event) {
+                const orgunitModifyDialog = this.shadowRoot.getElementById('appscoOrgunitModify');
+
+                orgunitModifyDialog.parent = {};
+                orgunitModifyDialog.orgUnit = event.detail.orgUnit;
+                orgunitModifyDialog.open();
+            }
+
+            _onOrgunitModified(event) {
+                const orgunit = event.detail.orgUnit;
+                this.modifyOrgunit(orgunit);
+                this._notify('Organization unit ' + orgunit.name + ' successfully modified.');
+            }
+
+            _onRemoveOrgunit(event) {
+                const orgunitRemoveDialog = this.shadowRoot.getElementById('appscoOrgunitRemove');
+
+                orgunitRemoveDialog.orgUnit = event.detail.orgUnit;
+                orgunitRemoveDialog.open();
+            }
+
+            _onOrgunitRemoved(event) {
+                const orgunit = event.detail.orgUnit;
+                this.removeOrgunit(orgunit);
+                this._notify('Organization unit ' + orgunit.name + ' successfully removed.');
+            }
+
+            _fireUpgrade(event) {
+                const dialog = this.shadowRoot.getElementById('appscoUpgradeAction');
+                dialog.setSubscription(event.detail.subscription);
+                dialog.setPlans(event.detail.plans);
+                dialog.initializePage();
+                dialog.toggle();
+            }
+
+            _onInvitationRemoved(event) {
+                const invitation = event.detail.invitation;
+                this.removeInvitations([invitation]);
+                this._notify('Invitation for account ' + invitation.email + ' has been removed.');
+            }
+
+            _onInvitationAlreadyRemoved(event) {
+                const invitation = event.detail.invitation;
+                this.removeInvitations([invitation]);
+                this._notify('Invitation for account ' + invitation.email + ' has already been removed.');
+            }
+        }
+        window.customElements.define(AppscoDirectoryPage.is, AppscoDirectoryPage);
     </script>
 </dom-module>

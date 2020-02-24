@@ -33,10 +33,13 @@
             dropElement.className = dropElement.className.replace(' dropover', '');
 
             if (dragItem) {
-
-                this.fire('item-dropped', {
-                    item: JSON.parse(dragItem)
-                });
+                this.dispatchEvent(new CustomEvent('item-dropped', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        item: JSON.parse(dragItem)
+                    }
+                }));
             }
             else {
             }

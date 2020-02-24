@@ -8,6 +8,8 @@
 
 <link rel="import" href="appsco-company-group-role-item.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-group-roles`
 Contains group's role list and Load More action.
@@ -39,18 +41,18 @@ Custom property | Description | Default
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--appsco-company-group-roles);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --appsco-company-group-roles;
             }
             .roles {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
             }
             appsco-company-group-role-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-company-group-role-item);
+                @apply --appsco-company-group-role-item;
             }
             .group-roles-container {
                 width: 100%;
@@ -76,18 +78,18 @@ Custom property | Description | Default
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             .roles {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
                 width: 100%;
             }
             .info-total {
                 margin-bottom: 10px;
             }
             .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 color: var(--secondary-text-color);
             }
             paper-button {
@@ -95,22 +97,22 @@ Custom property | Description | Default
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
-                @apply(--text-wrap-break);
+                @apply --paper-font-body2;
+                @apply --info-message;
+                @apply --text-wrap-break;
             }
             :host([preview]) .roles {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             :host([preview]) appsco-company-group-role-item {
                 width: auto;
                 margin: 0 2px 0 0;
-                @apply(--appsco-company-group-role-item-preview);
+                @apply --appsco-company-group-role-item-preview;
             }
         </style>
 
@@ -119,7 +121,7 @@ Custom property | Description | Default
             <iron-ajax
                     id="getGroupRolesApiRequest"
                     url="[[ _listApi ]]"
-                    headers="[[ _computedHeaders ]]"
+                    headers="[[ _headers ]]"
                     debounce-duration="300"
                     on-error="_onError"
                     on-response="_onResponse"></iron-ajax>
@@ -164,231 +166,198 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroupRoles extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-group-roles'; }
 
-            is: 'appsco-company-group-roles',
-
-            properties: {
-
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Route to retrieve list
-                 */
-                listApi: {
-                    type: String,
-                    value: '',
-                    observer: '_onListApiChanged'
-                },
-
-                /**
-                 * Number of items to load and present
-                 */
-                size: {
-                    type: Number,
-                    value: 10
-                },
-
-                /**
-                 * Show load more button
-                 */
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if group should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * If true roles will load on listApi change.
-                 */
-                autoLoadActive: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _listApi: {
-                    type: String,
-                    value: ''
-                },
-
-                _loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _roles: {
-                    type: Array,
-                    value: function() {
-                        return [];
+            static get properties() {
+                return {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     },
-                    notify: true
-                },
 
-                _allRoles: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    listApi: {
+                        type: String,
+                        observer: '_onListApiChanged'
+                    },
+
+                    size: {
+                        type: Number,
+                        value: 10
+                    },
+
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * If true roles will load on listApi change.
+                     */
+                    autoLoadActive: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _listApi: {
+                        type: String,
+                    },
+
+                    _loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _roles: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
+                    },
+
+                    _allRoles: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _rolesEmpty: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _message: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _nextPageApiUrl: {
+                        type: String
+                    },
+
+                    _totalRoles: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _renderedIndex: {
+                        type: Number,
+                        value: -1
+                    },
+
+                    _loaders: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _rolesEmpty: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                _message: {
-                    type: String,
-                    value: ''
-                },
-
-                _nextPageApiUrl: {
-                    type: String
-                },
-
-                _totalRoles: {
-                    type: Number,
-                    value: 0
-                },
-
-                _renderedIndex: {
-                    type: Number,
-                    value: -1
-                },
-
-                _loaders: {
-                    type: Array,
-                    value: function() { return []; }
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'slide-from-left-animation',
-                                nodes: [],
-                                nodeDelay: 50,
-                                timing: {
-                                    duration: 300
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'slide-from-left-animation',
+                        nodes: [],
+                        nodeDelay: 50,
+                        timing: {
+                            duration: 300
                         }
                     }
+                };
+            }
+
+            _onListApiChanged(url) {
+                if (!url) {
+                    return;
                 }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _onListApiChanged: function(url) {
-                this._listApi = ((url.indexOf('extended') != -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
+                this._listApi = ((url.indexOf('extended') !== -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
                 if (this.autoLoadActive && url && url.length > 0) {
                     this._loadRoles();
                 }
-            },
+            }
 
-            _setLoadMoreAction: function() {
+            _setLoadMoreAction() {
                 this._loadMore = (!this.preview && this.loadMore && this._allRoles.length < this._totalRoles);
-            },
+            }
 
-            _hideLoadMoreAction: function() {
+            _hideLoadMoreAction() {
                 this._loadMore = false;
-            },
+            }
 
-            _loadRoles: function() {
+            _loadRoles() {
                 this._showProgressBar();
                 this._loadMore = false;
                 this._clearRoles();
                 this.$.getGroupRolesApiRequest.generateRequest();
-            },
+            }
 
-            loadItems: function() {
+            loadItems() {
                 this._loadRoles();
-            },
+            }
 
-            reloadRoles: function() {
+            reloadRoles() {
                 this._loadRoles();
-            },
+            }
 
-            _loadMoreRoles: function() {
+            _loadMoreRoles() {
                 this._showLoadMoreProgressBar();
                 this.$.getGroupRolesApiRequest.url = this._nextPageApiUrl;
                 this.$.getGroupRolesApiRequest.generateRequest();
-            },
+            }
 
-            _onError: function(event) {
+            _onError(event) {
                 this._message = 'We couldn\'t load users at the moment. Please try again in a minute.';
                 this._handleEmptyLoad();
-            },
+            }
 
-            _handleEmptyLoad: function() {
+            _handleEmptyLoad() {
                 this._rolesEmpty = true;
                 this._message = 'There are no users in the group.';
 
-                /**
-                 * Fired when there are no roles.
-                 *
-                 * @event empty-load
-                 */
-                this.fire('empty-load');
+                this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
 
                 this._hideProgressBar();
                 this._hideLoadMoreProgressBar();
-            },
+            }
 
-            _clearLoaders: function() {
-                for (var idx in this._loaders) {
+            _clearLoaders() {
+                for (const idx in this._loaders) {
                     clearTimeout(this._loaders[idx]);
                 }
                 this.set('_loaders', []);
-            },
+            }
 
-            _clearRoles: function() {
+            _clearRoles() {
                 this._clearLoaders();
                 this.set('_roles', []);
                 this.set('_allRoles', []);
-            },
+            }
 
-            _onResponse: function(event) {
-                var response = event.detail.response;
+            _onResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.company_roles) {
-                    var roles = response.company_roles,
+                    const roles = response.company_roles,
                         meta = response.meta,
                         rolesCount = roles.length - 1;
 
@@ -407,14 +376,11 @@ Custom property | Description | Default
                         this._clearRoles();
                     }
                     roles.forEach(function(el, index) {
-
                         this._loaders.push(setTimeout(function() {
-
                             this.push('_roles', el);
                             this.push('_allRoles', el);
 
-                            if (index == rolesCount) {
-
+                            if (index === rolesCount) {
                                 this._loadMore = this.loadMore;
 
                                 if (this._roles.length === meta.total) {
@@ -425,25 +391,21 @@ Custom property | Description | Default
                                 this._hideLoadMoreProgressBar();
                                 this._setLoadMoreAction();
 
-                                /**
-                                 * Fired when roles are loaded
-                                 *
-                                 * @event loaded
-                                 * @param {Object} companyRoles[]
-                                 */
-                                this.fire('group-roles-loaded', {
-                                    companyRoles: roles
-                                });
+                                this.dispatchEvent(new CustomEvent('group-roles-loaded', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        companyRoles: roles
+                                    }
+                                }));
                             }
-
                         }.bind(this), (index + 1) * 30));
-
                     }.bind(this));
                 }
-            },
+            }
 
-            addGroupItems: function(roles) {
-                var length = roles.length,
+            addGroupItems(roles) {
+                const length = roles.length,
                     allRoles = this._allRoles,
                     allLength = allRoles.length;
 
@@ -451,8 +413,7 @@ Custom property | Description | Default
                 this._message = '';
                 this._renderedIndex = length - 1;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (0 === allLength) {
                         this.push('_roles', roles[i]);
                         this.push('_allRoles', roles[i]);
@@ -460,9 +421,7 @@ Custom property | Description | Default
                         this._totalRoles++;
                     }
                     else {
-
-                        for (var j = 0; j < allLength; j++) {
-
+                        for (let j = 0; j < allLength; j++) {
                             if (allRoles[j].alias === roles[i].alias) {
                                 break;
                             }
@@ -472,32 +431,29 @@ Custom property | Description | Default
 
                                 this._totalRoles++;
                             }
-
                         }
                     }
                 }
-            },
+            }
 
-            removeGroupItems: function(roles) {
-                var length = roles.length,
+            removeGroupItems(roles) {
+                const length = roles.length,
                     _roles = this._roles,
                     _length = _roles.length,
                     allRoles = this._allRoles,
                     allLength = allRoles.length;
 
-                for (var i = 0; i < length; i++) {
-                    var role = roles[i];
+                for (let i = 0; i < length; i++) {
+                    const role = roles[i];
 
-                    for (var j = 0; j < _length; j++) {
-
+                    for (let j = 0; j < _length; j++) {
                         if (role.self === _roles[j].self) {
                             this.splice('_roles', j, 1);
                             break;
                         }
                     }
 
-                    for (var k = 0; k < allLength; k++) {
-
+                    for (let k = 0; k < allLength; k++) {
                         if (role.self === allRoles[k].self) {
                             this.splice('_allRoles', k, 1);
                             break;
@@ -505,47 +461,41 @@ Custom property | Description | Default
                     }
 
                     this._totalRoles--;
-
                 }
 
                 if (0 === this._roles.length) {
                     this._handleEmptyLoad();
                 }
-            },
+            }
 
-            _showProgressBar: function() {
-                this.$$('#paperProgress').hidden = false;
-            },
+            _showProgressBar() {
+                this.shadowRoot.getElementById('paperProgress').hidden = false;
+            }
 
-            _showLoadMoreProgressBar: function() {
-                this.$$('#loadMoreProgress').hidden = false;
-            },
+            _showLoadMoreProgressBar() {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
-                    this.$$('#paperProgress').hidden = true;
+                    this.shadowRoot.getElementById('paperProgress').hidden = true;
                 }.bind(this), 300);
+            }
 
-            },
-
-            _hideLoadMoreProgressBar: function() {
-
+            _hideLoadMoreProgressBar() {
                 setTimeout(function() {
-                    this.$$('#loadMoreProgress').hidden = true;
+                    this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                 }.bind(this), 300);
+            }
 
-            },
+            _onItemsDomChange() {
+                const index = this._renderedIndex;
 
-            _onItemsDomChange: function() {
-                var index = this._renderedIndex;
-
-                if (-1 != index) {
-
+                if (-1 !== index) {
                     this.animationConfig.entry.nodes = [];
 
-                    for (var i = 0; i <= index; i++) {
-                        var addedItem = this.$$('#appscoGroupRoleItem_' + i);
+                    for (let i = 0; i <= index; i++) {
+                        const addedItem = this.shadowRoot.getElementById('appscoGroupRoleItem_' + i);
                         this.animationConfig.entry.nodes.push(addedItem);
                     }
 
@@ -553,8 +503,8 @@ Custom property | Description | Default
 
                     this._renderedIndex = -1;
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyGroupRoles.is, AppscoCompanyGroupRoles);
     </script>
 </dom-module>

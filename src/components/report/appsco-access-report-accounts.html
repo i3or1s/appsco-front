@@ -10,27 +10,25 @@
 
 <dom-module id="appsco-access-report-accounts">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host {
                 --appsco-list-item: {
-                    @apply(--appsco-access-report-list-item);
+                    @apply --appsco-access-report-list-item;
                 };
                 --appsco-list-item-activated: {
-                    @apply(--appsco-access-report-list-item-activated);
+                    @apply --appsco-access-report-list-item-activated;
                 };
             }
             :host appsco-access-report-account-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-access-report-account-item);
+                @apply --appsco-access-report-account-item;
             }
             :host .info-total {
                 margin-bottom: 10px;
             }
             :host .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 opacity: 0.6;
             }
         </style>
@@ -84,45 +82,50 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessReportAccounts extends Polymer.mixinBehaviors([Polymer.AppscoListBehavior], Polymer.Element) {
+            static get is() { return 'appsco-access-report-accounts'; }
 
-            is: 'appsco-access-report-accounts',
+            static get properties() {
+                return {
+                    numberOfResourcesToDisplay: {
+                        type: Number,
+                        value: 15
+                    },
 
-            properties: {
+                    _accountsCount: {
+                        type: Number,
+                        value: 0
+                    },
 
-                numberOfResourcesToDisplay: {
-                    type: Number,
-                    value: 15
-                },
+                    _typeLabel: {
+                        type: String,
+                        computed: '_computeTypeLabel(type)'
+                    }
+                };
+            }
 
-                _accountsCount: {
-                    type: Number,
-                    value: 0
-                },
+            ready() {
+                super.ready();
 
-                _typeLabel: {
-                    type: String,
-                    computed: '_computeTypeLabel(type)'
-                }
-            },
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
-            behaviors: [
-                Polymer.AppscoListBehavior
-            ],
+            _addListeners() {
+                this.addEventListener('filter-done', this._getResultTotal);
+                this.addEventListener('list-loaded', this._getResultTotal);
+                this.addEventListener('list-empty', this._getResultTotal);
+            }
 
-            listeners: {
-                'filter-done': '_getResultTotal',
-                'list-loaded': '_getResultTotal',
-                'list-empty': '_getResultTotal'
-            },
-
-            _computeTypeLabel: function(type) {
+            _computeTypeLabel(type) {
                 return ('account' === type) ? 'users' : type + 's';
-            },
+            }
 
-            _getResultTotal: function() {
+            _getResultTotal() {
                 this._accountsCount = this.getCurrentCount();
             }
-        });
+        }
+        window.customElements.define(AppscoAccessReportAccounts.is, AppscoAccessReportAccounts);
     </script>
 </dom-module>

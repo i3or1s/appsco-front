@@ -37,23 +37,23 @@ Custom property | Description | Default
             }
             :host > div {
                 margin: 6px 0;
-            @apply(--account-detail-container);
+            @apply --account-detail-container;
             }
             :host div[label] {
                 color: var(--secondary-text-color);
-            @apply(--paper-font-body1);
-            @apply(--account-details-label);
+            @apply --paper-font-body1;
+            @apply --account-details-label;
             }
             :host div[content] {
                 color: var(--primary-text-color);
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--paper-font-subhead);
-            @apply(--account-details-value);
+            @apply --layout-horizontal;
+            @apply --layout-center;
+            @apply --paper-font-subhead;
+            @apply --account-details-value;
             }
             :host .flex {
-            @apply(--layout-flex);
-            @apply(--paper-font-common-nowrap);
+            @apply --layout-flex;
+            @apply --paper-font-common-nowrap;
             }
         </style>
 
@@ -121,134 +121,128 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountDetails extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-account-details'; }
 
-            is: 'appsco-account-details',
-
-            properties: {
-
-                /**
-                 * [Account](https://developers.appsco.com/api/me) that is to be rendered.
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onAccountChanged'
                     },
-                    observer: '_onAccountChanged'
-                },
 
-                _accountFirstName: {
-                    type: String,
-                    computed: '_computeAccountFirstName(account)'
-                },
+                    _accountFirstName: {
+                        type: String,
+                        computed: '_computeAccountFirstName(account)'
+                    },
 
-                _accountLastName: {
-                    type: String,
-                    computed: '_computeAccountLastName(account)'
-                },
+                    _accountLastName: {
+                        type: String,
+                        computed: '_computeAccountLastName(account)'
+                    },
 
-                /**
-                 * Computed country name.
-                 */
-                _accountCountry: {
-                    type: String,
-                    computed: '_computeCountry(_countryList, account)'
-                },
+                    /**
+                     * Computed country name.
+                     */
+                    _accountCountry: {
+                        type: String,
+                        computed: '_computeCountry(_countryList, account)'
+                    },
 
-                /**
-                 * Country list to get name of country from.
-                 * Country code = account.country.
-                 *
-                 * This is loaded from local data/country-list.json.
-                 */
-                _countryList: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    /**
+                     * Country list to get name of country from.
+                     * Country code = account.country.
+                     *
+                     * This is loaded from local data/country-list.json.
+                     */
+                    _countryList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _countryListUrl: {
+                        type: String,
+                        value: function () {
+                            return this.resolveUrl('./data/country-list.json');
+                        }
+                    },
+
+                    _publicProfile: {
+                        type: String,
+                        computed: '_computePublicProfileInfo(account)'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _countryListUrl: {
-                    type: String,
-                    value: function() {
-                        return this.resolveUrl('./data/country-list.json');
-                    }
-                },
+            ready() {
+                super.ready();
 
-                _publicProfile: {
-                    type: String,
-                    computed: '_computePublicProfileInfo(account)'
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            _onCountryListResponse: function(event, ironRequest) {
+            _onCountryListResponse(event, ironRequest) {
                 this._countryList = ironRequest.response;
-            },
+            }
 
-            _computeAccountFirstName: function(account) {
+            _computeAccountFirstName(account) {
                 return account && account.first_name ? account.first_name : '';
-            },
+            }
 
-            _computeAccountLastName: function(account) {
+            _computeAccountLastName(account) {
                 return account && account.last_name ? account.last_name : '';
-            },
+            }
 
-            _computeCountry: function(list, account) {
-                var length = list.length - 1;
+            _computeCountry(list, account) {
+                const length = list.length - 1;
 
-                for (var i = 0; i < length; i++) {
-                    var country = list[i];
+                for (let i = 0; i < length; i++) {
+                    const country = list[i];
 
-                    if (account && country.code == account.country) {
+                    if (account && country.code === account.country) {
                         return country.name;
                     }
-
                 }
 
                 return '';
-            },
+            }
 
-            _computePublicProfileInfo: function(account) {
+            _computePublicProfileInfo(account) {
                 return (account && account.profile_options && account.profile_options.public) ? 'On' : 'Off';
-            },
+            }
 
-            _onAccountChanged: function() {
+            _onAccountChanged() {
                 this._showDetails();
-            },
+            }
 
-            _showDetails: function() {
+            _showDetails() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
             }
-        });
+        }
+        window.customElements.define(AppscoAccountDetails.is, AppscoAccountDetails);
     </script>
 </dom-module>

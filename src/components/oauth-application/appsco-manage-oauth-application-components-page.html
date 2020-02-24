@@ -13,6 +13,8 @@
 <link rel="import" href="appsco-oauth-application-authorizations.html">
 <link rel="import" href="../page/appsco-layout-with-cards-styles.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-manage-oauth-application-components-page">
     <template>
         <style include="appsco-layout-with-cards-styles">
@@ -81,121 +83,102 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoManageOAuthApplicationComponentsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-manage-oauth-application-components-page'; }
 
-            is: 'appsco-manage-oauth-application-components-page',
-
-            properties: {
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                certificatesApi: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-in-animation',
-                                nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
-                                nodeDelay: 50,
-                                timing: {
-                                    delay: 200,
-                                    duration: 100
-                                }
-                            },
-                            'exit': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                fromPage: this
-                            }, {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }]
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            reloadCertificates: function() {
-                this.$.appscoOAuthApplicationCertificates.reloadItems();
-            },
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _setSharedElement: function(target) {
+                    certificatesApi: {
+                        type: String
+                    },
 
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-in-animation',
+                        nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
+                        nodeDelay: 50,
+                        timing: {
+                            delay: 200,
+                            duration: 100
+                        }
+                    },
+                    'exit': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        fromPage: this
+                    }, {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }]
+                };
+            }
+
+            reloadCertificates() {
+                this.$.appscoOAuthApplicationCertificates.reloadItems();
+            }
+
+            _setSharedElement(target) {
                 while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
                     target = target.parentNode;
                 }
 
-                /**
-                 * Set hero animation element that is to be shared between pages.
-                 *
-                 * @type {{hero: *}}
-                 */
                 this.sharedElements = {
                     'hero': target
                 };
-            },
-
-            _onManageApplicationSettingsAction: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-application-settings');
-            },
-
-            _onManageApplicationCertificatesAction: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-application-certificates');
             }
-        });
+
+            _onManageApplicationSettingsAction(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('manage-application-settings', { bubbles: true, composed: true }));
+            }
+
+            _onManageApplicationCertificatesAction(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('manage-application-certificates', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoManageOAuthApplicationComponentsPage.is, AppscoManageOAuthApplicationComponentsPage);
     </script>
 </dom-module>

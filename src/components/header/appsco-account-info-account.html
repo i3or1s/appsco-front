@@ -35,7 +35,7 @@ Example:
                 border-bottom: 1px solid var(--divider-color);
                 position: relative;
 
-            @apply(--appsco-account-info-account);
+            @apply --appsco-account-info-account;
             }
             :host:hover {
                 background-color: var(--inactive-account-background-hover, #f9f7f7);
@@ -50,7 +50,7 @@ Example:
                 box-sizing: border-box;
                 cursor: pointer;
 
-            @apply(--appsco-account);
+            @apply --appsco-account;
             }
             :host .account:hover {
                 background-color: var(--hover-background-color);
@@ -60,7 +60,7 @@ Example:
                     width: 32px;
                     height: 32px;
                     margin-right: 10px;
-                    @apply(--appsco-account-img);
+                    @apply --appsco-account-img;
                 };
                 --account-initials-font-size: 14px;
             }
@@ -70,13 +70,13 @@ Example:
                 margin: 0;
                 display: block;
 
-            @apply(--appsco-account-info-lead);
+            @apply --appsco-account-info-lead;
             }
             :host .account .info-additional {
                 font-size: 12px;
                 line-height: 14px;
 
-            @apply(--appsco-account-info-additional);
+            @apply --appsco-account-info-additional;
             }
             :host .account .info-lead, :host .account .info-additional {
                 display: block;
@@ -90,7 +90,7 @@ Example:
                 margin: auto;
             }
             :host .truncate {
-            @apply(--paper-font-common-nowrap);
+            @apply --paper-font-common-nowrap;
                 display: block;
             }
         </style>
@@ -121,50 +121,46 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountInfoAccount extends Polymer.Element {
+            static get is() { return 'appsco-account-info-account'; }
 
-            is: 'appsco-account-info-account',
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        notify: true
+                    },
 
-            properties: {
+                    _accountDisplay: {
+                        type: String,
+                        computed: '_setAccountDisplay(account)'
+                    },
 
-                /**
-                 * Account to display.
-                 */
-                account: {
-                    type: Object,
-                    notify: true
-                },
+                    /**
+                     * Indicates if _accountDisplay is empty or not.
+                     */
+                    _name: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-                /**
-                 * Account display name to present to user.
-                 */
-                _accountDisplay: {
-                    type: String,
-                    computed: '_setAccountDisplay(account)'
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Indicates if _accountDisplay is empty or not.
-                 */
-                _name: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                'tap': '_onAccountTap'
-            },
+            _addListeners() {
+                this.addEventListener('tap', this._onAccountTap);
+            }
 
-            /**
-             * Returns display name for account.
-             * @param {Object} account.
-             *
-             * @private
-             */
-            _setAccountDisplay: function(account) {
-                var displayName = '';
+            _setAccountDisplay(account) {
+                let displayName = '';
 
                 if (account.first_name) {
                     displayName = account.first_name;
@@ -177,25 +173,18 @@ Example:
                 }
 
                 return displayName;
-            },
-
-            /**
-             * Fires event when user selects account.
-             *
-             * @private
-             */
-            _onAccountTap: function() {
-
-                /**
-                 * Fired when user selects account.
-                 *
-                 * @event account-selected
-                 */
-                this.fire('account-selected', {
-                    account: this.account
-                });
             }
 
-        });
+            _onAccountTap() {
+                this.dispatchEvent(new CustomEvent('account-selected', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        account: this.account
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoAccountInfoAccount.is, AppscoAccountInfoAccount);
     </script>
 </dom-module>

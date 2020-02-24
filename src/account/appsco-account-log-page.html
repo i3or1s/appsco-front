@@ -13,7 +13,7 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                      border-bottom: 1px solid var(--divider-color);
@@ -28,10 +28,14 @@
                  };
             }
             :host paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
+
+                --paper-card-header-text: {
+                    @apply --full-page-paper-card-header-text;
+                };
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
         </style>
 
@@ -58,91 +62,86 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountLogPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-account-log-page'; }
 
-            is: 'appsco-account-log-page',
-
-            properties: {
-
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                authorizationToken: {
-                    type: String
-                },
+                    authorizationToken: {
+                        type: String
+                    },
 
-                /**
-                 * Get authorized apps link.
-                 */
-                logApi: {
-                    type: String,
-                    'observer': '_onLogApiChange'
-                },
+                    /**
+                     * Get authorized apps link.
+                     */
+                    logApi: {
+                        type: String,
+                        'observer': '_onLogApiChange'
+                    },
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
-                        }
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _onLogApiChange: function() {
-                this.loadLog();
-            },
-
-            loadLog: function() {
-                this.$.appscoAccountLog.loadLog();
-            },
-
-            _back: function() {
-                this.fire('back');
+                };
             }
-        });
+
+            ready(){
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            _onLogApiChange() {
+                this.loadLog();
+            }
+
+            loadLog() {
+                this.$.appscoAccountLog.loadLog();
+            }
+
+            _back() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoAccountLogPage.is, AppscoAccountLogPage);
     </script>
 </dom-module>
 

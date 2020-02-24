@@ -38,17 +38,17 @@ Example:
                 line-height: 1.4;
                 position: relative;
 
-                @apply(--appsco-list-item);
+                @apply --appsco-list-item;
             }
             :host .item-icon {
                 width: 32px;
                 height: 32px;
                 margin-right: 10px;
-                @apply(--appsco-list-item-icon);
+                @apply --appsco-list-item-icon;
             }
             :host .item-icon::shadow #sizedImgDiv {
                 border-radius: 50%;
-                @apply(--appsco-list-item-icon-contain);
+                @apply --appsco-list-item-icon-contain;
             }
             :host .item-date {
                 font-size: 11px;
@@ -56,10 +56,10 @@ Example:
                 top: 5px;
                 right: 6px;
                 opacity: 0.5;
-                @apply(--appsco-list-item-date);
+                @apply --appsco-list-item-date;
             }
             :host .item-message {
-                @apply(--appsco-list-item-message);
+                @apply --appsco-list-item-message;
             }
             appsco-account-image.preview-account-image {
                 margin-right: 8px;
@@ -92,75 +92,63 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoListItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-list-item'; }
 
-            is: 'appsco-list-item',
+            static get properties() {
+                return {
+                    item: {
+                        type: Object
+                    },
 
-            properties: {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                /**
-                 * Item to display.
-                 *
-                 * @type {Object}
-                 */
-                item: {
-                    type: Object
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'block';
+                });
 
-            attached: function() {
-                this.style.display = 'block';
-                this.playAnimation('entry');
-            },
-
-            /**
-             * Formats date and returns formatted date as string.
-             *
-             * @param {String} value
-             * @returns {string}
-             * @private
-             */
-            _dateFormat: function(value) {
-
-                if (value) {
-
-                    var options = {
-                        weekday: "long", year: "numeric", month: "short",
-                        day: "numeric", hour: "2-digit", minute: "2-digit"
-                    };
-
-                    return (new Date(value)).toLocaleDateString('en', options);
-                }
-
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
             }
-        });
+
+            _dateFormat(value) {
+                if (!value) {
+                    return '';
+                }
+
+                const options = {
+                    weekday: "long", year: "numeric", month: "short",
+                    day: "numeric", hour: "2-digit", minute: "2-digit"
+                };
+
+                return (new Date(value)).toLocaleDateString('en', options);
+            }
+        }
+        window.customElements.define(AppscoListItem.is, AppscoListItem);
     </script>
 </dom-module>

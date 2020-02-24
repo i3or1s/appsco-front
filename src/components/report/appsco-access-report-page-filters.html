@@ -8,12 +8,14 @@
 
 <link rel="import" href="../components/appsco-search.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-access-report-page-filters">
     <template>
         <style>
             :host {
-                @apply(--layout-vertical);
-                @apply(--appsco-access-report-page-filters);
+                @apply --layout-vertical;
+                @apply --appsco-access-report-page-filters;
 
                 --paper-dropdown-menu: {
                     width: 100%;
@@ -34,7 +36,7 @@
                 box-sizing: border-box;
             }
             .suggested-groups {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 width: 100%;
                 min-height: 100px;
                 max-height: calc(100vh - 2*64px - 30px - 10px - 3*54px);
@@ -62,7 +64,7 @@
                 line-height: 18px;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
         </style>
 
@@ -86,7 +88,7 @@
                                  on-iron-activate="_onFilterByAssigneeTypeAction">
                 <paper-listbox id="filterList"
                                class="dropdown-content"
-                               selected="0">
+                               selected="0" slot="dropdown-content">
                     <template is="dom-repeat" items="[[ _assigneeTypeList ]]">
                         <paper-item value$="[[ item.value ]]" 
                                     name$="[[ item.name ]]">
@@ -122,183 +124,174 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessReportPageFilters extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-access-report-page-filters'; }
 
-            is: 'appsco-access-report-page-filters',
+            static get properties() {
+                return {
+                    groupsApi: {
+                        type: String
+                    },
 
-            properties: {
+                    _assigneeTypeList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'Users',
+                                    value: 'users'
+                                },
+                                {
+                                    name: 'Contacts',
+                                    value: 'contacts'
+                                },
+                                {
+                                    name: 'All',
+                                    value: 'all'
+                                }];
+                        }
+                    },
 
-                groupsApi: {
-                    type: String,
-                    value: ''
-                },
+                    _groupsApi: {
+                        type: String,
+                        computed: '_computeGroupsApi(groupsApi)'
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _searchGroupsApi: {
+                        type: String,
+                        computed: '_computeSearchGroupsApi(groupsApi, _groupTerm)'
+                    },
 
-                _assigneeTypeList: {
-                    type: Array,
-                    value: function () {
-                        return [
-                            {
-                                name: 'Users',
-                                value: 'users'
-                            },
-                            {
-                                name: 'Contacts',
-                                value: 'contacts'
-                            },
-                            {
-                                name: 'All',
-                                value: 'all'
+                    _groupList: {
+                        type: Array,
+                        value: function () {
+                            return [{
+                                alias: 'all',
+                                name: 'All groups'
                             }];
+                        }
+                    },
+
+                    _groupListDisplay: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _groupTerm: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _filterTerm: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _filterAssigneeType: {
+                        type: String,
+                        value: 'users'
+                    },
+
+                    _filterGroup: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     }
-                },
+                };
+            }
 
-                _groupsApi: {
-                    type: String,
-                    computed: '_computeGroupsApi(groupsApi)'
-                },
+            ready() {
+                super.ready();
 
-                _searchGroupsApi: {
-                    type: String,
-                    computed: '_computeSearchGroupsApi(groupsApi, _groupTerm)'
-                },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+                });
+            }
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _groupList: {
-                    type: Array,
-                    value: function() {
-                        return [{
-                            alias: 'all',
-                            name: 'All groups'
-                        }];
-                    }
-                },
-
-                _groupListDisplay: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _groupTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterTerm: {
-                    type: String,
-                    value: ''
-                },
-
-                _filterAssigneeType: {
-                    type: String,
-                    value: 'users'
-                },
-
-                _filterGroup: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                }
-            },
-            
-            attached: function() {
-                Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-            },
-
-            reset: function() {
+            reset() {
                 this.$.appscoSearch.reset();
                 this.$.filterListGroups.selected = 0;
                 this.$.filterList.selected = 0;
                 this._hideGroupList();
-            },
+            }
 
-            getFilters: function() {
+            getFilters() {
                 return {
                     term: this._filterTerm,
                     type: this._filterAssigneeType,
                     group: this._filterGroup
                 };
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+            _computeGroupsApi(groupsApi) {
+                return groupsApi ? groupsApi + '?extended=1' : null;
+            }
 
-            _computeGroupsApi: function(groupsApi) {
-                return groupsApi ? groupsApi + '?extended=1' : '';
-            },
+            _computeSearchGroupsApi(groupsApi, term) {
+                return (groupsApi && term) ? (groupsApi + '?extended=1&limit=10&term=' + term) : null;
+            }
 
-            _computeSearchGroupsApi: function(groupsApi, term) {
-                return (groupsApi && term) ? (groupsApi + '?extended=1&limit=10&term=' + term) : '';
-            },
-
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
+                for (let i = 0; i < path.length; i++) {
                     if (path[i] == element) {
                         return true;
-
-                        break;
                     }
                 }
 
                 return false;
-            },
+            }
 
-            _handleDocumentClick: function(event) {
-                var path = Polymer.dom(event).path;
+            _handleDocumentClick(event) {
+                const path = Polymer.dom(event).path;
 
                 if (!this._isInPath(path, this.$.filterGroup)) {
                     this._hideGroupList();
                 }
-            },
+            }
 
-            _filterAccountsByTermAction: function(term) {
+            _filterAccountsByTermAction(term) {
                 this._filterTerm = term;
 
-                this.fire('filter-access-report-by-account-term', {
-                    term: term
-                });
-            },
+                this.dispatchEvent(new CustomEvent('filter-access-report-by-account-term', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        term: term
+                    }
+                }));
+            }
 
-            _onSearchAccounts: function(event) {
+            _onSearchAccounts(event) {
                 this._filterAccountsByTermAction(event.detail.term);
-            },
+            }
 
-            _onSearchAccountsClear: function() {
+            _onSearchAccountsClear() {
                 this._filterAccountsByTermAction('');
-            },
+            }
 
-            _onFilterByAssigneeTypeAction: function(event) {
-                var type = event.detail.item.getAttribute('value');
+            _onFilterByAssigneeTypeAction(event) {
+                const type = event.detail.item.getAttribute('value');
 
                 this._filterAssigneeType = type;
 
-                this.fire('filter-access-report-by-assignee-type', {
-                    type: type
-                });
-            },
+                this.dispatchEvent(new CustomEvent('filter-access-report-by-assignee-type', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        type: type
+                    }
+                }));
+            }
 
-            _onGroupsResponse: function(event) {
-                var response = event.detail.response;
+            _onGroupsResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.company_groups) {
-
                     response.company_groups.forEach(function(item, index) {
                         this.push('_groupList', item);
                     }.bind(this));
@@ -306,10 +299,10 @@
                     this.set('_groupListDisplay', this._groupList);
                     this._setDefaultGroup();
                 }
-            },
+            }
 
-            _filterGroupListByTerm: function(term) {
-                var termLength = term.length,
+            _filterGroupListByTerm(term) {
+                const termLength = term.length,
                     groups = this._groupList,
                     length = groups.length;
 
@@ -319,13 +312,12 @@
                     term = '';
                 }
 
-                for (var i = 0; i < length; i++) {
-                    var group = groups[i];
+                for (let i = 0; i < length; i++) {
+                    const group = groups[i];
 
                     if (group && group.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
                         this.push('_groupListDisplay', group);
                     }
-
                 }
 
                 if (0 === this._groupListDisplay.length && 3 < termLength) {
@@ -334,19 +326,19 @@
                         name: 'There is no accounts in asked group.'
                     });
                 }
-            },
+            }
 
-            _setDefaultGroup: function() {
+            _setDefaultGroup() {
                 this.$.appscoSearchGroup.setValue(this._groupList[0].name);
                 this.$.filterListGroups.selected = 0;
-            },
+            }
 
-            _showGroupList: function() {
+            _showGroupList() {
                 this.$.filterListGroups.hidden = false;
-            },
+            }
 
-            _hideGroupList: function() {
-                var groupFilter = this.$.filterListGroups,
+            _hideGroupList() {
+                const groupFilter = this.$.filterListGroups,
                     appscoGroupSearch = this.$.appscoSearchGroup;
 
                 if (0 === appscoGroupSearch.getValue().length && groupFilter.selectedItem) {
@@ -354,45 +346,43 @@
                 }
 
                 this.$.filterListGroups.hidden = true;
-            },
+            }
 
-            _onFilterGroupFocus: function() {
+            _onFilterGroupFocus() {
                 this._showGroupList();
-            },
+            }
 
-            _onFilterGroupKeyup: function(event) {
-                var keyCode = event.keyCode;
-
-                if (40 === keyCode) {
+            _onFilterGroupKeyup(event) {
+                if (40 === event.keyCode) {
                     event.target.blur();
                     this._selectFirstGroup();
                 }
+            }
 
-            },
-
-            _onFilterGroupSearch: function(event) {
+            _onFilterGroupSearch(event) {
                 this._filterGroupListByTerm(event.detail.term);
-            },
+            }
 
-            _onClearGroupSearch: function(event) {
+            _onClearGroupSearch(event) {
                 this._filterGroupListByTerm('');
-            },
+            }
 
-            _selectFirstGroup: function() {
-                var groupFilter = this.$.filterListGroups;
+            _selectFirstGroup() {
+                const groupFilter = this.$.filterListGroups;
 
                 if (!groupFilter.selectedItem) {
                     groupFilter.selected = this._groupListDisplay[0].value;
                 }
 
                 groupFilter.selectedItem.focus();
-            },
+            }
 
-            _onFilterByGroupAction: function(event) {
-                var alias = event.detail.item.getAttribute('value'),
+            _onFilterByGroupAction(event) {
+                const alias = event.detail.item.getAttribute('value'),
                     groups = this._groupListDisplay,
-                    length = groups.length,
-                    selectedGroup;
+                    length = groups.length;
+
+                let selectedGroup;
 
                 if ('all' === alias) {
                     selectedGroup = {
@@ -401,9 +391,7 @@
                     };
                 }
                 else {
-
-                    for (var i = 0; i < length; i++) {
-
+                    for (let i = 0; i < length; i++) {
                         if (alias === groups[i].alias) {
                             selectedGroup = groups[i];
                             break;
@@ -417,13 +405,17 @@
                 this.$.appscoSearchGroup.setValue(this._format(selectedGroup.name));
                 this._hideGroupList();
 
-                this.fire('filter-access-report-by-group', {
-                    group: selectedGroup
-                });
-            },
+                this.dispatchEvent(new CustomEvent('filter-access-report-by-group', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        group: selectedGroup
+                    }
+                }));
+            }
 
-            _format: function(value) {
-                var result = '';
+            _format(value) {
+                let result = '';
                 if (value) {
                     result = value;
                     if (value.length > 30) {
@@ -432,6 +424,7 @@
                 }
                 return result;
             }
-        });
+        }
+        window.customElements.define(AppscoAccessReportPageFilters.is, AppscoAccessReportPageFilters);
     </script>
 </dom-module>

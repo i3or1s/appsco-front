@@ -9,13 +9,11 @@
 
 <dom-module id="appsco-integration-rules">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host appsco-integration-rule-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-integration-rule-item);
+                @apply --appsco-integration-rule-item;
             }
         </style>
 
@@ -66,23 +64,20 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationRules extends Polymer.mixinBehaviors([Polymer.AppscoListBehavior], Polymer.Element) {
+            static get is() { return 'appsco-integration-rules'; }
 
-            is: 'appsco-integration-rules',
-
-            properties: {
-
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoListBehavior
-            ]
-        });
+                };
+            }
+        }
+        window.customElements.define(AppscoIntegrationRules.is, AppscoIntegrationRules);
     </script>
 </dom-module>

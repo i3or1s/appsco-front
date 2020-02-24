@@ -9,6 +9,8 @@
 
 <link rel="import" href="../components/components/appsco-loader.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-subscription-cancel">
     <template>
         <style>
@@ -18,26 +20,25 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-closed="_onDialogClosed">
@@ -65,94 +66,51 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoSubscriptionCancel extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-subscription-cancel'; }
 
-            is: 'appsco-subscription-cancel',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                _subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                companyApi: {
-                    type: String
-                },
-
-                _subscriptionApi: {
-                    type: String,
-                    computed: '_computeSubscriptionApi(companyApi)'
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            setSubscription: function (subscription) {
-                this._subscription = subscription;
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    _subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _computeSubscriptionApi: function(companyApi) {
+                    companyApi: {
+                        type: String
+                    },
+
+                    _subscriptionApi: {
+                        type: String,
+                        computed: '_computeSubscriptionApi(companyApi)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            setSubscription(subscription) {
+                this._subscription = subscription;
+            }
+
+            _computeSubscriptionApi(companyApi) {
                 return companyApi + '/billing/subscriptions';
-            },
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._loader = false;
-            },
+            }
 
-            _onConfirm: function() {
+            _onConfirm() {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this._subscriptionApi + '/' + this._subscription.id,
@@ -165,17 +123,16 @@
 
                 request.send(options).then(function(request) {
                     this.$.dialog.close();
-
-                    /**
-                     * Fired when application has been shared.
-                     *
-                     * @event application-shared
-                     */
-                    this.fire('subscription-canceled', {
-                        subscription: request.response
-                    });
+                    this.dispatchEvent(new CustomEvent('subscription-canceled', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            subscription: request.response
+                        }
+                    }));
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoSubscriptionCancel.is, AppscoSubscriptionCancel);
     </script>
 </dom-module>

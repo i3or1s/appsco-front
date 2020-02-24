@@ -15,8 +15,11 @@
     <link rel="import" href="../../../../bower_components/iron-meta/iron-meta.html">
     <link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
+    <link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
+    <custom-style>
+        <style include="demo-pages-shared-styles"></style>
+    </custom-style>
 </head>
 <body>
 
@@ -38,7 +41,7 @@
                 id="iconsRequest"
                 url="https://my-dev.appsco.com/api/v2/dashboards/483/icons"
                 last-response="{{ajaxResponse}}"
-                headers="{{ _computedHeaders }}"
+                headers="{{ _headers }}"
                 debounce-duration="300">
         </iron-ajax>
         <template is="dom-repeat" items="{{ ajaxResponse.icons }}" as="icon" id="icons">
@@ -48,7 +51,7 @@
                     url="{{ icon }}"
                     last-response="{{ applicationResponse }}"
                     on-response="handleIconResponse"
-                    headers="{{ _computedHeaders }}"
+                    headers="{{ _headers }}"
                     debounce-duration="300">
             </iron-ajax>
             <appsco-application-info id="appInfo_{{index}}"></appsco-application-info>
@@ -62,40 +65,31 @@
         </template>
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationRemoveDemo extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-application-remove-demo'; }
 
-            is: 'appsco-application-remove-demo',
+            ready() {
+                super.ready();
 
-            properties: {
-                authorizationToken: {
-                    type: String,
-                    value: '1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44'
-                },
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                }
-            },
-            attached: function () {
-                this.$.iconsRequest.generateRequest();
-            },
-            reset: function () {
-                this.$.iconsRequest.generateRequest();
-            },
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    "Authorization": "token " + authorizationToken
-                }
-            },
-            handleIconResponse: function (e) {
-                var appRemove = this.$$("#removeMe_" + e.model.index);
-                this.$$("#appInfo_" + e.model.index).application = e.detail.response.icon;
-                this.$$("#removeMe_" + e.model.index).application = e.detail.response;
-                this.$$("#removeMeBtn_" + e.model.index).addEventListener('tap', function () {
-                    appRemove.open();
-                })
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.$.iconsRequest.generateRequest();
+                });
             }
-        });
+
+            reset() {
+                this.$.iconsRequest.generateRequest();
+            }
+
+            handleIconResponse(e) {
+                const appRemove = this.shadowRoot.getElementById('removeMe_' + e.model.index);
+                this.shadowRoot.getElementById("appInfo_" + e.model.index).application = e.detail.response.icon;
+                this.shadowRoot.getElementById("removeMe_" + e.model.index).application = e.detail.response;
+                this.shadowRoot.getElementById("removeMeBtn_" + e.model.index).addEventListener('tap', function () {
+                    appRemove.open();
+                });
+            }
+        }
+        window.customElements.define(AppscoApplicationRemoveDemo.is, AppscoApplicationRemoveDemo);
     </script>
 </dom-module>
 </body>

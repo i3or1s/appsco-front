@@ -13,17 +13,17 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                      border-bottom: 1px solid var(--divider-color);
                  };
             }
             :host paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
         </style>
 
@@ -48,89 +48,84 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationSettingsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-settings-page'; }
 
-            is: 'appsco-application-settings-page',
+            static get properties() {
+                return {
+                    /**
+                     * Selected application from search list.
+                     */
+                    application: {
+                        type: Object,
+                        notify: true
+                    },
 
-            properties: {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                /**
-                 * Selected application from search list.
-                 */
-                application: {
-                    type: Object,
-                    notify: true
-                },
+                    company: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    animationConfig: {
+                        type: Object
+                    },
 
-                company: {
-                    type: Boolean,
-                    value: false
-                },
+                    sharedElements: {
+                        type: Object
+                    }
+                };
+            }
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            ready(){
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
+            _back() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
 
-            _back: function() {
-                this.fire('back');
-            },
-
-            setPage: function() {
+            setPage() {
                 this.$.appscoApplicationSettings.setUp();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.$.appscoApplicationSettings.reset();
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationSettingsPage.is, AppscoApplicationSettingsPage);
     </script>
 </dom-module>
 

@@ -17,13 +17,13 @@ Application image is used to present application in form of an image or initials
                 display: block;
             }
             :host .application-image {
-                @apply(--layout-vertical);
-                @apply(--layout-center-justified);
+                @apply --layout-vertical;
+                @apply --layout-center-justified;
                 width: 52px;
                 height: 52px;
                 margin: 0;
                 border-radius: 50%;
-                @apply(--application-image);
+                @apply --application-image;
             }
             :host .application-image.no-radius {
                 border-radius: 0;
@@ -57,34 +57,29 @@ Application image is used to present application in form of an image or initials
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationImage extends Polymer.Element {
+            static get is() { return 'appsco-application-image'; }
 
-            is: 'appsco-application-image',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _applicationInitials: {
+                        type: String,
+                        computed: '_computeApplicationInitials(application)'
                     }
-                },
-
-                _applicationInitials: {
-                    type: String,
-                    computed: '_computeApplicationInitials(application)'
-                }
-            },
-
-            _computeApplicationInitials: function(application) {
-                var initials = '';
-
-                if (application.title) {
-                    initials = application.title.substring(0, 2);
-                }
-
-                return initials;
+                };
             }
-        });
+
+            _computeApplicationInitials(application) {
+                return application.title ? application.title.substring(0, 2) : '';
+            }
+        }
+        window.customElements.define(AppscoApplicationImage.is, AppscoApplicationImage);
     </script>
 </dom-module>

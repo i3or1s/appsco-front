@@ -66,34 +66,34 @@ Custom property | Description | Default
                 position: relative;
                 background-color: var(--item-background-color, #fff);
                 border-radius: 3px;
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 transition: all 0.1s ease-out;
-                @apply(--appsco-company-partner-admin-item);
+                @apply --appsco-company-partner-admin-item;
             }
             .item:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             .account-title {
                 display: block;
                 height: 32px;
                 line-height: 16px;
-                @apply(--paper-font-common-base);
+                @apply --paper-font-common-base;
                 font-size: 14px;
                 font-weight: 400;
                 overflow: hidden;
             }
             .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             paper-button {
-                @apply(--paper-font-common-base);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-base;
+                @apply --paper-font-common-nowrap;
 
                 padding: 4px;
                 font-size: 12px;
@@ -106,22 +106,22 @@ Custom property | Description | Default
                 background: transparent;
             }
             .account-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             .account-basic-info {
                 width: 220px;
-                @apply(--account-basic-info);
+                @apply --account-basic-info;
             }
             .account-additional-info {
                 border-left: 1px solid var(--divider-color);
-                @apply(--account-additional-info);
+                @apply --account-additional-info;
             }
             .account-basic-info .info-label, .account-basic-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--account-basic-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --account-basic-info-values;
             }
             .info-label {
                 font-size: 16px;
@@ -160,81 +160,79 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyPartnerAdminItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-partner-admin-item'; }
 
-            is: 'appsco-company-partner-admin-item',
+            static get properties() {
+                return {
+                    customer: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    partnerAdmin: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                customer: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                partnerAdmin: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
 
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _onRevokeAction: function (event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `revoke` action is tapped.
-                 *
-                 * @event remove-partner-admin-from-customer
-                 * @param {Object} partnerAdmin
-                 */
-                this.fire('remove-partner-admin-from-customer', {
-                    customer: this.customer,
-                    partnerAdmin: this.partnerAdmin
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
                 });
             }
 
-        });
+            _onRevokeAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('remove-partner-admin-from-customer', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        customer: this.customer,
+                        partnerAdmin: this.partnerAdmin
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyPartnerAdminItem.is, AppscoCompanyPartnerAdminItem);
     </script>
 </dom-module>

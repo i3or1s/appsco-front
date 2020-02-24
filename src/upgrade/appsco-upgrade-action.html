@@ -17,6 +17,7 @@
 
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-upgrade-action">
     <template>
@@ -24,17 +25,16 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-upgrade-action);
-
+                @apply --appsco-upgrade-action;
                 --paper-radio-button-checked-color: var(--app-primary-color-dark);
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host paper-input {
                 --paper-input-container-label: {
@@ -52,13 +52,13 @@
                 margin: 0;
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
+                @apply --paper-font-body2;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host .info {
                 margin: 0;
@@ -67,19 +67,19 @@
                 margin-top: 15px;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             :host .flex-center {
-                @apply(--layout-center);
+                @apply --layout-center;
             }
             :host .flex{
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host .baseline {
-                @apply(--layout-self-end);
+                @apply --layout-self-end;
                 padding-bottom: 10px;
                 text-align: center;
             }
@@ -104,7 +104,6 @@
         </iron-ajax>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -118,7 +117,7 @@
 
             <paper-dialog-scrollable>
                 <div class="dialog-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <div>
                         <p class="info">
@@ -186,164 +185,130 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoUpgradeAction extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-upgrade-action'; }
 
-            is: 'appsco-upgrade-action',
+            static get properties() {
+                return {
+                    companyApi: {
+                        type: String
+                    },
 
-            properties: {
+                    /**
+                     * Indicates if add application loader should be displayed or not.
+                     */
+                    _purchaseLoader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    _subscriptionYear: {
+                        type: Number,
+                        value: 0
+                    },
 
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                companyApi: {
-                    type: String
-                },
+                    _subscriptionMonth: {
+                        type: Number,
+                        value: 0
+                    },
 
-                /**
-                 * Indicates if add application loader should be displayed or not.
-                 */
-                _purchaseLoader: {
-                    type: Boolean,
-                    value: false
-                },
+                    _subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                _subscriptionYear: {
-                    type: Number,
-                    value: 0
-                },
+                    _plans: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                _subscriptionMonth: {
-                    type: Number,
-                    value: 0
-                },
+                    _currency: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _selectedPlan: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _stripePublicKey: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _publicKeyApi: {
+                        type: String,
+                        computed: '_computePublicKeyApi(companyApi)'
                     }
-                },
+                };
+            }
 
-                _plans: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _currency: {
-                    type: Number,
-                    value: 0
-                },
-
-                _selectedPlan: {
-                    type: String,
-                    value: ''
-                },
-
-                _stripePublicKey: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _publicKeyApi: {
-                    type: String,
-                    computed: '_computePublicKeyApi(companyApi)'
-                }
-
-            },
-
-            _computePublicKeyApi: function(companyApi) {
+            _computePublicKeyApi(companyApi) {
                 return companyApi + '/billing/pk';
-            },
+            }
 
-            _handlePublicKeyResponse: function(event) {
+            _handlePublicKeyResponse(event) {
                 if (!event.detail.response) {
                     return;
                 }
                 this._stripePublicKey = event.detail.response.stripePublicKey;
-            },
+            }
 
-            initializePage: function () {
+            initializePage () {
                 this._preselectPlan();
-            },
+            }
 
-            setSubscription: function (subscription) {
+            setSubscription (subscription) {
                 this._subscription = subscription;
-            },
+            }
 
-            setPlans: function (plans) {
+            setPlans (plans) {
                 this._plans = plans;
-            },
+            }
 
-            _preselectPlan: function () {
+            _preselectPlan () {
                 if (this._subscription && this._subscription.plan) {
                     this.set('_selectedPlan', this._subscription.plan.id);
                 } else {
                     this.set('_selectedPlan', this._getFirstPlan());
                 }
                 this.$.subscriptionPlan.selected = this._selectedPlan;
-            },
+            }
 
-            _getFirstPlan: function() {
+            _getFirstPlan() {
                 return this._plans && this._plans.length > 0 ? this._plans[0].id : '';
-            },
+            }
 
-            _reCalculate: function(plan) {
+            _reCalculate(plan) {
                 return this.$.quantity && this.$.quantity.value ? plan.amount * this.$.quantity.value : plan.amount;
-            },
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.quantity.focus();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._purchaseLoader = false;
-                this._error = '';
+                this._errorMessage = '';
                 this.$.quantity.value = '';
                 this.$.quantity.invalid = false;
-            },
+            }
 
-            _onSelectedPlanChanged: function (selectedPlan) {
+            _onSelectedPlanChanged(selectedPlan) {
                 this.$.subscriptionPlan.selected = selectedPlan;
-            },
+            }
 
-            _onPurchaseAction: function() {
-                var subscriptionsInput = this.$.quantity;
+            _onPurchaseAction() {
+                const subscriptionsInput = this.$.quantity;
 
                 if (subscriptionsInput.value.length === 0) {
                     subscriptionsInput.invalid = true;
@@ -351,7 +316,7 @@
                     return false;
                 }
 
-                var url, method = '';
+                let url, method = '';
                 if (this._subscription.id !== undefined) {
                     url = this.companyApi + '/billing/subscriptions/' + this._subscription.id;
                     method = 'PUT';
@@ -360,24 +325,21 @@
                     method = 'POST';
                 }
 
-                var request = document.createElement('iron-request'),
+                let request = document.createElement('iron-request'),
                     options = {
                         url: url,
                         method: method,
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     },
                     body = encodeURIComponent(this.$.quantity.name) +
-                            '=' +
-                            encodeURIComponent(this.$.quantity.value) +
-                            '&' +
-                            encodeURIComponent('subscription[period]') +
-                            "=" +
-                            encodeURIComponent(this.$.subscriptionPlan.selectedItem.value);
-                    if (this.$.couponCode.value) {
+                        '=' +
+                        encodeURIComponent(this.$.quantity.value) +
+                        '&' +
+                        encodeURIComponent('subscription[period]') +
+                        "=" +
+                        encodeURIComponent(this.$.subscriptionPlan.selectedItem.value);
+                if (this.$.couponCode.value) {
                         body +=
                             '&' +
                             encodeURIComponent(this.$.couponCode.name) +
@@ -393,12 +355,12 @@
                 request.send(options).then(
                     function(request) {
                         if (request.response.requires_action) {
-                            var stripe = Stripe(this._stripePublicKey);
-                            var elements = stripe.elements();
+                            const stripe = Stripe(this._stripePublicKey);
+                            const elements = stripe.elements();
 
                             stripe.handleCardPayment(request.response.client_secret).then(function(result) {
                                 if (result.error) {
-                                    this._error = 'An error occured';
+                                    this._errorMessage = 'An error occurred';
                                     this._purchaseLoader = false;
                                 } else {
                                     this._paymentCompleted(request.response);
@@ -410,62 +372,43 @@
                         this._paymentCompleted(request.response);
                     }.bind(this),
                     function() {
-                        this._error = request.response.message;
+                        this._errorMessage = request.response.message;
                         this._purchaseLoader = false;
                     }.bind(this)
                 );
-            },
+            }
 
-            _reCalculateAllPlans: function() {
-                var plansList = JSON.parse(JSON.stringify(this._plans));
+            _reCalculateAllPlans() {
+                const plansList = JSON.parse(JSON.stringify(this._plans));
                 this.set('_plans', []);
                 this.set('_plans', plansList);
-            },
+            }
 
-            _isPlanYearly: function(plan) {
+            _isPlanYearly(plan) {
                 return plan &&  'year' === plan.interval;
-            },
+            }
 
-            _paymentCompleted: function(response) {
-                var request = document.createElement('iron-request'),
+            _paymentCompleted(response) {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: response.on_confirm,
                         method: 'POST',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     };
                 request.send(options).then(function() {
                     this.$.dialog.close();
-
-                    /**
-                     * Fired when application has been shared.
-                     *
-                     * @event application-shared
-                     */
-                    this.fire('subscription-changed', {
-                        subscription: response
-                    });
-
+                    this.dispatchEvent(new CustomEvent('subscription-changed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            subscription: response
+                        }
+                    }));
                     this._purchaseLoader = false;
                 }.bind(this));
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
             }
-        });
+        }
+        window.customElements.define(AppscoUpgradeAction.is, AppscoUpgradeAction);
     </script>
 </dom-module>

@@ -9,23 +9,24 @@
                 display: inline-block;
                 position: relative;
                 margin-right: -10px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-provisioning-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-provisioning-actions;
             }
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--provisioning-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --provisioning-action;
             }
             :host .flex-none {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             .add-action{
-                @apply(--add-item-action);
+                @apply --add-item-action;
+                @apply --primary-button;
             }
         </style>
 
@@ -37,25 +38,27 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoProvisioningActions extends Polymer.Element {
+            static get is() { return 'appsco-provisioning-actions'; }
 
-            is: 'appsco-provisioning-actions',
+            ready() {
+                super.ready();
 
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinish'
-            },
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
+                });
+            }
 
-            _onAddAction: function() {
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+            }
 
-                /**
-                 * Fired when add action is tapped.
-                 *
-                 * @event add-integration
-                 */
-                this.fire('add-integration');
-            },
+            _onAddAction() {
+                this.dispatchEvent(new CustomEvent('add-integration', { bubbles: true, composed: true }));
+            }
 
-            reset: function() {}
-        });
+            reset() {}
+        }
+        window.customElements.define(AppscoProvisioningActions.is, AppscoProvisioningActions);
     </script>
 </dom-module>

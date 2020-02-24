@@ -11,7 +11,7 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-import-contacts);
+                @apply --appsco-import-contacts;
             }
             :host .info {
                 margin: 0;
@@ -33,9 +33,9 @@
                                 authorization-token="[[ authorizationToken ]]"
                                 import-api="[[ importApi ]]">
 
-            <h2 title>Importing contacts</h2>
+            <h2 title slot="title">Importing contacts</h2>
 
-            <div info>
+            <div info slot="info">
                 <p class="info">
                     To get started, prepare your contact data in the proper format for importing to AppsCo.
                     Allowed format is comma separated csv.
@@ -64,50 +64,38 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportContacts extends Polymer.Element {
+            static get is() { return 'appsco-import-contacts'; }
 
-            is: 'appsco-import-contacts',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    importApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    domain: {
+                        type: String
+                    }
+                };
+            }
 
-                /**
-                 * Import API link.
-                 */
-                importApi: {
-                    type: String,
-                    value: ''
-                },
-
-                domain: {
-                    type: String
-                }
-            },
-
-            /**
-             * Toggles import.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.appscoImportResource.toggle();
-            },
+            }
 
-            /**
-             * Closes import.
-             */
-            close: function() {
+            close() {
                 this.$.appscoImportResource.close();
-            },
+            }
 
-            _onDownloadExampleImportFile: function(event) {
+            _onDownloadExampleImportFile(event) {
                 event.stopPropagation();
                 window.location.href = this.domain + '/example_import.csv';
             }
-        });
+        }
+        window.customElements.define(AppscoImportContacts.is, AppscoImportContacts);
     </script>
 </dom-module>

@@ -9,6 +9,7 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-application-remove-group">
     <template>
@@ -16,7 +17,7 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-application-remove);
+                @apply --appsco-application-remove;
 
                 --form-error-box: {
                     margin-top: 0;
@@ -25,23 +26,22 @@
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host appsco-loader {
-                @apply(--paper-dialog-appsco-loader);
+                @apply --paper-dialog-appsco-loader;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -53,7 +53,7 @@
 
             <paper-dialog-scrollable>
                 <div class="remove-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Please confirm removal of [[ application.title ]] from [[ group.name ]] group.</p>
                 </div>
             </paper-dialog-scrollable>
@@ -66,107 +66,84 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationRemoveGroup extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-application-remove-group'; }
 
-            is: 'appsco-application-remove-group',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Application to remove from group.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
                     }
-                },
+                };
+            }
 
-                /**
-                 * Group to remove from.
-                 */
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            toggle: function () {
+            toggle() {
                 this.$.dialog.open();
-            },
+            }
 
-            _onDialogClosed: function() {
-                this._error = '';
+            _onDialogClosed() {
+                this._errorMessage = '';
                 this._loader = false;
-            },
+            }
 
-            setGroup: function(group) {
+            setGroup(group) {
                 this.group = group;
-            },
+            }
 
-            setApplication: function(application) {
+            setApplication(application) {
                 this.application = application;
-            },
+            }
 
-            _remove: function() {
-                var appRequest = document.createElement('iron-request'),
-                        options = {
-                            url: this.group.meta.self + '/applications/' + this.application.alias,
-                            method: 'DELETE',
-                            handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        };
+            _remove() {
+                const appRequest = document.createElement('iron-request'),
+                    options = {
+                        url: this.group.meta.self + '/applications/' + this.application.alias,
+                        method: 'DELETE',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._loader = true;
 
                 appRequest.send(options).then(function(request) {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when application is detached from group
-                     *
-                     * @event application-removed-from-group
-                     * @param [Object] application
-                     * @param [Object] group
-                     */
-                    this.fire('application-removed-from-group', {
-                        application: request.response,
-                        group: this.group
-                    });
-
+                    this.dispatchEvent(new CustomEvent('application-removed-from-group', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: request.response,
+                            group: this.group
+                        }
+                    }));
                 }.bind(this), function() {
-
-                    if (appRequest.status != 200) {
-                        this._error = this.apiErrors.getError(request.response.code);
+                    if (appRequest.status !== 200) {
+                        this._errorMessage = this.apiErrors.getError(request.response.code);
                     }
 
                     this._loader = false;
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationRemoveGroup.is, AppscoApplicationRemoveGroup);
     </script>
 </dom-module>

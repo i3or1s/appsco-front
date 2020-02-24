@@ -6,18 +6,31 @@
 <link rel="import" href="components/page/appsco-content.html">
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="provisioning/appsco-active-integrations.html">
+<link rel="import" href="provisioning/appsco-provisioning-page-actions.html">
+
+<link rel="import" href="provisioning/appsco-add-integration.html">
+<link rel="import" href="components/integration/appsco-run-integration-force-sync.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-provisioning-page">
     <template>
-        <style include="appsco-page-styles"></style>
-        <style>
+        <style include="appsco-page-styles">
             :host {
                 --appsco-active-integration-item: {
                     cursor: default;
                 };
                 --appsco-active-integration-item-activated: {
-                    @apply(--shadow-elevation-2dp);
+                    @apply --shadow-elevation-2dp;
                 };
+                --paper-dropdown-menu-icon: {
+                    color: var(--primary-text-color);
+                    width: 22px;
+                    height: 22px;
+                };
+            }
+            :host .item-info {
+                padding: 0 10px;
             }
         </style>
 
@@ -25,7 +38,7 @@
 
         <appsco-content id="appscoContent">
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-active-integrations
                             id="appscoActiveIntegrations"
@@ -37,93 +50,145 @@
                             api-errors="[[ apiErrors ]]"
                             on-edit-item="_onIntegrationEditAction"
                             on-list-loaded="_onIntegrationsLoadFinished"
+                            on-force-sync="_onIntegrationForceSync"
                             on-list-empty="_onIntegrationsLoadFinished"></appsco-active-integrations>
                 </div>
             </div>
 
         </appsco-content>
+
+        <appsco-add-integration
+                id="appscoAddIntegration"
+                authorization-token="[[ authorizationToken ]]"
+                available-integrations-api="[[ availableIntegrationsApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-requested="_onIntegrationRequested">
+        </appsco-add-integration>
+
+        <appsco-run-integration-force-sync
+                id="appscoRunIntegrationForceSync"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-integration-force-sync-done="_onForceSyncRun">
+        </appsco-run-integration-force-sync>
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-provisioning-page',
+        class AppscoProvisioningPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-provisioning-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    activeIntegrationsApi: {
+                        type: String
+                    },
 
-                activeIntegrationsApi: {
-                    type: String,
-                    value: ''
-                },
+                    availableIntegrationsApi: {
+                        type: String
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            ready() {
+                super.ready();
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            attached: function() {
                 this.pageLoaded = false;
-            },
 
-            reloadIntegrations: function() {
-                this.$.appscoActiveIntegrations.reloadIntegrations();
-            },
-
-            setIntegration: function(integration) {
-                this.$.appscoActiveIntegrations.modifyItems([integration]);
-            },
-
-            _pageLoaded: function() {
-                this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
-
-            _onIntegrationsLoadFinished: function() {
-                this._pageLoaded();
-            },
-
-            _onIntegrationEditAction: function(event) {
-                this.fire('edit-integration', {
-                    integration: event.detail.item
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
                 });
             }
-        });
+
+            _addListeners() {
+                this.toolbar.addEventListener('add-integration', this._onAddIntegrationAction.bind(this));
+            }
+
+            reloadIntegrations() {
+                this.$.appscoActiveIntegrations.reloadIntegrations();
+            }
+
+            setIntegration(integration) {
+                this.$.appscoActiveIntegrations.modifyItems([integration]);
+            }
+
+            _pageLoaded() {
+                this.pageLoaded = true;
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
+
+            _onIntegrationsLoadFinished() {
+                this._pageLoaded();
+            }
+
+            _onIntegrationEditAction(event) {
+                this.dispatchEvent(new CustomEvent('edit-integration', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        integration: event.detail.item
+                    }
+                }));
+            }
+
+            _onAddIntegrationAction() {
+                this.shadowRoot.getElementById('appscoAddIntegration').open();
+            }
+
+            _onIntegrationRequested(event) {
+                if (event.detail.authorizationUrl) {
+                    window.location.href = event.detail.authorizationUrl;
+                }
+            }
+
+            _onIntegrationForceSync(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRunIntegrationForceSync');
+                dialog.setIntegration(event.detail.integration);
+                dialog.open();
+            }
+
+            _onForceSyncRun(event) {
+                this._notify('Resync for ' + event.detail.integration.name + ' has been finished.');
+            }
+        }
+        window.customElements.define(AppscoProvisioningPage.is, AppscoProvisioningPage);
     </script>
 </dom-module>

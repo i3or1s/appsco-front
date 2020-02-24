@@ -9,6 +9,8 @@
 
 <link rel="import" href="../components/components/appsco-loader.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-billing-send-invoice">
     <template>
         <style>
@@ -18,26 +20,25 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-closed="_onDialogClosed">
@@ -69,105 +70,62 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoBillingSendInvoice extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-billing-send-invoice'; }
 
-            is: 'appsco-billing-send-invoice',
-
-            properties: {
-
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                invoice: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                companyApi: {
-                    type: String
-                },
-
-                _sendInvoiceApi: {
-                    type: String,
-                    computed: '_computeSendInvoiceApi(companyApi, invoice, subscription)'
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _computeSendInvoiceApi: function(companyApi, invoice, subscription) {
+                    invoice: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    companyApi: {
+                        type: String
+                    },
+
+                    _sendInvoiceApi: {
+                        type: String,
+                        computed: '_computeSendInvoiceApi(companyApi, invoice, subscription)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            _computeSendInvoiceApi(companyApi, invoice, subscription) {
                 return companyApi + '/billing/' + subscription.id + '/invoice/' + invoice.id + '/send';
-            },
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._loader = false;
-            },
+            }
 
-            _onSend: function() {
-                var request = document.createElement('iron-request'),
+            _onSend() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._sendInvoiceApi,
                         method: 'POST',
@@ -180,25 +138,25 @@
                 request.send(options).then(function(request) {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when invoice has been sent.
-                     *
-                     * @event invoice-sent
-                     */
-                    this.fire('invoice-sent', {
-                        sentTo: this.company.company.billing_email
-                    });
+                    this.dispatchEvent(new CustomEvent('invoice-sent', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            sentTo: this.company.billing_email
+                        }
+                    }));
                 }.bind(this));
-            },
+            }
 
-            setInvoice: function(invoice) {
+            setInvoice(invoice) {
                 this.set('invoice', invoice);
-            },
+            }
 
-            setSubscription: function(subscription) {
+            setSubscription(subscription) {
                 this.set('subscription', subscription);
             }
 
-        });
+        }
+        window.customElements.define(AppscoBillingSendInvoice.is, AppscoBillingSendInvoice);
     </script>
 </dom-module>

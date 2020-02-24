@@ -12,21 +12,22 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                      border-bottom: 1px solid var(--divider-color);
                  };
             }
             paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
 
                 --paper-card-header-text: {
                     color: var(--primary-text-color);
+                    @apply --full-page-paper-card-header-text;
                 };
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
         </style>
 
@@ -51,81 +52,81 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyIdpSettingsPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-idp-settings-page'; }
 
-            is: 'appsco-company-idp-settings-page',
+            static get properties() {
+                return {
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    authorizationToken: {
+                        type: String
+                    },
 
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    idPIntegrationsApi: {
+                        type: String
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                authorizationToken: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                idPIntegrationsApi: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'slide-from-bottom-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'slide-down-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'slide-from-bottom-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'slide-down-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            setDomain: function(domain) {
+            setDomain(domain) {
                 this.$.appscoCompanyIdPSettings.setDomain(domain);
-            },
+            }
 
-            setupPage: function() {
+            setupPage() {
                 this.$.appscoCompanyIdPSettings.setup();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.$.appscoCompanyIdPSettings.reset();
-            },
+            }
 
-            _onClosePageAction: function() {
-                this.fire('back');
-            },
+            _onClosePageAction() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
 
-            _onIdPSettingsSaved: function() {
+            _onIdPSettingsSaved() {
                 this._onClosePageAction();
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyIdpSettingsPage.is, AppscoCompanyIdpSettingsPage);
     </script>
 </dom-module>
 

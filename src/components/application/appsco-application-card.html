@@ -33,12 +33,12 @@ Custom property | Description | Default
         <style>
             :host {
                 display: none;
-            @apply(--appsco-application-card);
+            @apply --appsco-application-card;
             }
             .application-card {
-            @apply(--shadow-elevation-2dp);
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --shadow-elevation-2dp;
+            @apply --layout-horizontal;
+            @apply --layout-center;
                 width: 142px;
                 height: 24px;
                 line-height: 24px;
@@ -47,19 +47,19 @@ Custom property | Description | Default
                 cursor: pointer;
                 position: relative;
                 border-radius: 3px;
-            @apply(--application-card);
+            @apply --application-card;
             }
             .application-image {
-            @apply(--layout-flex-none);
+            @apply --layout-flex-none;
                 width: 22px;
                 height: 22px;
                 margin-right: 4px;
-            @apply(--application-image);
+            @apply --application-image;
             }
             .application-title {
-            @apply(--layout-flex);
-            @apply(--paper-font-common-nowrap);
-            @apply(--application-title);
+            @apply --layout-flex;
+            @apply --paper-font-common-nowrap;
+            @apply --application-title;
             }
             .clear-icon {
                 width: 14px;
@@ -89,93 +89,91 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationCard extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-card'; }
 
-            is: 'appsco-application-card',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    removeAction: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Item that is to be rendered.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _applicationImage: {
+                        type: String,
+                        computed: '_computeApplicationImage(application)'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                removeAction: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                _applicationImage: {
-                    type: String,
-                    computed: '_computeApplicationImage(application)'
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'flex';
+                });
 
-            listeners: {
-                'tap': '_onTap',
-                'neon-animation-finish': '_onAnimationFinish'
-            },
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this.playAnimation('entry');
+                    this._addListeners();
+                });
+            }
 
-            attached: function() {
-                this.style.display = 'flex';
-                this.playAnimation('entry');
-            },
+            _addListeners() {
+                this.addEventListener('tap', this._onTap);
+                this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+            }
 
-            _computeApplicationImage: function(application) {
+            _computeApplicationImage(application) {
                 return application.icon_url ? application.icon_url : application.application_url;
-            },
+            }
 
-            _onTap: function() {
-
+            _onTap() {
                 this.playAnimation('exit', {
                     exit: true
                 });
-
-            },
-
-            _onAnimationFinish: function(event) {
-
-                if (event.detail.exit) {
-                    this.fire('selected', {
-                        application: this.application
-                    });
-                }
-
             }
 
-        });
+            _onAnimationFinish(event) {
+                if (event.detail.exit) {
+                    this.dispatchEvent(new CustomEvent('selected', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application
+                        }
+                    }));
+                }
+            }
+        }
+        window.customElements.define(AppscoApplicationCard.is, AppscoApplicationCard);
     </script>
 </dom-module>

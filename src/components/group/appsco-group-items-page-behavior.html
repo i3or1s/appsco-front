@@ -35,14 +35,17 @@
         },
 
         _onAddToGroupAction: function() {
-
-            this.fire('add-item-to-group-event', {
-                resourceType: this.resourceType
-            });
+            this.dispatchEvent(new CustomEvent('add-item-to-group-event', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    resourceType: this.resourceType
+                }
+            }));
         },
 
         _onClosePageAction: function() {
-            this.fire('back');
+            this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
         }
     }
 </script>

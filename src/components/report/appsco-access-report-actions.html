@@ -8,21 +8,21 @@
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-access-report-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-access-report-actions;
             }
             :host .action {
                 margin-left: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--layout-flex-none);
-                @apply(--access-report-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --layout-flex-none;
+                @apply --access-report-action;
             }
             :host .export-action {
-                @apply(--primary-button);
+                @apply --primary-button;
                 min-width: 100px;
             }
         </style>
@@ -34,19 +34,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessReportActions extends Polymer.Element {
+            static get is() { return 'appsco-access-report-actions'; }
 
-            is: 'appsco-access-report-actions',
-
-            _onExportAction: function() {
-                /**
-                 * Fired when export action is tapped.
-                 *
-                 * @event export-access-report
-                 */
-                this.fire('export-access-report');
+            _onExportAction() {
+                this.dispatchEvent(new CustomEvent('export-access-report', { bubbles: true, composed: true }));
             }
-
-        });
+        }
+        window.customElements.define(AppscoAccessReportActions.is, AppscoAccessReportActions);
     </script>
 </dom-module>

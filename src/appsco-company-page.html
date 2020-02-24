@@ -15,7 +15,15 @@
 <link rel="import" href="company/appsco-company-domains-page.html">
 <link rel="import" href="company/appsco-company-transfer-token-page.html">
 <link rel="import" href="company/appsco-company-manage-idp-settings-page.html">
+<link rel="import" href="company/appsco-company-page-actions.html">
 
+<link rel="import" href="company/appsco-company-add-domain.html">
+<link rel="import" href="company/appsco-company-add-certificate.html">
+<link rel="import" href="company/appsco-company-remove-domain.html">
+<link rel="import" href="company/appsco-deactivate-idp-settings.html">
+<link rel="import" href="company/appsco-company-domain-token.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-company-page">
     <template>
@@ -40,7 +48,7 @@
 
         <appsco-content id="appscoContent" resource-active>
 
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
 
                 <div class="resource-header">
                     [[ company.name ]]
@@ -59,7 +67,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
 
                 <div class="content-container">
                     <neon-animated-pages class="flex"
@@ -122,6 +130,9 @@
                                 domains-api="[[ _domainsApi ]]"
                                 api-errors="[[ apiErrors ]]"
                                 on-company-settings-changed="_onSettingsChanged"
+                                on-deactivate-domain-idp-settings="_onDeactivateDomainIdPSettings"
+                                on-idp-certificate-add="_onAddIdpCertificate"
+                                on-idp-settings-saved="_onIdPSettingsSaved"
                                 on-back="_onResourceBack">
                         </appsco-company-manage-idp-settings-page>
 
@@ -129,6 +140,11 @@
                                 name="appsco-company-domains-page"
                                 authorization-token="[[ authorizationToken ]]"
                                 domains-api="[[ _domainsApi ]]"
+                                on-remove-domain="_onRemoveDomain"
+                                on-get-token="_onDomainGetToken"
+                                on-domain-not-verified="_onDomainNotVerified"
+                                on-show-domains-page-actions="_onShowDomainsPageActions"
+                                on-hide-domains-page-actions="_onHideDomainsPageActions"
                                 on-back="_onResourceBack">
                         </appsco-company-domains-page>
 
@@ -138,6 +154,7 @@
                                 transfer-token-api="[[ transferTokenApi ]]"
                                 partners-api-url="[[ partnersApiUrl ]]"
                                 send-transfer-token-api="[[ sendTransferTokenApi ]]"
+                                on-transfer-token-sent="_onTransferTokenSent"
                                 api-errors="[[ apiErrors ]]"
                                 on-back="_onResourceBack">
                         </appsco-company-transfer-token-page>
@@ -147,238 +164,253 @@
             </div>
         </appsco-content>
 
+        <appsco-company-add-domain
+                id="appscoCompanyAddDomain"
+                authorization-token="[[ authorizationToken ]]"
+                add-domain-api="[[ _domainsApi ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-company-add-domain>
+
+        <appsco-company-add-certificate id="appscoCompanyAddCertificate"></appsco-company-add-certificate>
+
+        <appsco-company-remove-domain
+                id="appscoCompanyRemoveDomain"
+                authorization-token="[[ authorizationToken ]]">
+        </appsco-company-remove-domain>
+
+        <appsco-company-domain-token id="appscoCompanyDomainToken"></appsco-company-domain-token>
+
+        <appsco-deactivate-idp-settings
+                id="appscoDeactivateIdPSettings"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-idp-settings-deactivated="_onIdPSettingsDeactivated">
+        </appsco-deactivate-idp-settings>
+
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-company-page',
+        class AppscoCompanyPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-page'; }
 
-            properties: {
-
-                company: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    company: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                /**
-                 * Get company transfer token link.
-                 */
-                transferTokenApi: {
-                    type: String,
-                    value: ''
-                },
+                    transferTokenApi: {
+                        type: String
+                    },
 
-                sendTransferTokenApi: {
-                    type: String,
-                    value: ''
-                },
+                    sendTransferTokenApi: {
+                        type: String
+                    },
 
-                partnersApiUrl: {
-                    type: String,
-                    value: ''
-                },
+                    partnersApiUrl: {
+                        type: String
+                    },
 
-                saveIpWhiteListApi: {
-                    type: String,
-                    value: ''
-                },
+                    saveIpWhiteListApi: {
+                        type: String
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _settingsApi: {
+                        type: String,
+                        computed: '_computeSettingsApi(company)'
+                    },
+
+                    _brandSettingsApi: {
+                        type: String,
+                        computed: '_computeBrandSettingsApi(company)'
+                    },
+
+                    _imageSettingsApi: {
+                        type: String,
+                        computed: '_computeImageSettingsApi(company)'
+                    },
+
+                    _dashboardImageSettingsApi: {
+                        type: String,
+                        computed: '_computeDashboardImageSettingsApi(company)'
+                    },
+
+                    _domainsApi: {
+                        type: String,
+                        computed: '_computeDomainsApi(company)'
+                    },
+
+                    groupsApi: {
+                        type: String,
+                        computed: '_computeGroupsApi(company)'
+                    },
+
+                    _idPIntegrationsApi: {
+                        type: String,
+                        computed: '_computeIdPIntegrationsApi(company)'
+                    },
+
+                    /**
+                     * Selected page.
+                     * It has value of component's 'name' attribute.
+                     */
+                    _selected: {
+                        type: String,
+                        value: 'appsco-company-components-page',
+                        notify: true
+                    },
+
+                    showDomainsPage: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_observeShowDomainsPage'
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    brandLogo: {
+                        type: String,
+                        value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAgCAYAAAB+ZAqzAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAVZJREFUeNrsmOENgjAQhcE4AG5QN2AERnCEjsAIdQJG6AiO0BEcATdwhLONxJR6V1u8Ij98ycXkrL3HR+8gVlWCAEDa0EjuaqP1csLGkPJ7FtlNR3hKIzknNeV0uC5YqzhNSc/AiORgKiyCnCbWSm5ar02DHEzFhyB3J9aCf/tL02qckSCvbHSAy60Va9BSSGFn1gAt1zjNlmj5Mr+gdYE0aXZahFmFdOgnSW5aEikivHmWo1NJWnoBLf8ItFujNWumErSwDs3V+xjJoNURtBTwSC6lZQrRmtXhoNXa6IFPIwctE3lYf3crv6TVER26Ki29RVpiNVoJkz+FlmGnlTD5Y7ROia82q9Iat0ALG5xyml3laUXMqkSKZWgRpiha4k+LMPYzWvuYsbquDxhFxn8fzmTt3DNnP9xVNgymbvbCj9SXu8zNeiZTUVocZ27pe/3HA/8QYABzJAP50CmRFwAAAABJRU5ErkJggg=='
                     }
-                },
+                };
+            }
 
-                /**
-                 * Update company settings link.
-                 */
-                _settingsApi: {
-                    type: String,
-                    computed: '_computeSettingsApi(company)'
-                },
+            static get observers(){
+                return [
+                    '_updateScreen(tabletScreen, mobileScreen)'
+                ];
+            };
 
-                /**
-                 * Update company settings link.
-                 */
-                _brandSettingsApi: {
-                    type: String,
-                    computed: '_computeBrandSettingsApi(company)'
-                },
-
-                /**
-                 * Update company logo link.
-                 */
-                _imageSettingsApi: {
-                    type: String,
-                    computed: '_computeImageSettingsApi(company)'
-                },
-
-                _dashboardImageSettingsApi: {
-                    type: String,
-                    computed: '_computeDashboardImageSettingsApi(company)'
-                },
-
-                /**
-                 * Get domains link.
-                 */
-                _domainsApi: {
-                    type: String,
-                    computed: '_computeDomainsApi(company)'
-                },
-
-                /**
-                 * Get groups link.
-                 */
-                groupsApi: {
-                    type: String,
-                    computed: '_computeGroupsApi(company)'
-                },
-
-                _idPIntegrationsApi: {
-                    type: String,
-                    computed: '_computeIdPIntegrationsApi(company)'
-                },
-
-                /**
-                 * Selected page.
-                 * It has value of component's 'name' attribute.
-                 */
-                _selected: {
-                    type: String,
-                    value: 'appsco-company-components-page',
-                    notify: true
-                },
-
-                showDomainsPage: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_observeShowDomainsPage'
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                brandLogo: {
-                    type: String,
-                    value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAgCAYAAAB+ZAqzAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAVZJREFUeNrsmOENgjAQhcE4AG5QN2AERnCEjsAIdQJG6AiO0BEcATdwhLONxJR6V1u8Ij98ycXkrL3HR+8gVlWCAEDa0EjuaqP1csLGkPJ7FtlNR3hKIzknNeV0uC5YqzhNSc/AiORgKiyCnCbWSm5ar02DHEzFhyB3J9aCf/tL02qckSCvbHSAy60Va9BSSGFn1gAt1zjNlmj5Mr+gdYE0aXZahFmFdOgnSW5aEikivHmWo1NJWnoBLf8ItFujNWumErSwDs3V+xjJoNURtBTwSC6lZQrRmtXhoNXa6IFPIwctE3lYf3crv6TVER26Ki29RVpiNVoJkz+FlmGnlTD5Y7ROia82q9Iat0ALG5xyml3laUXMqkSKZWgRpiha4k+LMPYzWvuYsbquDxhFxn8fzmTt3DNnP9xVNgymbvbCj9SXu8zNeiZTUVocZ27pe/3HA/8QYABzJAP50CmRFwAAAABJRU5ErkJggg=='
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(tabletScreen, mobileScreen)'
-            ],
-
-            attached: function() {
+            ready() {
+                super.ready();
 
                 this.pageLoaded = false;
 
-                if (this.mobileScreen || this.tabletScreen) {
-                    this.updateStyles();
-                }
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            resetPage: function() {
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this._onResourceActionCompanyPage.bind(this));
+                this.toolbar.addEventListener('add-domain', this._onAddDomain.bind(this));
+                this.toolbar.addEventListener('search-groups', this._onSearchGroups.bind(this));
+                this.toolbar.addEventListener('search-groups-clear', this._onSearchGroupsClear.bind(this));
+            }
+
+            resetPage() {
                 this._showCompanyComponentsPage();
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            addDomain: function(domain) {
+            addDomain(domain) {
                 this.$.appscoCompanyComponentsPage.addDomain(domain);
                 this.$.appscoCompanyDomainsPage.addDomain(domain);
-            },
+            }
 
-            modifyDomain: function(domain) {
+            modifyDomain(domain) {
                 this.$.appscoCompanyComponentsPage.modifyDomain(domain);
                 this.$.appscoCompanyDomainsPage.modifyDomain(domain);
                 this.$.appscoCompanyManageIdPSettingsPage.modifyDomain(domain);
-            },
+            }
 
-            removeDomain: function(domain) {
+            removeDomain(domain) {
                 this.$.appscoCompanyComponentsPage.removeDomain(domain);
                 this.$.appscoCompanyDomainsPage.removeDomain(domain);
                 this.reloadIdPDomains();
-            },
+            }
 
-            reloadIdPDomains: function() {
+            reloadIdPDomains() {
                 this.$.appscoCompanyManageIdPSettingsPage.reloadDomains();
-            },
+            }
 
-            showManageDomainsPage: function() {
+            showManageDomainsPage() {
                 this.$.appscoCompanyComponentsPage.setSharedElement('domains');
 
                 setTimeout(function() {
                     this._showCompanyDomainsPage();
                     this.showDomainsPage = false;
                 }.bind(this), 50);
-            },
+            }
 
-            _observeShowDomainsPage: function(show) {
-
+            _observeShowDomainsPage(show) {
                 if (show) {
                     this.showManageDomainsPage();
                 }
-            },
+            }
 
-            _computeSettingsApi: function(company) {
-                return (company.meta && company.meta.settings) ? company.meta.settings : '';
-            },
+            _computeSettingsApi(company) {
+                return (company.meta && company.meta.settings) ? company.meta.settings : null;
+            }
 
-            _computeBrandSettingsApi: function(company) {
-                return company.self ? (company.self + '/branding') : '';
-            },
+            _computeBrandSettingsApi(company) {
+                return company.self ? (company.self + '/branding') : null;
+            }
 
-            _computeImageSettingsApi: function(company) {
-                return (company.meta && company.meta.logo) ? company.meta.logo : '';
-            },
+            _computeImageSettingsApi(company) {
+                return (company.meta && company.meta.logo) ? company.meta.logo : null;
+            }
 
-            _computeDashboardImageSettingsApi: function(company) {
+            _computeDashboardImageSettingsApi(company) {
                 return (company.meta && company.meta.dashboard_logo) ? company.meta.dashboard_logo : '';
-            },
+            }
 
-            _computeDomainsApi: function(company) {
-                return (company.meta && company.meta.domains) ? company.meta.domains + '?extended=1' : '';
-            },
+            _computeDomainsApi(company) {
+                return (company.meta && company.meta.domains) ? company.meta.domains + '?extended=1' : null;
+            }
 
-            _computeGroupsApi: function(company) {
-                return company.self ? (company.self + '/groups') : '';
-            },
+            _computeGroupsApi(company) {
+                return company.self ? (company.self + '/groups') : null;
+            }
 
-            _computeIdPIntegrationsApi: function(company) {
-                return company.self ? (company.self + '/settings/idps/integrations') : '';
-            },
+            _computeIdPIntegrationsApi(company) {
+                return company.self ? (company.self + '/settings/idps/integrations') : null;
+            }
 
-            _updateScreen: function(medium, tablet, mobile) {
+            _updateScreen(medium, tablet, mobile) {
                 this.updateStyles();
 
                 if (mobile) {
@@ -387,79 +419,79 @@
                 else if(!this.$.appscoContent.resourceActive) {
                     this.$.appscoContent.showSection('resource');
                 }
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _showCompanyComponentsPage: function() {
+            _showCompanyComponentsPage() {
                 this._selected = 'appsco-company-components-page';
-            },
+            }
 
-            _showCompanySettingsPage: function() {
+            _showCompanySettingsPage() {
                 this._selected = 'appsco-company-settings-page';
-            },
+            }
 
-            _showCompanyBrandSettingsPage: function() {
+            _showCompanyBrandSettingsPage() {
                 this._selected = 'appsco-company-brand-settings-page';
-            },
+            }
 
-            _showCompanyBrandedLoginPage: function() {
+            _showCompanyBrandedLoginPage() {
                 this._selected = 'appsco-company-branded-login-page';
-            },
+            }
 
-            _showCompanyDomainsPage: function() {
+            _showCompanyDomainsPage() {
                 this._selected = 'appsco-company-domains-page';
-            },
+            }
 
-            _showCompanyTransferTokenPage: function() {
+            _showCompanyTransferTokenPage() {
                 this._selected = 'appsco-company-transfer-token-page';
-            },
+            }
 
-            _showCompanyManageIdPSettings: function() {
+            _showCompanyManageIdPSettings() {
                 this._selected = 'appsco-company-manage-idp-settings-page';
-            },
+            }
 
-            _onResourceBack: function() {
+            _onResourceBack() {
                 this._showCompanyComponentsPage();
-            },
+            }
 
-            _onManageCompanySettings: function() {
+            _onManageCompanySettings() {
                 this._showCompanySettingsPage();
-            },
+            }
 
-            _onSettingsChanged: function() {
+            _onSettingsChanged() {
                 this._showCompanyComponentsPage();
-            },
+            }
 
-            _onManageCompanyBrandSettings: function() {
+            _onManageCompanyBrandSettings() {
                 this._showCompanyBrandSettingsPage();
-            },
+            }
 
-            _onManageCompanyBrandedLogin: function() {
+            _onManageCompanyBrandedLogin() {
                 this._showCompanyBrandedLoginPage();
-            },
+            }
 
-            _onCompanyBrandSettingsChanged: function() {
+            _onCompanyBrandSettingsChanged() {
                 this._showCompanyComponentsPage();
-            },
+            }
 
-            _onManageCompanyDomains: function() {
+            _onManageCompanyDomains() {
                 this._showCompanyDomainsPage();
-            },
+            }
 
-            _onManageCompanyTransferToken: function() {
+            _onManageCompanyTransferToken() {
                 this._showCompanyTransferTokenPage();
-            },
+            }
 
-            _onManageCompanyIdPSettings: function() {
+            _onManageCompanyIdPSettings() {
                 this._showCompanyManageIdPSettings();
-            },
+            }
 
-            _onPageAnimationFinish: function(event) {
-                var fromPage = event.detail.fromPage,
+            _onPageAnimationFinish(event) {
+                const fromPage = event.detail.fromPage,
                     toPage = event.detail.toPage;
 
                 switch(fromPage.getAttribute('name')) {
@@ -468,7 +500,6 @@
                     case 'appsco-company-transfer-token-page':
                         fromPage.resetPage();
                         break;
-
                     default:
                         break;
                 }
@@ -478,13 +509,84 @@
                     case 'appsco-company-domains-page':
                         toPage.setupPage();
                         break;
-
                     default:
                         break;
                 }
-
             }
 
-        });
+            _onResourceActionCompanyPage() {
+                this.toolbar.toggleResource();
+            }
+
+            _onAddDomain() {
+                this.shadowRoot.getElementById('appscoCompanyAddDomain').open();
+            }
+
+            _onRemoveDomain(event) {
+                const dialog = this.shadowRoot.getElementById('appscoCompanyRemoveDomain');
+                dialog.setDomain(event.detail.domain);
+                dialog.open();
+            }
+
+            _onAddIdpCertificate(event) {
+                const dialog = this.shadowRoot.getElementById('appscoCompanyAddCertificate');
+                dialog.setSource(event);
+                dialog.open();
+            }
+
+            _searchGroups(term) {
+                this._showProgressBar();
+                this.searchGroups(term);
+            }
+
+            _onSearchGroups(event) {
+                this._searchGroups(event.detail.term);
+            }
+
+            _onSearchGroupsClear() {
+                this._searchGroups('');
+            }
+
+            _onDomainGetToken(event) {
+                const dialog = this.shadowRoot.getElementById('appscoCompanyDomainToken');
+                dialog.setDomain(event.detail.domain);
+                dialog.open();
+            }
+
+            _onTransferTokenSent() {
+                this._notify('Transfer token email has been successfully sent.');
+            }
+
+            _onShowDomainsPageActions() {
+                this.toolbar.showDomainsPageActions();
+            }
+
+            _onHideDomainsPageActions() {
+                this.toolbar.hideDomainsPageActions();
+            }
+
+            _onIdPSettingsSaved(event) {
+                this._notify('IdP settings for ' + event.detail.domain.domain + ' domain was successfully saved.');
+            }
+
+            _onDeactivateDomainIdPSettings(event) {
+                const dialog = this.shadowRoot.getElementById('appscoDeactivateIdPSettings');
+                dialog.setDomain(event.detail.domain);
+                dialog.open();
+            }
+
+            _onIdPSettingsDeactivated(event) {
+                const domain = event.detail.domain;
+
+                this.modifyDomain(domain);
+                this._notify('IdP settings for ' + domain.domain + ' domain was successfully deactivated.');
+            }
+
+            _onDomainNotVerified(event) {
+                const domain = event.detail.domain;
+                this._notify('Unable to verify ' + domain.domain + ' domain - please wait until the DNS record change is propagated.', true);
+            }
+        }
+        window.customElements.define(AppscoCompanyPage.is, AppscoCompanyPage);
     </script>
 </dom-module>

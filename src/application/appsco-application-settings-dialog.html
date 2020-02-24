@@ -11,6 +11,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/application/appsco-application-settings.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-application-settings-dialog">
     <template>
         <style>
@@ -20,21 +22,21 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             appsco-application-settings {
                 --form-action: {
@@ -44,7 +46,6 @@
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-closed="_onDialogClosed">
@@ -85,113 +86,83 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoApplicationSettingsDialog extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-application-settings-dialog'; }
 
-            is: 'appsco-application-settings-dialog',
-
-            properties: {
-
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _applicationSettings: {
-                    type: Boolean,
-                    value: false
-                },
-
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            setApplication: function(application) {
+                    _applicationSettings: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            setApplication(application) {
                 this.application = application;
-            },
+            }
 
             /**
              * Toggles add applications dialog.
              */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
             /**
              * Called after dialog has been closed.
              *
              * @private
              */
-            _onDialogClosed: function() {
-                this._loader = false;
-            },
-
-            _onEnter: function() {
-                this._onSave();
-            },
-
-            _onSave: function() {
-                this._showLoader();
-                this.$.appscoApplicationSettings.save();
-            },
-
-            _onApplicationsSettingsSaved: function() {
-                this._hideLoader();
-                this.toggle();
-            },
-
-            _onFormError: function() {
-                this._hideLoader();
-            },
-
-            _showLoader: function() {
-                this._loader = true;
-            },
-
-            _hideLoader: function() {
+            _onDialogClosed() {
                 this._loader = false;
             }
-        });
+
+            _onEnter() {
+                this._onSave();
+            }
+
+            _onSave() {
+                this._showLoader();
+                this.$.appscoApplicationSettings.save();
+            }
+
+            _onApplicationsSettingsSaved() {
+                this._hideLoader();
+                this.toggle();
+            }
+
+            _onFormError() {
+                this._hideLoader();
+            }
+
+            _showLoader() {
+                this._loader = true;
+            }
+
+            _hideLoader() {
+                this._loader = false;
+            }
+        }
+        window.customElements.define(AppscoApplicationSettingsDialog.is, AppscoApplicationSettingsDialog);
     </script>
 </dom-module>

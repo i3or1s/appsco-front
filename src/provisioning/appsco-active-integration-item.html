@@ -12,9 +12,7 @@
 
 <dom-module id="appsco-active-integration-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host .item-image {
                 width: 52px;
                 height: 52px;
@@ -89,32 +87,35 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoActiveIntegrationItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-active-integration-item'; }
 
-            is: 'appsco-active-integration-item',
-
-            properties: {
-                _forceSyncAvailable: {
-                    type: Boolean,
-                    computed: '_computeForceSyncAvailable(item)'
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            _onForceSync: function() {
-                this.fire('force-sync', {
-                    integration: this.item
-                });
-            },
-
-            _computeForceSyncAvailable: function(item) {
-                return (item && item.kind === 'ra');
+            static get properties() {
+                return {
+                    _forceSyncAvailable: {
+                        type: Boolean,
+                        computed: '_computeForceSyncAvailable(item)'
+                    }
+                };
             }
 
-        });
+            _onForceSync() {
+                this.dispatchEvent(new CustomEvent('force-sync', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        integration: this.item
+                    }
+                }));
+            }
+
+            _computeForceSyncAvailable(item) {
+                return (item && item.kind === 'ra');
+            }
+        }
+        window.customElements.define(AppscoActiveIntegrationItem.is, AppscoActiveIntegrationItem);
     </script>
 </dom-module>

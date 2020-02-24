@@ -20,6 +20,8 @@
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-access-on-boarding-roles-item">
     <template>
         <style include="appsco-list-item-styles"></style>
@@ -41,7 +43,7 @@
                 --account-initials-background-color: var(--report-account-initials-background-color);
             }
             iron-collapse {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
             }
             .events-container {
                 padding: 20px;
@@ -50,12 +52,12 @@
             }
             .event-list {
                 width: 100%;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-wrap;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             .resource-icon {
                 width: 24px;
@@ -64,7 +66,7 @@
                 display: block;
             }
             .resource-title {
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-nowrap;
                 margin-right: 10px;
                 font-size: 12px;
                 color: var(--secondary-text-color);
@@ -92,12 +94,12 @@
             }
             :host .list-actions {
                 margin-top: 10px;
-                @apply(--layout-vertical);
-                @apply(--layout-end);
+                @apply --layout-vertical;
+                @apply --layout-end;
             }
             :host .resolve-action {
-                @apply(--primary-button);
-                @apply(--shadow-elevation-2dp);
+                @apply --primary-button;
+                @apply --shadow-elevation-2dp;
                 color: var(--primary-text-color);
                 background-color: var(--item-background-color);
                 border: none;
@@ -141,7 +143,7 @@
                                loader-alt="AppsCo is processing request"
                                multi-color></appsco-loader>
 
-                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                 <div class="event-list">
                     <table>
@@ -201,157 +203,141 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessOnBoardingRolesItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-access-on-boarding-roles-item'; }
 
-            is: 'appsco-access-on-boarding-roles-item',
-
-            properties: {
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                screen800: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                eventTypesList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _eventsVisible: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _resolveRequests: {
-                    type: Number,
-                    value: 0
-                },
-
-                _resolvedEvents: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _unresolvedEvents: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            observers: [
-                '_updateScreen(screen800)'
-            ],
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    screen800: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            _updateScreen: function() {
+                    eventTypesList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _eventsVisible: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _resolveRequests: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _resolvedEvents: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _unresolvedEvents: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_updateScreen(screen800)'
+                ];
+            }
+
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
             
-            _onShowEvents: function() {
+            _onShowEvents() {
                 this.$.events.show();
                 this._eventsVisible = true;
-            },
+            }
 
-            _onHideEvents: function() {
+            _onHideEvents() {
                 this.$.events.hide();
                 this._eventsVisible = false;
-            },
+            }
 
-            _isUnresolvedEvent: function(item) {
+            _isUnresolvedEvent(item) {
                 item.selected = item.selected ? item.selected : false;
 
                 return ('unresolved' === item.status);
-            },
+            }
 
-            _getParameter: function(item, parameter) {
-                var eventTypes = this.eventTypesList;
+            _getParameter(item, parameter) {
+                const eventTypes = this.eventTypesList;
 
-                for (var i = 0; i < eventTypes.length; i++) {
-                    var eventType = eventTypes[i];
+                for (let i = 0; i < eventTypes.length; i++) {
+                    const eventType = eventTypes[i];
 
-                    if (eventType.name == item.event_type) {
+                    if (eventType.name === item.event_type) {
                         return eventType[parameter];
                     }
                 }
 
                 return '';
-            },
+            }
 
-            _removeItemIfNoUnresolvedEvents: function() {
-
+            _removeItemIfNoUnresolvedEvents() {
                 if (0 === this.item.access_onboardings.length) {
-
-                    this.fire('remove-item', {
-                        item: this.item
-                    });
+                    this.dispatchEvent(new CustomEvent('remove-item', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            item: this.item
+                        }
+                    }));
                 }
-            },
+            }
 
-            _onResolveEventsFinished: function() {
-
+            _onResolveEventsFinished() {
                 if (0 < this._resolvedEvents.length) {
-
-                    /**
-                     * Fired when events have been resolved.
-                     *
-                     * @event access-on-boarding-events-resolved
-                     */
-                    this.fire('access-on-boarding-events-resolved', {
-                        resolvedItems: this._resolvedEvents,
-                        unresolvedItems: this._unresolvedEvents
-                    });
+                    this.dispatchEvent(new CustomEvent('access-on-boarding-events-resolved', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            resolvedItems: this._resolvedEvents,
+                            unresolvedItems: this._unresolvedEvents
+                        }
+                    }));
                 }
                 else {
                     this._showError('There was an error while resolving events. Please try again. If error continues contact AppsCo support.');
@@ -361,12 +347,11 @@
                 this.set('_unresolvedEvents', []);
                 this._hideLoader();
                 this._removeItemIfNoUnresolvedEvents();
-            },
+            }
 
-            _resolveEvent: function(item) {
-
+            _resolveEvent(item) {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         options = {
                             url: item.meta.resolve,
                             method: 'PUT',
@@ -375,22 +360,19 @@
                         };
 
                     request.send(options).then(function() {
-
-                        if (200 == request.status) {
+                        if (200 === request.status) {
                             resolve(request.response);
                         }
-
                     }.bind(this), function() {
-
                         if (404 === request.status) {
                             reject(item);
                         }
                     }.bind(this));
                 }.bind(this));
-            },
+            }
 
-            _removeResolvedEvent: function(item) {
-                var events = this.item.access_onboardings,
+            _removeResolvedEvent(item) {
+                const events = this.item.access_onboardings,
                     eventsClone = JSON.parse(JSON.stringify(this.item.access_onboardings));
 
                 events.forEach(function(ev, i) {
@@ -401,12 +383,12 @@
 
                 this.set('item.access_onboardings', []);
                 this.set('item.access_onboardings', eventsClone);
-            },
+            }
 
-            _onResolveSelectedAction: function() {
-                var resolveList = this.item.access_onboardings.filter(function(el) {
-                   return el.selected;
-                }),
+            _onResolveSelectedAction() {
+                const resolveList = this.item.access_onboardings.filter(function (el) {
+                        return el.selected;
+                    }),
                     length = resolveList.length;
 
                 if (0 === length) {
@@ -419,11 +401,10 @@
                 this._showLoader();
                 this._hideError();
 
-                for (var i = 0; i < length; i++) {
-                    var item = resolveList[i];
+                for (let i = 0; i < length; i++) {
+                    const item = resolveList[i];
 
                     (function(me) {
-
                         me._resolveEvent(item).then(function(item) {
                             me.push('_resolvedEvents', item);
                             me._removeResolvedEvent(item);
@@ -444,6 +425,7 @@
                     })(this);
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoAccessOnBoardingRolesItem.is, AppscoAccessOnBoardingRolesItem);
     </script>
 </dom-module>

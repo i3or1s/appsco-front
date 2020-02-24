@@ -37,7 +37,7 @@ Custom property | Description | Default
 
                 --paper-icon-button-ink-color: var(--appsco-account-action-color);
 
-            @apply(--appsco-header-account-actions);
+            @apply --appsco-header-account-actions;
             }
             :host a {
                 text-decoration: none;
@@ -49,8 +49,8 @@ Custom property | Description | Default
                 color: var(--appsco-account-action-color);
             }
             :host .new-notifications-icon {
-                color: var(--appsco-account-new-notifications-color, --primary-color);
-                --paper-icon-button-ink-color: var(--appsco-account-new-notifications-color, --primary-color);
+                color: var(--appsco-account-new-notifications-color, var(--primary-color));
+                --paper-icon-button-ink-color: var(--appsco-account-new-notifications-color, var(--primary-color));
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;
@@ -109,111 +109,82 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoHeaderAccountActions extends Polymer.Element {
+            static get is() { return 'appsco-header-account-actions'; }
 
-            is: 'appsco-header-account-actions',
+            static get properties() {
+                return {
+                    account: {
+                        type: Object
+                    },
 
-            properties: {
+                    /** Indicates if chat exists or not. */
+                    chat: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Active account from AppsCo dashboard.
-                 */
-                account: {
-                    type: Object
-                },
+                    tutorialActionAvailable: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /** Indicates if chat exists or not. */
-                chat: {
-                    type: Boolean,
-                    value: false
-                },
+                    authorizationToken: {
+                        type: String
+                    },
 
-                tutorialActionAvailable: {
-                    type: Boolean,
-                    value: false
-                },
+                    notificationsApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    notificationsSize: {
+                        type: Number,
+                        value: 5
+                    },
 
-                /**
-                 * Notifications API link.
-                 */
-                notificationsApi: {
-                    type: String
-                },
-
-                /**
-                 * Number of notifications to load.
-                 */
-                notificationsSize: {
-                    type: Number,
-                    value: 5
-                },
-
-                /**
-                 * Indicates if there are new notifications.
-                 */
-                _newNotifications: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            /**
-             * Fires an event after chat action is tapped.
-             *
-             * @private
-             */
-            _onChatAction: function(event) {
-
-                /**
-                 * Fired after chat action is tapped.
-                 *
-                 * @event account-chat
-                 */
-                this.fire('account-chat');
-            },
-
-            notifyNewNotifications:function (newNotificationsCount) {
-                this.$.newNotificationsIcon.setNotificationsCount(newNotificationsCount);
-                this._newNotifications = true;
-            },
-
-            notifyNotificationsSeen:function () {
-                this.$.newNotificationsIcon.setNotificationsCount(0);
-                this._newNotifications = false;
-            },
-
-            /**
-             * Handles notifications action.
-             *
-             * @private
-             */
-            _onNotificationsAction: function(event) {
-                this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
-            },
-
-            /**
-             * Handles notifications action when there are new notifications.
-             *
-             * @private
-             */
-            _onNewNotificationsAction: function(event) {
-                this._newNotifications = false;
-                this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
-            },
-
-            _onGetStartedIcon: function(event) {
-                this.fire('get-started', {
-                    account: this.account
-                });
+                    /**
+                     * Indicates if there are new notifications.
+                     */
+                    _newNotifications: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
             }
 
-        });
+            _onChatAction(event) {
+                this.dispatchEvent(new CustomEvent('account-chat', { bubbles: true, composed: true }));
+            }
+
+            notifyNewNotifications(newNotificationsCount) {
+                this.$.newNotificationsIcon.setNotificationsCount(newNotificationsCount);
+                this._newNotifications = true;
+            }
+
+            notifyNotificationsSeen() {
+                this.$.newNotificationsIcon.setNotificationsCount(0);
+                this._newNotifications = false;
+            }
+
+            _onNotificationsAction(event) {
+                this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
+            }
+
+            _onNewNotificationsAction(event) {
+                this._newNotifications = false;
+                this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
+            }
+
+            _onGetStartedIcon(event) {
+                this.dispatchEvent(new CustomEvent('get-started', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        account: this.account
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoHeaderAccountActions.is, AppscoHeaderAccountActions);
     </script>
 </dom-module>

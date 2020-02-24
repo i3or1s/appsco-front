@@ -11,7 +11,7 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-import-accounts);
+                @apply --appsco-import-accounts;
             }
             :host .info {
                 margin: 0;
@@ -33,9 +33,9 @@
                                 authorization-token="[[ authorizationToken ]]"
                                 import-api="[[ importApi ]]">
 
-            <h2 title>Importing accounts</h2>
+            <h2 title slot="title">Importing accounts</h2>
 
-            <div info>
+            <div info slot="info">
                 <p class="info">
                     To get started, prepare your organization’s business account data so it’s in the proper format
                     for importing to AppsCo. Allowed format is csv.
@@ -67,51 +67,38 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImportAccounts extends Polymer.Element {
+            static get is() { return 'appsco-import-accounts'; }
 
-            is: 'appsco-import-accounts',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    importApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    domain: {
+                        type: String
+                    }
+                };
+            }
 
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                importApi: {
-                    type: String,
-                    value: ''
-                },
-
-                domain: {
-                    type: String
-                }
-            },
-
-            /**
-             * Toggles import.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.appscoImportResource.toggle();
-            },
+            }
 
-            /**
-             * Closes import.
-             */
-            close: function() {
+            close() {
                 this.$.appscoImportResource.close();
-            },
+            }
 
-            _onDownloadExampleImportFile: function(event) {
+            _onDownloadExampleImportFile(event) {
                 event.stopPropagation();
                 window.location.href = this.domain + '/example_import.csv';
             }
-        });
+        }
+        window.customElements.define(AppscoImportAccounts.is, AppscoImportAccounts);
     </script>
 </dom-module>

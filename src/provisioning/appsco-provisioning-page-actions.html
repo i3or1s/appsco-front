@@ -12,15 +12,15 @@
     <template>
         <style>
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host > * {
                 height: 100%;
             }
             appsco-provisioning-actions {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
         </style>
 
@@ -28,50 +28,48 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoProvisioningPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-provisioning-page-actions'; }
 
-            is: 'appsco-provisioning-page-actions',
+            static get properties() {
+                return {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-            properties: {
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 200,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 200,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            resetPage: function() {
+            resetPage() {
                 this.$.appscoProvisioningActions.reset();
-            },
+            }
 
-            resetPageActions: function() {
+            resetPageActions() {
                 this.resetPage();
             }
-        });
+        }
+        window.customElements.define(AppscoProvisioningPageActions.is, AppscoProvisioningPageActions);
     </script>
 </dom-module>
 

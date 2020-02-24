@@ -12,6 +12,8 @@
 <link rel="import" href="../../components/components/appsco-loader.html">
 <link rel="import" href="../../components/components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-company-add-group">
     <template>
         <style>
@@ -21,27 +23,26 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
 
         </style>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -56,29 +57,30 @@
             <paper-dialog-scrollable>
                 <div class="dialog-container">
 
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <p>
                         Enter the group name and click "ADD" to create it.
                     </p>
 
-                     <form is="iron-form"
-                          id="form"
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
                           method="POST"
-                          action="[[ companyGroupsApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
-
-                        <div class="input-container">
-                            <paper-input id="groupName"
-                                         label="New group name"
-                                         name="company_group[name]"
-                                         required
-                                         auto-validate
-                                         error-message="Please enter group name."></paper-input>
-                        </div>
-                    </form>
+                          action="[[ companyGroupsApi ]]">
+                            <div class="input-container">
+                                <paper-input id="groupName"
+                                             label="New group name"
+                                             name="company_group[name]"
+                                             required
+                                             auto-validate
+                                             error-message="Please enter group name."></paper-input>
+                            </div>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -95,162 +97,103 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyAddGroup extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-add-group'; }
 
-            is: 'appsco-company-add-group',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                companyGroupsApi: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                /**
-                 * Target for iron-a11y-keys component.
-                 * Submit form on enter.
-                 */
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.form
-                    }
-                }
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    companyGroupsApi: {
+                        type: String
+                    },
 
-            /**
-             * Opens add group dialog.
-             */
-            open: function() {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    },
+
+                    _target: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this._target = this.$.form;
+            }
+
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            /**
-             * Closes add group dialog.
-             */
-            close: function() {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            /**
-             * Toggles add group dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.groupName.focus();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this._target.reset();
-            },
+            }
 
             /**
              * Submits form on ENTER key using iron-a11y-keys component.
              *
              * @private
              */
-            _onEnter: function() {
+            _onEnter() {
                 this._submitForm();
-            },
+            }
 
-            _submitForm: function() {
-
+            _submitForm() {
                 this._hideError();
 
                 if (this._target.validate()) {
                     this._showLoader();
                     this._target.submit();
                 }
+            }
 
-            },
-
-            /**
-             * Called on form error.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
             /**
              * Called after group has been added.
@@ -258,14 +201,17 @@
              * @param {Object} event
              * @private
              */
-            _onFormResponse: function(event) {
+            _onFormResponse(event) {
                 this.close();
-
-                this.fire('group-added', {
-                    group: event.detail.response
-                });
-
+                this.dispatchEvent(new CustomEvent('group-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        group: event.detail.response
+                    }
+                }));
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyAddGroup.is, AppscoCompanyAddGroup);
     </script>
 </dom-module>

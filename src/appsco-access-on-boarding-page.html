@@ -11,6 +11,9 @@
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="components/access-on-boarding/appsco-access-on-boarding-roles.html">
 <link rel="import" href="components/access-on-boarding/appsco-access-on-boarding-page-filters.html">
+<link rel="import" href="components/access-on-boarding/appsco-access-on-boarding-page-actions.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-access-on-boarding-page">
     <template>
@@ -24,7 +27,7 @@
                     cursor: default;
                 };
                 --appsco-access-on-boarding-list-item-activated: {
-                    @apply(--shadow-elevation-2dp);
+                    @apply --shadow-elevation-2dp;
                 };
             }
             :host div[resource] .resource-header, :host div[resource] .resource-actions {
@@ -44,7 +47,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent" resource-active>
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-content">
                     <appsco-access-on-boarding-page-filters id="accessOnBoardingPageFilters"
                                                             groups-api="[[ groupsApi ]]"
@@ -53,7 +56,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-access-on-boarding-roles
                             id="appscoAccessOnBoardingRoles"
@@ -65,7 +68,9 @@
                             api-errors="[[ apiErrors ]]"
                             load-more
                             on-list-loaded="_onRolesLoadFinished"
-                            on-list-empty="_onRolesLoadFinished"></appsco-access-on-boarding-roles>
+                            on-access-on-boarding-events-resolved="_onEventsResolved"
+                            on-list-empty="_onRolesLoadFinished">
+                    </appsco-access-on-boarding-roles>
                 </div>
             </div>
 
@@ -74,128 +79,137 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-access-on-boarding-page',
+        class AppscoAccessOnBoardingPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-access-on-boarding-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    groupsApi: {
+                        type: String
+                    },
 
-                groupsApi: {
-                    type: String,
-                    value: ''
-                },
+                    accessOnBoardingUsersApi: {
+                        type: String
+                    },
 
-                accessOnBoardingUsersApi: {
-                    type: String,
-                    value: ''
-                },
+                    exportAccessOnBoardingApi: {
+                        type: String
+                    },
 
-                exportAccessOnBoardingApi: {
-                    type: String,
-                    value: ''
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen, screen992)',
+                    '_toggleFilters(mobileScreen)'
+                ];
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen) {
+                        this.updateStyles();
+                    }
+                });
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, screen992)',
-                '_toggleFilters(mobileScreen)'
-            ],
+            _addListeners() {
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+                this.toolbar.addEventListener('export-access-on-boarding', this._onExportAccessOnBoardingAction.bind(this));
+            }
 
-            attached: function() {
-                 this.pageLoaded = false;
-
-                if (this.mobileScreen) {
-                    this.updateStyles();
-                }
-            },
-
-            _toggleFilters: function(mobile) {
+            _toggleFilters(mobile) {
                 if (mobile) {
                     this.hideResource();
                 } else {
                     this.showResource();
                 }
-            },
+            }
 
-            hideResource: function() {
+            hideResource() {
                 this.$.appscoContent.hideSection('resource');
-            },
+            }
 
-            showResource: function() {
+            showResource() {
                 this.$.appscoContent.showSection('resource');
-            },
+            }
 
-            initializePage: function() {},
+            initializePage() {}
 
-            resetPage: function() {
+            resetPage() {
                 this._reloadLists();
                 this._resetFilters();
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            reloadRoles: function() {
+            reloadRoles() {
                 this._reloadLists();
-            },
+            }
 
-            export: function() {
-                var request = document.createElement('iron-request'),
-                    url = this.exportAccessOnBoardingApi,
+            export() {
+                const request = document.createElement('iron-request'),
                     options = {
                         method: 'GET',
                         handleAs: 'blob',
@@ -205,7 +219,9 @@
                     },
                     filters = this._getAccessOnBoardingFilters();
 
-                if (filters.group.alias && 'all' != filters.group.alias) {
+                let url = this.exportAccessOnBoardingApi
+
+                if (filters.group.alias && 'all' !== filters.group.alias) {
                     url += (-1 < url.indexOf('?')) ?
                         ('&group=' + filters.group.alias) :
                         ('?group=' + filters.group.alias);
@@ -220,10 +236,10 @@
                 options.url = url;
 
                 request.send(options).then(function() {
-                    var fileReader = new FileReader();
+                    const fileReader = new FileReader();
 
                     fileReader.onload = function(event) {
-                        var link = document.createElement('a');
+                        const link = document.createElement('a');
 
                         link.href = event.target.result;
                         link.setAttribute('download', 'AppsCo - Access On-boarding Status List.xlsx');
@@ -233,7 +249,7 @@
                             link.click();
                         }
                         else if (document.createEvent) {
-                            var clickEvent = document.createEvent('MouseEvents');
+                            const clickEvent = document.createEvent('MouseEvents');
 
                             clickEvent.initEvent('click', true, true);
                             link.dispatchEvent(clickEvent);
@@ -244,43 +260,55 @@
 
                     fileReader.readAsDataURL(request.response);
 
-                    this.fire('export-access-on-boarding-finished');
+                    this._hideProgressBar();
                 }.bind(this), function() {
-                    this.fire('export-access-on-boarding-failed', {
-                        message: 'Export of Access On Boarding Report failed. Please contact AppsCo support.'
-                    });
+                    this._hideProgressBar();
+                    this._notify('Export of Access On Boarding Report failed. Please contact AppsCo support.');
                 }.bind(this));
-            },
-
-            _getAccessOnBoardingFilters: function() {
-                return this.$.accessOnBoardingPageFilters.getFilters();
-            },
-
-            _updateScreen: function() {
-                this.updateStyles();
-            },
-
-            _reloadLists: function() {
-                this.$.appscoAccessOnBoardingRoles.reloadItems();
-            },
-
-            _resetFilters: function() {
-                this.$.accessOnBoardingPageFilters.reset();
-            },
-
-            _onPageLoaded: function() {
-                this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
-            
-            _onRolesLoadFinished: function() {
-                this._onPageLoaded();
-            },
-
-            _onFilterPageAction: function(event) {
-                this.$.appscoAccessOnBoardingRoles.filterRoles(event.detail.filters);
             }
-        });
+
+            _getAccessOnBoardingFilters() {
+                return this.$.accessOnBoardingPageFilters.getFilters();
+            }
+
+            _updateScreen() {
+                this.updateStyles();
+            }
+
+            _reloadLists() {
+                this.$.appscoAccessOnBoardingRoles.reloadItems();
+            }
+
+            _resetFilters() {
+                this.$.accessOnBoardingPageFilters.reset();
+            }
+
+            _onPageLoaded() {
+                this.pageLoaded = true;
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
+            
+            _onRolesLoadFinished() {
+                this._onPageLoaded();
+            }
+
+            _onFilterPageAction(event) {
+                this.$.appscoAccessOnBoardingRoles.filterRoles(event.detail.filters);
+                this._showProgressBar();
+            }
+
+            _onEventsResolved(event) {
+                this._notify((0 === event.detail.unresolvedItems.length) ?
+                    'Selected events have been resolved manually.' :
+                    'There was an error while resolving some events. Not all events were resolved.');
+            }
+            _onExportAccessOnBoardingAction() {
+                this._showProgressBar();
+                this.export();
+            }
+
+        }
+        window.customElements.define(AppscoAccessOnBoardingPage.is, AppscoAccessOnBoardingPage);
     </script>
 
 </dom-module>

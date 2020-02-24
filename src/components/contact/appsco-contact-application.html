@@ -9,6 +9,7 @@
 <link rel="import" href="../../../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-contact-application">
     <template>
@@ -16,7 +17,7 @@
             :host {
                 display: none;
                 color: var(--primary-text-color);
-                @apply(--appsco-contact-application);
+                @apply --appsco-contact-application;
                 margin-bottom: 4px;
                 font-size: 14px;
             }
@@ -29,17 +30,17 @@
             :host .assignee-image-preview {
                 width: 28px;
                 height: 28px;
-                @apply(--appsco-contact-application-image);
+                @apply --appsco-contact-application-image;
             }
             :host .assignee-image-preview::shadow #sizedImgDiv, :host .assignee-image-preview::shadow #placeholder {
-                @apply(--appsco-contact-application-image-contain);
+                @apply --appsco-contact-application-image-contain;
             }
             :host .account-initials {
                 position: relative;
                 background-color: var(--body-background-color, #f5f8fa);
                 color: var(--primary-text-color);
                 cursor: default;
-                @apply(--subscriber-initials);
+                @apply --subscriber-initials;
             }
             :host .account-initials .initials {
                 position: absolute;
@@ -60,9 +61,9 @@
                 };
             }
             :host .assignee {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--shadow-elevation-2dp);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --shadow-elevation-2dp;
                 width: 100%;
                 height: 70px;
                 padding: 0 10px;
@@ -71,25 +72,25 @@
                 overflow: hidden;
                 position: relative;
                 background-color: var(--item-background-color, #fafafa);
-                @apply(--appsco-contact-application);
+                @apply --appsco-contact-application;
             }
             :host .assignee:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             :host .assignee .assignee-image-preview {
                 width: 52px;
                 height: 52px;
                 margin: 0;
                 border-radius: 50%;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host .assignee .initials {
                 line-height: 52px;
                 font-size: 18px;
             }
             :host .assignee-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             :host .assignee-basic-info {
@@ -97,7 +98,7 @@
             }
             :host.assignee-basic-info .info-label, :host .assignee-basic-info .info-value {
                 width: 226px;
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-nowrap;
             }
             :host .assignee-security-info {
                 border-left: 1px solid var(--divider-color);
@@ -113,21 +114,21 @@
             }
             :host .assignee-name {
                 display: block;
-                @apply(--paper-font-common-base);
+                @apply --paper-font-common-base;
                 font-size: 16px;
                 font-weight: 400;
                 overflow: hidden;
             }
             :host .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             :host paper-button {
-                @apply(--paper-font-common-base);
-                @apply(--paper-font-common-nowrap);
+                @apply --paper-font-common-base;
+                @apply --paper-font-common-nowrap;
                 padding: 4px;
                 font-size: 12px;
                 font-weight: 400;
@@ -144,11 +145,11 @@
                 margin-right: 5px;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
         </style>
 
@@ -194,17 +195,88 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoContactApplication extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-contact-application'; }
 
-            is: 'appsco-contact-application',
+            static get properties() {
+                return {
+                    assignee: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _computeOrganizationUnits: function(application) {
+                    /**
+                     * Application which is assigned to contact.
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _orgUnits: {
+                        type: String,
+                        computed: '_computeOrganizationUnits(application)'
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _individualClaims: {
+                        type: Boolean,
+                        computed: '_computeIndividualClaims(application)'
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
+                        }
+                    }
+                };
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
+
+            _computeOrganizationUnits(application) {
                 if (application.org_units) {
-                    var result = '',
-                            orgUnits = application.org_units,
-                            length = orgUnits.length;
+                    let result = '',
+                        orgUnits = application.org_units,
+                        length = orgUnits.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         result += orgUnits[i].name;
                         result += (i === length -1) ? '' : ', ';
                     }
@@ -213,128 +285,47 @@
                 }
 
                 return '';
-            },
+            };
 
-            properties: {
-
-                assignee: {
-                    type: Object,
-                    value: function() { return {}; }
-                },
-
-                /**
-                 * Application which is assigned to contact.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _orgUnits: {
-                    type: String,
-                    computed: '_computeOrganizationUnits(application)'
-                },
-
-                /**
-                 * Indicates if assignee should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _individualClaims: {
-                    type: Boolean,
-                    computed: '_computeIndividualClaims(application)'
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _computeIndividualClaims: function(application) {
+            _computeIndividualClaims(application) {
                 return application.claim_type === 'individual';
-            },
+            }
 
-            _onClaimsAction: function(event) {
+            _onClaimsAction(event) {
                 event.stopPropagation();
 
-                /**
-                 * Fired when claims action is tapped.
-                 *
-                 * @event change-assignee-claims
-                 * @param {Object} assignee
-                 */
-                this.fire('change-assignee-claims', {
-                    assignee: this.assignee.account,
-                    application: this.application
-                });
-            },
+                this.dispatchEvent(new CustomEvent('change-assignee-claims', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        assignee: this.assignee.account,
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onRevokeAction: function(event) {
+            _onRevokeAction(event) {
                 event.stopPropagation();
 
-                var appRequest = document.createElement('iron-request');
+                const appRequest = document.createElement('iron-request');
 
                 appRequest.send({
                     url: this.application.meta.subscribers + '?extended=1&term=' + this.assignee.account.email,
                     method: 'GET',
                     handleAs: 'json',
-                    headers: {
-                        'Authorization': 'token ' + this.authorizationToken
-                    }
+                    headers: this._headers
                 }).then(function() {
-
-                    /**
-                     * Fired when revoke action is tapped.
-                     *
-                     * @event revoke-assignee
-                     * @param {Object} assignee
-                     */
-                    this.fire('revoke-assignee', {
-                        assignee: appRequest.response.accounts[0],
-                        application: this.application
-                    });
-
+                    this.dispatchEvent(new CustomEvent('revoke-assignee', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            assignee: appRequest.response.accounts[0],
+                            application: this.application
+                        }
+                    }));
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoContactApplication.is, AppscoContactApplication);
     </script>
 </dom-module>

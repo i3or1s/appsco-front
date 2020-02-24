@@ -13,6 +13,8 @@
 <link rel="import" href="appsco-tutorial-identity-provider.html">
 <link rel="import" href="appsco-tutorial-provisioning.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-tutorial">
     <template>
         <style>
@@ -23,7 +25,7 @@
                 border: 1px solid rgba(0,0,0,0.3);
 
                 padding: 10px;
-                @apply(--shadow-elevation-8dp);
+                @apply --shadow-elevation-8dp;
                 margin-left:10px;
             }
         </style>
@@ -104,146 +106,130 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoTutorial extends Polymer.mixinBehaviors([Polymer.AppscoCoverBehaviour, Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-tutorial'; }
 
-            is: 'appsco-tutorial',
+            static get properties() {
+                return {
+                    currentPage: {
+                        type: String,
+                        notify: true,
+                        observer: '_pageChanged'
+                    },
+                    tutorialsApi: {
+                        type: String,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
 
-            _pageChanged: function(){
+                    tuts: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                'companyProfile',
+                                'companyBranding',
+                                'brandedLogin',
+                                'addCompanyUser',
+                                'addResource',
+                                'shareResource',
+                                'companyDomain',
+                                'identityProvider',
+                                'companyProvisioning'
+                            ];
+                        }
+                    },
+
+                    tutorials: {
+                        type: Object,
+                        notify: true,
+                        reflectToAttribute: true,
+                        value: function () {
+                            return {}
+                        }
+                    },
+
+                    directoryPageLoaded: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+
+                    resourcesPageLoaded: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+
+                    companyDomainsLoaded: {
+                        type: Boolean,
+                        notify: true
+                    },
+
+                    resourceShareAccountsLoaded: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+
+                    currentSteps: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    isTutorialActive: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.initTutorials();
+                    this.getCurrentState();
+                });
+            }
+
+            _pageChanged(){
                 this.tuts.forEach(function(item, key){
-                    var tutorial = this.$$('#'+item);
+                    var tutorial = this.shadowRoot.getElementById(item);
                     if(tutorial) {
                         tutorial.pageChanged(this.currentPage);
                     }
                 }.bind(this));
-            },
+            }
 
-            properties: {
-                currentPage: {
-                    type: String,
-                    notify: true,
-                    observer: '_pageChanged'
-                },
-                tutorialsApi: {
-                    type: String,
-                    value: '',
-                    notify: true,
-                    reflectToAttribute: true
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                tuts: {
-                    type: Array,
-                    value: function(){ return [
-                        'companyProfile',
-                        'companyBranding',
-                        'brandedLogin',
-                        'addCompanyUser',
-                        'addResource',
-                        'shareResource',
-                        'companyDomain',
-                        'identityProvider',
-                        'companyProvisioning'
-                    ]; }
-                },
-
-                tutorials: {
-                    type: Object,
-                    notify: true,
-                    reflectToAttribute: true,
-                    value: function () {
-                        return {}
-                    }
-                },
-
-                directoryPageLoaded: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                },
-
-                resourcesPageLoaded: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                },
-
-                companyDomainsLoaded: {
-                    type: Boolean,
-                    notify: true
-                },
-
-                resourceShareAccountsLoaded: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                },
-
-                currentSteps: {
-                    type: Object,
-                    value: function() { return {}; }
-                },
-
-                isTutorialActive: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoCoverBehaviour
-            ],
-
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
-
-            getTutorials: function() {
+            getTutorials() {
                 return this.tutorials;
-            },
+            }
 
-            getTutorial: function(tutorialId) {
+            getTutorial(tutorialId) {
                 return this.tutorials[tutorialId];
-            },
+            }
 
-            attached: function() {
-                this.initTutorials();
-                this.getCurrentState();
-            },
-
-            initTutorials: function() {
+            initTutorials() {
                 this.tuts.forEach(function(item, key){
-                    var tutorial = this.$$('#'+item);
+                    const tutorial = this.shadowRoot.getElementById(item);
                     if(tutorial) {
                         this.tutorials[tutorial.getId()] = tutorial;
                     }
                 }.bind(this));
-            },
+            }
 
-            _onTutorialDone: function(event) {
-                var tutorial = event.detail.tutorial,
+            _onTutorialDone(event) {
+                const tutorial = event.detail.tutorial,
                     tutorialsRequest = document.createElement('iron-request');
 
                 tutorialsRequest.send({
                     url: this.tutorialsApi,
                     method: "PUT",
                     handleAs: 'json',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        "Authorization": "token " + this.authorizationToken
-                    },
+                    headers: this._headers,
                     body: 'tutorial_info[tutorial_id]=' + tutorial.getId()
                             + '&tutorial_info[status]=DONE'
                             + '&tutorial_info[step]=' + tutorial.maxSteps
@@ -251,7 +237,7 @@
                     this._applyTutorialStatus(request.response);
                 }.bind(this));
 
-                for (var idx in this.tutorials) {
+                for (const idx in this.tutorials) {
                     if (this.tutorials.hasOwnProperty(idx)) {
                         if (!this.tutorials[idx].isDone()) {
                             return;
@@ -260,53 +246,54 @@
                 }
 
                 this.showAllTutorialsDoneInfo();
-            },
+            }
 
-            showAllTutorialsDoneInfo: function() {
-                var targetElement = document.querySelector('* paper-icon-button.appsco-get-started-icon');
+            showAllTutorialsDoneInfo() {
+                let targetElement = document.querySelector('* paper-icon-button.appsco-get-started-icon');
                 if(null === targetElement) {
                     targetElement = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
                 }
 
-                var cover = this.buildCover(targetElement);
-                var doneElement = document.querySelector('* #done-all-tutorials');
+                const cover = this.buildCover(targetElement);
+                let doneElement = document.querySelector('* #done-all-tutorials');
                 if(null === doneElement) {
                     doneElement = document.querySelector('* /deep/ #done-all-tutorials');
                 }
-                var closeButton = document.querySelector('* #done-all-tutorials paper-button');
+                let closeButton = document.querySelector('* #done-all-tutorials paper-button');
                 if(null === closeButton) {
                     closeButton = document.querySelector('* /deep/ #done-all-tutorials paper-button');
                 }
 
-                var closeListener = function() {
-                        cover.destroy();
-                        popper.destroy();
-                        doneElement.hidden = true;
+                const closeListener = function () {
+                    cover.destroy();
+                    popper.destroy();
+                    doneElement.hidden = true;
 
-                        targetElement.removeEventListener('click', closeListener);
-                        closeButton.removeEventListener('click', closeListener);
-                    };
-                var popperGetStartedIcon = document.querySelector('* paper-icon-button.appsco-get-started-icon');
+                    targetElement.removeEventListener('click', closeListener);
+                    closeButton.removeEventListener('click', closeListener);
+                };
+                let popperGetStartedIcon = document.querySelector('* paper-icon-button.appsco-get-started-icon');
                 if(null === popperGetStartedIcon) {
                     popperGetStartedIcon = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
                 }
-                var popper = new Popper(
-                        popperGetStartedIcon,
-                        doneElement, { placement: 'right-start' }
-                    );
+                const popper = new Popper(
+                    popperGetStartedIcon,
+                    doneElement,
+                    { placement: 'right-start' }
+                );
 
                 closeButton.addEventListener('click', closeListener);
                 targetElement.addEventListener('click', closeListener);
 
                 cover.show();
                 doneElement.hidden = false;
-            },
+            }
 
-            _applyTutorialStatus: function(tutorialsInfo) {
-                for (var idx in tutorialsInfo) {
+            _applyTutorialStatus(tutorialsInfo) {
+                for (const idx in tutorialsInfo) {
                     if (tutorialsInfo.hasOwnProperty(idx)) {
                         this.tuts.forEach(function(tut) {
-                            var tutorial = this.$$('#'+tut);
+                            var tutorial = this.shadowRoot.getElementById(tut);
                             if (!tutorial) { return; }
                             if (tutorial.getId() === idx) {
                                 tutorial.status = tutorialsInfo[idx]['status'];
@@ -315,42 +302,40 @@
                     }
                 }
 
-                var tutorials = this.tutorials;
+                const tutorials = this.tutorials;
                 this.set('tutorials', {});
                 this.set('tutorials', tutorials);
-           },
+            }
 
-            getCurrentState: function() {
-                var tutorialsRequest = document.createElement('iron-request');
+            getCurrentState() {
+                const tutorialsRequest = document.createElement('iron-request');
 
                 tutorialsRequest.send({
                     url: this.tutorialsApi,
                     method: "GET",
                     handleAs: 'json',
-                    headers: {
-                        "Authorization": "token " + this.authorizationToken
-                    }
+                    headers: this._headers
                 }).then(function(request) {
                     this._applyTutorialStatus(request.response);
                 }.bind(this));
-            },
+            }
 
-            startTutorial: function(tutorialId) {
+            startTutorial(tutorialId) {
                 this.tuts.forEach(function(tut) {
-                    var tutorial = this.$$('#'+tut);
+                    const tutorial = this.shadowRoot.getElementById(tut);
                     if (!tutorial) { return; }
                     if (tutorial.getId() === tutorialId) {
                         tutorial.start();
                     }
                 }.bind(this));
-            },
+            }
 
-            notifyDomainAdded: function(domain) {
+            notifyDomainAdded(domain) {
                 this.$.companyDomain.domainAdded(domain);
-            },
+            }
 
-            _computeIsTutorialActive: function() {
-                for(var idx in this.currentSteps) {
+            _computeIsTutorialActive() {
+                for(const idx in this.currentSteps) {
                     if (this.currentSteps.hasOwnProperty(idx) && this.currentSteps[idx] > 0) {
                         this.isTutorialActive = true;
                         return;
@@ -358,16 +343,16 @@
                 }
 
                 this.isTutorialActive = false;
-            },
+            }
 
-            _onStepChanged: function(event) {
+            _onStepChanged(event) {
                 if (!this.currentSteps) {
                     this.currentSteps = {};
                 }
                 this.currentSteps[event.detail.id] = event.detail.step;
                 this._computeIsTutorialActive();
             }
-
-        });
+        }
+        window.customElements.define(AppscoTutorial.is, AppscoTutorial);
     </script>
 </dom-module>

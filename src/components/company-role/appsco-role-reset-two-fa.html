@@ -9,13 +9,15 @@
 <link rel="import" href="../../components/components/appsco-loader.html">
 <link rel="import" href="../../components/components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-role-reset-two-fa">
     <template>
         <style>
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-role-reset-two-fa);
+                @apply --appsco-role-reset-two-fa;
 
                 --form-error-box: {
                      margin-top: 0;
@@ -24,23 +26,22 @@
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host appsco-loader {
-                @apply(--paper-dialog-appsco-loader);
+                @apply --paper-dialog-appsco-loader;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -52,7 +53,7 @@
 
             <paper-dialog-scrollable>
                 <div class="disable-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Are you sure you want to reset two-factor authentication for this user?
                         The user will have to set up two-factor authentication again.</p>
                 </div>
@@ -66,101 +67,84 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoRoleResetTwoFa extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-role-reset-two-fa'; }
 
-            is: 'appsco-role-reset-two-fa',
-
-            properties: {
-
-                role: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _resetTwoFAApi: {
-                    type: String,
-                    computed: '_computeResetTwoFAApi(role)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            setRole: function(role) {
-                this.set('role', role);
-            },
-
-            _computeResetTwoFAApi: function(role) {
-                return (role.meta && role.meta.reset_2fa) ? role.meta.reset_2fa : '';
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _resetTwoFAApi: {
+                        type: String,
+                        computed: '_computeResetTwoFAApi(role)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _showLoader: function() {
+            open() {
+                this.$.dialog.open();
+            }
+
+            close() {
+                this.$.dialog.close();
+            }
+
+            toggle() {
+                this.$.dialog.toggle();
+            }
+
+            setRole(role) {
+                this.set('role', role);
+            }
+
+            _computeResetTwoFAApi(role) {
+                return (role.meta && role.meta.reset_2fa) ? role.meta.reset_2fa : null;
+            }
+
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _onConfirmAction: function() {
-                var request = document.createElement('iron-request'),
+            _onConfirmAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this._resetTwoFAApi,
                         method: 'DELETE',
@@ -171,28 +155,26 @@
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        /**
-                         * Fired when two-factor authentication is reset.
-                         *
-                         * @event role-two-fa-reset
-                         */
-                        this.fire('role-two-fa-reset', {
-                            role: this.role
-                        });
+                        this.dispatchEvent(new CustomEvent('role-two-fa-reset', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                role: this.role
+                            }
+                        }));
 
                         this.close();
                     }
 
                 }.bind(this), function() {
-                    var code = request.response ? request.response.code : request.status;
+                    const code = request.response ? request.response.code : request.status;
 
                     this._showError(this.apiErrors.getError(code));
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoRoleResetTwoFa.is, AppscoRoleResetTwoFa);
     </script>
 </dom-module>

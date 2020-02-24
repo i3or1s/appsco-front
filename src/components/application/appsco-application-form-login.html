@@ -35,19 +35,18 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'appsco-application-form-login',
+        class AppscoApplicationFormLogin extends Polymer.mixinBehaviors([Polymer.AppscoApplicationFormBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-form-login'; }
 
-            properties: {
-                claimsNamePrefix: {
-                    type: String,
-                    value: "claims_login"
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoApplicationFormBehavior
-            ]
-        });
+            static get properties() {
+                return {
+                    claimsNamePrefix: {
+                        type: String,
+                        value: "claims_login"
+                    }
+                };
+            }
+        }
+        window.customElements.define(AppscoApplicationFormLogin.is, AppscoApplicationFormLogin);
     </script>
 </dom-module>

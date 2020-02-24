@@ -9,7 +9,7 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                      border-bottom: 1px solid var(--divider-color);
@@ -21,17 +21,18 @@
                 };
             }
             paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
 
                 --paper-card-header-text: {
                     color: var(--primary-text-color);
+                    @apply --full-page-paper-card-header-text;
                 };
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             .emphasized {
                 font-weight: 500;
@@ -74,55 +75,55 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyIdpDomainsPage extends Polymer.Element {
+            static get is() { return 'appsco-company-idp-domains-page'; }
 
-            is: 'appsco-company-idp-domains-page',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    domainsApi: {
+                        type: String
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _showDomains: {
+                        type: Boolean,
+                        value: true
+                    },
 
-                domainsApi: {
-                    type: String,
-                    value: ''
-                },
+                    _showMessage: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
 
-                _showDomains: {
-                    type: Boolean,
-                    value: true
-                },
+            reloadDomains() {
+                this.shadowRoot.getElementById('appscoCompanyIdPDomains').reloadDomains();
+            }
 
-                _showMessage: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+            modifyDomain(domain) {
+                this.shadowRoot.getElementById('appscoCompanyIdPDomains').modifyDomain(domain);
+            }
 
-            reloadDomains: function() {
-                this.$$('#appscoCompanyIdPDomains').reloadDomains();
-            },
-
-            modifyDomain: function(domain) {
-                this.$$('#appscoCompanyIdPDomains').modifyDomain(domain);
-            },
-
-            _onCompanyIdPDomainsLoaded: function() {
+            _onCompanyIdPDomainsLoaded() {
                 this._showDomains = true;
                 this._showMessage = false;
-            },
+            }
 
-            _onCompanyIdPDomainsEmptyLoad: function() {
+            _onCompanyIdPDomainsEmptyLoad() {
                 this._showDomains = false;
                 this._showMessage = true;
-            },
-
-            _onClosePageAction: function() {
-                this.fire('back');
             }
-        });
+
+            _onClosePageAction() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoCompanyIdpDomainsPage.is, AppscoCompanyIdpDomainsPage);
     </script>
 </dom-module>
 

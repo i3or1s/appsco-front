@@ -44,6 +44,9 @@
     "src/appsco-get-started-page.html",
     "src/appsco-additional-options-page.html"
   ],
+  "lint": {
+    "rules": ["polymer-2"]
+  },
   "sources": [
     "src/**/*",
     "images/**/*",
@@ -51,7 +54,9 @@
   ],
   "extraDependencies": [
     "manifest.json",
-    "bower_components/webcomponentsjs/webcomponents-lite.min.js",
+    "bower_components/webcomponentsjs/*.js",
+    "bower_components/web-animations-js/web-animations-next-lite.min.js",
+    "bower_components/popper.js/dist/umd/*",
     "bower_components/gold-cc-input/images/*",
     "bower_components/gold-cc-cvc-input/cvc_hint.png",
     "bower_components/gold-cc-cvc-input/cvc_hint_amex.png"
@@ -60,7 +65,7 @@
     {
       "name": "bundled",
       "bundle": true,
-      "js": {"minify": true, "compile": true},
+      "js": {"minify": true},
       "css": {"minify": true},
       "html": {"minify": true},
       "addServiceWorker": true

@@ -10,17 +10,17 @@
     <template>
         <style>
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host .pricing-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 width: 120px;
                 display: none;
             }
             :host .pricing-button[active] {
-                @apply(--primary-button-active);
+                @apply --primary-button-active;
             }
             :host([tablet-s768-screen]) .pricing-button {
                 display: block;
@@ -37,56 +37,54 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoUpgradePageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-upgrade-page-actions'; }
 
-            is: 'appsco-upgrade-page-actions',
+            static get properties() {
+                return {
+                    tabletS768Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                tabletS768Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            _backToHome: function() {
-                this.fire('back');
-            },
-
-            _onPricingAction: function() {
-                this.fire('toggle-pricing');
+                };
             }
-        });
+
+            _backToHome() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            _onPricingAction() {
+                this.dispatchEvent(new CustomEvent('toggle-pricing', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoUpgradePageActions.is, AppscoUpgradePageActions);
     </script>
 </dom-module>
 

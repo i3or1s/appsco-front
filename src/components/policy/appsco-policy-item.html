@@ -12,17 +12,17 @@
 <link rel="import" href="../components/appsco-list-item-styles.html">
 <link rel="import" href="../account/appsco-account-image.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-policy-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host .policy-icon-container {
                 width: 52px;
                 height: 52px;
                 margin: 0;
                 border-radius: 26px;
-                background-color: var(--policy-icon-background-color, --account-initials-background-color);
+                background-color: var(--policy-icon-background-color, var(--account-initials-background-color));
                 position: relative;
             }
             :host .policy-icon {
@@ -109,90 +109,88 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoPolicyItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-policy-item'; }
 
-            is: 'appsco-policy-item',
-
-            properties: {
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                policyActive: {
-                    type: Boolean,
-                    computed: '_computeActiveStatus(item)',
-                    reflectToAttribute: true
-                },
-
-                policyConfigured: {
-                    type: Boolean,
-                    computed: '_computeConfiguredStatus(item, policyActive)',
-                    reflectToAttribute: true
-                },
-
-                _icon: {
-                    type: String,
-                    computed: '_computeIcon(policyActive)'
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            listeners: {
-                'tap': '_onItemAction'
-            },
-
-            attached: function() {},
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    policyActive: {
+                        type: Boolean,
+                        computed: '_computeActiveStatus(item)',
+                        reflectToAttribute: true
+                    },
 
-            _computeActiveStatus: function(policy) {
-                return ('active' === policy.status);
-            },
+                    policyConfigured: {
+                        type: Boolean,
+                        computed: '_computeConfiguredStatus(item, policyActive)',
+                        reflectToAttribute: true
+                    },
 
-            _computeConfiguredStatus: function(policy, policyActive) {
-                return (policyActive && !policy.missing_config);
-            },
+                    _icon: {
+                        type: String,
+                        computed: '_computeIcon(policyActive)'
+                    },
 
-            _computeIcon: function(active) {
-                return (active ? 'icons:check' : 'icons:clear');
-            },
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-            _onEnableItemAction: function(event) {
-                event.stopPropagation();
+            ready() {
+                super.ready();
 
-                this.fire('enable-policy', {
-                    policy: this.item
-                });
-            },
-
-            _onDisableItemAction: function(event) {
-                event.stopPropagation();
-
-                this.fire('disable-policy', {
-                    policy: this.item
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._addListeners();
                 });
             }
-        });
+
+            _addListeners() {
+                this.addEventListener('tap', this._onItemAction);
+            }
+
+            _computeActiveStatus(policy) {
+                return ('active' === policy.status);
+            }
+
+            _computeConfiguredStatus(policy, policyActive) {
+                return (policyActive && !policy.missing_config);
+            }
+
+            _computeIcon(active) {
+                return (active ? 'icons:check' : 'icons:clear');
+            }
+
+            _onEnableItemAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('enable-policy', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        policy: this.item
+                    }
+                }));
+            }
+
+            _onDisableItemAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('disable-policy', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        policy: this.item
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoPolicyItem.is, AppscoPolicyItem);
     </script>
 </dom-module>

@@ -37,7 +37,7 @@ Example:
                  padding-top: 6px;
                  padding-bottom: 6px;
                  font-size: 20px;
-                 @apply(--notifications-paper-card-header-text);
+                 @apply --notifications-paper-card-header-text;
              };
             --paper-card-actions: {
                  padding: 0;
@@ -66,7 +66,7 @@ Example:
             :host appsco-dropdown {
                 top: 12px;
                 right: 1px;
-            @apply(--appsco-account-notifications-dropdown);
+            @apply --appsco-account-notifications-dropdown;
             }
             :host paper-card {
                 width: 100%;
@@ -80,7 +80,7 @@ Example:
                 font-size: 14px;
                 color: var(--primary-text-color, #273441);
                 border: none;
-            @apply(--appsco-account-notifications-all-action);
+            @apply --appsco-account-notifications-all-action;
             }
         </style>
 
@@ -116,56 +116,52 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountNotificationsDropdown extends Polymer.Element {
+            static get is() { return 'appsco-account-notifications-dropdown'; }
 
-            is: 'appsco-account-notifications-dropdown',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String
+                    },
 
-            properties: {
+                    notificationsApi: {
+                        type: String
+                    },
 
-                /**
-                 * Authorization token
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    /**
+                     * Number of notifications to load.
+                     */
+                    notificationsSize: {
+                        type: Number,
+                        value: 5
+                    },
 
-                /**
-                 * Notifications API link.
-                 */
-                notificationsApi: {
-                    type: String
-                },
+                    /**
+                     * Indicates if notifications are opened or not.
+                     */
+                    _open: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Number of notifications to load.
-                 */
-                notificationsSize: {
-                    type: Number,
-                    value: 5
-                },
+                    /**
+                     * DOM element which triggers the dropdown.
+                     */
+                    _triggerDropdown: {
+                        type: Object,
+                        notify: true
+                    }
+                };
+            }
 
-                /**
-                 * Indicates if notifications are opened or not.
-                 */
-                _open: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * DOM element which triggers the dropdown.
-                 */
-                _triggerDropdown: {
-                    type: Object,
-                    notify: true
-                }
-            },
+                this._triggerDropdown = this.shadowRoot.getElementById('notificationsAction');
+            }
 
-            attached: function() {
-                this._triggerDropdown = this.$$('#notificationsAction');
-            },
-
-            toggleNotifications: function(target) {
+            toggleNotifications(target) {
                 this._open = !this._open;
                 this._triggerDropdown = target;
                 this.$.appscoNotificationsDropdown.toggle();
@@ -173,30 +169,19 @@ Example:
                 if (this._open) {
                     this.$.appscoAccountNotifications.loadNotifications();
                 }
-            },
+            }
 
-            _onNotificationsLoad: function() {
+            _onNotificationsLoad() {
                 this.$.notificationsActions.hidden = false;
-                this.fire('notifications-seen');
-            },
+                this.dispatchEvent(new CustomEvent('notifications-seen', { bubbles: true, composed: true }));
+            }
 
-            /**
-             * Fires event on see all notifications action.
-             *
-             * @private
-             */
-            _seeAllNotificationsAction: function() {
-
-                /**
-                 * Fired when user taps on see all notifications action.
-                 *
-                 * @event all-notifications
-                 */
-                this.fire('all-notifications');
+            _seeAllNotificationsAction() {
+                this.dispatchEvent(new CustomEvent('all-notifications', { bubbles: true, composed: true }));
 
                 this.toggleNotifications();
             }
-
-        });
+        }
+        window.customElements.define(AppscoAccountNotificationsDropdown.is, AppscoAccountNotificationsDropdown);
     </script>
 </dom-module>

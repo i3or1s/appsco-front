@@ -14,6 +14,8 @@
 
 <link rel="import" href="../appsco-application-card.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">>
+
 <!--
 `appsco-company-application-add-search`
 Is used to present application search.
@@ -46,8 +48,8 @@ Custom property | Description | Default
                 margin-bottom: 10px;
             }
             .application-list {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
                 padding: 2px;
                 margin-right: -8px;
             }
@@ -59,8 +61,8 @@ Custom property | Description | Default
                 margin: 0;
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host .or-add-container {
                 color: var(--secondary-text-color);
@@ -76,7 +78,7 @@ Custom property | Description | Default
                 background-color: transparent;
                 font-size: inherit;
                 text-transform: uppercase;
-                @apply(--link-button);
+                @apply --link-button;
             }
         </style>
 
@@ -108,154 +110,106 @@ Custom property | Description | Default
             <paper-button class="link-button"
                           on-tap="_onAddItem">Add custom application</paper-button>
         </div>
-
-        <!--<template is="dom-if" if="[[ !_searchActive ]]">
-            <div class="or-add-container add-link-container">
-                or
-                <paper-button class="link-button"
-                              on-tap="_onAddLink">Add link</paper-button>
-            </div>
-        </template>-->
-
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyApplicationAddSearch extends Polymer.mixinBehaviors([
+            Appsco.HeadersMixin,
+            Polymer.NeonSharedElementAnimatableBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-application-add-search'; }
 
-            is: 'appsco-company-application-add-search',
-
-            properties: {
-
-                /**
-                 * Selected application from search list.
-                 */
-                selectedApplication: {
-                    type: Object,
-                    notify: true
-                },
-
-                /**
-                 * Application list from search.
-                 */
-                _searchList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                /**
-                 * Message to display if there is no search result.
-                 */
-                _message: {
-                    type: String
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Applications template API link.
-                 * API to get applications.
-                 */
-                applicationsTemplateApi: {
-                    type: String
-                },
-
-                /**
-                 * Number of applications to load and present.
-                 */
-                size: {
-                    type: Number,
-                    value: 12
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _searchActive: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _customApplicationAction: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if appsco loader should be displayed.
-                 */
-                _searchLoader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'scale-up-animation',
-                                node: this
-                            },
-                            'exit': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                fromPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }]
-                        }
-                    }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': {}
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    selectedApplication: {
+                        type: Object,
+                        notify: true
+                    },
 
-            /**
-             * Gets applications by term.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onSearch: function(event) {
-                var searchValue = event.detail.term,
+                    /**
+                     * Application list from search.
+                     */
+                    _searchList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _message: {
+                        type: String
+                    },
+
+                    applicationsTemplateApi: {
+                        type: String
+                    },
+
+                    /**
+                     * Number of applications to load and present.
+                     */
+                    size: {
+                        type: Number,
+                        value: 12
+                    },
+
+                    _searchActive: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _customApplicationAction: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * Indicates if appsco loader should be displayed.
+                     */
+                    _searchLoader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'scale-up-animation',
+                        node: this
+                    },
+                    'exit': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        fromPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
+                        }
+                    }]
+                };
+                this.sharedElements = {
+                    'hero': {}
+                };
+            }
+
+            _onSearch(event) {
+                const searchValue = event.detail.term,
                     searchLength = searchValue.length;
 
                 this._searchLoader = true;
@@ -277,20 +231,20 @@ Custom property | Description | Default
                     return false;
                 }
 
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     url = this.applicationsTemplateApi + '?extended=1&limit=' + this.size + '&term=' + searchValue;
 
                 this._message = '';
 
-                var options = {
+                const options = {
                     url: url,
                     method: 'GET',
                     handleAs: 'json',
-                    headers: this._computedHeaders
+                    headers: this._headers
                 };
 
                 request.send(options).then(function() {
-                    var applications = request.response.applications;
+                    const applications = request.response.applications;
 
                     if (applications && applications.length > 0) {
                         this.set('_searchList', applications);
@@ -303,74 +257,46 @@ Custom property | Description | Default
 
                     this._searchLoader = false;
                 }.bind(this));
-            },
+            }
 
-            _onSearchClear: function() {
+            _onSearchClear() {
                 this._onSearch({
                     detail: {
                         term: ''
                     }
                 });
-            },
+            }
 
-            /**
-             * Called after application has been selected from search list.
-             * Sets selected application.
-             * Fires an event.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onApplicationSelect: function(event) {
-                this.sharedElements.hero = this.$$('#application_' + event.model.index);
+            _onApplicationSelect(event) {
+                this.sharedElements.hero = this.shadowRoot.getElementById('application_' + event.model.index);
                 this.selectedApplication = event.detail.application;
 
-                /**
-                 * Fired after application has been selected.
-                 *
-                 * @event application-select
-                 */
-                this.fire('application-select');
-            },
+                this.dispatchEvent(new CustomEvent('application-select', { bubbles: true, composed: true }));
+            }
 
-            _onAddItem: function(event) {
+            _onAddItem(event) {
                 this.sharedElements.hero = Polymer.dom(event).rootTarget;
 
-                /**
-                 * Fired on Add Custom Application action.
-                 *
-                 * @event add-item
-                 */
-                this.fire('add-item');
-            },
+                this.dispatchEvent(new CustomEvent('add-item', { bubbles: true, composed: true }));
+            }
 
-            _onAddLink: function(event) {
+            _onAddLink(event) {
                 this.sharedElements.hero = Polymer.dom(event).rootTarget;
 
-                /**
-                 * Fired on Add Link action.
-                 *
-                 * @event add-link
-                 */
-                this.fire('add-link');
-            },
+                this.dispatchEvent(new CustomEvent('add-link', { bubbles: true, composed: true }));
+            }
 
-            /**
-             * Sets focus on search input.
-             */
-            setup: function() {
+            setup() {
                 this.$.appscoSearch.setup();
-            },
+            }
 
-            /**
-             * Resets component.
-             */
-            reset: function() {
+            reset() {
                 this.$.appscoSearch.reset();
                 this._searchList = [];
                 this._searchActive = false;
                 this._message = '';
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyApplicationAddSearch.is, AppscoCompanyApplicationAddSearch);
     </script>
 </dom-module>

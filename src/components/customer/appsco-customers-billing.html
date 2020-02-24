@@ -14,7 +14,7 @@
             :host appsco-customer-billing-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-customer-billing-item);
+                @apply --appsco-customer-billing-item;
             }
 
             :host .total {
@@ -76,53 +76,53 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-customers-billing',
+        class AppscoCustomersBilling extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-customers-billing'; }
 
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            properties: {
-
-                paymentType: {
-                    type: String,
-                    value: ''
-                },
-
-                period: {
-                    type: String,
-                    value: ''
-                },
-
-                _items: {
-                    type: Array,
-                    value: function() {
-                        return[]
+            static get properties() {
+                return {
+                    paymentType: {
+                        type: String,
+                        value: ''
                     },
-                    computed: '_computeListItems(_listItems)'
-                }
-            },
 
-            observers: [
-                '_observeItems(_listItems)'
-            ],
+                    period: {
+                        type: String,
+                        value: ''
+                    },
 
-            _observeItems: function(items) {
+                    _items: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        },
+                        computed: '_computeListItems(_listItems)'
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
+
+            _observeItems(items) {
                 this.setObservableType('customers');
                 this.populateItems(items);
-            },
+            }
 
-            filter: function(searchTerm, paymentType, period) {
-                var filterApi = this.listApi + '?page=1&limit=1000&extended=1';
+            filter(searchTerm, paymentType, period) {
+                let filterApi = this.listApi + '?page=1&limit=1000&extended=1';
 
                 this._hideMessage();
                 this._showProgressBar();
                 this._hideLoadMoreAction();
                 this._clearListLoaders();
                 this.set('_listItems', []);
-
 
                 if (searchTerm) {
                     filterApi += '&term=' + searchTerm;
@@ -137,23 +137,22 @@
                 }
 
                 this._getItems(filterApi).then(function(items) {
-                    var itemsLength = items.length,
+                    const itemsLength = items.length,
                         allListItems = JSON.parse(JSON.stringify(this._allListItems)),
                         allLength = allListItems.length;
 
                     if (0 === itemsLength) {
                         this._showMessage('There are no customers that match given parameters');
                         this._handleEmptyLoad();
-                        this.fire('filter-done');
+                        this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                         return false;
                     }
 
                     this._listEmpty = false;
 
                     items.forEach(function(element, index) {
-
-                        for (var i = 0; i < allLength; i++) {
-                            var currentListItem = allListItems[i];
+                        for (let i = 0; i < allLength; i++) {
+                            const currentListItem = allListItems[i];
 
                             if (element.alias === currentListItem.alias) {
                                 this.push('_listItems', currentListItem);
@@ -167,31 +166,28 @@
 
                         if (index === itemsLength - 1) {
                             this._hideProgressBar();
-                            this.fire('filter.done');
+                            this.dispatchEvent(new CustomEvent('filter.done', { bubbles: true, composed: true }));
                         }
-
                     }.bind(this));
-
                 }.bind(this));
+            }
 
-            },
-
-            _computeListItems: function(listItems) {
-                var groupedItems = [],
+            _computeListItems(listItems) {
+                const groupedItems = [],
                     addedCompanies = [],
                     licencesSum = [],
                     itemsWithLicences = [];
                 listItems.forEach(function(item, index) {
-                    var customerIndex = addedCompanies.indexOf(item.customer.alias);
+                    const customerIndex = addedCompanies.indexOf(item.customer.alias);
                     if (customerIndex === -1) {
-                        var customer = item.customer;
+                        const customer = item.customer;
                         customer.billing_data = [];
                         addedCompanies.push(item.customer.alias);
                         customer.billing_data.push({month: this.getMonthName(item.month), year: item.year, used_licences: item.used_licences});
                         groupedItems.push(customer);
                         licencesSum.push(item.used_licences);
                     } else {
-                        groupedItems[customerIndex].billing_data.push({month: this.getMonthName(item.month), year: item.year, used_licences: item.used_licences})
+                        groupedItems[customerIndex].billing_data.push({month: this.getMonthName(item.month), year: item.year, used_licences: item.used_licences});
                         licencesSum [customerIndex] += item.used_licences;
                     }
                 }.bind(this));
@@ -201,11 +197,11 @@
                 });
                 this.$.numberOfCustomers.innerHTML = itemsWithLicences.length;
                 return itemsWithLicences;
-            },
+            }
 
-            getMonthName: function(month) {
-                var name = '';
-                switch (month) {
+            getMonthName(month) {
+                let name = '';
+                switch(month) {
                     case 1:
                         name = 'January';
                         break;
@@ -245,8 +241,8 @@
                 }
                 return name;
             }
-
-        });
+        }
+        window.customElements.define(AppscoCustomersBilling.is, AppscoCustomersBilling);
     </script>
 </dom-module>
 

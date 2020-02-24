@@ -9,6 +9,7 @@
 <link rel="import" href="../../components/appsco-loader.html">
 <link rel="import" href="../../components/appsco-form-error.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-account-disapprove-device">
     <template>
@@ -16,7 +17,7 @@
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-account-disapprove-device);
+                @apply --appsco-account-disapprove-device;
 
                 --form-error-box: {
                     margin-top: 0;
@@ -25,23 +26,22 @@
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host appsco-loader {
-                @apply(--paper-dialog-appsco-loader);
+                @apply --paper-dialog-appsco-loader;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -55,7 +55,7 @@
 
             <paper-dialog-scrollable>
                 <div>
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Please confirm that you want to disapprove chosen device.</p>
                 </div>
             </paper-dialog-scrollable>
@@ -68,133 +68,109 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountDisapproveDevice extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-disapprove-device'; }
 
-            is: 'appsco-account-disapprove-device',
-
-            properties: {
-
-                /**
-                 * Device owner.
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Device to disapprove.
-                 */
-                device: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _disapproveDeviceApi: {
-                    type: String,
-                    computed: '_computeDisapproveApi(device)'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            setDevice: function(device) {
-                this.set('device', device);
-            },
-
-            setAccount: function(account) {
-                this.set('account', account);
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            _computeDisapproveApi: function(device) {
-                return device.meta ? device.meta.disapprove : '';
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    device: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _disapproveDeviceApi: {
+                        type: String,
+                        computed: '_computeDisapproveApi(device)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _onDialogClosed: function() {
-                this._error = '';
+            setDevice(device) {
+                this.set('device', device);
+            }
+
+            setAccount(account) {
+                this.set('account', account);
+            }
+
+            open () {
+                this.$.dialog.open();
+            }
+
+            close () {
+                this.$.dialog.close();
+            }
+
+            _computeDisapproveApi(device) {
+                return device.meta ? device.meta.disapprove : null;
+            }
+
+            _onDialogClosed() {
+                this._errorMessage = '';
                 this._loader = false;
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
 
-            _onDisapproveAction: function() {
-                var request = document.createElement('iron-request'),
-                        options = {
-                            url: this._disapproveDeviceApi,
-                            method: 'POST',
-                            handleAs: 'json',
-                            headers: this._headers
-                        };
+            _onDisapproveAction() {
+                const request = document.createElement('iron-request'),
+                    options = {
+                        url: this._disapproveDeviceApi,
+                        method: 'POST',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (200 === request.status) {
-
-                        this.fire('device-disapprove-finished', {
-                            device: this.device
-                        });
+                        this.dispatchEvent(new CustomEvent('device-disapprove-finished', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                device: this.device
+                            }
+                        }));
 
                         this.close();
                     }
@@ -204,6 +180,7 @@
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountDisapproveDevice.is, AppscoAccountDisapproveDevice);
     </script>
 </dom-module>

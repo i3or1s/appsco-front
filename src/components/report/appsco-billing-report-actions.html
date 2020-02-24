@@ -8,19 +8,19 @@
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host .action {
                 margin-left: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--layout-flex-none);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --layout-flex-none;
             }
             :host .export-action {
-                @apply(--primary-button);
+                @apply --primary-button;
                 min-width: 100px;
             }
         </style>
@@ -32,19 +32,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoBillingReportActions extends Polymer.Element {
+            static get is() { return 'appsco-billing-report-actions'; }
 
-            is: 'appsco-billing-report-actions',
-
-            _onExportAction: function() {
-
-                /**
-                 * Fired when export action is tapped.
-                 *
-                 * @event export-billing-report
-                 */
-                this.fire('export-billing-report');
+            _onExportAction() {
+                this.dispatchEvent(new CustomEvent('export-billing-report', { bubbles: true, composed: true }));
             }
-        });
+        }
+        window.customElements.define(AppscoBillingReportActions.is, AppscoBillingReportActions);
     </script>
 </dom-module>

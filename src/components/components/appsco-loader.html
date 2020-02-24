@@ -53,7 +53,7 @@ Custom property | Description | Default
                 bottom: 0;
                 right: 0;
                 margin: auto;
-                @apply(--appsco-loader);
+                @apply --appsco-loader;
             }
         </style>
 
@@ -70,95 +70,90 @@ Custom property | Description | Default
 </dom-module>
 
 <script>
-    Polymer({
-        is: 'appsco-loader',
+    class AppscoLoader extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+        static get is() { return 'appsco-loader'; }
 
-        properties: {
+        static get properties() {
+            return {
+                /**
+                 * Indicates if loader is active or not.
+                 */
+                active: {
+                    type: Boolean,
+                    value: false,
+                    observer: '_onActiveChanged'
+                },
 
-            /**
-             * Indicates if loader is active or not.
-             */
-            active: {
-                type: Boolean,
-                value: false,
-                notify: true
-            },
+                /**
+                 * Alt text for loader.
+                 */
+                loaderAlt: {
+                    type: String,
+                    value: 'Appsco is loading'
+                },
 
-            /**
-             * Alt text for loader.
-             */
-            loaderAlt: {
-                type: String,
-                value: 'Appsco is loading'
-            },
+                /**
+                 * Indicates if loader is multicolored ot not.
+                 */
+                multiColor: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                },
 
-            /**
-             * Indicates if loader is multicolored ot not.
-             */
-            multiColor: {
-                type: Boolean,
-                value: false,
-                notify: true
-            },
+                animationConfig: {
+                    type: Object
+                }
+            };
+        }
 
-            /**
-             * Animation for loader appearance.
-             */
-            animationConfig: {
-                value: function() {
-                    return {
-                        'entry': {
-                            name: 'fade-in-animation',
-                            node: this,
-                            timing: {
-                                duration: 200
-                            }
-                        },
-                        'exit': {
-                            name: 'fade-out-animation',
-                            node: this,
-                            timing: {
-                                duration: 100
-                            }
-                        }
+        ready() {
+            super.ready();
+
+            this.animationConfig = {
+                'entry': {
+                    name: 'fade-in-animation',
+                    node: this,
+                    timing: {
+                        duration: 200
+                    }
+                },
+                'exit': {
+                    name: 'fade-out-animation',
+                    node: this,
+                    timing: {
+                        duration: 100
                     }
                 }
+            };
+
+            Polymer.RenderStatus.afterNextRender(this, function() {
+                this._addListeners();
+            });
+        }
+
+        _addListeners() {
+            this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+        }
+
+        _onActiveChanged(newValue, oldValue) {
+            if (undefined === oldValue && !newValue) {
+                return;
             }
-        },
-
-        behaviors: [
-            Polymer.NeonAnimationRunnerBehavior
-        ],
-
-        listeners: {
-            'active-changed': '_onActiveChanged',
-            'neon-animation-finish': '_onNeonAnimationFinish'
-        },
-
-        attached: function() {
-            this._onActiveChanged();
-        },
-
-        _onActiveChanged: function() {
-
             if (this.active) {
-
                 this.style.display = 'block';
                 this.playAnimation('entry');
-
             }
             else {
                 this.playAnimation('exit');
             }
+        }
 
-        },
-
-        _onNeonAnimationFinish: function() {
-
+        _onNeonAnimationFinish() {
             if (!this.active) {
                 this.style.display = 'none';
             }
-
         }
-    });
+    }
+    window.customElements.define(AppscoLoader.is, AppscoLoader);
 </script>

@@ -18,6 +18,8 @@
 <link rel="import" href="../components/application/appsco-application-autologin.html">
 <link rel="import" href="../components/page/appsco-layout-with-cards-styles.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-manage-application-components-page">
     <template>
         <style include="appsco-layout-with-cards-styles">
@@ -34,7 +36,7 @@
             }
             :host .info-lead {
                 font-size: 14px;
-                @apply(--text-wrap-break);
+                @apply --text-wrap-break;
             }
             :host .info-additional {
                 font-size: 12px;
@@ -81,7 +83,7 @@
         <iron-ajax
                 auto
                 url="[[ companyIdpSamlMetadataApi ]]"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_onCompanyIdpSamlMetadataReponse"
         ></iron-ajax>
 
@@ -243,191 +245,157 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoManageApplicationComponentsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-manage-application-components-page'; }
 
-            is: 'appsco-manage-application-components-page',
-
-            properties: {
-
-                col2: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                resourceAdmin: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                },
-
-                /**
-                 * Get application groups link.
-                 */
-                groupsApi: {
-                    type: String
-                },
-
-                /**
-                 * Selected application from search list.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    col2: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
                     },
-                    notify: true,
-                    observer: '_onApplicationChanged'
-                },
 
-                companyIdpSamlMetadataApi: {
-                    type: String,
-                    value: ''
-                },
+                    /**
+                     * Indicates if it is medium screen size.
+                     * It uses iron-media-query.
+                     */
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _isSAMLApp: {
-                    type: Boolean,
-                    computed: '_computeIsSAMLApp(application)'
-                },
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _isOpenIDApp: {
-                    type: Boolean,
-                    computed: '_computeIsOpenIDApp(application)'
-                },
-
-                _isUnPwAuthType: {
-                    type: Boolean,
-                    computed: '_computeIsUnPwAuthType(application)'
-                },
-
-                _viewSecurityPermission: {
-                    type: Boolean,
-                    computed: '_computeViewSecurityPermission(application)'
-                },
-
-                _autologinItem: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _autologinUnavailable: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _shouldShowAdvanced: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-in-animation',
-                                nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
-                                nodeDelay: 50,
-                                timing: {
-                                    delay: 200,
-                                    duration: 100
-                                }
-                            },
-                            'exit': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                fromPage: this
-                            }, {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }]
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    resourceAdmin: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    groupsApi: {
+                        type: String
+                    },
+
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true,
+                        observer: '_onApplicationChanged'
+                    },
+
+                    companyIdpSamlMetadataApi: {
+                        type: String
+                    },
+
+                    _isSAMLApp: {
+                        type: Boolean,
+                        computed: '_computeIsSAMLApp(application)'
+                    },
+
+                    _isOpenIDApp: {
+                        type: Boolean,
+                        computed: '_computeIsOpenIDApp(application)'
+                    },
+
+                    _isUnPwAuthType: {
+                        type: Boolean,
+                        computed: '_computeIsUnPwAuthType(application)'
+                    },
+
+                    _viewSecurityPermission: {
+                        type: Boolean,
+                        computed: '_computeViewSecurityPermission(application)'
+                    },
+
+                    _autologinItem: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _autologinUnavailable: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _shouldShowAdvanced: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
+            ready(){
+                super.ready();
 
-            load: function () {
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-in-animation',
+                        nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
+                        nodeDelay: 50,
+                        timing: {
+                            delay: 200,
+                            duration: 100
+                        }
+                    },
+                    'exit': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        fromPage: this
+                    }, {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }]
+                };
+            }
+
+            load() {
                 this._loadGroups();
-            },
+            }
 
-            reloadAssignees: function() {
-                this.$$('#appscoApplicationAssignees').reload();
-            },
+            reloadAssignees() {
+                this.shadowRoot.getElementById('appscoApplicationAssignees').reload();
+            }
 
-            removeAssignee: function(assignee) {
-                this.$$('#appscoApplicationAssignees').removeAssignee(assignee);
-            },
+            removeAssignee(assignee) {
+                this.shadowRoot.getElementById('appscoApplicationAssignees').removeAssignee(assignee);
+            }
 
-            _onApplicationChanged: function() {
+            _onApplicationChanged() {
                 this._autologinUnavailable = false;
                 this._autologinItem = this.application.auth_type == 'item';
-            },
+            }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
+            _loadGroups() {
+
+                if (this.shadowRoot.getElementById('appscoApplicationGroups') && this.shadowRoot.getElementById('appscoApplicationGroups').$) {
+                    this.shadowRoot.getElementById('appscoApplicationGroups').loadGroups();
                 }
-            },
-
-            _loadGroups: function() {
-
-                if (this.$$('#appscoApplicationGroups') && this.$$('#appscoApplicationGroups').$) {
-                    this.$$('#appscoApplicationGroups').loadGroups();
-                }
-            },
+            }
 
             /**
              * Computes isSAMLApp value
@@ -436,28 +404,28 @@
              * @returns {boolean}
              * @private
              */
-            _computeIsSAMLApp: function(application) {
+            _computeIsSAMLApp(application) {
                 return ['saml', 'saml_dropbox', 'saml_office_365'].indexOf(application.auth_type) !== -1;
-            },
+            }
 
-            _computeIsOpenIDApp: function(application) {
+            _computeIsOpenIDApp(application) {
                 return application.auth_type === 'open_id';
-            },
+            }
 
-            _computeIsUnPwAuthType: function (application) {
+            _computeIsUnPwAuthType (application) {
                 var isUnpw =
                                 application.auth_type &&
                                 (application.auth_type === 'unpw' || application.auth_type === 'item')
                         ;
                 this.col2 = !isUnpw;
                 return isUnpw;
-            },
+            }
 
-            _computeViewSecurityPermission: function(application) {
+            _computeViewSecurityPermission(application) {
                 return ['unpw', 'item'].indexOf(application.auth_type) !== -1;
-            },
+            }
 
-            _setSharedElement: function(target) {
+            _setSharedElement(target) {
 
                 while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
                     target = target.parentNode;
@@ -471,61 +439,60 @@
                 this.sharedElements = {
                     'hero': target
                 };
-            },
-
-            _onManageApplicationSettings: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('application-settings');
-            },
-
-            _onAllAssignees: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('all-assignees');
-            },
-
-            _onAllLog: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('all-log');
-            },
-
-            _onCompanyIdpSamlMetadataReponse: function(event) {
-                this._idpMetadata = event.detail.response;
-            },
-
-            _onManageGroups: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-groups');
-            },
-
-            _onManageCompliance: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-compliance');
-            },
-
-            _onResourceAdmins: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-resource-admins');
-            },
-
-            _onAutologinUnavailable: function() {
-                this._autologinUnavailable = true;
-            },
-
-            _onAutologinChanged: function() {
-                this._autologinItem = !this._autologinItem;
-
-                this.$$('#appscoApplicationLog').load();
-            },
-
-            showAdvanced: function() {
-                this._shouldShowAdvanced = true;
-            },
-
-            hideAdvanced: function() {
-                this._shouldShowAdvanced = false;
             }
 
-        });
+            _onManageApplicationSettings(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('application-settings', { bubbles: true, composed: true }));
+            }
+
+            _onAllAssignees(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('all-assignees', { bubbles: true, composed: true }));
+            }
+
+            _onAllLog(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('all-log', { bubbles: true, composed: true }));
+            }
+
+            _onCompanyIdpSamlMetadataReponse(event) {
+                this._idpMetadata = event.detail.response;
+            }
+
+            _onManageGroups(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('manage-groups', { bubbles: true, composed: true }));
+            }
+
+            _onManageCompliance(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('manage-compliance', { bubbles: true, composed: true }));
+            }
+
+            _onResourceAdmins(event) {
+                this._setSharedElement(event.target);
+                this.dispatchEvent(new CustomEvent('manage-resource-admins', { bubbles: true, composed: true }));
+            }
+
+            _onAutologinUnavailable() {
+                this._autologinUnavailable = true;
+            }
+
+            _onAutologinChanged() {
+                this._autologinItem = !this._autologinItem;
+                this.shadowRoot.getElementById('appscoApplicationLog').load();
+            }
+
+            showAdvanced() {
+                this._shouldShowAdvanced = true;
+            }
+
+            hideAdvanced() {
+                this._shouldShowAdvanced = false;
+            }
+        }
+        window.customElements.define(AppscoManageApplicationComponentsPage.is, AppscoManageApplicationComponentsPage);
     </script>
 </dom-module>
 

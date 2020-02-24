@@ -9,13 +9,11 @@
 
 <dom-module id="appsco-oauth-applications">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host appsco-oauth-application-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-oauth-application-item);
+                @apply --appsco-oauth-application-item;
             }
         </style>
 
@@ -65,14 +63,9 @@
     </template>
 
     <script>
-        Polymer({
-
-            is: 'appsco-oauth-applications',
-
-            behaviors: [
-                Polymer.AppscoListBehavior
-            ]
-
-        });
+        class AppscoOAuthApplications extends Polymer.mixinBehaviors([Polymer.AppscoListBehavior], Polymer.Element) {
+            static get is() { return 'appsco-oauth-applications'; }
+        }
+        window.customElements.define(AppscoOAuthApplications.is, AppscoOAuthApplications);
     </script>
 </dom-module>

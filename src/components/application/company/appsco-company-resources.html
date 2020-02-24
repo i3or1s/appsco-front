@@ -44,19 +44,19 @@ Custom property | Description | Default
 
         <style>
             :host appsco-company-resource-item {
-                @apply(--appsco-company-resource-item);
+                @apply --appsco-company-resource-item;
             }
             :host([display-grid]) appsco-company-resource-item {
                 width: auto;
                 margin: 0 10px 10px 0;
                 position: relative;
-                @apply(--appsco-company-resource-item);
+                @apply --appsco-company-resource-item;
             }
             :host .info-total {
                 margin-bottom: 10px;
             }
             :host .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 color: var(--secondary-text-color);
             }
         </style>
@@ -112,59 +112,59 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyResources extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-resources'; }
 
-            is: 'appsco-company-resources',
+            static get properties() {
+                return {
+                    resourceAdmin: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            properties: {
+                    displayStyle: {
+                        type: String,
+                        value: 'list',
+                        observer: '_displayStyleChanged'
+                    },
 
-                resourceAdmin: {
-                    type: Boolean,
-                    value: false
-                },
+                    displayGrid: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-                displayStyle: {
-                    type: String,
-                    value: 'list',
-                    observer: '_displayStyleChanged'
-                },
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-                displayGrid: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_observeItems(_listItems)'
-            ],
-
-            _observeItems: function(items) {
+            _observeItems(items) {
                 this.setObservableType('resources');
                 this.populateItems(items);
-            },
+            }
 
-            _displayStyleChanged: function(newValue) {
+            _displayStyleChanged(newValue) {
                 this.displayGrid = (newValue === 'grid');
-            },
+            }
 
-            setDisplayStyle: function(displayStyle) {
+            setDisplayStyle(displayStyle) {
                 this.displayStyle = displayStyle;
-            },
+            }
 
-            _onError: function(response) {
+            _onError(response) {
                 if (response.detail.request.status === 403) {
-                    this.fire('load-forbidden');
+                    this.dispatchEvent(new CustomEvent('load-forbidden', { bubbles: true, composed: true }));
                 }
                 this._onGetListError(response);
             }
-
-        });
+        }
+        window.customElements.define(AppscoCompanyResources.is, AppscoCompanyResources);
     </script>
 </dom-module>

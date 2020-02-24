@@ -7,6 +7,8 @@
 
 <link rel="import" href="../components/appsco-list-item.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-notifications`
 Is used to present notifications.
@@ -39,28 +41,28 @@ Example:
                 display: block;
                 position: relative;
                 width: 100%;
-            @apply(--layout-vertical);
-            @apply(--appsco-account-notifications);
+            @apply --layout-vertical;
+            @apply --appsco-account-notifications;
             }
             .account-notifications {
                 padding-top: 10px;
                 position: relative;
-            @apply(--appsco-account-notifications-container);
+            @apply --appsco-account-notifications-container;
             }
             :host appsco-list-item {
                 font-size: 14px;
                 padding: 20px 6px 10px 6px;
-            @apply(--account-notifications-appsco-list-item);
+            @apply --account-notifications-appsco-list-item;
             }
             :host appsco-list-item:first-of-type {
-            @apply(--account-notifications-appsco-list-item-first);
+            @apply --account-notifications-appsco-list-item-first;
             }
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
                 padding: 0 16px;
-            @apply(--paper-font-body2);
-            @apply(--info-message);
+            @apply --paper-font-body2;
+            @apply --info-message;
             }
             :host paper-progress {
                 position: absolute;
@@ -69,14 +71,14 @@ Example:
                 right: 0;
                 margin: auto;
                 width: 100%;
-            @apply(--appsco-account-notifications-paper-progress);
+            @apply --appsco-account-notifications-paper-progress;
             }
             :host paper-button {
                 display: block;
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-            @apply(--load-more-button);
+            @apply --load-more-button;
             }
         </style>
 
@@ -84,7 +86,7 @@ Example:
                 id="ironAjaxNotifications"
                 url="{{ _computedUrl }}"
                 method="GET"
-                headers="{{ _computedHeaders }}"
+                headers="{{ _headers }}"
                 handle-as="json"
                 on-error="_handleError"
                 on-response="_handleResponse">
@@ -117,117 +119,60 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountNotifications extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-notifications'; }
 
-            is: 'appsco-account-notifications',
-
-            properties: {
-
-                /**
-                 * Authorization token
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Notifications API link.
-                 */
-                notificationsApi: {
-                    type: String
-                },
-
-                /**
-                 * Next notifications page to load through use of API link.
-                 */
-                _nextPage: {
-                    type: Number,
-                    value: 1
-                },
-
-                /**
-                 * Number of notifications to load.
-                 */
-                size: {
-                    type: Number,
-                    value: 5
-                },
-
-                /**
-                 * Indicates if load more action should be available or not.
-                 */
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Computed url.
-                 */
-                _computedUrl: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                },
-
-                /**
-                 * Notifications for account.
-                 * Get from Appsco API within iron-ajax.
-                 *
-                 * @type Notification[]
-                 */
-                _notifications: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    },
-                    notify: true
-                },
-
-                /**
-                 * Message to display instead of notifications.
-                 */
-                _message: {
-                    type: String
-                }
-            },
-
-            attached: function() {
-
-                this.$.loadMore.disabled = false;
-                this.fire('notifications-attached');
-            },
-
-            /**
-             * Computes iron-ajax url.
-             *
-             * @param {String} notificationsApi
-             * @private
-             */
-            _computeUrl: function (notificationsApi) {
-                return notificationsApi + '?page=' + this._nextPage + '&limit=' + this.size;
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    notificationsApi: {
+                        type: String
+                    },
+
+                    _nextPage: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    size: {
+                        type: Number,
+                        value: 5
+                    },
+
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _computedUrl: {
+                        type: String
+                    },
+
+                    _notifications: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
+                    },
+
+                    _message: {
+                        type: String
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.$.loadMore.disabled = false;
+                    this.dispatchEvent(new CustomEvent('notifications-attached', { bubbles: true, composed: true }));
+                });
+            }
+
+            _computeUrl(notificationsApi) {
+                return notificationsApi + '?page=' + this._nextPage + '&limit=' + this.size;
+            }
 
             /**
              * Maps notification object to list-item object.
@@ -236,10 +181,10 @@ Example:
              * @returns {{ item: object }}
              * @private
              */
-            _mapToListItem: function(item) {
-                var icon = item.imageUrl,
-                        domain = window.location.protocol + '//' + window.location.hostname,
-                        result = null;
+            _mapToListItem(item) {
+                let icon = item.imageUrl,
+                    domain = window.location.protocol + '//' + window.location.hostname,
+                    result = null;
 
                 if (icon && icon.indexOf('/public/pic') > -1) {
                     icon = domain + icon;
@@ -263,19 +208,16 @@ Example:
                 }
 
                 return result;
-            },
+            }
 
-            _getNotificationMessage: function(notification) {
-                var dom = document.createElement('div');
+            _getNotificationMessage(notification) {
+                const dom = document.createElement('div');
                 dom.innerHTML = notification;
 
                 return dom.getElementsByClassName('notification-message')[0].textContent;
-            },
+            }
 
-            /**
-             * Triggers ajax request in order to get notifications.
-             */
-            loadNotifications: function() {
+            loadNotifications() {
                 this.$.progress.hidden = false;
                 this.set('_notifications', []);
                 this._message = '';
@@ -283,45 +225,30 @@ Example:
 
                 this.$.ironAjaxNotifications.url = this._computeUrl(this.notificationsApi);
                 this.$.ironAjaxNotifications.generateRequest();
-            },
+            }
 
-            _loadMore: function() {
+            _loadMore() {
                 this.$.progress.hidden = false;
 
                 this.$.ironAjaxNotifications.url = this._computeUrl(this.notificationsApi);
                 this.$.ironAjaxNotifications.generateRequest();
-            },
+            }
 
-            /**
-             * Handles error on get notifications API request.
-             * @param {Object} event Event from error response.
-             *
-             * @private
-             */
-            _handleError: function(event) {
+            _handleError(event) {
                 this._message = 'We couldn\'t load notifications at the moment. Please try again in a minute. If error continues contact us.';
                 this._hideProgressBar();
-            },
+            }
 
-            /**
-             * Handles response on get notifications API request.
-             * @param {Object} event Event from response.
-             *
-             * @private
-             */
-            _handleResponse: function(event) {
-                var notifications = event.detail.response,
-                        currentLength = this._notifications.length;
+            _handleResponse(event) {
+                const notifications = event.detail.response,
+                    currentLength = this._notifications.length;
 
                 if (notifications && notifications.length > 0) {
-
                     this.$.loadMore.disabled = false;
                     this._nextPage += 1;
 
                     notifications.forEach(function(notification, i) {
-
                         setTimeout( function() {
-
                             this.push('_notifications', notifications[i]);
 
                             if (i === (notifications.length - 1)) {
@@ -330,19 +257,18 @@ Example:
                                 if (notifications.length < this.size) {
                                     this.$.loadMore.disabled = true;
                                 }
-
-                                this.fire('notifications-load', {
-                                    notifications: notifications
-                                });
+                                this.dispatchEvent(new CustomEvent('notifications-load', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        notifications: notifications
+                                    }
+                                }));
                             }
-
                         }.bind(this));
-
                     }.bind(this));
-
                 }
                 else if (notifications && !notifications.length) {
-
                     if (!currentLength) {
                         this._message = 'There are no notifications.';
                     }
@@ -354,16 +280,14 @@ Example:
                     this._message = 'We couldn\'t load notifications at the moment.';
                     this._hideProgressBar();
                 }
-            },
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
                     this.$.progress.hidden = true;
                 }.bind(this), 500);
-
             }
-
-        });
+        }
+        window.customElements.define(AppscoAccountNotifications.is, AppscoAccountNotifications);
     </script>
 </dom-module>

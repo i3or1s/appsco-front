@@ -12,7 +12,6 @@
             :host {
                 display: inline-block;
                 position: relative;
-                padding: 8px;
                 outline: none;
                 -webkit-user-select: none;
                 -moz-user-select: none;
@@ -21,8 +20,6 @@
                 cursor: pointer;
                 z-index: 0;
                 line-height: 1;
-                width: 40px;
-                height: 40px;
                 -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
                 -webkit-tap-highlight-color: transparent;
                 box-sizing: border-box !important;
@@ -54,8 +51,8 @@
             }
 
             :host([has-notifications]) paper-icon-button {
-                color: var(--appsco-account-new-notifications-color, --primary-color);
-                --paper-icon-button-ink-color: var(--appsco-account-new-notifications-color, --primary-color);
+                color: var(--appsco-account-new-notifications-color, var(--primary-color));
+                --paper-icon-button-ink-color: var(--appsco-account-new-notifications-color, var(--primary-color));
             }
 
             :host .notification-count {
@@ -78,32 +75,33 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoNotificationIcon extends Polymer.Element {
+            static get is() { return 'appsco-notification-icon'; }
 
-            is: 'appsco-notification-icon',
-            properties: {
-                notificationCount: {
-                    type: Number,
-                    value: 0
-                },
+            static get properties() {
+                return {
+                    notificationCount: {
+                        type: Number,
+                        value: 0
+                    },
 
-                hasNotifications: {
-                    type: Boolean,
-                    value: false,
-                    computed: '_computeHasNotifications(notificationCount)',
-                    reflectToAttribute: true
-                }
-
-            },
-
-            _computeHasNotifications: function(notificationCount) {
-                return notificationCount > 0;
-            },
-
-            setNotificationsCount: function (notificationsCount) {
-                this.notificationCount = notificationsCount;
+                    hasNotifications: {
+                        type: Boolean,
+                        value: false,
+                        computed: '_computeHasNotifications(notificationCount)',
+                        reflectToAttribute: true
+                    }
+                };
             }
 
-        });
+            _computeHasNotifications(notificationCount) {
+                return notificationCount > 0;
+            }
+
+            setNotificationsCount(notificationsCount) {
+                this.notificationCount = notificationsCount;
+            }
+        }
+        window.customElements.define(AppscoNotificationIcon.is, AppscoNotificationIcon);
     </script>
 </dom-module>

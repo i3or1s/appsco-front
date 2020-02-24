@@ -35,7 +35,7 @@ Custom property | Description | Default
         <style>
             :host {
                 display: block;
-                @apply(--appsco-account-security);
+                @apply --appsco-account-security;
 
                 --iron-icon-height: 20px;
                 --iron-icon-width: 20px;
@@ -44,16 +44,16 @@ Custom property | Description | Default
                 };
             }
             .security-score {
-                @apply(--paper-font-code1);
-                @apply(--layout);
-                @apply(--layout-center);
-                @apply(--layout-center-justified);
+                @apply --paper-font-code1;
+                @apply --layout;
+                @apply --layout-center;
+                @apply --layout-center-justified;
                 width: 40px;
                 height: 40px;
                 box-sizing: border-box;
                 border-radius: 50%;
                 color: #ffffff;
-                @apply(--security-score);
+                @apply --security-score;
             }
             :host([strong]) .security-score {
                 background-color: var(--strong-color, #0f9d58);
@@ -88,53 +88,52 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountSecurity extends Polymer.Element {
+            static get is() { return 'appsco-account-security'; }
 
-            is: 'appsco-account-security',
-
-            properties: {
-
-                role: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    role: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_roleChanged'
                     },
-                    observer: '_roleChanged'
-                },
 
-                info: {
-                    type: Boolean,
-                    value: false
-                },
+                    info: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _score: {
-                    type: Number,
-                    value: 0
-                },
+                    _score: {
+                        type: Number,
+                        value: 0
+                    },
 
-                strong: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    strong: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                medium: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    medium: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                weak: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
+                    weak: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-            _roleChanged: function () {
-
+            _roleChanged() {
                 if (this.role && this.role.security) {
-                    var score = this.role.security.application_score;
+                    const score = this.role.security.application_score;
 
                     this._score = Math.round(score);
                     this.weak = false;
@@ -153,8 +152,8 @@ Custom property | Description | Default
 
                     this.weak = true;
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoAccountSecurity.is, AppscoAccountSecurity);
     </script>
 </dom-module>

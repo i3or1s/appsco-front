@@ -10,13 +10,13 @@
 
 <link rel="import" href="components/page/appsco-content.html">
 <link rel="import" href="components/components/appsco-loader.html">
+<link rel="import" href="upgrade/appsco-upgrade-page-actions.html">
 
 <dom-module id="appsco-trybusiness-page">
     <template>
         <style>
             :host {
                 display: block;
-
                 --content-color: var(--primary-text-color);
                 --info-width: 320px;
             }
@@ -24,7 +24,7 @@
                 text-align: center;
             }
             :host .box {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
                 background-color: #ffffff;
                 padding: 30px 10px;
                 margin-right: 40px;
@@ -192,7 +192,7 @@
                 right: 0;
             }
             :host .upgrade-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 border-radius: 0;
                 font-size: 20px;
                 font-weight: 500;
@@ -200,14 +200,14 @@
                 background-color: var(--app-secondary-color-1);
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
-                @apply(--layout-center);
+                @apply --layout-vertical;
+                @apply --layout-center;
             }
             :host .flex {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host([s1600-screen]) .upgrade-header {
                 padding-top: 60px;
@@ -235,15 +235,15 @@
                 margin-right: 20px;
             }
             :host([tablet-s920-screen]) .upgrade-content {
-                @apply(--layout-vertical);
-                @apply(--layout-center);
+                @apply --layout-vertical;
+                @apply --layout-center;
             }
             :host([tablet-s920-screen]) .box {
                 margin-right: 0;
                 margin-bottom: 20px;
             }
             :host([tablet-s920-screen]) .box {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
                 width: 64%;
                 margin-right: 0;
                 margin-bottom: 20px;
@@ -272,10 +272,10 @@
 
         <appsco-content id="appscoContent">
 
-            <div content>
+            <div content slot="content">
 
                 <div class="upgrade-header flex-vertical">
-                    <img src="../images/appsco-logo-business.png" alt="Appsco Business">
+                    <img src$="[[rootPath]]images/appsco-logo-business.png" alt="Appsco Business">
 
                     <h1 class="title text-center">
                         Connect and manage users, apps and directories <br> simply and securely
@@ -289,7 +289,7 @@
 
                 <div class="upgrade-content flex-horizontal">
                     <div class="box flex-vertical flex">
-                        <img src="../images/try-business/increase-productivity-icon.png" alt="Increase Productivity" class="box-icon">
+                        <img src$="[[rootPath]]images/try-business/increase-productivity-icon.png" alt="Increase Productivity" class="box-icon">
                         <h2 class="box-title">Increase Productivity</h2>
                         <hr>
                         <ul class="box-list">
@@ -302,7 +302,7 @@
                         </ul>
                     </div>
                     <div class="box flex-vertical flex">
-                        <img src="../images/try-business/improve-security-icon.png" alt="Improve Security" class="box-icon">
+                        <img src$="[[rootPath]]images/try-business/improve-security-icon.png" alt="Improve Security" class="box-icon">
                         <h2 class="box-title">Improve Security</h2>
                         <hr>
                         <ul class="box-list">
@@ -320,7 +320,7 @@
                         </ul>
                     </div>
                     <div class="box flex-vertical flex">
-                        <img src="../images/try-business/ensure-compliance-icon.png" alt="Ensure Compliance" class="box-icon">
+                        <img src$="[[rootPath]]images/try-business/ensure-compliance-icon.png" alt="Ensure Compliance" class="box-icon">
                         <h2 class="box-title">Ensure Compliance</h2>
                         <hr>
                         <ul class="box-list">
@@ -340,7 +340,7 @@
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
 
                 <appsco-loader alt="Appsco is processing request"
                                active="[[ _loader ]]"
@@ -397,138 +397,140 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-trybusiness-page',
+        class AppscoTrybusinessPage extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-trybusiness-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    companyUpgradeApi: {
+                        type: String
+                    },
 
-                companyUpgradeApi: {
-                    type: String
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    mobileScreenHeight: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                mobileScreenHeight: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    tabletS768Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                tabletS768Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    tabletS920Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                tabletS920Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    tabletS1024Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                tabletS1024Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    tabletS1280Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                tabletS1280Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    laptopS1440Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                laptopS1440Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    s1600Screen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                s1600Screen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    animationConfig: {
+                        type: Object
+                    },
 
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, mobileScreenHeight, tabletS768Screen, tabletS920Screen, tabletS1024Screen, tabletS1280Screen, laptopS1440Screen, s1600Screen)'
+                ];
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.$.appscoContent.showSection('info');
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
+                    if (this.mobileScreen || this.mobileScreenHeight || this.tabletS768Screen || this.tabletS920Screen
+                        || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopS1440Screen || this.s1600Screen) {
+                        this.updateStyles();
+                    }
+                });
 
-            observers: [
-                '_updateScreen(mobileScreen, mobileScreenHeight, tabletS768Screen, tabletS920Screen, tabletS1024Screen, tabletS1280Screen, laptopS1440Screen, s1600Screen)'
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._onPageLoaded();
+                });
+            }
 
-            attached: function() {
-                this.$.appscoContent.showSection('info');
-
-                if (this.mobileScreen || this.mobileScreenHeight || this.tabletS768Screen || this.tabletS920Screen
-                    || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopS1440Screen || this.s1600Screen) {
-                    this.updateStyles();
-                }
-
-                this._onPageLoaded();
-            },
-
-            _updateScreen: function(mobile, mobileScreenHeight, tabletS768Screen) {
+            _updateScreen(mobile, mobileScreenHeight, tabletS768Screen) {
                 this.updateStyles();
 
                 if (!mobile && !tabletS768Screen && !this.$.appscoContent.infoActive) {
                     this.$.appscoContent.showSection('info');
                 }
-            },
+            }
 
-            togglePricing: function() {
+            togglePricing() {
                 this.$.appscoContent.toggleSection('info');
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _upgradeToBusiness: function() {
+            _upgradeToBusiness() {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: this.companyUpgradeApi,
@@ -544,29 +546,33 @@
                 this._showLoader();
 
                 request.send(options).then(function() {
-
                     if (request.succeeded) {
-                        this.fire('upgraded', {
-                            account: request.response.account
-                        });
+                        this.dispatchEvent(new CustomEvent('upgraded', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                account: request.response.account
+                            }
+                        }));
                     }
-
                     this._hideLoader();
-
                 }.bind(this), function() {
-
-                    this.fire('upgrade-failed', {
-                        error: request.response.code
-                    });
-
+                    this.dispatchEvent(new CustomEvent('upgrade-failed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            error: request.response.code
+                        }
+                    }));
                     this._hideLoader();
                 }.bind(this));
-            },
-
-            _onPageLoaded: function() {
-                this.pageLoaded = true;
-                this.fire('page-loaded');
             }
-        });
+
+            _onPageLoaded() {
+                this.pageLoaded = true;
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoTrybusinessPage.is, AppscoTrybusinessPage);
     </script>
 </dom-module>

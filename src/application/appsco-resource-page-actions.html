@@ -14,9 +14,9 @@
     <template>
         <style>
             :host {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout-end-justified);
+            @apply --layout-horizontal;
+            @apply --layout-center;
+            @apply --layout-end-justified;
 
                 --paper-icon-button: {
                      width: 24px;
@@ -39,12 +39,12 @@
                 left: -25%;
             }
             .search-subscribers-action {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             .global-page-actions {
-                @apply(--manage-page-global-actions);
+                @apply --manage-page-global-actions;
             }
             :host .back-action {
                 margin-right: 0;
@@ -87,96 +87,101 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoResourcePageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-resource-page-actions'; }
 
-            is: 'appsco-resource-page-actions',
+            static get properties() {
+                return {
+                    _searchSubscribersActive: {
+                        type: Boolean,
+                        value: false
+                    },
 
-            properties: {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _searchSubscribersActive: {
-                    type: Boolean,
-                    value: false
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready(){
+                super.ready();
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            enableSubscribersSearchAction: function() {
+            enableSubscribersSearchAction() {
                 this._searchSubscribersActive = true;
-            },
+            }
 
-            disableSubscribersSearchAction: function() {
+            disableSubscribersSearchAction() {
                 this._onSearchClear();
                 this._searchSubscribersActive = false;
-            },
+            }
 
-            _backToApplications: function() {
-                this.fire('back');
-            },
+            _backToApplications() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
 
-            _onResourceAction: function() {
-                this.fire('resource-section');
-            },
+            _onResourceAction() {
+                this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+            }
 
-            _onSearch: function(event) {
+            _onSearch(event) {
+                this.dispatchEvent(new CustomEvent('search-subscribers', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        term: event.detail.term
+                    }
+                }));
+            }
 
-                this.fire('search-subscribers', {
-                    term: event.detail.term
-                });
-            },
-
-            _onSearchClear: function() {
+            _onSearchClear() {
                 this._resetSubscribersSearch();
 
-                this.fire('search-subscribers-clear', {
-                    term: ''
-                });
-            },
+                this.dispatchEvent(new CustomEvent('search-subscribers-clear', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        term: ''
+                    }
+                }));
+            }
 
-            _resetSubscribersSearch: function() {
+            _resetSubscribersSearch() {
 
                 if (this._searchSubscribersActive) {
-                    this.$$('#appscoSearch').reset();
+                    this.shadowRoot.getElementById('appscoSearch').reset();
                 }
-            },
+            }
 
-            resetApplicationSubscribersPageActions: function() {
+            resetApplicationSubscribersPageActions() {
                 this._resetSubscribersSearch();
             }
-        });
+        }
+        window.customElements.define(AppscoResourcePageActions.is, AppscoResourcePageActions);
     </script>
 </dom-module>
 

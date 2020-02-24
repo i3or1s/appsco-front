@@ -9,6 +9,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-remove-domain`
 Shows dialog screen with confirmation for account removal from organization unit.
@@ -28,7 +30,7 @@ Shows dialog screen with confirmation for account removal from organization unit
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-domain-remove);
+                @apply --appsco-domain-remove;
 
                 --form-error-box: {
                      margin-top: 0;
@@ -37,23 +39,22 @@ Shows dialog screen with confirmation for account removal from organization unit
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host appsco-loader {
-                @apply(--paper-dialog-appsco-loader);
+                @apply --paper-dialog-appsco-loader;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -65,7 +66,7 @@ Shows dialog screen with confirmation for account removal from organization unit
 
             <paper-dialog-scrollable>
                 <div class="remove-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Please confirm removal of [[ domain.domain ]] from company.</p>
                 </div>
             </paper-dialog-scrollable>
@@ -78,102 +79,76 @@ Shows dialog screen with confirmation for account removal from organization unit
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyRemoveDomain extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior, Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-remove-domain'; }
 
-            is: 'appsco-company-remove-domain',
-
-            properties: {
-
-                /**
-                 * Domain to remove.
-                 */
-                domain: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _removeDomainApi: {
-                    type: String,
-                    computed: '_computeRemoveDomainApi(domain)'
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            setDomain: function(domain) {
-                this.domain = domain;
-            },
-
-            open: function () {
-                this.$.dialog.open();
-            },
-
-            close: function () {
-                this.$.dialog.close();
-            },
-
-            toggle: function () {
-                this.$.dialog.toggle();
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    domain: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _removeDomainApi: {
+                        type: String,
+                        computed: '_computeRemoveDomainApi(domain)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    }
                 };
-            },
+            }
 
-            _computeRemoveDomainApi: function(domain) {
+            setDomain(domain) {
+                this.domain = domain;
+            }
+
+            open () {
+                this.$.dialog.open();
+            }
+
+            close () {
+                this.$.dialog.close();
+            }
+
+            toggle () {
+                this.$.dialog.toggle();
+            }
+
+            _computeRemoveDomainApi(domain) {
                 return domain.self ? domain.self : '';
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
 
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideError();
                 this._hideLoader();
-            },
+            }
 
-            _remove: function() {
+            _remove() {
                 var request = document.createElement('iron-request'),
                         options = {
                             url: this._removeDomainApi,
@@ -187,18 +162,14 @@ Shows dialog screen with confirmation for account removal from organization unit
                 request.send(options).then(function() {
                     this.close();
 
-                    /**
-                     * Fired when domain is deleted.
-                     *
-                     * @event domain-removed
-                     * @param [Object] domain
-                     */
-                    this.fire('domain-removed', {
-                        domain: this.domain
-                    });
-
+                    this.dispatchEvent(new CustomEvent('domain-removed', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            domain: this.domain
+                        }
+                    }));
                 }.bind(this), function() {
-
                     if (request.status === 404) {
                         this._showError('We couldn\'t remove domain from company. Please try again in a minute.');
                     }
@@ -206,6 +177,7 @@ Shows dialog screen with confirmation for account removal from organization unit
                     this._hideLoader();
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyRemoveDomain.is, AppscoCompanyRemoveDomain);
     </script>
 </dom-module>

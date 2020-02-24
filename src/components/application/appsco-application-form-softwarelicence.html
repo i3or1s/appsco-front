@@ -38,15 +38,16 @@
         </div>
 
         <div class="input-container">
-            <gold-email-input
+            <paper-input
                     id="supportEmail"
+                    type="email"
                     data-field
                     name$="[[ claimsNamePrefix ]][supportEmail]"
                     label="Support email"
                     value="[[ claims.supportEmail ]]"
                     auto-validate
                     error-message="Please type in correct email."
-            ></gold-email-input>
+            ></paper-input>
         </div>
 
         <div class="input-container">
@@ -98,19 +99,18 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'appsco-application-form-softwarelicence',
+        class AppscoApplicationFormSoftwareLicence extends Polymer.mixinBehaviors([Polymer.AppscoApplicationFormBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-form-softwarelicence'; }
 
-            properties: {
-                claimsNamePrefix: {
-                    type: String,
-                    value: "claims_softwarelicence"
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoApplicationFormBehavior
-            ]
-        });
+            static get properties() {
+                return {
+                    claimsNamePrefix: {
+                        type: String,
+                        value: "claims_softwarelicence"
+                    }
+                };
+            }
+        }
+        window.customElements.define(AppscoApplicationFormSoftwareLicence.is, AppscoApplicationFormSoftwareLicence);
     </script>
 </dom-module>

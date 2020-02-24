@@ -12,16 +12,16 @@
     <template>
         <style include="shared-styles">
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
 
                 --account-advanced-settings-action: {
-                     @apply(--primary-button);
+                     @apply --primary-button;
                  };
 
                 --account-advanced-settings-action-active: {
-                     @apply(--primary-button-active);
+                     @apply --primary-button-active;
                  };
             }
             :host > * {
@@ -31,7 +31,7 @@
                 margin-right: 10px;
             }
             .global-page-actions {
-                @apply(--manage-page-global-actions);
+                @apply --manage-page-global-actions;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;
@@ -74,73 +74,71 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-account-page-actions'; }
 
-            is: 'appsco-account-page-actions',
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready(){
+                super.ready();
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            resetPage: function() {
+            resetPage() {
                 this.resetPageActions();
-            },
+            }
 
-            resetPageActions: function() {
+            resetPageActions() {
                 this.enableAdvancedSettings();
                 this.$.appscoAccountActions.resetAdvancedSettingsAction();
-            },
-
-            disableAdvancedSettings: function() {
-                this.$.appscoAccountActions.disableAdvancedSettings();
-            },
-
-            enableAdvancedSettings: function() {
-                this.$.appscoAccountActions.enableAdvancedSettings();
-            },
-
-            _backToHome: function() {
-                this.fire('back');
-            },
-
-            _onResourceAction: function() {
-                this.fire('resource-section');
             }
-        });
+
+            disableAdvancedSettings() {
+                this.$.appscoAccountActions.disableAdvancedSettings();
+            }
+
+            enableAdvancedSettings() {
+                this.$.appscoAccountActions.enableAdvancedSettings();
+            }
+
+            _backToHome() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            _onResourceAction() {
+                this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoAccountPageActions.is, AppscoAccountPageActions);
     </script>
 </dom-module>
 

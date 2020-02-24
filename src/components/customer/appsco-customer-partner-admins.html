@@ -8,6 +8,7 @@
 
 <link rel="import" href="appsco-company-partner-admin-item.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <!--
 `appsco-customer-partner-admins`
@@ -40,18 +41,18 @@ Custom property | Description | Default
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--appsco-customer-partner-admins);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --appsco-customer-partner-admins;
             }
             .roles {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
             }
             appsco-company-partner-admin-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-company-group-role-item);
+                @apply --appsco-company-group-role-item;
             }
             .partner-admins-container {
                 width: 100%;
@@ -77,18 +78,18 @@ Custom property | Description | Default
                 position: absolute;
                 top: 0;
                 left: 0;
-                @apply(--appsco-list-progress-bar);
+                @apply --appsco-list-progress-bar;
             }
             .roles {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
                 width: 100%;
             }
             .info-total {
                 margin-bottom: 10px;
             }
             .total {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 color: var(--secondary-text-color);
             }
             .load-more-box paper-button {
@@ -96,24 +97,24 @@ Custom property | Description | Default
                 width: 120px;
                 margin: 20px auto 0;
                 text-align: center;
-                @apply(--load-more-button);
+                @apply --load-more-button;
             }
             .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
             :host([preview]) .roles {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             :host([preview]) appsco-company-partner-admin-item {
                 width: auto;
                 margin: 0 2px 0 0;
-                @apply(--appsco-company-partner-admin-item-preview);
+                @apply --appsco-company-partner-admin-item-preview;
             }
             :host .options paper-button {
-                @apply(--primary-button);
+                @apply --primary-button;
                 display: inline-block;
             }
             :host .options {
@@ -126,7 +127,7 @@ Custom property | Description | Default
             <iron-ajax
                     id="getPartnerAdminsApiRequest"
                     url="[[ _listApi ]]"
-                    headers="[[ _computedHeaders ]]"
+                    headers="[[ _headers ]]"
                     debounce-duration="300"
                     on-error="_onError"
                     on-response="_onResponse"></iron-ajax>
@@ -178,243 +179,210 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCustomerPartnerAdmins extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-customer-partner-admins'; }
 
-            is: 'appsco-customer-partner-admins',
-
-            properties: {
-
-                customer: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Route to retrieve list
-                 */
-                listApi: {
-                    type: String,
-                    value: '',
-                    observer: '_onListApiChanged'
-                },
-
-                /**
-                 * Number of items to load and present
-                 */
-                size: {
-                    type: Number,
-                    value: 10
-                },
-
-                /**
-                 * Show load more button
-                 */
-                loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if customer should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * If true roles will load on listApi change.
-                 */
-                autoLoadActive: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _listApi: {
-                    type: String,
-                    value: ''
-                },
-
-                _loadMore: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _partnerAdmins: {
-                    type: Array,
-                    value: function() {
-                        return [];
+            static get properties() {
+                return {
+                    customer: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     },
-                    notify: true
-                },
 
-                _allPartnerAdmins: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    listApi: {
+                        type: String,
+                        observer: '_onListApiChanged'
+                    },
+
+                    size: {
+                        type: Number,
+                        value: 10
+                    },
+
+                    loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * If true roles will load on listApi change.
+                     */
+                    autoLoadActive: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _listApi: {
+                        type: String
+                    },
+
+                    _loadMore: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _partnerAdmins: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        notify: true
+                    },
+
+                    _allPartnerAdmins: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _partnerAdminsEmpty: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _message: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _nextPageApiUrl: {
+                        type: String
+                    },
+
+                    _totalPartnerAdmins: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _renderedIndex: {
+                        type: Number,
+                        value: -1
+                    },
+
+                    _loaders: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _partnerAdminsEmpty: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                _message: {
-                    type: String,
-                    value: ''
-                },
-
-                _nextPageApiUrl: {
-                    type: String
-                },
-
-                _totalPartnerAdmins: {
-                    type: Number,
-                    value: 0
-                },
-
-                _renderedIndex: {
-                    type: Number,
-                    value: -1
-                },
-
-                _loaders: {
-                    type: Array,
-                    value: function() { return []; }
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'slide-from-left-animation',
-                                nodes: [],
-                                nodeDelay: 50,
-                                timing: {
-                                    duration: 300
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'slide-from-left-animation',
+                        nodes: [],
+                        nodeDelay: 50,
+                        timing: {
+                            duration: 300
                         }
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _onListApiChanged: function(url) {
-
+            _onListApiChanged(url) {
                 if (url) {
-                    this._listApi = ((url.indexOf('extended') != -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
+                    this._listApi = ((url.indexOf('extended') !== -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
 
                     if (this.autoLoadActive && url && url.length > 0) {
                         this._loadPartnerAdmins();
                     }
                 }
-            },
+            }
 
-            _setLoadMoreAction: function() {
+            _setLoadMoreAction() {
                 this._loadMore = (this.loadMore && this._allPartnerAdmins.length < this._totalPartnerAdmins);
-            },
+            }
 
-            _hideLoadMoreAction: function() {
+            _hideLoadMoreAction() {
                 this._loadMore = false;
-            },
+            }
 
-            _onAddPartnerAdmin: function() {
-                this.fire('add-partner-admin', {
-                    customer: this.customer
-                })
-            },
+            _onAddPartnerAdmin() {
+                this.dispatchEvent(new CustomEvent('add-partner-admin', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        customer: this.customer
+                    }
+                }));
+            }
 
-            _loadPartnerAdmins: function() {
+            _loadPartnerAdmins() {
                 this._showProgressBar();
                 this._loadMore = false;
                 this._clearPartnerAdmins();
                 this.$.getPartnerAdminsApiRequest.generateRequest();
-            },
+            }
 
-            loadPartnerAdmins: function() {
+            loadPartnerAdmins() {
                 this._loadPartnerAdmins();
-            },
+            }
 
-            reloadPartnerAdmins: function() {
+            reloadPartnerAdmins() {
                 this._loadPartnerAdmins();
-            },
+            }
 
-            _loadMorePartnerAdmins: function() {
+            _loadMorePartnerAdmins() {
                 this._showLoadMoreProgressBar();
                 this.$.getPartnerAdminsApiRequest.url = this._nextPageApiUrl;
                 this.$.getPartnerAdminsApiRequest.generateRequest();
-            },
+            }
 
-            _onError: function(event) {
+            _onError(event) {
                 this._message = 'We couldn\'t load partner admins at the moment. Please try again in a minute.';
                 this._handleEmptyLoad();
-            },
+            }
 
-            _handleEmptyLoad: function() {
+            _handleEmptyLoad() {
                 this._partnerAdminsEmpty = true;
                 this._message = 'There are no partner admins for customer.';
 
-                /**
-                 * Fired when there are no roles.
-                 *
-                 * @event empty-load
-                 */
-                this.fire('empty-load');
+                this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
 
                 this._hideProgressBar();
                 this._hideLoadMoreProgressBar();
-            },
+            }
 
-            _clearLoaders: function() {
-                for (var idx in this._loaders) {
+            _clearLoaders() {
+                for (let idx in this._loaders) {
                     clearTimeout(this._loaders[idx]);
                 }
                 this.set('_loaders', []);
-            },
+            }
 
-            _clearPartnerAdmins: function() {
+            _clearPartnerAdmins() {
                 this._clearLoaders();
                 this.set('_partnerAdmins', []);
                 this.set('_allPartnerAdmins', []);
-            },
+            }
 
-            _onResponse: function(event) {
-                var response = event.detail.response;
+            _onResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.partner_admins) {
-                    var partnerAdmins = response.partner_admins,
-                            meta = response.meta,
-                            partnerAdminsCount = partnerAdmins.length - 1;
+                    const partnerAdmins = response.partner_admins,
+                        meta = response.meta,
+                        partnerAdminsCount = partnerAdmins.length - 1;
 
                     this._totalPartnerAdmins = meta.total;
                     this._nextPageApiUrl = meta.next + '&limit=' + this.size;
@@ -429,14 +397,11 @@ Custom property | Description | Default
 
                     this._clearPartnerAdmins();
                     partnerAdmins.forEach(function(el, index) {
-
                         this._loaders.push(setTimeout(function() {
-
                             this.push('_partnerAdmins', el);
                             this.push('_allPartnerAdmins', el);
 
-                            if (index == partnerAdminsCount) {
-
+                            if (index === partnerAdminsCount) {
                                 this._loadMore = this.loadMore;
 
                                 if (this._partnerAdmins.length === meta.total) {
@@ -447,34 +412,29 @@ Custom property | Description | Default
                                 this._hideLoadMoreProgressBar();
                                 this._setLoadMoreAction();
 
-                                /**
-                                 * Fired when partnerAdmins are loaded
-                                 *
-                                 * @event loaded
-                                 * @param {Object} companyRoles[]
-                                 */
-                                this.fire('partner-admins-loaded', {
-                                    companyRoles: partnerAdmins
-                                });
+                                this.dispatchEvent(new CustomEvent('partner-admins-loaded', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        companyRoles: partnerAdmins
+                                    }
+                                }));
                             }
-
                         }.bind(this), (index + 1) * 30));
-
                     }.bind(this));
                 }
-            },
+            }
 
-            addPartnerAdmins: function(partnerAdmins) {
-                var length = partnerAdmins.length,
-                        allPartnerAdmins = this._allPartnerAdmins,
-                        allLength = allPartnerAdmins.length;
+            addPartnerAdmins(partnerAdmins) {
+                const length = partnerAdmins.length,
+                    allPartnerAdmins = this._allPartnerAdmins,
+                    allLength = allPartnerAdmins.length;
 
                 this._partnerAdminsEmpty = false;
                 this._message = '';
                 this._renderedIndex = length - 1;
 
-                for (var i = 0; i < length; i++) {
-
+                for (let i = 0; i < length; i++) {
                     if (0 === allLength) {
                         this.push('_partnerAdmins', partnerAdmins[i]);
                         this.push('_allPartnerAdmins', partnerAdmins[i]);
@@ -482,9 +442,7 @@ Custom property | Description | Default
                         this._totalPartnerAdmins++;
                     }
                     else {
-
-                        for (var j = 0; j < allLength; j++) {
-
+                        for (let j = 0; j < allLength; j++) {
                             if (allPartnerAdmins[j].alias === partnerAdmins[i].alias) {
                                 break;
                             }
@@ -494,32 +452,29 @@ Custom property | Description | Default
 
                                 this._totalPartnerAdmins++;
                             }
-
                         }
                     }
                 }
-            },
+            }
 
-            removePartnerAdmins: function(partnerAdmins) {
-                var length = partnerAdmins.length,
-                        _partnerAdmins = this._partnerAdmins,
-                        _length = _partnerAdmins.length,
-                        allPartnerAdmins = this._allPartnerAdmins,
-                        allLength = allPartnerAdmins.length;
+            removePartnerAdmins(partnerAdmins) {
+                const length = partnerAdmins.length,
+                    _partnerAdmins = this._partnerAdmins,
+                    _length = _partnerAdmins.length,
+                    allPartnerAdmins = this._allPartnerAdmins,
+                    allLength = allPartnerAdmins.length;
 
-                for (var i = 0; i < length; i++) {
-                    var role = partnerAdmins[i];
+                for (let i = 0; i < length; i++) {
+                    const role = partnerAdmins[i];
 
-                    for (var j = 0; j < _length; j++) {
-
+                    for (let j = 0; j < _length; j++) {
                         if (role.self === _partnerAdmins[j].self) {
                             this.splice('_partnerAdmins', j, 1);
                             break;
                         }
                     }
 
-                    for (var k = 0; k < allLength; k++) {
-
+                    for (let k = 0; k < allLength; k++) {
                         if (role.self === allPartnerAdmins[k].self) {
                             this.splice('_allPartnerAdmins', k, 1);
                             break;
@@ -527,47 +482,42 @@ Custom property | Description | Default
                     }
 
                     this._totalPartnerAdmins--;
-
                 }
 
                 if (0 === this._partnerAdmins.length) {
                     this._handleEmptyLoad();
                 }
-            },
+            }
 
-            _showProgressBar: function() {
-                this.$$('#paperProgress').hidden = false;
-            },
+            _showProgressBar() {
+                this.shadowRoot.getElementById('paperProgress').hidden = false;
+            }
 
-            _showLoadMoreProgressBar: function() {
-                this.$$('#loadMoreProgress').hidden = false;
-            },
+            _showLoadMoreProgressBar() {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+            }
 
-            _hideProgressBar: function() {
-
+            _hideProgressBar() {
                 setTimeout(function() {
-                    this.$$('#paperProgress').hidden = true;
+                    this.shadowRoot.getElementById('paperProgress').hidden = true;
+                }.bind(this), 300);
+            }
+
+            _hideLoadMoreProgressBar() {
+                setTimeout(function() {
+                    this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                 }.bind(this), 300);
 
-            },
+            }
 
-            _hideLoadMoreProgressBar: function() {
+            _onItemsDomChange() {
+                const index = this._renderedIndex;
 
-                setTimeout(function() {
-                    this.$$('#loadMoreProgress').hidden = true;
-                }.bind(this), 300);
-
-            },
-
-            _onItemsDomChange: function() {
-                var index = this._renderedIndex;
-
-                if (-1 != index) {
-
+                if (-1 !== index) {
                     this.animationConfig.entry.nodes = [];
 
-                    for (var i = 0; i <= index; i++) {
-                        var addedItem = this.$$('#appscoPartnerAdminItem_' + i);
+                    for (let i = 0; i <= index; i++) {
+                        const addedItem = this.shadowRoot.getElementById('appscoPartnerAdminItem_' + i);
                         this.animationConfig.entry.nodes.push(addedItem);
                     }
 
@@ -575,8 +525,8 @@ Custom property | Description | Default
 
                     this._renderedIndex = -1;
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoCustomerPartnerAdmins.is, AppscoCustomerPartnerAdmins);
     </script>
 </dom-module>

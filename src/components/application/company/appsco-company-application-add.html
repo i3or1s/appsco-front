@@ -15,6 +15,8 @@
 <link rel="import" href="appsco-company-application-add-search.html">
 <link rel="import" href="appsco-company-application-add-settings.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-application-add`
 Is used to support adding new application process.
@@ -48,13 +50,13 @@ Custom property | Description | Default
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-            @apply(--paper-dialog-scrollable-child);
+            @apply --paper-dialog-scrollable-child;
             }
             :host neon-animated-pages > * {
-            @apply(--neon-animated-pages);
+            @apply --neon-animated-pages;
             }
             :host neon-animated-pages > .iron-selected {
                 position: relative;
@@ -67,32 +69,19 @@ Custom property | Description | Default
                 padding-right: 24px;
             }
             :host .buttons paper-button {
-            @apply(--paper-dialog-button);
+            @apply --paper-dialog-button;
             }
             :host .buttons paper-button.add-action {
                 margin: 0 0 0 10px;
                 display: none;
-                @apply(--paper-dialog-confirm-button);
+                @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
         </style>
 
-        <iron-ajax auto
-                   url="[[ linkApi ]]"
-                   on-response="_onLinkResponse"
-                   headers="[[ _computedHeaders ]]">
-        </iron-ajax>
-
-        <iron-ajax auto
-                   url="[[ itemApi ]]"
-                   on-response="_onItemResponse"
-                   headers="[[ _computedHeaders ]]">
-        </iron-ajax>
-
         <paper-dialog
-                with-backdrop
                 id="addApplicationDialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -147,197 +136,117 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyApplicationAdd extends Polymer.mixinBehaviors([Appsco.HeadersMixin, Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-application-add'; }
 
-            is: 'appsco-company-application-add',
-
-            properties: {
-
-                /**
-                 * Selected page.
-                 * It has value of component's 'name' attribute.
-                 */
-                _selected: {
-                    type: String,
-                    value: 'appsco-application-add-search',
-                    notify: true
-                },
-
-                /**
-                 * Selected application from search list.
-                 */
-                _selectedApplication: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    /**
+                     * Selected page.
+                     * It has value of component's 'name' attribute.
+                     */
+                    _selected: {
+                        type: String,
+                        value: 'appsco-application-add-search',
+                        notify: true
                     },
-                    notify: true
-                },
 
-                /**
-                 * Link application resource.
-                 */
-                _link: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _selectedApplication: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    },
+
+                    link: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    item: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    applicationsTemplateApi: {
+                        type: String
+                    },
+
+                    addApplicationApi: {
+                        type: String
+                    },
+
+                    _dialogTitle: {
+                        type: String,
+                        value: 'Add application'
+                    },
+
+                    /**
+                     * Indicates wheather add action should be displayed or not.
+                     * It depends on which page is currently displayed.
+                     */
+                    _addAction: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                }
+            }
 
-                /**
-                 * Item application resource.
-                 */
-                _item: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Authorization token
-                 */
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Applications template API link.
-                 * API to get applications.
-                 */
-                applicationsTemplateApi: {
-                    type: String
-                },
-
-                /**
-                 * Dashboard API link.
-                 * API on which dashboard to save new application as icon.
-                 */
-                addApplicationApi: {
-                    type: String
-                },
-
-                /**
-                 * Get custom link resource API link.
-                 * API to get custom link resource.
-                 */
-                linkApi: {
-                    type: String
-                },
-
-                /**
-                 * Get custom item API link.
-                 * API to get custom item resource.
-                 */
-                itemApi: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _dialogTitle: {
-                    type: String,
-                    value: 'Add application'
-                },
-
-                /**
-                 * Indicates wheather add action should be displayed or not.
-                 * It depends on which page is currently displayed.
-                 */
-                _addAction: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Indicates if appsco loader should be displayed.
-                 */
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation config for add application action button (_addAction).
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this.$.addApplicationAction,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this.$.addApplicationAction,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this.$.addApplicationAction,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this.$.addApplicationAction,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                '_selected-changed': '_onSelectedChanged',
-                'neon-animation-finish': '_onAddActionAnimationFinish'
-            },
+            _addListeners() {
+                this.addEventListener('_selected-changed', this._onSelectedChanged.bind(this));
+                this.addEventListener('neon-animation-finish', this._onAddActionAnimationFinish.bind(this));
+            }
 
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{Authorization: string}}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _onFormError: function() {
+            _onFormError() {
                 this._hideLoader();
-            },
-
-            _onLinkResponse: function(event) {
-                var link = event.detail.response;
-
-                link.title = 'Link';
-                this.set('_link', link);
-            },
-
-            _onItemResponse: function(event) {
-                var customApp = event.detail.response;
-
-                customApp.title = 'Application title';
-                customApp.custom_application = true;
-                this.set('_item', customApp);
-            },
+            }
 
             /**
              * Called after selected page has been changed.
@@ -345,9 +254,8 @@ Custom property | Description | Default
              *
              * @private
              */
-            _onSelectedChanged: function() {
-
-                if (this._selected != 'appsco-application-add-search') {
+            _onSelectedChanged() {
+                if (this._selected !== 'appsco-application-add-search') {
                     this.$.addApplicationAction.style.display = 'block';
                     this.playAnimation('entry');
                     this._addAction = true;
@@ -356,8 +264,7 @@ Custom property | Description | Default
                     this._addAction = false;
                     this.playAnimation('exit');
                 }
-
-            },
+            }
 
             /**
              * Called after add application action animation is finished.
@@ -365,13 +272,11 @@ Custom property | Description | Default
              *
              * @private
              */
-            _onAddActionAnimationFinish: function() {
-
+            _onAddActionAnimationFinish() {
                 if (!this._addAction) {
                     this.$.addApplicationAction.style.display = 'none';
                 }
-
-            },
+            }
 
             /**
              * Called after application has been selected from search list.
@@ -379,9 +284,9 @@ Custom property | Description | Default
              *
              * @private
              */
-            _onApplicationSelect: function() {
+            _onApplicationSelect() {
                 this._selected = 'appsco-application-add-settings';
-            },
+            }
 
             /**
              * Called after clicked on Add Custom Application action.
@@ -389,33 +294,25 @@ Custom property | Description | Default
              *
              * @private
              */
-            _onAddItem: function(event) {
-                this._item.title = event.detail.searchTerm;
-                this.set('_selectedApplication', this._item);
+            _onAddItem(event) {
+                this.item.custom_application = true;
+                this.item.title = event.detail.searchTerm;
+                this.set('_selectedApplication', this.item);
                 this._onApplicationSelect();
                 this._dialogTitle = 'Add custom application';
-            },
+            }
 
-            /**
-             * Called after clicked on Add Link action.
-             *
-             * @private
-             */
-            _onAddLink: function() {
-                this.set('_selectedApplication', this._link);
+            _onAddLink() {
+                this.link.title = 'Link';
+                this.set('_selectedApplication', this.link);
                 this._onApplicationSelect();
                 this._dialogTitle = 'Add link';
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this._dialogTitle = 'Add application';
                 this.$.appscoApplicationAddSearch.setup();
-            },
+            }
 
             /**
              * Called after dialog has been closed.
@@ -424,14 +321,14 @@ Custom property | Description | Default
              *
              * @private
              */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._selectedApplication = {};
                 this.$.appscoApplicationAddSearch.reset();
                 this.$.appscoApplicationAddSettings.reset();
                 this._selected = 'appsco-application-add-search';
                 this._dialogTitle = 'Add application';
                 this._hideLoader();
-            },
+            }
 
             /**
              * Called when user wants to save chosen application.
@@ -439,62 +336,42 @@ Custom property | Description | Default
              *
              * @private
              */
-            _onAddApplication: function() {
+            _onAddApplication() {
                 this._showLoader();
                 this.$.appscoApplicationAddSettings.addApplication();
-            },
-
-            /**
-             * Called after application has been successfully added.
-             * It closes the dialog.
-             *
-             * @private
-             */
-            _onApplicationAdded: function() {
-                this._closeDialog();
-            },
-
-            _closeDialog: function() {
-                this.$.addApplicationDialog.close();
-                this.$.addApplicationAction.disabled = false;
-            },
-
-            setAction: function (action) {
-                this.$.appscoApplicationAddSettings.setAction(action);
-            },
-
-            /**
-             * Toggles application add dialog.
-             */
-            toggle: function() {
-                this.$.addApplicationDialog.toggle();
-            },
-
-            _onPageAnimationFinish: function(event) {
-                var fromPage = event.detail.fromPage,
-                        toPage = event.detail.toPage;
-
-                switch(fromPage.getAttribute('name')) {
-                    case 'appsco-application-add-settings':
-                    case 'appsco-application-add-search':
-                        fromPage.reset();
-                        break;
-
-                    default:
-                        break;
-                }
-
-                switch(toPage.getAttribute('name')) {
-                    case 'appsco-application-add-search':
-                        toPage.setup();
-                        break;
-
-                    default:
-                        break;
-                }
-
             }
 
-        });
+            _onApplicationAdded() {
+                this._closeDialog();
+            }
+
+            _closeDialog() {
+                this.$.addApplicationDialog.close();
+                this.$.addApplicationAction.disabled = false;
+            }
+
+            setAction(action) {
+                this.$.appscoApplicationAddSettings.setAction(action);
+            }
+
+            toggle() {
+                this.$.addApplicationDialog.toggle();
+            }
+
+            _onPageAnimationFinish(event) {
+                const fromPage = event.detail.fromPage,
+                    toPage = event.detail.toPage;
+
+                let attribute = fromPage.getAttribute('name');
+                if (attribute === 'appsco-application-add-settings' || attribute === 'appsco-application-add-search') {
+                    fromPage.reset();
+                }
+
+                if (toPage.getAttribute('name') === 'appsco-application-add-search') {
+                    toPage.setup();
+                }
+            }
+        }
+        window.customElements.define(AppscoCompanyApplicationAdd.is, AppscoCompanyApplicationAdd);
     </script>
 </dom-module>

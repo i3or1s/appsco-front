@@ -17,23 +17,22 @@
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host appsco-loader {
-                @apply(--paper-dialog-appsco-loader);
+                @apply --paper-dialog-appsco-loader;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -56,65 +55,66 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoCompanyNotice extends Polymer.Element {
+            static get is() { return 'appsco-company-notice'; }
 
-            is: 'appsco-company-notice',
+            static get properties() {
+                return {
+                    notice: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    noticeEvent: {
+                        type: String,
+                        value: ''
+                    },
 
-                notice: {
-                    type: String,
-                    value: ''
-                },
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
 
-                noticeEvent: {
-                    type: String,
-                    value: ''
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            setNotice: function(notice) {
+            setNotice(notice) {
                 this.notice = notice;
-            },
+            }
 
-            setNoticeEvent: function(noticeEvent) {
+            setNoticeEvent(noticeEvent) {
                 this.noticeEvent = noticeEvent;
-            },
+            }
 
-            open: function () {
+            open() {
                 this.$.dialog.open();
-            },
+            }
 
-            close: function () {
+            close() {
                 this.$.dialog.close();
-            },
+            }
 
-            toggle: function () {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _onDialogClosed: function() {
-                this.fire(this.noticeEvent);
+            _onDialogClosed() {
+                this.dispatchEvent(new CustomEvent(this.noticeEvent, { bubbles: true, composed: true }));
                 this._hideLoader();
-            },
+            }
 
-            _onConfirmAction: function() {
+            _onConfirmAction() {
                 this._showLoader();
                 this.close();
             }
-        });
+        }
+        window.customElements.define(AppscoCompanyNotice.is, AppscoCompanyNotice);
     </script>
 </dom-module>

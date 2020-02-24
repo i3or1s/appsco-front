@@ -19,23 +19,25 @@
 <link rel="import" href="../components/components/appsco-form-error.html">
 <link rel="import" href="../components/components/appsco-price.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-update-subscription-action">
     <template>
         <style>
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-update-subscription-action);
+                @apply --appsco-update-subscription-action;
 
                 --paper-radio-button-checked-color: var(--app-primary-color-dark);
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host paper-input {
                 --paper-input-container-label: {
@@ -53,13 +55,13 @@
                 margin: 0;
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
+                @apply --paper-font-body2;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host .info {
                 margin: 0;
@@ -68,19 +70,19 @@
                 margin-top: 15px;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             :host .flex-vertical {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             :host .flex-center {
-                @apply(--layout-center);
+                @apply --layout-center;
             }
             :host .flex{
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host .baseline {
-                @apply(--layout-self-end);
+                @apply --layout-self-end;
                 padding-bottom: 10px;
                 text-align: center;
             }
@@ -99,7 +101,7 @@
                 id="plansRequest"
                 url="[[ _plansApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 auto
                 on-response="_handlePlansResponse"
         ></iron-ajax>
@@ -114,7 +116,6 @@
         </iron-ajax>
 
         <paper-dialog id="dialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -128,7 +129,7 @@
 
             <paper-dialog-scrollable>
                 <div class="dialog-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <div>
 
@@ -205,144 +206,113 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoUpdateSubscriptionAction extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-update-subscription-action'; }
 
-            is: 'appsco-update-subscription-action',
+            static get properties() {
+                return {
+                    companyApi: {
+                        type: String
+                    },
 
-            properties: {
+                    subscription: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    /**
+                     * Indicates if add application loader should be displayed or not.
+                     */
+                    _purchaseLoader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _subscriptionYear: {
+                        type: Number,
+                        value: 0
+                    },
 
-                /**
-                 * Company API link.
-                 * API in which company to add application.
-                 */
-                companyApi: {
-                    type: String
-                },
+                    _subscriptionMonth: {
+                        type: Number,
+                        value: 0
+                    },
 
-                subscription: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    _plansApi: {
+                        type: String,
+                        computed: "_computePlansApi(companyApi)"
+                    },
+
+                    _loadingPlans: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _plans: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _purchaseApi: {
+                        type: String,
+                        computed: "_computePurchaseApi(companyApi, subscription)"
+                    },
+
+                    _selectedPlan: {
+                        type: String,
+                        computed: "_computeSelectedPlan(subscription, _plans)"
+                    },
+
+                    _stripePublicKey: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _publicKeyApi: {
+                        type: String,
+                        computed: '_computePublicKeyApi(companyApi)'
                     }
-                },
+                };
+            }
 
-                /**
-                 * Indicates if add application loader should be displayed or not.
-                 */
-                _purchaseLoader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _subscriptionYear: {
-                    type: Number,
-                    value: 0
-                },
-
-                _subscriptionMonth: {
-                    type: Number,
-                    value: 0
-                },
-
-                _plansApi: {
-                    type: String,
-                    computed: "_computePlansApi(companyApi)"
-                },
-
-                _loadingPlans: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _plans: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _purchaseApi: {
-                    type: String,
-                    computed: "_computePurchaseApi(companyApi, subscription)"
-                },
-
-                _selectedPlan: {
-                    type: String,
-                    computed: "_computeSelectedPlan(subscription, _plans)"
-                },
-
-                _stripePublicKey: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _publicKeyApi: {
-                    type: String,
-                    computed: '_computePublicKeyApi(companyApi)'
-                }
-            },
-
-            _computePublicKeyApi: function(companyApi) {
+            _computePublicKeyApi(companyApi) {
                 return companyApi + '/billing/pk';
-            },
+            }
 
-            _handlePublicKeyResponse: function(event) {
+            _handlePublicKeyResponse(event) {
                 if (!event.detail.response) {
                     return;
                 }
                 this._stripePublicKey = event.detail.response.stripePublicKey;
-            },
+            }
 
-            _computeHeaders: function (authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+            _computePlansApi(companyApi) {
+                return companyApi ? companyApi + '/billing/plans' : null;
+            }
 
-            _computePlansApi: function(companyApi) {
-                return companyApi ? companyApi + '/billing/plans' : '';
-            },
-
-            _isYearlyPlan: function(plan) {
+            _isYearlyPlan(plan) {
                 return plan && plan.interval == 'year';
-            },
+            }
 
-            _updateTotalPrice: function() {
+            _updateTotalPrice() {
                 var clonedPlansList = JSON.parse(JSON.stringify(this._plans));
                 this.set('_plans', []);
                 this.set('_plans', clonedPlansList);
-            },
+            }
 
-            _calculateTotalPrice: function(plan) {
+            _calculateTotalPrice(plan) {
                 if (!plan) {
                     return;
                 }
 
                 return this.$.quantity && this.$.quantity.value ? plan.amount * this.$.quantity.value : plan.amount;
-            },
+            }
 
-            _computeSelectedPlan: function(subscription, plans) {
+            _computeSelectedPlan(subscription, plans) {
                 if (subscription && subscription.plan) {
                     return subscription.plan.id;
                 }
@@ -350,48 +320,35 @@
                     return plans[0].id;
                 }
                 return null;
-            },
+            }
 
-            _computePurchaseApi: function(companyApi, subscription) {
+            _computePurchaseApi(companyApi, subscription) {
                 if (subscription && subscription.id) {
-                    return companyApi ? companyApi + '/billing/subscriptions/' + this.subscription.id : '';
+                    return companyApi ? companyApi + '/billing/subscriptions/' + this.subscription.id : null;
                 }
-                return companyApi ? companyApi + '/billing/subscriptions' : '';
-            },
+                return companyApi ? companyApi + '/billing/subscriptions' : null;
+            }
 
-            /**
-             * Toggles add applications dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.dialog.toggle();
-            },
+            }
 
-            setSubscription: function(subscription) {
+            setSubscription(subscription) {
                 this.subscription = subscription;
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.quantity.focus();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._purchaseLoader = false;
-                this._error = '';
+                this._errorMessage = '';
                 this.$.quantity.value = '';
                 this.$.quantity.invalid = false;
-            },
+            }
 
-            _handlePlansResponse: function(event) {
+            _handlePlansResponse(event) {
                 var response = event.detail.response;
                 this.set('_plans', []);
 
@@ -407,9 +364,9 @@
                 }, this);
 
                 this._loadingPlans = false;
-            },
+            }
 
-            _onPurchaseAction: function() {
+            _onPurchaseAction() {
                 var subscriptionsInput = this.$.quantity;
 
                 if (subscriptionsInput.value.length === 0) {
@@ -424,10 +381,7 @@
                         url: this._purchaseApi,
                         method: method,
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     },
                     body = encodeURIComponent(this.$.quantity.name) +
                             '=' +
@@ -457,7 +411,7 @@
 
                             stripe.handleCardPayment(request.response.client_secret).then(function(result) {
                                 if (result.error) {
-                                    this._error = 'An error occured';
+                                    this._errorMessage = 'An error occured';
                                     this._purchaseLoader = false;
                                 } else {
                                     this._paymentCompleted(request.response);
@@ -469,39 +423,35 @@
                         this._paymentCompleted(request.response);
                     }.bind(this),
                     function() {
-                        this._error = request.response.message;
+                        this._errorMessage = request.response.message;
                         this._purchaseLoader = false;
                     }.bind(this)
                 );
-            },
+            }
 
-            _paymentCompleted: function(response) {
+            _paymentCompleted(response) {
                 var request = document.createElement('iron-request'),
                     options = {
                         url: response.on_confirm,
                         method: 'POST',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     };
                 request.send(options).then(function() {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when application has been shared.
-                     *
-                     * @event application-shared
-                     */
-                    this.fire('subscription-updated', {
-                        subscription: response
-                    });
+                    this.dispatchEvent(new CustomEvent('subscription-updated', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            subscription: response
+                        }
+                    }));
 
                     this._purchaseLoader = false;
                 }.bind(this));
             }
-
-        });
+        }
+        window.customElements.define(AppscoUpdateSubscriptionAction.is, AppscoUpdateSubscriptionAction);
     </script>
 </dom-module>

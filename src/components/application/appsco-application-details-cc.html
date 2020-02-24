@@ -8,21 +8,21 @@
         <style>
             :host div[label] {
                 color: var(--secondary-text-color);
-                @apply(--paper-font-body1);
-                @apply(--application-details-label);
+                @apply --paper-font-body1;
+                @apply --application-details-label;
             }
 
             :host div[content] {
                 color: var(--primary-text-color);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--paper-font-subhead);
-                @apply(--application-details-value);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --paper-font-subhead;
+                @apply --application-details-value;
             }
 
             :host .flex {
-                @apply(--layout-flex);
-                @apply(--paper-font-common-nowrap);
+                @apply --layout-flex;
+                @apply --paper-font-common-nowrap;
             }
 
             :host > div {
@@ -105,20 +105,21 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationDetailsCC extends Polymer.Element {
+            static get is() { return 'appsco-application-details-cc'; }
 
-            is: 'appsco-application-details-cc',
-
-            properties: {
-
-                claims: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    },
-                    notify: true
-                }
+            static get properties() {
+                return {
+                    claims: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
+                    }
+                };
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationDetailsCC.is, AppscoApplicationDetailsCC);
     </script>
 </dom-module>

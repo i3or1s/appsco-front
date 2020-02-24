@@ -41,20 +41,20 @@ Custom property | Description | Default
                 padding: 0;
                 margin: 0;
 
-                @apply(--appsco-dropdown);
+                @apply --appsco-dropdown;
             }
             :host .content {
                 height: 100%;
                 background-color: #ffffff;
 
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
             }
             :host .caret {
                 height: 10px;
                 position: relative;
                 overflow: hidden;
                 z-index: 100;
-                @apply(--appsco-dropdown-caret);
+                @apply --appsco-dropdown-caret;
             }
             :host .caret > div:first-child {
                 width: 0;
@@ -81,140 +81,128 @@ Custom property | Description | Default
             <div></div>
         </div>
 
-        <div class="content"><content></content></div>
+        <div class="content"><slot></slot></div>
 
     </template>
 
     <script>
+        class AppscoDropdown extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-dropdown'; }
 
-        Polymer({
-            is: 'appsco-dropdown',
+            static get properties() {
+                return {
+                    /**
+                     * Indicates whether dropdown is opened or not.
+                     */
+                    open: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                    /**
+                     * Indicates if user clicks inside dropdown.
+                     */
+                    trigger: {
+                        type: Object,
+                        value: {},
+                        notify: true
+                    },
 
-            properties: {
+                    /**
+                     * Indicates if dropdown should be closed on click outside.
+                     */
+                    dontCloseOutside: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Indicates whether dropdown is opened or not.
-                 */
-                open: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                /**
-                 * Indicates if user clicks inside dropdown.
-                 */
-                trigger: {
-                    type: Object,
-                    value: {},
-                    notify: true
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Indicates if dropdown should be closed on click outside.
-                 */
-                dontCloseOutside: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation for dropdown appearance.
-                 */
-                animationConfig: {
-                    type: Object,
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'scale-up-animation',
-                                node: this,
-                                axis: 'y',
-                                transformOrigin: '0 0',
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'scale-up-animation',
+                        node: this,
+                        axis: 'y',
+                        transformOrigin: '0 0',
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                    if (!this.dontCloseOutside) {
+                        Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+                    }
+                });
+            }
 
-            listeners: {
-                'neon-animation-finish': '_onAnimationFinish',
-                'open-changed': '_openChanged'
-            },
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+                this.addEventListener('open-changed', this._openChanged);
+            }
 
-            ready: function() {
-
-                if (!this.dontCloseOutside) {
-                    Polymer.Gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-                }
-
-            },
-            
-            toggle: function() {
+            toggle() {
                 this.open = !this.open;
-            },
+            }
 
             /**
              * Evaluates if item is in given path.
              *
              * @param {HTMLElement} element The element to be evaluated.
-             * @param {Array<HTMLElements>=} path Elements in path to be checked against item element.
+             * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
              * @return {Boolean}
              *
              * @private
              */
-            _isInPath: function(path, element) {
+            _isInPath(path, element) {
                 path = path || [];
 
-                for (var i = 0; i < path.length; i++) {
-
+                for (let i = 0; i < path.length; i++) {
                     if (path[i] == element) {
                         return true;
-
-                        break;
                     }
                 }
 
                 return false;
-            },
+            }
 
             /**
              * Listens for click outside of dropdown in order to close it.
              * @private
              */
-            _handleDocumentClick: function(event) {
-                var path = Polymer.dom(event).path;
+            _handleDocumentClick(event) {
+                const path = Polymer.dom(event).path;
 
                 if (this.trigger && !this._isInPath(path, this) && !this._isInPath(path, this.trigger)) {
                     this.open = false;
                 }
-
-            },
+            }
 
             /**
              * It is called after dropdown animation is finished.
              * @private
              */
-            _onAnimationFinish: function() {
-
+            _onAnimationFinish() {
                 if (!this.open) {
                     this.style.display = 'none';
                 }
-
-            },
+            }
 
             /**
              * Listen for 'open' property change.
@@ -222,8 +210,7 @@ Custom property | Description | Default
              * If it is false it hides the dropdown.
              * @private
              */
-            _openChanged: function() {
-
+            _openChanged() {
                 if (this.open) {
                     this.style.display = 'block';
                     this.playAnimation('entry');
@@ -231,8 +218,8 @@ Custom property | Description | Default
                 else {
                     this.playAnimation('exit');
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoDropdown.is, AppscoDropdown);
     </script>
 </dom-module>

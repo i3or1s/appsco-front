@@ -6,16 +6,15 @@
 <link rel="import" href="appsco-integration-webhook-item.html">
 <link rel="import" href="../components/appsco-list-behavior.html">
 <link rel="import" href="../components/appsco-list-styles.html">
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-integration-webhooks">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host appsco-integration-webhook-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-integration-webhook-item);
+                @apply --appsco-integration-webhook-item;
             }
         </style>
 
@@ -72,68 +71,75 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationWebhooks extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-integration-webhooks'; }
 
-            is: 'appsco-integration-webhooks',
-
-            properties: {
-
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _watcherListApi: {
-                    type: String,
-                    computed: '_computeWatcherListApi(integration)'
-                },
-
-                _watcherList: {
-                    type: Array,
-                    value: function() {
-                        return [];
+            static get properties() {
+                return {
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     },
-                    observer: '_onWatcherListChanged'
-                }
-            },
 
-            behaviors: [
-                Polymer.AppscoListBehavior
-            ],
+                    _watcherListApi: {
+                        type: String,
+                        computed: '_computeWatcherListApi(integration)'
+                    },
 
-            listeners: {
-                'list-loaded': '_getWatcherList'
-            },
+                    _watcherList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        },
+                        observer: '_onWatcherListChanged'
+                    }
+                };
+            }
 
-            _computeWatcherListApi: function(integration) {
-                return integration.meta ? (integration.meta.watchers + '?extended=1') : '';
-            },
+            ready() {
+                super.ready();
 
-            _getWatcherList: function() {
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('list-loaded', this._getWatcherList);
+            }
+
+            _computeWatcherListApi(integration) {
+                return integration.meta ? (integration.meta.watchers + '?extended=1') : null;
+            }
+
+            _getWatcherList() {
                 this._removeUnActiveWebhooks();
                 this.$.getWatcherListApiRequest.generateRequest();
-            },
+            }
 
-            _onWatcherListChanged: function() {
+            _onWatcherListChanged() {
                 this._setWebhooksState();
-            },
+            }
 
-            addIntegrationWatcher: function(watcher) {
-                var watchers = JSON.parse(JSON.stringify(this._watcherList));
+            addIntegrationWatcher(watcher) {
+                let watchers = JSON.parse(JSON.stringify(this._watcherList));
 
                 watchers.push(watcher);
 
                 this.set('_watcherList', []);
                 this.set('_watcherList', watchers);
-            },
+            }
 
-            removeIntegrationWatcher: function(watcher) {
-                var watchers = JSON.parse(JSON.stringify(this._watcherList)),
+            removeIntegrationWatcher(watcher) {
+                const watchers = JSON.parse(JSON.stringify(this._watcherList)),
                     length = watchers.length;
 
-                for (var i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     if (watcher.alias === watchers[i].alias) {
                         watchers.splice(i, 1);
                         break;
@@ -142,48 +148,47 @@
 
                 this.set('_watcherList', []);
                 this.set('_watcherList', watchers);
-            },
+            }
 
-            _removeUnActiveWebhooks: function() {
-                var webhooks = JSON.parse(JSON.stringify(this._allListItems)),
+            _removeUnActiveWebhooks() {
+                const webhooks = JSON.parse(JSON.stringify(this._allListItems)),
                     webhooksLength = webhooks.length,
                     removeWebhooks = [];
-                for (var j = 0; j < webhooksLength; j++) {
-                    var webhook = webhooks[j];
+                for (let j = 0; j < webhooksLength; j++) {
+                    let webhook = webhooks[j];
 
                     if (false === this._isVisible(webhook)) {
                         removeWebhooks.push(webhook);
-                        continue;
                     }
                 }
 
                 if (0 < removeWebhooks.length) {
                     this.removeItems(removeWebhooks);
                 }
-            },
+            }
 
-            _setWebhooksState: function() {
-                var webhooks = JSON.parse(JSON.stringify(this._allListItems)),
+            _setWebhooksState() {
+                let webhooks = JSON.parse(JSON.stringify(this._allListItems)),
                     webhooksLength = webhooks.length,
                     modifyWebhooks = [],
                     watchers = this._watcherList;
 
                 if (watchers && 0 < watchers.length) {
-                    var watchersLength = watchers.length;
+                    let watchersLength = watchers.length;
 
-                    for (var j = 0; j < webhooksLength; j++) {
-                        var webhook = webhooks[j];
+                    for (let j = 0; j < webhooksLength; j++) {
+                        let webhook = webhooks[j];
 
-                        for (var i = 0; i < watchersLength; i++) {
+                        for (let i = 0; i < watchersLength; i++) {
                             if (webhook.self === watchers[i].meta.webhook) {
                                 webhook.removeWatcherApi = watchers[i].self;
-                                this.$$('#appscoListItem_' + j).register(watchers[i].url);
+                                this.shadowRoot.getElementById('appscoListItem_' + j).register(watchers[i].url);
                                 modifyWebhooks.push(webhook);
                                 break;
                             }
                             else {
                                 delete webhook.removeWatcherApi;
-                                this.$$('#appscoListItem_' + j).unregister();
+                                this.shadowRoot.getElementById('appscoListItem_' + j).unregister();
 
                                 if (i === watchersLength - 1) {
                                     modifyWebhooks.push(webhook);
@@ -191,22 +196,22 @@
                             }
                         }
                     }
-
                 }
 
                 if (0 < modifyWebhooks.length) {
                     this.modifyItems(modifyWebhooks);
                 }
-            },
+            }
 
-            _isVisible: function (webhook) {
+            _isVisible(webhook) {
                 // If From Method is set to null then it is not visible webhook
-                return null === webhook.fromMethod ? false : true;
-            },
+                return null !== webhook.fromMethod;
+            }
 
-            _onGetWatcherListResponse: function(event) {
+            _onGetWatcherListResponse(event) {
                 this.set('_watcherList', (event.detail.response && event.detail.response.watchers) ? event.detail.response.watchers : []);
             }
-        });
+        }
+        window.customElements.define(AppscoIntegrationWebhooks.is, AppscoIntegrationWebhooks);
     </script>
 </dom-module>

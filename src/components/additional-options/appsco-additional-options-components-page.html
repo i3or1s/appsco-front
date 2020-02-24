@@ -9,11 +9,13 @@
 
 <link rel="import" href="../page/appsco-layout-with-cards-styles.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-additional-options-components-page">
     <template>
         <style include="appsco-layout-with-cards-styles">
             :host .info {
-                @apply(--info-message);
+                @apply --info-message;
             }
         </style>
 
@@ -52,180 +54,170 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAdditionalOptionsComponentsPage extends Polymer.mixinBehaviors([
+            Appsco.HeadersMixin,
+            Polymer.NeonSharedElementAnimatableBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-additional-options-components-page'; }
 
-            is: 'appsco-additional-options-components-page',
+            static get properties() {
+                return {
+                    getCompanyIdpConfigListApi: {
+                        type: String
+                    },
 
-            properties: {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                getCompanyIdpConfigListApi: {
-                    type: String,
-                    value: ''
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-in-animation',
-                                nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
-                                nodeDelay: 50,
-                                timing: {
-                                    delay: 200,
-                                    duration: 100
-                                }
-                            },
-                            'exit': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                fromPage: this
-                            }, {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }]
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    _getCompanyIdpConfigListApi: {
+                        type: String,
+                        computed: '_computeGetCompanyIdpConfigListApi(getCompanyIdpConfigListApi)'
+                    },
+
+                    _idpConfigList: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _loaders: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _message: {
+                        type: String,
+                        value: ''
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                _getCompanyIdpConfigListApi: {
-                    type: String,
-                    computed: '_computeGetCompanyIdpConfigListApi(getCompanyIdpConfigListApi)'
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(tabletScreen, mediumScreen)'
+                ];
+            }
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+            ready() {
+                super.ready();
 
-                _idpConfigList: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-in-animation',
+                        nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
+                        nodeDelay: 50,
+                        timing: {
+                            delay: 200,
+                            duration: 100
+                        }
+                    },
+                    'exit': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        fromPage: this
+                    }, {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }]
+                };
 
-                _loaders: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _message: {
-                    type: String,
-                    value: ''
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(tabletScreen, mediumScreen)'
-            ],
-
-            attached: function() {
                 this.pageLoaded = false;
 
-                if (this.tabletScreen || this.mediumScreen) {
-                    this.updateStyles();
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.tabletScreen || this.mediumScreen) {
+                        this.updateStyles();
+                    }
+                });
+            }
 
-            initializePage: function() {
-                this.fire('show-page-progress-bar');
+            initializePage() {
+                this.dispatchEvent(new CustomEvent('show-page-progress-bar', { bubbles: true, composed: true }));
                 this._getCompanyIdpConfigList();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._clearIdpConfigList();
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+            _computeGetCompanyIdpConfigListApi(api) {
+                return api ? (api + '?extended=1&page=1&limit=100') : null;
+            }
 
-            _computeGetCompanyIdpConfigListApi: function(api) {
-                return api ? (api + '?extended=1&page=1&limit=100') : '';
-            },
-
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _setSharedElement: function(target) {
-
+            _setSharedElement(target) {
                 if (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
                     target = target.parentNode;
                 }
 
-                /**
-                 * Set hero animation element that is to be shared between pages.
-                 *
-                 * @type {{hero: *}}
-                 */
                 this.sharedElements = {
                     'hero': target
                 };
-            },
+            }
 
-            _clearLoaders: function() {
-
-                for (var idx in this._loaders) {
+            _clearLoaders() {
+                for (let idx in this._loaders) {
                     clearTimeout(this._loaders[idx]);
                 }
 
                 this.set('_loaders', []);
-            },
+            }
 
-            _clearIdpConfigList: function() {
+            _clearIdpConfigList() {
                 this._clearLoaders();
                 this.set('_idpConfigList', []);
                 this.set('_message', '');
-            },
+            }
 
-            _fireIdpConfigListLoadedEvent: function(idpConfigList) {
-                this.fire('idp-config-list-loaded', {
-                    idpConfigList: idpConfigList
-                });
-            },
+            _fireIdpConfigListLoadedEvent(idpConfigList) {
+                this.dispatchEvent(new CustomEvent('idp-config-list-loaded', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        idpConfigList: idpConfigList
+                    }
+                }));
+            }
 
-            _getCompanyIdpConfigList: function() {
+            _getCompanyIdpConfigList() {
                 this._clearIdpConfigList();
 
                 if (this._getCompanyIdpConfigListApi && this._headers['Authorization']) {
-                    var requestComponent = this.$.getCompanyIdpConfigListApiRequest;
+                    const requestComponent = this.$.getCompanyIdpConfigListApiRequest;
 
                     if (requestComponent.lastRequest) {
                         requestComponent.lastRequest.abort();
@@ -237,21 +229,21 @@
                     this.set('_message', this.apiErrors.getError(404));
                     this._fireIdpConfigListLoadedEvent([]);
                 }
-            },
+            }
 
-            _onGetCompanyIdpConfigListError: function(event) {
+            _onGetCompanyIdpConfigListError(event) {
                 this.set('_message', this.apiErrors.getError(event.detail.request.response.code));
                 this._fireIdpConfigListLoadedEvent([]);
-            },
+            }
 
-            _onGetCompanyIdpConfigListResponse: function(event) {
-                var response = event.detail.response;
+            _onGetCompanyIdpConfigListResponse(event) {
+                const response = event.detail.response;
 
                 this._clearIdpConfigList();
                 this.set('_message', '');
 
                 if (response && response.configs) {
-                    var idpConfigList = response.configs,
+                    const idpConfigList = response.configs,
                         meta = response.meta,
                         idpConfigListCount = idpConfigList.length - 1;
 
@@ -262,9 +254,7 @@
                     }
 
                     idpConfigList.forEach(function(el, index) {
-
                         this._loaders.push(setTimeout(function() {
-
                             this.push('_idpConfigList', el);
 
                             if (index === idpConfigListCount) {
@@ -272,18 +262,23 @@
                             }
 
                         }.bind(this), (index + 1) * 30));
-
                     }.bind(this));
                 }
-            },
-
-            _onManageIntegrationAction: function(event) {
-                this._setSharedElement(event.target);
-                this.fire('manage-idp', {
-                    idp: event.model.item
-                });
             }
-        });
+
+            _onManageIntegrationAction(event) {
+                this._setSharedElement(event.target);
+
+                this.dispatchEvent(new CustomEvent('manage-idp', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        idp: event.model.item
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoAdditionalOptionsComponentsPage.is, AppscoAdditionalOptionsComponentsPage);
     </script>
 </dom-module>
 

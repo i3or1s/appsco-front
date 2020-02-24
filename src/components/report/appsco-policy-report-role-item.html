@@ -16,6 +16,8 @@
 <link rel="import" href="../components/appsco-list-item-styles.html">
 <link rel="import" href="appsco-policies-report-breached-policy-item.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-policy-report-role-item">
     <template>
         <style include="appsco-list-item-styles"></style>
@@ -33,22 +35,22 @@
                 --account-initials-background-color: var(--report-account-initials-background-color);
             }
             iron-collapse {
-                @apply(--shadow-elevation-2dp);
+                @apply --shadow-elevation-2dp;
             }
             .resources-container {
                 padding: 20px;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
+                @apply --layout-vertical;
+                @apply --layout-center;
                 background-color: var(--collapsible-content-background-color);
             }
             .resource-list {
                 width: 100%;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-wrap;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
             :host([screen1300]) {
                 --appsco-policies-report-breached-policy-item: {
@@ -122,121 +124,108 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoPolicyReportRoleItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-policy-report-role-item'; }
 
-            is: 'appsco-policy-report-role-item',
+            static get properties() {
+                return {
+                    policiesReportApi: {
+                        type: String
+                    },
 
-            properties: {
+                    screen800: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    screen1300: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                policiesReportApi: {
-                    type: String,
-                    value: ''
-                },
+                    _policies: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
 
-                screen800: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _getPoliciesApiUrl: {
+                        type: String,
+                        computed: '_computeGetPoliciesApiUrl(item, policiesReportApi)'
+                    },
 
-                screen1300: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _policiesCount: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _policies: {
-                    type: Array,
-                    value: function() {
-                        return [];
+                    _policiesLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _policiesVisible: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(screen800, screen1300)',
+                    '_checkStatus(_policiesLoaded)'
+                ];
+            }
 
-                _getPoliciesApiUrl: {
-                    type: String,
-                    computed: '_computeGetPoliciesApiUrl(item, policiesReportApi)'
-                },
+            connectedCallback() {
+                super.connectedCallback();
 
-                _policiesCount: {
-                    type: Number,
-                    value: 0
-                },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._checkStatus(this._policiesLoaded);
+                });
+            }
 
-                _policiesLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _policiesVisible: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            observers: [
-                '_updateScreen(screen800, screen1300)',
-                '_checkStatus(_policiesLoaded)'
-            ],
-
-            attached: function() {
-                this._checkStatus(this._policiesLoaded);
-            },
-
-            _checkStatus: function(policiesLoaded) {
-
+            _checkStatus(policiesLoaded) {
                 if (!this.noAutoDisplay && policiesLoaded) {
                     this._showItem();
                 }
-            },
+            }
 
-            getPolicies: function() {
+            getPolicies() {
                 return this._policies;
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+            _computeGetPoliciesApiUrl(item, policiesReportApi) {
+                return policiesReportApi ? (policiesReportApi + '?extended=1&limit=1000&account=' + encodeURIComponent(item.account.self)) : null;
+            }
 
-            _computeGetPoliciesApiUrl: function(item, policiesReportApi) {
-                return policiesReportApi ? (policiesReportApi + '?extended=1&limit=1000&account=' + encodeURIComponent(item.account.self)) : '';
-            },
-
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _setApiRequestUrl: function(url) {
+            _setApiRequestUrl(url) {
                 this.$.getPoliciesApiRequest.url = url;
-            },
+            }
 
-            _onGetPoliciesError: function() {
+            _onGetPoliciesError() {
                 this.set('_policies', []);
                 this._policiesCount = 0;
                 this._policiesLoaded = true;
-            },
+            }
 
-            _onGetPoliciesResponse: function(event) {
-                var response = event.detail.response;
+            _onGetPoliciesResponse(event) {
+                const response = event.detail.response;
 
                 if (response && response.logs) {
-                    var policies = response.logs;
+                    const policies = response.logs;
 
                     this._policiesCount = response.count ? response.count : 0;
 
@@ -249,17 +238,18 @@
 
                     this._policiesLoaded = true;
                 }
-            },
+            }
 
-            _onShowResources: function() {
+            _onShowResources() {
                 this.$.resources.show();
                 this._policiesVisible = true;
-            },
+            }
 
-            _onHideResources: function() {
+            _onHideResources() {
                 this.$.resources.hide();
                 this._policiesVisible = false;
             }
-        });
+        }
+        window.customElements.define(AppscoPolicyReportRoleItem.is, AppscoPolicyReportRoleItem);
     </script>
 </dom-module>

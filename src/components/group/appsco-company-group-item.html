@@ -12,6 +12,8 @@
 <link rel="import" href="../components/appsco-list-item-behavior.html">
 <link rel="import" href="../components/appsco-list-item-styles.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-company-group-item`
 Presents group in form of an item.
@@ -39,9 +41,7 @@ Custom property | Description | Default
 
 <dom-module id="appsco-company-group-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host([preview][activated]) {
                 background-color: #e8e8e8;
             }
@@ -50,7 +50,7 @@ Custom property | Description | Default
                 cursor: pointer;
             }
             :host .item-title {
-                @apply(--text-no-wrap);
+                @apply --text-no-wrap;
             }
             :host([mobile-screen]) .item-additional-info {
                 display: none;
@@ -134,177 +134,171 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroupItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-group-item'; }
 
-            is: 'appsco-company-group-item',
+            static get properties() {
+                return {
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    _groupRolesApiUrl: {
+                        type: String,
+                        computed: '_computeGroupRolesApiUrl(item)'
+                    },
 
-                /**
-                 * Indicates if group should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _groupResourcesApiUrl: {
+                        type: String,
+                        computed: '_computeGroupResourcesApiUrl(item)'
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _groupContactsApiUrl: {
+                        type: String,
+                        computed: '_computeGroupContactsApiUrl(item)'
+                    },
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _groupRolesCount: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _groupRolesApiUrl: {
-                    type: String,
-                    computed: '_computeGroupRolesApiUrl(item)'
-                },
+                    _groupRolesLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _groupResourcesApiUrl: {
-                    type: String,
-                    computed: '_computeGroupResourcesApiUrl(item)'
-                },
+                    _groupResourcesCount: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _groupContactsApiUrl: {
-                    type: String,
-                    computed: '_computeGroupContactsApiUrl(item)'
-                },
+                    _groupResourcesLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _groupRolesCount: {
-                    type: Number,
-                    value: 0
-                },
+                    _groupContactsCount: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _groupRolesLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+                    _groupContactsLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _groupResourcesCount: {
-                    type: Number,
-                    value: 0
-                },
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-                _groupResourcesLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+            static get observers() {
+                return [
+                    '_listenForItemInfoLoad(_groupRolesLoaded, _groupResourcesLoaded, _groupContactsLoaded)'
+                ];
+            }
 
-                _groupContactsCount: {
-                    type: Number,
-                    value: 0
-                },
+            ready() {
+                super.ready();
 
-                _groupContactsLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
+            _addListeners() {
+                this.addEventListener('tap', this._onItemAction);
+            }
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            observers: [
-                '_listenForItemInfoLoad(_groupRolesLoaded, _groupResourcesLoaded, _groupContactsLoaded)'
-            ],
-
-            listeners: {
-                'tap': '_onItemAction'
-            },
-
-            recalculateTotals: function() {
+            recalculateTotals() {
                 this.$.getGroupRolesApiRequest.generateRequest();
                 this.$.getGroupContactsApiRequest.generateRequest();
                 this.$.getGroupResourcesApiRequest.generateRequest();
-            },
+            }
 
-            increaseGroupRolesCount: function(count) {
+            increaseGroupRolesCount(count) {
                 this._groupRolesCount += count;
-            },
+            }
 
-            decreaseGroupRolesCount: function(count) {
+            decreaseGroupRolesCount(count) {
                 this._groupRolesCount -= count;
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+            _computeGroupRolesApiUrl(group) {
+                return group.meta ? group.meta.company_roles : null;
+            }
 
-            _computeGroupRolesApiUrl: function(group) {
-                return group.meta ? group.meta.company_roles : '';
-            },
+            _computeGroupResourcesApiUrl(group) {
+                return group.meta ? group.meta.applications : null;
+            }
 
-            _computeGroupResourcesApiUrl: function (group) {
-                return group.meta ? group.meta.applications : '';
-            },
+            _computeGroupContactsApiUrl(group) {
+                return group.meta ? group.meta.contacts : null;
+            }
 
-            _computeGroupContactsApiUrl: function(group) {
-                return group.meta ? group.meta.contacts : '';
-            },
-
-            _onGroupRolesError: function() {
+            _onGroupRolesError() {
                 this._groupRolesCount = 0;
                 this._groupRolesLoaded = true;
-            },
+            }
 
-            _onGroupContactsError: function() {
+            _onGroupContactsError() {
                 this._groupContactsCount = 0;
                 this._groupContactsLoaded = true;
-            },
+            }
 
-            _onGroupResourcesError: function() {
+            _onGroupResourcesError() {
                 this._groupResourcesCount = 0;
                 this._groupResourcesLoaded = true;
-            },
+            }
 
-            _onGroupRolesResponse: function(event) {
-                var response = event.detail.response;
+            _onGroupRolesResponse(event) {
+                const response = event.detail.response;
 
                 this._groupRolesCount = (response && response.meta) ? response.meta.total : 0;
                 this._groupRolesLoaded = true;
-            },
+            }
 
-            _onGroupResourcesResponse: function(event) {
-                var response = event.detail.response;
+            _onGroupResourcesResponse(event) {
+                const response = event.detail.response;
 
                 this._groupResourcesCount = (response && response.meta) ? response.meta.total : 0;
                 this._groupResourcesLoaded = true;
-            },
+            }
 
-            _onGroupContactsResponse: function(event) {
-                var response = event.detail.response;
+            _onGroupContactsResponse(event) {
+                const response = event.detail.response;
 
                 this._groupContactsCount = (response && response.meta) ? response.meta.total : 0;
                 this._groupContactsLoaded = true;
-            },
+            }
 
-            _listenForItemInfoLoad: function(rolesLoaded, resourcesLoaded, contactsLoaded) {
-
+            _listenForItemInfoLoad(rolesLoaded, resourcesLoaded, contactsLoaded) {
                 if (this.noAutoDisplay && rolesLoaded && resourcesLoaded && contactsLoaded) {
                     this._showItem();
                 }
-            },
-
-            _onRenameGroupAction: function(event) {
-                event.stopPropagation();
-                this.fire('group-rename', {
-                    group: this.item
-                });
             }
-        });
+
+            _onRenameGroupAction(event) {
+                event.stopPropagation();
+                this.dispatchEvent(new CustomEvent('group-rename', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        group: this.item
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyGroupItem.is, AppscoCompanyGroupItem);
     </script>
 </dom-module>

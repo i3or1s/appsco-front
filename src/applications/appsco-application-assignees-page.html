@@ -13,7 +13,7 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                      border-bottom: 1px solid var(--divider-color);
@@ -23,10 +23,14 @@
                 --subscriber-initials-background-color: var(--body-background-color-darker);
             }
             :host paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
+
+                --paper-card-header-text: {
+                    @apply --full-page-paper-card-header-text;
+                };
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
             .info p {
                 margin-top: 5px;
@@ -69,105 +73,100 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationAssigneesPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-assignees-page'; }
 
-            is: 'appsco-application-assignees-page',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _assigneesEmpty: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 600
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    _assigneesEmpty: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _onAssigneesEmpty: function() {
-                this._assigneesEmpty = true;
-            },
-
-            _onAssigneesLoaded: function() {
-                this._assigneesEmpty = false;
-            },
-
-            reloadAssignees: function() {
-                this.$.appscoApplicationAssignees.reload();
-            },
-
-            searchAssignees: function(term) {
-                this.$.appscoApplicationAssignees.search(term);
-            },
-
-            removeAssignee: function(assignee) {
-                this.$$('#appscoApplicationAssignees').removeAssignee(assignee);
-            },
-
-            _back: function() {
-                this.fire('back');
-            },
-
-            setupPage: function() {
-                this.fire('enable-assignees-search-action');
-            },
-
-            resetPage: function() {
-                this.fire('disable-assignees-search-action');
+                };
             }
-        });
+
+            ready(){
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 600
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            _onAssigneesEmpty() {
+                this._assigneesEmpty = true;
+            }
+
+            _onAssigneesLoaded() {
+                this._assigneesEmpty = false;
+            }
+
+            reloadAssignees() {
+                this.$.appscoApplicationAssignees.reload();
+            }
+
+            searchAssignees(term) {
+                this.$.appscoApplicationAssignees.search(term);
+            }
+
+            removeAssignee(assignee) {
+                this.shadowRoot.getElementById('appscoApplicationAssignees').removeAssignee(assignee);
+            }
+
+            _back() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            setupPage() {
+                this.dispatchEvent(new CustomEvent('enable-assignees-search-action', { bubbles: true, composed: true }));
+            }
+
+            resetPage() {
+                this.dispatchEvent(new CustomEvent('disable-assignees-search-action', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoApplicationAssigneesPage.is, AppscoApplicationAssigneesPage);
     </script>
 </dom-module>
 

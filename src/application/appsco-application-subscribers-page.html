@@ -15,7 +15,7 @@
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                      border-bottom: 1px solid var(--divider-color);
@@ -25,10 +25,10 @@
                 --subscriber-initials-background-color: var(--body-background-color-darker);
             }
             :host paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
         </style>
 
@@ -55,87 +55,82 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationSubscribersPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-subscribers-page'; }
 
-            is: 'appsco-application-subscribers-page',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
                         }
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
                     }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _back: function() {
-                this.fire('back');
-            },
-
-            searchSubscribers: function(term) {
-                this.$.appscoApplicationSubscribers.search(term);
-            },
-
-            setupPage: function() {
-                this.fire('enable-subscribers-search-action');
-            },
-
-            resetPage: function() {
-                this.fire('disable-subscribers-search-action');
+                };
             }
-        });
+
+            ready(){
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            _back() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            searchSubscribers(term) {
+                this.$.appscoApplicationSubscribers.search(term);
+            }
+
+            setupPage() {
+                this.dispatchEvent(new CustomEvent('enable-subscribers-search-action', { bubbles: true, composed: true }));
+            }
+
+            resetPage() {
+                this.dispatchEvent(new CustomEvent('disable-subscribers-search-action', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoApplicationSubscribersPage.is, AppscoApplicationSubscribersPage);
     </script>
 </dom-module>
 

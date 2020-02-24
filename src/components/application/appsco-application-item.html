@@ -33,14 +33,15 @@ Custom property | Description | Default
 
 <dom-module id="appsco-application-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 width: 100%;
                 margin: 0 0 10px 0;
 
                 --icon-action-border-radius: 16px;
+            }
+            :host .item-basic-info {
+                padding: 0 10px;
             }
             :host([display-grid]) .item-icon {
                 margin: 24px 0 8px 0;
@@ -98,178 +99,157 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-item'; }
 
-            is: 'appsco-application-item',
-
-            properties: {
-
-                /**
-                 * Indicates if user manages company applications or not.
-                 */
-                company: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-                 */
-                application: {
-                    type: Object,
-                    value: function () {
-                        return {};
+            static get properties() {
+                return {
+                    company: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
                     },
-                    observer: '_onApplicationChanged'
-                },
 
-                displayGrid: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    /**
+                     * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onApplicationChanged'
+                    },
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    displayGrid: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _applicationType: {
-                    type: String,
-                    computed: '_computeApplicationType(application)'
-                },
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _orgUnits: {
-                    type: String,
-                    computed: '_computeOrganizationUnits(company, application)'
-                },
+                    _applicationType: {
+                        type: String,
+                        computed: '_computeApplicationType(application)'
+                    },
 
-                _groups: {
-                    type: String,
-                    computed: '_computeGroups(company, application)'
-                },
+                    _orgUnits: {
+                        type: String,
+                        computed: '_computeOrganizationUnits(company, application)'
+                    },
 
-                active: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _groups: {
+                        type: String,
+                        computed: '_computeGroups(company, application)'
+                    },
 
-                _applicationIcon: {
-                    type: String,
-                    computed: '_computeApplicationIcon(company, application)'
-                },
+                    active: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _shared: {
-                    type: Boolean,
-                    computed: '_computeApplicationShared(company, application)'
-                },
+                    _applicationIcon: {
+                        type: String,
+                        computed: '_computeApplicationIcon(company, application)'
+                    },
 
-                _editable: {
-                    type: Boolean,
-                    computed: '_computeApplicationEditable(_shared, application)'
-                },
+                    _shared: {
+                        type: Boolean,
+                        computed: '_computeApplicationShared(company, application)'
+                    },
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                    _editable: {
+                        type: Boolean,
+                        computed: '_computeApplicationEditable(_shared, application)'
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
+            }
 
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _onApplicationChanged: function(application) {
-
+            _onApplicationChanged(application) {
                 if (this.company) {
                     this.active = application.selected;
                 }
+            }
 
-            },
-
-            _computeApplicationType: function(application) {
-
+            _computeApplicationType(application) {
                 switch (application.auth_type) {
                     case 'login':
                         return 'Login';
-
                     case 'cc':
                         return 'Credit Card';
-
                     case 'softwarelicence':
                         return 'Software Licence';
-
                     case 'passport':
                         return 'Passport';
-
                     case 'securenote':
                         return 'Secure Note';
-
                     case 'none':
                         return 'Link';
-
                     case 'open_id':
                         return 'Open ID';
-
                     default:
                         return 'Application';
                 }
-            },
+            }
 
-            _computeOrganizationUnits: function(company, application) {
-
+            _computeOrganizationUnits(company, application) {
                 if (company && application.org_units && application.org_units.length > 0) {
-                    var result = '',
-                            orgUnits = application.org_units,
-                            length = orgUnits.length;
+                    let result = '',
+                        orgUnits = application.org_units,
+                        length = orgUnits.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         result += orgUnits[i].name;
                         result += (i === length -1) ? '' : ', ';
                     }
-
                     return result;
                 }
 
                 return '';
+            }
 
-            },
-
-            _computeGroups: function(company, application) {
-
+            _computeGroups(company, application) {
                 if (company && application.groups && application.groups.length > 0) {
-                    var result = '',
+                    let result = '',
                         groups = application.groups,
                         length = groups.length;
 
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         result += groups[i].name;
                         result += (i === length -1) ? '' : ', ';
                     }
@@ -278,91 +258,78 @@ Custom property | Description | Default
                 }
 
                 return '';
+            }
 
-            },
-
-            _computeApplicationIcon: function(company, application) {
+            _computeApplicationIcon(company, application) {
                 return company ? application.application_url : application.icon_url;
-            },
+            }
 
-            _computeApplicationShared: function(company, application) {
+            _computeApplicationShared(company, application) {
                 return (!company && !application.owner);
-            },
+            }
 
-            _computeApplicationEditable: function(shared, application) {
+            _computeApplicationEditable(shared, application) {
                 return !shared || application.application.user_can_edit;
-            },
+            }
 
-            _onInfo: function (event) {
+            _onInfo(event) {
                 event.stopPropagation();
 
-                /**
-                 * Fired when `info` is tapped.
-                 *
-                 * @event info
-                 * @param {Object} application [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
-                 *                              for which event is fired
-                 */
-                this.fire('info', {
-                    application: this.application
-                });
-            },
+                this.dispatchEvent(new CustomEvent('info', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
 
-            _onEdit: function (event) {
+            _onEdit(event) {
                 event.stopPropagation();
 
                 if (this._shared) {
-                    /**
-                     * Fired when `edit` is tapped on a shared application.
-                     *
-                     * @event edit
-                     * @param {Object} application [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
-                     *                              for which event is fired
-                     */
-                    this.fire('edit-shared-application', {
-                        application: this.application
-                    });
+                    this.dispatchEvent(new CustomEvent('edit-shared-application', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application
+                        }
+                    }));
                 } else {
-                    /**
-                     * Fired when `edit` is tapped.
-                     *
-                     * @event edit
-                     * @param {Object} application [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
-                     *                              for which event is fired
-                     */
-                    this.fire('edit', {
-                        application: this.application
-                    });
+                    this.dispatchEvent(new CustomEvent('edit', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            application: this.application
+                        }
+                    }));
                 }
-            },
+            }
 
-            _onApplicationAction: function() {
+            _onApplicationAction() {
                 this.active = !this.active;
 
                 if (this.company) {
                     this.application.selected = this.active;
                 }
 
-                /**
-                 * Fired when whole item is tapped.
-                 *
-                 * @event application
-                 * @param {Object} application [Application](https://developers.appsco.com/api/dashboard/id/icons/id)
-                 *                              for which event is fired
-                 */
-                this.fire('application', {
-                    application: this.application
-                });
-            },
-
-            select: function() {
-                this.active = true;
-            },
-
-            deselect: function() {
-                this.active = false;
+                this.dispatchEvent(new CustomEvent('application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
             }
 
-        });
+            select() {
+                this.active = true;
+            }
+
+            deselect() {
+                this.active = false;
+            }
+        }
+        window.customElements.define(AppscoApplicationItem.is, AppscoApplicationItem);
     </script>
 </dom-module>

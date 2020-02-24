@@ -13,20 +13,22 @@
     <link rel="import" href="../../../../bower_components/iron-ajax/iron-ajax.html">
     <link rel="import" href="../../../../bower_components/paper-toast/paper-toast.html">
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-        :root {
-            --appsco-account-image-settings: {
-                 display: block;
-             };
-        }
-        :root .vertical-section-container {
-            max-width: 500px;
-        }
-        .additional-info {
-            text-align: center;
-            font-style: italic;
-        }
-    </style>
+    <custom-style>
+        <style include="demo-pages-shared-styles">
+            html {
+                --appsco-account-image-settings: {
+                   display: block;
+                };
+            }
+            :root .vertical-section-container {
+                max-width: 500px;
+            }
+            .additional-info {
+                text-align: center;
+                font-style: italic;
+            }
+        </style>
+    </custom-style>
 </head>
 <body>
 
@@ -53,7 +55,7 @@
                     authorization-token="1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44"
                     image-settings-api="https://my-dev.appsco.com/api/v2/me/profile-image">
 
-                <div class="additional-info" info>
+                <div class="additional-info" info slot="info">
                     <p>Recommended size is 96x96.</p>
                 </div>
 

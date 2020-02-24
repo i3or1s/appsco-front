@@ -14,9 +14,7 @@
 
 <dom-module id="appsco-oauth-application-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 width: 100%;
             }
@@ -25,7 +23,7 @@
                 height: 52px;
                 margin: 0;
                 border-radius: 26px;
-                background-color: var(--oauth-application-icon-background-color, --account-initials-background-color);
+                background-color: var(--oauth-application-icon-background-color, var(--account-initials-background-color));
                 position: relative;
             }
             :host .oauth-application-icon {
@@ -65,48 +63,49 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoOAuthApplicationsItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-oauth-application-item'; }
 
-            is: 'appsco-oauth-application-item',
+            ready() {
+                super.ready();
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            listeners: {
-                'tap': '_onItemAction'
-            },
-
-            ready: function() {
-                this.fire('component-ready');
-            },
-
-            _onEditItemAction: function(event) {
-                event.stopPropagation();
-                /**
-                 * Fired when edit action is tapped.
-                 *
-                 * @event edit-oauth-application
-                 * @param {Object} application
-                 */
-                this.fire('edit-oauth-application', {
-                    application: this.item
-                });
-            },
-
-            _onRemoveItemAction: function(event) {
-                event.stopPropagation();
-                /**
-                 * Fired when remove action is tapped.
-                 *
-                 * @event remove-oauth-application
-                 * @param {Object} application
-                 */
-                this.fire('remove-oauth-application', {
-                    application: this.item
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                    this.dispatchEvent(new CustomEvent('component-ready', { bubbles: true, composed: true }));
                 });
             }
-        });
+
+            _addListeners() {
+                this.addEventListener('tap', this._onItemAction);
+            }
+
+            _onEditItemAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('edit-oauth-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.item
+                    }
+                }));
+            }
+
+            _onRemoveItemAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('remove-oauth-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.item
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoOAuthApplicationsItem.is, AppscoOAuthApplicationsItem);
     </script>
 </dom-module>

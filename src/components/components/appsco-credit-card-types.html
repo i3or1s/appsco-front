@@ -2,22 +2,27 @@
 
 <dom-module id="appsco-credit-card-types">
     <script>
-        Polymer({
+        class AppscoCreditCardTypes extends Polymer.Element {
+            static get is() { return 'appsco-credit-card-types'; }
 
-            is: 'appsco-credit-card-types',
+            static get properties() {
+                return {
+                    types: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    }
+                };
+            }
 
-            properties: {
-                types: {
-                    type: Array,
-                    value: function() { return []; }
-                }
-            },
+            ready() {
+                super.ready();
 
-            ready: function () {
                 this.types = this.ccTypes();
-            },
+            }
 
-            ccTypes: function () {
+            ccTypes() {
                 return [
                     {
                         "code": 1,
@@ -61,8 +66,7 @@
                     }
                 ]
             }
-
-
-        });
+        }
+        window.customElements.define(AppscoCreditCardTypes.is, AppscoCreditCardTypes);
     </script>
 </dom-module>

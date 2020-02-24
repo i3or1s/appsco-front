@@ -49,34 +49,34 @@ Custom property | Description | Default
                 position: relative;
                 background-color: var(--item-background-color, #ffffff);
                 border-radius: 3px;
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 transition: all 0.1s ease-out;
-                @apply(--appsco-company-idp-domain-item);
+                @apply --appsco-company-idp-domain-item;
             }
             .item:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
             .domain-title {
                 display: block;
                 height: 32px;
                 line-height: 16px;
-            @apply(--paper-font-common-base);
+            @apply --paper-font-common-base;
                 font-size: 14px;
                 font-weight: 400;
                 overflow: hidden;
             }
             .actions {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --layout-horizontal;
+            @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
             }
             paper-button {
-            @apply(--paper-font-common-base);
-            @apply(--paper-font-common-nowrap);
+            @apply --paper-font-common-base;
+            @apply --paper-font-common-nowrap;
 
                 padding: 4px;
                 font-size: 12px;
@@ -89,27 +89,27 @@ Custom property | Description | Default
                 background: transparent;
             }
             .domain-info {
-                @apply(--layout-vertical);
-                @apply(--layout-start);
+                @apply --layout-vertical;
+                @apply --layout-start;
                 padding: 0 10px;
             }
             .domain-basic-info {
                 width: 220px;
-                @apply(--domain-basic-info);
+                @apply --domain-basic-info;
             }
             .domain-status-info {
                 border-left: 1px solid var(--divider-color);
-                @apply(--domain-status-info);
+                @apply --domain-status-info;
             }
             .domain-basic-info .info-label, .domain-basic-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--domain-basic-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --domain-basic-info-values;
             }
             .domain-status-info .info-label, .domain-status-info .info-value {
                 width: 220px;
-                @apply(--paper-font-common-nowrap);
-                @apply(--domain-status-info-values);
+                @apply --paper-font-common-nowrap;
+                @apply --domain-status-info-values;
             }
             .domain-status-info .info-label {
                 color: var(--app-primary-color);
@@ -161,102 +161,94 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyIdpDomainItem extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-idp-domain-item'; }
 
-            is: 'appsco-company-idp-domain-item',
-
-            properties: {
-
-                /**
-                 * Domain that is to be rendered
-                 */
-                domain: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    domain: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onDomainChanged'
                     },
-                    observer: '_onDomainChanged'
-                },
 
-                /**
-                 * Indicates if domain should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * Indicates if domain should be in preview mode rather then full detailed view.
+                     */
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    _domainHasIdpConfigured: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                },
-
-                _domainHasIdpConfigured: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _onDomainChanged: function(domain) {
-                this._domainHasIdpConfigured = (domain && domain.hasIdp);
-            },
-
-            _onManageAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `manage` action is tapped.
-                 *
-                 * @event manage
-                 * @param {Object} domain
-                 */
-                this.fire('manage', {
-                    domain: this.domain
+                };
+                Polymer.RenderStatus.beforeNextRender(this, function () {
+                    this.style.display = 'inline-block';
                 });
-            },
 
-            _onDeactivateAction: function(event) {
-                event.stopPropagation();
-
-                /**
-                 * Fired when `deactivate` action is tapped.
-                 *
-                 * @event deactivate
-                 * @param {Object} domain
-                 */
-                this.fire('deactivate-domain-idp-settings', {
-                    domain: this.domain
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this.playAnimation('entry');
                 });
             }
 
-        });
+            _onDomainChanged(domain) {
+                this._domainHasIdpConfigured = (domain && domain.hasIdp);
+            }
+
+            _onManageAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('manage', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: this.domain
+                    }
+                }));
+            }
+
+            _onDeactivateAction(event) {
+                event.stopPropagation();
+
+                this.dispatchEvent(new CustomEvent('deactivate-domain-idp-settings', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: this.domain
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyIdpDomainItem.is, AppscoCompanyIdpDomainItem);
     </script>
 </dom-module>

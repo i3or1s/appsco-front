@@ -8,21 +8,21 @@
             :host {
                 display: inline-block;
                 position: relative;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-compliance-report-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-compliance-report-actions;
             }
             :host .action {
                 margin-left: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--layout-flex-none);
-                @apply(--compliance-report-action);
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --layout-flex-none;
+                @apply --compliance-report-action;
             }
             :host .export-action {
-                @apply(--primary-button);
+                @apply --primary-button;
                 min-width: 100px;
             }
         </style>
@@ -34,19 +34,13 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoComplianceReportActions extends Polymer.Element {
+            static get is() { return 'appsco-compliance-report-actions'; }
 
-            is: 'appsco-compliance-report-actions',
-
-            _onExportAction: function() {
-                /**
-                 * Fired when export action is tapped.
-                 *
-                 * @event export-compliance-report
-                 */
-                this.fire('export-compliance-report');
+            _onExportAction() {
+                this.dispatchEvent(new CustomEvent('export-compliance-report', { bubbles: true, composed: true }));
             }
-
-        });
+        }
+        window.customElements.define(AppscoComplianceReportActions.is, AppscoComplianceReportActions);
     </script>
 </dom-module>

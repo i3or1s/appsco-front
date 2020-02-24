@@ -29,7 +29,7 @@ Example:
             :host {
                 width: 100%;
                 display: none;
-                @apply(--appsco-form-error);
+                @apply --appsco-form-error;
             }
             :host .error-box {
                 min-height: 38px;
@@ -40,7 +40,7 @@ Example:
                 font-size: 12px;
                 box-sizing: border-box;
 
-                @apply(--form-error-box);
+                @apply --form-error-box;
             }
         </style>
 
@@ -51,69 +51,74 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoFormError extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-form-error'; }
 
-            is: 'appsco-form-error',
+            static get properties() {
+                return {
+                    /**
+                     * Indicates if error exists.
+                     */
+                    _error: {
+                        type: Boolean,
+                        computed: '_checkIfErrorExists(message)'
+                    },
 
-            properties: {
+                    /**
+                     * Message to display in error box.
+                     */
+                    message: {
+                        type: String,
+                        value: '',
+                        notify: true
+                    },
 
-                /**
-                 * Indicates if error exists.
-                 */
-                _error: {
-                    type: Boolean,
-                    computed: '_checkIfErrorExists(message)'
-                },
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                /**
-                 * Message to display in error box.
-                 */
-                message: {
-                    type: String,
-                    value: '',
-                    notify: true
-                },
+            static get observers() {
+                return [
+                    '_onMessageChanged(message)'
+                ]
+            }
 
-                /**
-                 * Animation configuration for root element.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+            ready() {
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                'message-changed': '_onMessageChanged',
-                'neon-animation-finish': '_onNeonAnimationFinish'
-            },
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+            }
 
-            _checkIfErrorExists: function(message) {
-                return (message && message.toString().trim() != '');
-            },
+            _checkIfErrorExists(message) {
+                return (message && message.toString().trim() !== '');
+            }
 
-            _onMessageChanged: function() {
-
+            _onMessageChanged() {
                 if (this._error) {
                     this.playAnimation('entry');
                     this.style.display = 'block';
@@ -121,16 +126,14 @@ Example:
                 else {
                     this.playAnimation('exit');
                 }
+            }
 
-            },
-
-            _onNeonAnimationFinish: function() {
-
+            _onNeonAnimationFinish() {
                 if (!this._error) {
                     this.style.display = 'none';
                 }
-
             }
-        });
+        }
+        window.customElements.define(AppscoFormError.is, AppscoFormError);
     </script>
 </dom-module>

@@ -29,17 +29,17 @@ Custom property | Description | Default
         <style>
             :host {
                 display: block;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
-                @apply(--appsco-account-actions);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
+                @apply --appsco-account-actions;
             }
             :host .advanced-settings-button {
-                @apply(--account-advanced-settings-action);
+                @apply --account-advanced-settings-action;
             }
             :host .advanced-settings-button[active] {
-                @apply(--shadow-elevation-2dp);
-                @apply(--account-advanced-settings-action-active);
+                @apply --shadow-elevation-2dp;
+                @apply --account-advanced-settings-action-active;
             }
             :host .advanced-settings-button[disabled] {
                 opacity: 0.5;
@@ -57,55 +57,34 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountActions extends Polymer.Element {
+            static get is() { return 'appsco-account-actions'; }
 
-            is: 'appsco-account-actions',
-
-            properties: {
-
-                /**
-                 * Indicates if advanced action(s) should be visible or not.
-                 */
-                advanced: {
-                    type: Boolean,
-                    value: false
-                }
-
-            },
-
-            /**
-             * Called on account advanced settings action.
-             *
-             * @private
-             */
-            _onAdvancedSettingsAction: function() {
-
-                /**
-                 * Fired when advanced settings action is triggered.
-                 *
-                 * @event advanced-settings
-                 */
-                this.fire('advanced-settings');
-            },
-
-            /**
-             * Disables advanced settings action.
-             */
-            disableAdvancedSettings: function() {
-                this.$$('#advancedSettingsAction').disabled = true;
-            },
-
-            /**
-             * Enables advanced settings action.
-             */
-            enableAdvancedSettings: function() {
-                this.$$('#advancedSettingsAction').disabled = false;
-            },
-
-            resetAdvancedSettingsAction: function() {
-                this.$$('#advancedSettingsAction').active = false;
+            static get properties() {
+                return {
+                    advanced: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
             }
 
-        });
+            _onAdvancedSettingsAction() {
+                this.dispatchEvent(new CustomEvent('advanced-settings', { bubbles: true, composed: true }));
+            }
+
+            disableAdvancedSettings() {
+                this.shadowRoot.getElementById('advancedSettingsAction').disabled = true;
+            }
+
+            enableAdvancedSettings() {
+                this.shadowRoot.getElementById('advancedSettingsAction').disabled = false;
+            }
+
+            resetAdvancedSettingsAction() {
+                this.shadowRoot.getElementById('advancedSettingsAction').active = false;
+            }
+        }
+        window.customElements.define(AppscoAccountActions.is, AppscoAccountActions);
     </script>
 </dom-module>

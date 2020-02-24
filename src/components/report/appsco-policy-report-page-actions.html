@@ -13,9 +13,9 @@
     <template>
         <style include="shared-styles">
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host > * {
                 height: 100%;
@@ -27,7 +27,7 @@
                 left: -25%;
             }
             .global-page-actions {
-                @apply(--manage-page-global-actions);
+                @apply --manage-page-global-actions;
             }
             :host .back-action {
                 margin-right: 0;
@@ -65,53 +65,54 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoPolicyReportPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-policy-report-page-actions'; }
 
-            is: 'appsco-policy-report-page-actions',
+            static get properties() {
+                return {
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            _onBackToAction: function() {
-                this.fire('back');
-            },
-
-            _onResourceSectionAction: function() {
-                this.fire('resource-section');
+                };
             }
-        });
+
+            _onBackToAction() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
+
+            _onResourceSectionAction() {
+                this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoPolicyReportPageActions.is, AppscoPolicyReportPageActions);
     </script>
 </dom-module>
 

@@ -12,8 +12,10 @@
 <link rel="import" href="components/page/appsco-page-styles.html">
 <link rel="import" href="components/report/appsco-compliance-report-accounts.html">
 <link rel="import" href="components/report/appsco-compliance-report-page-filters.html">
-
+<link rel="import" href="components/report/appsco-compliance-report-page-actions.html">
 <link rel="import" href="components/components/appsco-behavior-report-page.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-compliance-report-page">
     <template>
@@ -27,7 +29,7 @@
                     cursor: default;
                 };
                 --appsco-compliance-report-list-item-activated: {
-                    @apply(--shadow-elevation-2dp);
+                    @apply --shadow-elevation-2dp;
                 };
             }
             :host div[resource] .resource-content {
@@ -44,7 +46,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent" resource-active>
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-content">
                     <appsco-compliance-report-page-filters id="complianceReportPageFilters"
                                                        groups-api="[[ groupsApi ]]"
@@ -55,7 +57,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-compliance-report-accounts
                             id="appscoComplianceReportRoles"
@@ -92,163 +94,166 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-compliance-report-page',
+        class AppscoComplianceReportPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoBehaviourReportPage,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-compliance-report-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    groupsApi: {
+                        type: String
+                    },
 
-                groupsApi: {
-                    type: String,
-                    value: ''
-                },
+                    rolesApi: {
+                        type: String
+                    },
 
-                rolesApi: {
-                    type: String,
-                    value: ''
-                },
+                    contactsApi: {
+                        type: String
+                    },
 
-                contactsApi: {
-                    type: String,
-                    value: ''
-                },
+                    exportAccessReportApi: {
+                        type: String
+                    },
 
-                exportAccessReportApi: {
-                    type: String,
-                    value: ''
-                },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _rolesLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _rolesVisible: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _contactsLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _contactsVisible: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _pageReady: {
+                        type: Boolean,
+                        computed: '_computePageReadyState(_rolesLoaded, _contactsLoaded)',
+                        observer: '_onPageReadyChanged'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen, screen992)',
+                    '_toggleFilters(mobileScreen)'
+                ];
+            }
 
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _rolesLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _rolesVisible: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _contactsLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _contactsVisible: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _pageReady: {
-                    type: Boolean,
-                    computed: '_computePageReadyState(_rolesLoaded, _contactsLoaded)',
-                    observer: '_onPageReadyChanged'
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoBehaviourReportPage
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen, screen992)',
-                '_toggleFilters(mobileScreen)'
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            listeners: {
-                'neon-animation-finish': '_onNeonAnimationFinish'
-            },
+            _addListeners() {
+                this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish.bind(this));
+                this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+            }
 
-            attached: function() {
-                 this.pageLoaded = false;
-
-                if (this.mobileScreen) {
-                    this.updateStyles();
-                }
-            },
-
-            _toggleFilters: function(mobile) {
+            _toggleFilters(mobile) {
                 if (mobile) {
                     this.hideResource();
                 } else {
                     this.showResource();
                 }
-            },
+            }
 
-            hideResource: function() {
+            hideResource() {
                 this.$.appscoContent.hideSection('resource');
-            },
+            }
 
-            showResource: function() {
+            showResource() {
                 this.$.appscoContent.showSection('resource');
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._reloadLists();
                 this._hideContacts();
                 this._showRoles();
                 this._resetFilters();
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            getFilters: function() {
-                var filters = this.$.complianceReportPageFilters.getFilters(),
+            getFilters() {
+                const filters = this.$.complianceReportPageFilters.getFilters(),
                     data = {};
                 switch (filters.type) {
                     case 'users':
@@ -267,142 +272,134 @@
                 }
 
                 return data;
-            },
+            }
 
-            getFileName: function() {
+            getFileName() {
                 return 'Compliance Report.xlsx';
-            },
+            }
 
-            getOnSuccessEvent: function() {
+            getOnSuccessEvent() {
                 return 'export-compliance-report-finished';
-            },
+            }
 
-            getOnFailEvent: function() {
+            getOnFailEvent() {
                 return 'export-compliance-report-failed';
-            },
+            }
 
-            getFailMessage: function() {
+            getFailMessage() {
                 return 'Export of Compliance Report failed. Please contact AppsCo support.';
-            },
+            }
 
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _computePageReadyState: function(accounts, contacts) {
+            _computePageReadyState(accounts, contacts) {
                 return accounts && contacts;
-            },
+            }
 
-            _reloadLists: function() {
+            _reloadLists() {
                 this.$.appscoComplianceReportRoles.reloadItems();
                 this.$.appscoComplianceReportContacts.reloadItems();
-            },
+            }
 
-            _resetFilters: function() {
+            _resetFilters() {
                 this.$.complianceReportPageFilters.reset();
-            },
+            }
 
-            _showRoles: function() {
+            _showRoles() {
                 this._rolesVisible = true;
                 this.animationConfig.entry.node = this.$.appscoComplianceReportRoles;
                 this.playAnimation('entry');
-            },
+            }
 
-            _hideRoles: function() {
+            _hideRoles() {
                 this.animationConfig.exit.node = this.$.appscoComplianceReportRoles;
                 this.playAnimation('exit', {
                     activeList: 'roles'
                 });
-            },
+            }
 
-            _showContacts: function() {
+            _showContacts() {
                 this._contactsVisible = true;
                 this.animationConfig.entry.node = this.$.appscoComplianceReportContacts;
                 this.playAnimation('entry');
-            },
+            }
 
-            _hideContacts: function() {
+            _hideContacts() {
                 this.animationConfig.exit.node = this.$.appscoComplianceReportContacts;
                 this.playAnimation('exit', {
                     activeList: 'contacts'
                 });
-            },
+            }
 
-            _onPageReadyChanged: function(pageReady) {
-
+            _onPageReadyChanged(pageReady) {
                 if (pageReady) {
                     this._onPageLoaded();
                 }
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _onNeonAnimationFinish: function(event) {
-
+            _onNeonAnimationFinish(event) {
                 switch (event.detail.activeList) {
                     case 'roles':
                         this._rolesVisible = false;
                         this._showContacts();
                         break;
-
                     case 'contacts':
                         this._contactsVisible = false;
                         this._showRoles();
                         break;
-
                     default:
                         return false;
 
                 }
-            },
+            }
 
-            _onAccountsLoadFinished: function() {
+            _onAccountsLoadFinished() {
                 this._rolesLoaded = true;
-            },
+            }
 
-            _onContactsLoadFinished: function() {
+            _onContactsLoadFinished() {
                 this._contactsLoaded = true;
-            },
+            }
 
-            _filterByTermAction: function(event) {
+            _filterByTermAction(event) {
                 var term = event.detail.term;
 
                 this.$.appscoComplianceReportRoles.filterByTerm(term);
                 this.$.appscoComplianceReportContacts.filterByTerm(term);
-            },
+            }
 
-            _filterByAssigneeTypeAction: function(event) {
-
+            _filterByAssigneeTypeAction(event) {
                 switch (event.detail.type) {
-
                     case 'users':
                         this._hideContacts();
                         break;
-
                     case 'contacts':
                         this._hideRoles();
                         break;
-
                     case 'all':
                         this._showRoles();
                         this._showContacts();
                         break;
-
                     default:
                         return false;
                 }
-            },
+            }
 
-            _filterByGroupAction: function(event) {
+            _filterByGroupAction(event) {
                 var group = event.detail.group;
 
                 this.$.appscoComplianceReportRoles.filterByGroup(group);
                 this.$.appscoComplianceReportContacts.filterByGroup(group);
             }
-        });
+        }
+        window.customElements.define(AppscoComplianceReportPage.is, AppscoComplianceReportPage);
     </script>
 
 </dom-module>

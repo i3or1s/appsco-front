@@ -28,11 +28,11 @@ Custom property | Description | Default
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-account-orgunits);
+                @apply --appsco-account-orgunits;
             }
             :host .orgunits {
-                @apply(--layout-vertical);
-                @apply(--appsco-orgunits);
+                @apply --layout-vertical;
+                @apply --appsco-orgunits;
             }
             :host appsco-account-orgunit-item:first-of-type {
                 border-top: none;
@@ -40,8 +40,8 @@ Custom property | Description | Default
             :host .message {
                 color: var(--secondary-text-color);
                 font-style: italic;
-                @apply(--paper-font-body2);
-                @apply(--info-message);
+                @apply --paper-font-body2;
+                @apply --info-message;
             }
         </style>
 
@@ -61,22 +61,20 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountOrgunits extends Polymer.Element {
+            static get is() { return 'appsco-account-orgunits'; }
 
-            is: 'appsco-account-orgunits',
-
-            properties: {
-
-                /**
-                 * Account
-                 */
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
                     }
-                }
+                };
             }
-        });
+        }
+        window.customElements.define(AppscoAccountOrgunits.is, AppscoAccountOrgunits);
     </script>
 </dom-module>

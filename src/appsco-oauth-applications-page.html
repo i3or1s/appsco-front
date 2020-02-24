@@ -15,6 +15,12 @@
 <link rel="import" href="components/oauth-application/appsco-oauth-applications.html">
 <link rel="import" href="components/oauth-application/appsco-oauth-application-info.html">
 <link rel="import" href="components/components/appsco-page-behavior.html">
+<link rel="import" href="components/oauth-application/appsco-oauth-applications-page-actions.html">
+
+<link rel="import" href="components/oauth-application/appsco-add-oauth-application.html">
+<link rel="import" href="components/oauth-application/appsco-remove-oauth-application.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
 
 <dom-module id="appsco-oauth-applications-page">
     <template>
@@ -51,7 +57,7 @@
                 --iron-icon-fill-color: var(--primary-text-color, #ffffff);
             }
             :host .application-name {
-                @apply(--paper-font-subhead);
+                @apply --paper-font-subhead;
                 font-size: 18px;
             }
         </style>
@@ -60,7 +66,7 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent" resource-active>
-            <div class="flex-vertical" resource>
+            <div class="flex-vertical" resource slot="resource">
                 <div class="resource-header">
                     oAuth Applications
                 </div>
@@ -84,7 +90,7 @@
                 </div>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-oauth-applications
                             id="oAuthApplications"
@@ -96,11 +102,12 @@
                             on-item="_onOAuthApplicationAction"
                             on-list-loaded="_onOAuthApplicationsLoaded"
                             on-list-empty="_onOAuthApplicationsEmptyLoad"
-                    ></appsco-oauth-applications>
+                            on-remove-oauth-application="_onRemoveOAuthApplicationAction">
+                    </appsco-oauth-applications>
                 </div>
             </div>
 
-            <div class="flex-vertical" info>
+            <div class="flex-vertical" info slot="info">
                 <div class="info-header flex-horizontal">
                     <div class="application-image">
                         <iron-icon icon="device:widgets"></iron-icon>
@@ -122,149 +129,177 @@
             </div>
         </appsco-content>
 
+        <appsco-remove-oauth-application
+                id="appscoRemoveOAuthApplication"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-remove-oauth-application>
+
+        <appsco-add-oauth-application
+                id="appscoAddOauthApplication"
+                authorization-token="[[ authorizationToken ]]"
+                oauth-applications-api="[[ oAuthApplicationsApi ]]"
+                company="[[ currentCompany ]]"
+                api-errors="[[ apiErrors ]]"
+                on-oauth-application-added="_onOauthApplicationAdded">
+        </appsco-add-oauth-application>
+
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-oauth-applications-page',
+        class AppscoOauthApplicationsPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-oauth-applications-page'; }
 
-            properties: {
+            static get properties() {
+                return {
+                    oAuthApplication: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                oAuthApplication: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    currentCompany: {
+                        type: Object
+                    },
+
+                    oAuthApplicationsApi: {
+                        type: String
+                    },
+
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _oAuthApplicationSelectAction: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
                     }
-                },
+                };
+            }
 
-               oAuthApplicationsApi: {
-                    type: String,
-                    value: ''
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen)'
+                ];
+            }
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+            ready() {
+                super.ready();
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                _oAuthApplicationSelectAction: {
-                    type: Number,
-                    value: 0
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
 
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen)'
-            ],
+            _addListeners() {
+                this.toolbar.addEventListener('add-oauth-application', this._onAddOAuthApplicationAction.bind(this));
+            }
 
-            attached: function() {
-                this.pageLoaded = false;
-
-                if (this.mobileScreen) {
-                    this.updateStyles();
-                }
-            },
-
-            initializePage: function() {
+            initializePage() {
                 this._setDefaultOAuthApplication();
-            },
+            }
 
-            _setDefaultOAuthApplication: function() {
+            _setDefaultOAuthApplication() {
                 this.set('oAuthApplication', this.$.oAuthApplications.getFirstItem());
-            },
+            }
 
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _onPageLoaded: function() {
+            _onPageLoaded() {
                 this.pageLoaded = true;
                 this.initializePage();
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _resetPageList: function() {
+            _resetPageList() {
                 this.$.oAuthApplications.resetAllItems();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this.hideInfo();
                 this._resetPageList();
-            },
+            }
 
-            _onOAuthApplicationsLoaded: function() {
+            _onOAuthApplicationsLoaded() {
                 this._onPageLoaded();
-            },
+            }
 
-            _onOAuthApplicationsEmptyLoad: function() {
+            _onOAuthApplicationsEmptyLoad() {
                 this._onPageLoaded();
-            },
+            }
 
-            hideInfo: function() {
+            hideInfo() {
                 this.$.appscoContent.hideSection('info');
-            },
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
-            },
+            }
 
-            reloadOAuthApplications: function() {
+            reloadOAuthApplications() {
                 this.$.oAuthApplications.reloadItems();
-            },
+            }
 
-            _onOAuthApplicationAction: function(event) {
+            _onOAuthApplicationAction(event) {
                 if (event.detail.item.activated) {
                     this.set('oAuthApplication', event.detail.item);
                     this._showInfo();
@@ -273,14 +308,37 @@
                     this.hideInfo();
                     this._setDefaultOAuthApplication();
                 }
-            },
-
-            _onInfoEditAction: function() {
-                this.fire('edit-oauth-application', {
-                    application: this.oAuthApplication
-                });
             }
-        });
 
+            _onInfoEditAction() {
+                this.dispatchEvent(new CustomEvent('edit-oauth-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.oAuthApplication
+                    }
+                }));
+            }
+
+            _onAddOAuthApplicationAction() {
+                this.shadowRoot.getElementById('appscoAddOauthApplication').open();
+            }
+
+            _onOauthApplicationAdded(event) {
+                const application = event.detail.application;
+
+                this.reloadOAuthApplications();
+                this.hideInfo();
+
+                this._notify('OAuth application ' + application.title + ' has been successfully added.');
+            }
+
+            _onRemoveOAuthApplicationAction(event) {
+                const dialog = this.shadowRoot.getElementById('appscoRemoveOAuthApplication');
+                dialog.setApplication(event.detail.application);
+                dialog.open();
+            }
+        }
+        window.customElements.define(AppscoOauthApplicationsPage.is, AppscoOauthApplicationsPage);
     </script>
 </dom-module>

@@ -9,6 +9,8 @@
 <link rel="import" href="../../components/components/appsco-form-error.html">
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-folders-remove">
     <template>
         <style>
@@ -19,23 +21,22 @@
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-confirm] {
-                @apply(--paper-dialog-confirm-button);
+                @apply --paper-dialog-confirm-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation">
@@ -48,7 +49,7 @@
                 <appsco-loader active="[[ _loader ]]"
                                loader-alt="AppsCo is processing request"
                                multi-color></appsco-loader>
-                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                 <div class="remove-container">
                     <p>Confirm removing [[ folder.name ]] from dashboard?</p>
                 </div>
@@ -63,87 +64,79 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoFoldersRemove extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-folders-remove'; }
 
-            is: 'appsco-folders-remove',
+            static get properties() {
+                return {
+                    folderItem: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
+                    _company: {
+                        type: String,
+                        value: ''
+                    },
 
-                folderItem: {
-                    type: Object,
-                    value: function () { return {}; }
-                },
+                    _errorMessage: {
+                        type: String,
+                        value: ''
+                    }
+                };
+            }
 
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _company: {
-                    type: String,
-                    value: ''
-                },
-
-                _error: {
-                    type: String
-                }
-            },
-
-            toggle: function () {
+            toggle() {
                 this._hideError();
                 this.$.dialog.toggle();
-            },
+            }
 
-            setCompany: function(company) {
+            setCompany(company) {
                 this._company = company;
-            },
+            }
 
-            setFolderItem: function(folderItem) {
+            setFolderItem(folderItem) {
                 this._hideError();
                 this.folderItem = folderItem;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
 
-            _onDeleteAction: function() {
-                var request = document.createElement('iron-request'),
+            _onDeleteAction() {
+                const request = document.createElement('iron-request'),
                     options = {
                         url: this.folderItem.self,
                         method: 'DELETE',
                         handleAs: 'json',
-                        headers: {
-                            'Authorization': 'token ' + this.authorizationToken,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                        headers: this._headers
                     };
 
                 this._loader = true;
 
                 request.send(options).then(function() {
-                    if (200 == request.status) {
+                    if (200 === request.status) {
                         this.$.dialog.close();
 
-                        /**
-                         * Fired when groups are removed.
-                         *
-                         * @event groups-removed
-                         */
-                        this.fire('folder-removed', {
-                            folder: this.folderItem
-                        });
+                        this.dispatchEvent(new CustomEvent('folder-removed', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                folder: this.folderItem
+                            }
+                        }));
                         this.set('folderItem', {});
                     }
                     this._loader = false;
@@ -153,6 +146,7 @@
                     this._loader = false;
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoFoldersRemove.is, AppscoFoldersRemove);
     </script>
 </dom-module>

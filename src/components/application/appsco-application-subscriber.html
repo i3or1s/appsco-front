@@ -32,7 +32,7 @@ Example:
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: none;
-            @apply(--appsco-application-subscriber);
+            @apply --appsco-application-subscriber;
             }
             appsco-account-image.preview-account-image {
                 --account-image: {
@@ -49,9 +49,9 @@ Example:
              };
             }
             :host .subscriber {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--shadow-elevation-2dp);
+            @apply --layout-horizontal;
+            @apply --layout-center;
+            @apply --shadow-elevation-2dp;
                 width: 100%;
                 height: 70px;
                 padding: 0 10px;
@@ -61,10 +61,10 @@ Example:
                 position: relative;
                 background-color: var(--item-background-color, #fafafa);
                 cursor: pointer;
-            @apply(--appsco-application-subscriber);
+            @apply --appsco-application-subscriber;
             }
             :host .subscriber:hover {
-            @apply(--shadow-elevation-4dp);
+            @apply --shadow-elevation-4dp;
             }
             appsco-account-image.full-account-image {
                 --account-image: {
@@ -74,8 +74,8 @@ Example:
                 --account-initials-background-color: var(--subscriber-initials-background-color);
             }
             :host .subscriber-info {
-            @apply(--layout-vertical);
-            @apply(--layout-start);
+            @apply --layout-vertical;
+            @apply --layout-start;
                 padding: 0 10px;
             }
             :host .subscriber-basic-info {
@@ -83,7 +83,7 @@ Example:
             }
             :host.subscriber-basic-info .info-label, :host .subscriber-basic-info .info-value {
                 width: 226px;
-            @apply(--paper-font-common-nowrap);
+            @apply --paper-font-common-nowrap;
             }
             :host .info-label {
                 font-size: 16px;
@@ -96,26 +96,26 @@ Example:
             }
             :host .subscriber-name {
                 display: block;
-            @apply(--paper-font-common-base);
+            @apply --paper-font-common-base;
                 font-size: 16px;
                 font-weight: 400;
                 overflow: hidden;
             }
             :host .actions {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --layout-horizontal;
+            @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
                 display: none;
             }
             :host .actions[revoke] {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply --layout-horizontal;
+            @apply --layout-center;
             }
             :host .action-button {
-            @apply(--paper-font-common-base);
-            @apply(--paper-font-common-nowrap);
+            @apply --paper-font-common-base;
+            @apply --paper-font-common-nowrap;
                 padding: 4px;
                 font-size: 12px;
                 font-weight: 400;
@@ -152,95 +152,92 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationSubscriber extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-subscriber'; }
 
-            is: 'appsco-application-subscriber',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    subscriber: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    preview: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _owner: {
+                        type: Boolean,
+                        computed: '_computeOwner(subscriber, account)'
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                /**
-                 * Item to display.
-                 *
-                 * @type {Object}
-                 */
-                subscriber: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                account: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Indicates if subscriber should be in preview mode rather then full detailed view.
-                 */
-                preview: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _owner: {
-                    type: Boolean,
-                    computed: '_computeOwner(subscriber, account)'
-                },
-
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'inline-block';
+                });
 
-            attached: function() {
-                this.style.display = 'inline-block';
-                this.playAnimation('entry');
-            },
-
-            _computeOwner: function(subscriber, account) {
-                return account && subscriber.email == account.email;
-            },
-
-            _onRevokeAccessAction: function() {
-                this.fire('subscription-revoke', {
-                    application: this.application,
-                    account: this.subscriber
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
                 });
             }
-        });
+
+            _computeOwner(subscriber, account) {
+                return account && subscriber.email === account.email;
+            }
+
+            _onRevokeAccessAction() {
+                this.dispatchEvent(new CustomEvent('subscription-revoke', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application,
+                        account: this.subscriber
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoApplicationSubscriber.is, AppscoApplicationSubscriber);
     </script>
 </dom-module>

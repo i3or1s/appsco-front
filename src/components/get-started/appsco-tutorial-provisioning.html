@@ -4,9 +4,6 @@
 <link rel="import" href="appsco-tutorial-behaviour.html">
 <link rel="import" href="../components/appsco-cover-behaviour.html">
 
-<script src="../../../bower_components/popper.js/dist/umd/popper.js"></script>
-<script src="../../../bower_components/popper.js/dist/umd/popper-utils.js"></script>
-
 <dom-module id="appsco-tutorial-provisioning">
     <template>
         <style>
@@ -19,14 +16,14 @@
                 border: 1px solid rgba(0,0,0,0.3);
 
                 padding: 10px;
-                @apply(--shadow-elevation-8dp);
+                @apply --shadow-elevation-8dp;
                 margin-left:10px;
             }
             .flex-horizontal {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             .empty {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host #step-1 a.knowledge-base-link {
                 text-decoration: none;
@@ -132,55 +129,60 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoTutorialProvisioning extends Polymer.mixinBehaviors([
+            Polymer.AppscoTutorialBehaviour,
+            Polymer.AppscoCoverBehaviour
+        ], Polymer.Element) {
+            static get is() { return 'appsco-tutorial-provisioning'; }
 
-            is: 'appsco-tutorial-provisioning',
+            static get properties() {
+                return {
+                    page: {
+                        type: String
+                    },
 
-            _readMore: function () {
-                window.open(this.readme, '_blank');
-            },
+                    tutorialTitle: {
+                        type: String,
+                        notify: true
+                    }
+                };
+            }
 
-            property: {
-                page: {
-                    type: String
-                },
+            ready() {
+                super.ready();
 
-                tutorialTitle:{
-                    type: String,
-                    notify: true
-                }
-            },
+                this.tutorialId = 'provisioning';
+                this.tutorialTitle = 'Provisioning';
+                this.description = 'Add integrations with other systems';
+                this.icon = 'icons:icons:compare-arrows';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
+            }
 
-            behaviors: [
-                Polymer.AppscoTutorialBehaviour,
-                Polymer.AppscoCoverBehaviour
-            ],
+            connectedCallback() {
+                super.connectedCallback();
 
-            pageChanged: function() {
+                this.tutorialId = 'provisioning';
+                this.tutorialTitle = 'Provisioning';
+                this.description = 'Add integrations with other systems';
+                this.icon = 'icons:icons:compare-arrows';
+                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.init();
+                });
+            }
+
+            pageChanged() {
                 if(this.page !== 'provisioning' && this.step === 3) {
                     this.reset();
                 }
-            },
+            }
 
-            ready: function() {
-                this.tutorialId = 'provisioning';
-                this.tutorialTitle = 'Provisioning';
-                this.description = 'Add integrations with other systems';
-                this.icon = 'icons:icons:compare-arrows';
-                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
-            },
+            _readMore() {
+                window.open(this.readme, '_blank');
+            }
 
-            attached: function() {
-                this.tutorialId = 'provisioning';
-                this.tutorialTitle = 'Provisioning';
-                this.description = 'Add integrations with other systems';
-                this.icon = 'icons:icons:compare-arrows';
-                this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
-
-                this.init();
-            },
-
-            getPopperConfig: function() {
+            getPopperConfig() {
                 return {
                     step1: {
                         reference: 'body',
@@ -224,8 +226,7 @@
                             placement: 'left-start'
                         },
                         popperListenerBuilder: function(tutorial) {
-                            var
-                                dialog = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog'),
+                            let dialog = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog'),
                                 cancelButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button[dialog-dismiss]'),
                                 addButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button#addAction'),
                                 cancelListener,
@@ -261,18 +262,18 @@
                         }
                     }
                 };
-            },
+            }
 
-            start: function() {
+            start() {
                 this.step = 0;
                 this.nextStep();
-            },
+            }
 
-            step2: function(index, item, doneBuildingPopperHandler) {
+            step2(index, item, doneBuildingPopperHandler) {
                 this.handleStep(index, item, doneBuildingPopperHandler);
-            },
+            }
 
-            step3: function(index, item, doneBuildingPopperHandler) {
+            step3(index, item, doneBuildingPopperHandler) {
                 this.handleStep(index, item, doneBuildingPopperHandler);
                 setTimeout(function(){
                     // Is firefox
@@ -280,15 +281,15 @@
                         this.popperStep[index + 1].popper.popper.style.left = "200px";
                     }
                 }.bind(this), 300);
-            },
+            }
 
-            step4: function(index, item, doneBuildingPopperHandler) {
+            step4(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 400);
-            },
+            }
 
-            step5: function(index, item, doneBuildingPopperHandler) {
+            step5(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
                     this
                         ._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
@@ -298,23 +299,24 @@
                         .setAttribute('no-cancel-on-esc-key', true);
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 700);
-            },
+            }
 
-            step6: function(index, item, doneBuildingPopperHandler) {
+            step6(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 500);
-            },
+            }
 
-            step7: function(index, item, doneBuildingPopperHandler) {
+            step7(index, item, doneBuildingPopperHandler) {
                 setTimeout(function() {
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 500);
-            },
+            }
 
-            _nextStep: function() {
+            _nextStep() {
                 this.currentStep.reference.click();
             }
-        });
+        }
+        window.customElements.define(AppscoTutorialProvisioning.is, AppscoTutorialProvisioning);
     </script>
 </dom-module>

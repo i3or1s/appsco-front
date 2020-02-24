@@ -23,9 +23,9 @@ Account image is used to present group in form of an image or initials if image 
                 height: 52px;
                 margin: 0;
                 border-radius: 50%;
-                background-color: var(--group-image-background-color, --account-initials-background-color);
+                background-color: var(--group-image-background-color, var(--account-initials-background-color));
                 position: relative;
-                @apply(--group-image);
+                @apply --group-image;
             }
             .group-image::shadow #sizedImgDiv, :host .group-image::shadow #placeholder {
                 border-radius: 50%;
@@ -33,7 +33,7 @@ Account image is used to present group in form of an image or initials if image 
             .group-image.preview {
                 width: 36px;
                 height: 36px;
-                @apply(--group-image-preview);
+                @apply --group-image-preview;
             }
             .group-image iron-icon {
                 width: 24px;
@@ -67,26 +67,26 @@ Account image is used to present group in form of an image or initials if image 
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyGroupImage extends Polymer.Element {
+            static get is() { return 'appsco-company-group-image'; }
 
-            is: 'appsco-company-group-image',
+            static get properties() {
+                return {
+                    group: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
-
-                group: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    preview: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
                     }
-                },
-
-                preview: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
+                };
             }
-
-        });
+        }
+        window.customElements.define(AppscoCompanyGroupImage.is, AppscoCompanyGroupImage);
     </script>
 </dom-module>

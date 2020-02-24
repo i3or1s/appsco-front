@@ -8,15 +8,17 @@
 
 <link rel="import" href="../components/appsco-form-error.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-oauth-application-authorizations">
     <template>
         <style>
             :host {
-                @apply(--appsco-oauth-application-authorizations);
+                @apply --appsco-oauth-application-authorizations;
                 display: none;
             }
             :host .info {
-                @apply(--info-message);
+                @apply --info-message;
             }
         </style>
 
@@ -26,7 +28,7 @@
                    on-error="_onGetAuthorizationsError"
                    on-response="_onGetAuthorizationsResponse"></iron-ajax>
 
-        <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+        <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
         <p class="info">
             Number of authorizations: [[ _numberOfAuthorizations ]].
@@ -35,121 +37,114 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoOAuthApplicationAuthorizations extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-oauth-application-authorizations'; }
 
-            is: 'appsco-oauth-application-authorizations',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    _getAuthorizationsApi: {
+                        type: String,
+                        computed: '_computeGetAuthorizationsApi(application)'
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _numberOfAuthorizations: {
+                        type: Number,
+                        value: 0
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+                    _errorMessage: {
+                        type: String
+                    },
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    animationConfig: {
+                        value: function () {
+                            return {
 
-                _getAuthorizationsApi: {
-                    type: String,
-                    computed: '_computeGetAuthorizationsApi(application)'
-                },
-
-                _numberOfAuthorizations: {
-                    type: Number,
-                    value: 0
-                },
-
-                _error: {
-                    type: String
-                },
-
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
                             }
                         }
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
-
-            listeners: {
-                'application-changed': '_onApplicationChanged'
-            },
-
-            attached: function() {
-                this._showApplicationAuthorizations();
-            },
-
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
                 };
-            },
+            }
 
-            _computeGetAuthorizationsApi: function(application) {
-                return application.self ? (application.self + '/authorizations-count') : '';
-            },
+            ready() {
+                super.ready();
 
-            _showError: function(message) {
-                this._error = message;
-            },
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
+                        }
+                    }
+                };
 
-            _hideError: function() {
-                this._error = '';
-            },
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._showApplicationAuthorizations();
+                    this._addListeners();
+                });
+            }
 
-            _onApplicationChanged: function() {
+            _addListeners() {
+                this.addEventListener('application-changed', this._onApplicationChanged);
+            }
+
+            _computeGetAuthorizationsApi(application) {
+                return application.self ? (application.self + '/authorizations-count') : null;
+            }
+
+            _showError(message) {
+                this._errorMessage = message;
+            }
+
+            _hideError() {
+                this._errorMessage = '';
+            }
+
+            _onApplicationChanged() {
                 this._showApplicationAuthorizations();
-            },
+            }
 
-            _showApplicationAuthorizations: function() {
+            _showApplicationAuthorizations() {
                 this.style.display = 'block';
                 this.playAnimation('entry');
-            },
+            }
 
-            _onGetAuthorizationsError: function(event) {
+            _onGetAuthorizationsError(event) {
                 this._numberOfAuthorizations = 0;
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
-            },
+            }
 
-            _onGetAuthorizationsResponse: function(event) {
-                var response = event.detail.response;
+            _onGetAuthorizationsResponse(event) {
+                const response = event.detail.response;
 
                 this._numberOfAuthorizations = (response && response.authorizations_count) ? response.authorizations_count : 0;
             }
-        });
+        }
+        window.customElements.define(AppscoOAuthApplicationAuthorizations.is, AppscoOAuthApplicationAuthorizations);
     </script>
 </dom-module>

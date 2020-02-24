@@ -12,6 +12,8 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-company-add-domain">
     <template>
         <style>
@@ -21,21 +23,21 @@
             }
             :host paper-dialog {
                 width: 670px;
-                top: 10vh;
-                @apply(--appsco-paper-dialog);
+                top: 120px;
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             .emphasized {
                 font-weight: 500;
@@ -46,7 +48,6 @@
         </style>
 
         <paper-dialog id="addCompanyDomainDialog"
-                      with-backdrop
                       entry-animation="scale-up-animation"
                       exit-animation="fade-out-animation"
                       on-iron-overlay-opened="_onDialogOpened"
@@ -61,7 +62,7 @@
             <paper-dialog-scrollable>
                 <div class="dialog-container">
 
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
                     <template is="dom-if" if="[[ _supportLink ]]">
                         <a href="https://support.appsco.com/hc/en-gb"
@@ -74,23 +75,25 @@
                         Example: <span class="emphasized">my-domain.com</span>
                     </p>
 
-                    <form is="iron-form"
-                          id="form"
-                          method="POST"
-                          action="[[ addDomainApi ]]"
-                          headers="[[ _headers ]]"
-                          on-iron-form-error="_onFormError"
-                          on-iron-form-response="_onFormResponse">
+                    <iron-form
+                            id="form"
+                            headers="[[ _headers ]]"
+                            on-iron-form-error="_onFormError"
+                            on-iron-form-response="_onFormResponse">
+                        <form
+                                method="POST"
+                                action="[[ addDomainApi ]]">
 
-                        <div class="input-container">
-                            <paper-input id="domainName"
-                                         label="Your domain"
-                                         name="company_domain[domain]"
-                                         required
-                                         auto-validate
-                                         error-message="Please enter domain name."></paper-input>
-                        </div>
-                    </form>
+                            <div class="input-container">
+                                <paper-input id="domainName"
+                                             label="Your domain"
+                                             name="company_domain[domain]"
+                                             required
+                                             auto-validate
+                                             error-message="Please enter domain name."></paper-input>
+                            </div>
+                        </form>
+                    </iron-form>
                 </div>
             </paper-dialog-scrollable>
 
@@ -106,174 +109,111 @@
         </iron-a11y-keys>
 
     </template>
+
     <script>
-        Polymer({
+        class AppscoCompanyAddDomain extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-company-add-domain'; }
 
-            is: 'appsco-company-add-domain',
-
-            properties: {
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                addDomainApi: {
-                    type: String,
-                    value: ''
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                _supportLink: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Target for iron-a11y-keys component.
-                 * Submit form on enter.
-                 */
-                _target: {
-                    type: Object,
-                    value: function() {
-                        return this.$.form
-                    }
-                }
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    addDomainApi: {
+                        type: String
+                    },
 
-            /**
-             * Opens add domain dialog.
-             */
-            open: function() {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    },
+
+                    _supportLink: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _target: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this._target = this.$.form;
+            }
+
+            open() {
                 this.$.addCompanyDomainDialog.open();
-            },
+            }
 
-            /**
-             * Closes add domain dialog.
-             */
-            close: function() {
+            close() {
                 this.$.addCompanyDomainDialog.close();
-            },
+            }
 
-            /**
-             * Toggles add domain dialog.
-             */
-            toggle: function() {
+            toggle() {
                 this.$.addCompanyDomainDialog.toggle();
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
+            _hideError() {
+                this._errorMessage = '';
                 this._hideAppscoSupportLink();
-            },
+            }
 
-            _showAppscoSupportLink: function() {
+            _showAppscoSupportLink() {
                 this._supportLink = true;
-            },
+            }
 
-            _hideAppscoSupportLink: function() {
+            _hideAppscoSupportLink() {
                 this._supportLink = false;
-            },
+            }
 
-            /**
-             * Called after dialog has been opened.
-             *
-             * @private
-             */
-            _onDialogOpened: function() {
+            _onDialogOpened() {
                 this.$.domainName.focus();
-            },
+            }
 
-            /**
-             * Called after dialog has been closed.
-             *
-             * @private
-             */
-            _onDialogClosed: function() {
+            _onDialogClosed() {
                 this._hideLoader();
                 this._hideError();
                 this._target.reset();
-            },
+            }
 
-            /**
-             * Submits form on ENTER key using iron-a11y-keys component.
-             *
-             * @private
-             */
-            _onEnter: function() {
+            _onEnter() {
                 this._submitForm();
-            },
+            }
 
-            _submitForm: function() {
-
+            _submitForm() {
                 this._hideError();
 
                 if (this._target.validate()) {
                     this._showLoader();
                     this._target.submit();
                 }
+            }
 
-            },
-
-            /**
-             * Called on form error.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onFormError: function(event) {
+            _onFormError(event) {
                 var code = event.detail.request.response.code;
                 
                 if (1497441483 == code) {
@@ -282,22 +222,19 @@
                 
                 this._showError(this.apiErrors.getError(code));
                 this._hideLoader();
-            },
-
-            /**
-             * Called after domain has been added.
-             *
-             * @param {Object} event
-             * @private
-             */
-            _onFormResponse: function(event) {
-                this.close();
-
-                this.fire('domain-added', {
-                    domain: event.detail.response
-                });
-
             }
-        });
+
+            _onFormResponse(event) {
+                this.close();
+                this.dispatchEvent(new CustomEvent('domain-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: event.detail.response
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyAddDomain.is, AppscoCompanyAddDomain);
     </script>
 </dom-module>

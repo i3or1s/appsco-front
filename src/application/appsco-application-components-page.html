@@ -21,9 +21,9 @@
             :host {
                 display: block;
                 overflow-y: auto;
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
-                @apply(--layout-justified);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
+                @apply --layout-justified;
                 font-size: 14px;
                 color: var(--primary-text-color);
 
@@ -59,18 +59,18 @@
                  };
             }
             :host([col2]) {
-                @apply(--layout-start-justified);
+                @apply --layout-start-justified;
             }
             :host > * {
                 width: calc(100% / 3 - 10px);
                 margin-bottom: 10px;
-                @apply(--layout-self-start);
+                @apply --layout-self-start;
             }
             :host([col2]) > * {
                 width: calc(100% / 2 - 10px);
             }
             :host .details-subscribers, :host .security-autologin {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
             }
             appsco-application-settings-card {
                 --appsco-application-icons-color: var(--app-secondary-color);
@@ -130,7 +130,7 @@
                 margin-right: 0;
             }
             .message {
-                @apply(--info-message);
+                @apply --info-message;
             }
         </style>
 
@@ -228,112 +228,109 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationComponentsPage extends Polymer.mixinBehaviors([Polymer.NeonSharedElementAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-application-components-page'; }
 
-            is: 'appsco-application-components-page',
-
-            properties: {
-
-                col2: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Selected application from search list.
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    col2: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
                     },
-                    notify: true,
-                    observer: '_onApplicationChanged'
-                },
 
-                _isUnPwAuthType: {
-                    type: Boolean,
-                    computed: '_computeIsUnPwAuthType(application)'
-                },
+                    /**
+                     * Indicates if it is medium screen size.
+                     * It uses iron-media-query.
+                     */
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _autologinUnavailable: {
-                    type: Boolean,
-                    value: false
-                },
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _autologinItem: {
-                    type: Boolean,
-                    value: false
-                },
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'cascaded-animation',
-                                animation: 'fade-in-animation',
-                                nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
-                                nodeDelay: 50,
-                                timing: {
-                                    delay: 200,
-                                    duration: 100
-                                }
-                            },
-                            'exit': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                fromPage: this
-                            }, {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }]
-                        }
+                    /**
+                     * Selected application from search list.
+                     */
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true,
+                        observer: '_onApplicationChanged'
+                    },
+
+                    _isUnPwAuthType: {
+                        type: Boolean,
+                        computed: '_computeIsUnPwAuthType(application)'
+                    },
+
+                    _autologinUnavailable: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _autologinItem: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                }
-            },
+                };
+            }
 
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
+            ready(){
+                super.ready();
 
-            _computeIsUnPwAuthType: function (application) {
+                this.animationConfig = {
+                    'entry': {
+                        name: 'cascaded-animation',
+                        animation: 'fade-in-animation',
+                        nodes: Polymer.dom(this.root).querySelectorAll('paper-card'),
+                        nodeDelay: 50,
+                        timing: {
+                            delay: 200,
+                            duration: 100
+                        }
+                    },
+                    'exit': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        fromPage: this
+                    }, {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }]
+                };
+            }
+
+            _computeIsUnPwAuthType(application) {
                 var isUnpw =
                     application.auth_type &&
                     (application.auth_type === 'unpw' || application.auth_type === 'item')
                 ;
                 this.col2 = !isUnpw;
                 return isUnpw;
-            },
+            }
 
-            _setSharedElement: function(target) {
+            _setSharedElement(target) {
 
                 while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
                     target = target.parentNode;
@@ -347,38 +344,39 @@
                 this.sharedElements = {
                     'hero': target
                 };
-            },
+            }
 
-            _onApplicationChanged: function() {
+            _onApplicationChanged() {
                 this._autologinUnavailable = false;
                 this._autologinItem = this.application.auth_type == 'item';
-            },
+            }
 
-            _onManageApplicationSettings: function(event) {
+            _onManageApplicationSettings(event) {
                 this._setSharedElement(event.target);
-                this.fire('application-settings');
-            },
+                this.dispatchEvent(new CustomEvent('application-settings', { bubbles: true, composed: true }));
+            }
 
-            _onAllSubscribers: function(event) {
+            _onAllSubscribers(event) {
                 this._setSharedElement(event.target);
-                this.fire('all-subscribers');
-            },
+                this.dispatchEvent(new CustomEvent('all-subscribers', { bubbles: true, composed: true }));
+            }
 
-            _onAllLog: function(event) {
+            _onAllLog(event) {
                 this._setSharedElement(event.target);
-                this.fire('all-log');
-            },
+                this.dispatchEvent(new CustomEvent('all-log', { bubbles: true, composed: true }));
+            }
 
-            _onAutologinUnavailable: function() {
+            _onAutologinUnavailable() {
                 this._autologinUnavailable = true;
-            },
+            }
 
-            _onAutologinChanged: function() {
+            _onAutologinChanged() {
                 this._autologinItem = !this._autologinItem;
 
                 this.$.appscoApplicationLog.load();
             }
-        });
+        }
+        window.customElements.define(AppscoApplicationComponentsPage.is, AppscoApplicationComponentsPage);
     </script>
 </dom-module>
 

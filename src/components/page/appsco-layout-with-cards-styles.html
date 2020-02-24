@@ -8,10 +8,10 @@
                 display: block;
                 padding: 10px;
                 overflow-y: auto;
-                @apply(--appsco-layout-with-cards);
+                @apply --appsco-layout-with-cards;
 
                 --paper-card: {
-                    @apply(--layout-vertical);
+                    @apply --layout-vertical;
                     box-sizing: border-box;
                 };
                 --paper-card-content: {
@@ -23,7 +23,10 @@
                     border-color: var(--divider-color);
                 };
                 --paper-card-header-text: {
-                    padding: 8px 16px;
+                    padding-bottom: 8px;
+                    padding-top: 8px;
+                    padding-left: 16px;
+                    padding-right: 16px;
                     font-size: 18px;
                     color: var(--primary-text-color);
                     border-bottom: 1px solid var(--divider-color);
@@ -42,8 +45,8 @@
                 color: var(--primary-text-color);
             }
             :host .cols-layout {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-wrap;
             }
             :host .cols-layout > * {
                 width: 100%;

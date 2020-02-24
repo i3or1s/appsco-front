@@ -20,17 +20,35 @@
 <link rel="import" href="components/application/company/appsco-company-resources.html">
 <link rel="import" href="components/components/appsco-page-behavior.html">
 <link rel="import" href="components/components/appsco-list-observer-behavior.html">
+<link rel="import" href="applications/appsco-resources-page-actions.html">
+
+<link rel="import" href="components/application/company/appsco-company-application-add.html">
+<link rel="import" href="components/application/company/appsco-company-sso-application-add.html">
+<link rel="import" href="components/application/company/appsco-company-application-remove.html">
+<link rel="import" href="components/resource/appsco-share-resource.html">
+<link rel="import" href="components/application/appsco-import-resources.html">
+<link rel="import" href="applications/appsco-dialog-application-company-add.html">
+<link rel="import" href="components/application/company/appsco-company-resource-settings-dialog.html">
+
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
 
 <dom-module id="appsco-resources-page">
     <template>
         <style include="appsco-page-styles">
             :host {
-
+                --paper-dropdown-menu-icon: {
+                    color: var(--primary-text-color);
+                    width: 22px;
+                    height: 22px;
+                };
+                --item-basic-info: {
+                    padding: 0 10px;
+                };
                 --application-log-item: {
                      padding-bottom: 6px;
                      font-size: 14px;
                 };
-
                 --application-details-label: {
                     font-size: 12px;
                 };
@@ -61,7 +79,7 @@
             }
             :host .details-log paper-tabs {
                 height: 32px;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
                 color: var(--primary-text-color);
             }
             :host div[info] .info-details-section {
@@ -70,7 +88,7 @@
             }
             .tab-content {
                 margin-top: 20px;
-                @apply(--paper-tabs-content-style);
+                @apply --paper-tabs-content-style;
             }
             :host .info-actions > .view-button {
                 margin-right: 1px;
@@ -106,7 +124,7 @@
         <appsco-content id="appscoContent" resource-active>
 
             <template is="dom-if" if="[[ !resourceAdmin ]]">
-                <div class="flex-vertical" resource>
+                <div class="flex-vertical" resource slot="resource">
                     <div class="resource-header">
                         Groups
                     </div>
@@ -128,7 +146,7 @@
                 </div>
             </template>
 
-            <div content-top>
+            <div content-top slot="content-top">
                 <div class="content-top-header">
                     Additional options
                 </div>
@@ -164,7 +182,7 @@
                 </template>
             </div>
 
-            <div content>
+            <div content slot="content">
                 <div class="content-container">
                     <appsco-company-resources
                             id="appscoResources"
@@ -179,6 +197,7 @@
                             resource-admin="[[ resourceAdmin ]]"
                             on-item="_onResourceAction"
                             on-select-item="_onResourceSelectAction"
+                            on-resource-settings="_onEditSharedApplication"
                             on-edit-item="_onResourceEditAction"
                             on-items-removed="_onResourcesRemoved"
                             on-list-loaded="_pageLoaded"
@@ -189,7 +208,7 @@
             </div>
 
             <template is="dom-if" if="[[ !resourceAdmin ]]" restamp>
-                <div class="flex-vertical" info>
+                <div class="flex-vertical" info slot="info">
                     <div class="info-header flex-horizontal">
                         <appsco-application-info class="flex"
                                                  application="[[ resource ]]"
@@ -256,249 +275,340 @@
 
         </appsco-content>
 
+        <appsco-company-application-remove
+                id="appscoCompanyApplicationsRemove"
+                applications="[[ _selectedApplications ]]"
+                authorization-token="[[ authorizationToken ]]"
+                company-api="[[ companyApi ]]"
+                api-errors="[[ apiErrors ]]"
+                on-applications-remove-failed="_onApplicationsRemoveFailed">
+        </appsco-company-application-remove>
+
+        <appsco-company-application-add
+                id="appscoCompanyApplicationsAdd"
+                authorization-token="[[ authorizationToken ]]"
+                applications-template-api="[[ applicationsTemplateApi ]]"
+                add-application-api="[[ companyApplicationsApi ]]"
+                link="[[ link ]]"
+                item="[[ item ]]"
+                on-application-added="_onCompanyApplicationAdded"
+                on-application-claims-updated="_onCompanyApplicationClaimsUpdated">
+        </appsco-company-application-add>
+
+        <appsco-company-sso-application-add
+                id="appscoCompanySSOApplicationsAdd"
+                authorization-token="[[ authorizationToken ]]"
+                applications-template-api="[[ applicationsTemplateApi ]]"
+                add-application-api="[[ companyApplicationsApi ]]"
+                link="[[ link ]]"
+                item="[[ item ]]"
+                on-application-added="_onCompanyApplicationAdded"
+                on-application-claims-updated="_onCompanyApplicationClaimsUpdated">
+        </appsco-company-sso-application-add>
+
+        <appsco-share-resource
+                id="appscoShareResource"
+                authorization-token="[[ authorizationToken ]]"
+                get-roles-api="[[ companyRolesApi ]]"
+                get-contacts-api="[[ companyContactsApi ]]"
+                get-groups-api="[[ groupsApi ]]"
+                api-errors="[[ apiErrors ]]">
+        </appsco-share-resource>
+
+        <appsco-import-resources
+                id="appscoImportResources"
+                authorization-token="[[ authorizationToken ]]"
+                import-api="[[ companyImportResourcesApi ]]"
+                on-import-finished="_onImportCompanyResourcesFinished">
+        </appsco-import-resources>
+
+        <appsco-dialog-application-company-add
+                id="appscoDialogApplicationCompanyAdd"
+                authorization-token="[[ authorizationToken ]]"
+                add-application-api="[[ companyApplicationsApi ]]"
+                on-application-added="_onCompanyApplicationAdded"
+                on-application-claims-updated="_onCompanyApplicationClaimsUpdated">
+        </appsco-dialog-application-company-add>
+
+        <appsco-company-resource-settings-dialog
+                id="appscoCompanyResourceSettingsDialog"
+                account="[[ account ]]"
+                authorization-token="[[ authorizationToken ]]"
+                domain="[[ domain ]]">
+        </appsco-company-resource-settings-dialog>
+
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-resources-page',
+        class AppscoResourcesPage extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimatableBehavior,
+            Polymer.AppscoPageBehavior,
+            Polymer.AppscoListObserverBehavior,
+            Appsco.PageMixin,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-resources-page'; }
 
-            properties: {
-
-                resource: {
-                    type: Object,
-                    value: function() {
-                        return {};
+            static get properties() {
+                return {
+                    resource: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        notify: true
                     },
-                    notify: true
-                },
 
-                account: {
-                    type: Object,
-                    value: function () {
-                        return {};
+                    account: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    item: {
+                        type: Object
+                    },
+
+                    link: {
+                        type: Object
+                    },
+
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    resourceAdmin: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _orgUnits: {
+                        type: Array,
+                        value: function () {
+                            return [];
+                        }
+                    },
+
+                    _bulkActions: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+
+                    _infoShown: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _selectedTab: {
+                        type: Number
+                    },
+
+                    companyResourcesApi: {
+                        type: String
+                    },
+
+                    companyApi: {
+                        type: String
+                    },
+
+                    getCompanyIdpConfigListApi: {
+                        type: String
+                    },
+
+                    applicationsTemplateApi: {
+                        type: String
+                    },
+
+                    companyApplicationsApi: {
+                        type: String
+                    },
+
+                    companyRolesApi: {
+                        type: String
+                    },
+
+                    companyContactsApi: {
+                        type: String
+                    },
+
+                    companyImportResourcesApi: {
+                        type: String
+                    },
+
+                    domain: {
+                        type: String
+                    },
+
+                    _hasSamlIdp: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _resourceSelectAction: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    groupsApi: {
+                        type: String
+                    },
+
+                    _selectedFilter: {
+                        type: Number,
+                        value: 0,
+                        observer: '_onSelectedFilterChanged'
+                    },
+
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_onPageConfigChanged'
                     }
-                },
+                };
+            }
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            static get observers() {
+                return [
+                    '_getHasSamlIdpRequest(getCompanyIdpConfigListApi, authorizationToken)',
+                    '_updateScreen(mobileScreen, tabletScreen)',
+                    '_hideFilters(mobileScreen)'
+                ];
+            }
 
-                resourceAdmin: {
-                    type: Boolean,
-                    value: false
-                },
+            ready() {
+                super.ready();
 
-                _orgUnits: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-
-                _bulkActions: {
-                    type: Boolean,
-                    value: false,
-                    notify: true
-                },
-
-                _infoShown: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _selectedTab: {
-                    type: Number
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                computedHeaders: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Get company resources.
-                 */
-                companyResourcesApi: {
-                    type: String,
-                    value: ''
-                },
-
-                getCompanyIdpConfigListApi: {
-                    type: String,
-                    value: ''
-                },
-
-                _hasSamlIdp: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _resourceSelectAction: {
-                    type: Number,
-                    value: 0
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.pageLoaded = false;
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                },
+                };
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen) {
+                        this.updateStyles();
+                    }
+                });
 
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.set('_itemsComponent', this.$.appscoResources);
+                    this._addListeners();
+                });
+            }
 
-                groupsApi: {
-                    type: String,
-                    value: ''
-                },
+            _addListeners() {
+                this.toolbar.addEventListener('search', this._onSearchCompanyApplications.bind(this));
+                this.toolbar.addEventListener('search-clear', this._onSearchCompanyApplicationsClear.bind(this));
+                this.toolbar.addEventListener('select-all-resources', this.selectAllItems.bind(this));
+                this.toolbar.addEventListener('remove', this._onRemoveApplications.bind(this));
+                this.toolbar.addEventListener('add-item-action', this._onAddCompanyItemAction.bind(this));
+                this.toolbar.addEventListener('import-resources', this._onImportResourcesAction.bind(this));
+                this.toolbar.addEventListener('share', this._onShareResources.bind(this));
+            }
 
-                _selectedFilter: {
-                    type: Number,
-                    value: 0,
-                    observer: '_onSelectedFilterChanged'
-                },
-
-                pageConfig: {
-                    type: Object,
-                    value: function() { return {}; },
-                    observer: '_onPageConfigChanged'
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior,
-                Polymer.AppscoPageBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_getHasSamlIdpRequest(getCompanyIdpConfigListApi, authorizationToken)',
-                '_updateScreen(mobileScreen, tabletScreen)',
-                '_hideFilters(mobileScreen)'
-            ],
-
-            attached: function() {
-                this.pageLoaded = false;
-                this.set('_itemsComponent', this.$.appscoResources);
-
-                if (this.mobileScreen || this.tabletScreen) {
-                    this.updateStyles();
-                }
-
-            },
-
-            _updateScreen: function(mobile, tablet) {
+            _updateScreen(mobile, tablet) {
                 this.updateStyles();
-            },
+            }
 
-            _hideFilters: function(mobile) {
+            _hideFilters(mobile) {
                 if (mobile) {
                     this.hideResource();
                 }
-            },
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            initializePage: function() {
+            initializePage() {
                 this.setDefaultResource();
                 this._getHasSamlIdpRequest(this.getCompanyIdpConfigListApi, this.authorizationToken);
-            },
+            }
 
-            pageSelected: function () {
+            pageSelected () {
                 this.reloadResources();
-            },
+            }
 
-            resetPage: function() {
+            resetPage() {
                 this._deselectAllItems();
                 this.$.appscoResources.reset();
                 this._resetFilters();
                 this._resetPageActions();
                 this.hideInfo();
-            },
+            }
 
-            removeResourceAssignee: function(resource, assignee) {
-
+            removeResourceAssignee(resource, assignee) {
                 if (resource.alias === this.resource.alias) {
-                    this.$$('#appscoApplicationAssignees').removeAssignee(assignee);
+                    this.shadowRoot.getElementById('appscoApplicationAssignees').removeAssignee(assignee);
                 }
-            },
+            }
 
-            _onObservableItemListChange: function(event, data) {
+            _onObservableItemListChange(event, data) {
                 if(data.type === 'resources') {
                     this.setObservableType('resources-page');
                     this.populateItems(data.items);
                 }
                 event.stopPropagation();
-            },
+            }
 
-            _onResourcesEmptyLoad: function() {
+            _onResourcesEmptyLoad() {
                 this.hideInfo();
                 this._pageLoaded();
-            },
+            }
 
-            _showInfo: function() {
+            _showInfo() {
                 this.$.appscoContent.showSection('info');
                 this._infoShown = true;
                 this._selectedTab = 0;
-            },
+            }
 
-            hideInfo: function() {
+            hideInfo() {
                 this.$.appscoContent.hideSection('info');
                 this._infoShown = false;
                 this.$.appscoResources.deactivateItem(this.resource);
-            },
+            }
 
-            toggleInfo: function() {
-
+            toggleInfo() {
                 if (this.$.appscoResources.getAllItems().length > 0) {
                     this.$.appscoContent.toggleSection('info');
                     this._infoShown = !this._infoShown;
@@ -512,28 +622,28 @@
                     }
                 }
 
-            },
+            }
 
-            toggleResource: function() {
+            toggleResource() {
                 this.$.appscoContent.toggleSection('resource');
-            },
+            }
 
-            hideResource: function() {
+            hideResource() {
                 this.$.appscoContent.hideSection('resource');
-            },
+            }
 
-            toggleAdditionalOptions: function() {
+            toggleAdditionalOptions() {
                 this.$.appscoContent.toggleSection('content-top');
-            },
+            }
 
-            _onPageConfigChanged: function(newValue) {
+            _onPageConfigChanged(newValue) {
                 newValue = newValue[this.getAttribute('name')];
 
                 if (!newValue) {
                     return;
                 }
 
-                var appscoResourcesComponent = this.$.appscoResources;
+                const appscoResourcesComponent = this.$.appscoResources;
 
                 if (newValue.hide_resource_section) {
                     this.$.appscoContent.hideSection('resource')
@@ -551,57 +661,51 @@
                         ascending: newValue.sort_ascending
                     });
                 }
-            },
+            }
 
-            _showBulkActions: function() {
-                this.fire('show-bulk-actions');
-            },
+            addGroup(group) {
+                this.shadowRoot.getElementById('appscoCompanyGroups').addItems([group]);
+            }
 
-            _hideBulkActions: function() {
-                this.fire('hide-bulk-actions');
-            },
+            removeGroup(group) {
+                this.shadowRoot.getElementById('appscoCompanyGroups').removeItems([group]);
+            }
 
-            _resetPageActions: function() {
-                this.fire('reset-page-actions');
-            },
-
-            addGroup: function(group) {
-                this.$$('#appscoCompanyGroups').addItems([group]);
-            },
-
-            removeGroup: function(group) {
-                this.$$('#appscoCompanyGroups').removeItems([group]);
-            },
-
-            _handleResourceInfo: function(resource) {
+            _handleResourceInfo(resource) {
                 this.set('resource', resource);
 
                 if (!this._infoShown) {
                     this._showInfo();
                 }
-            },
+            }
 
-            _onViewResourceInfo: function(event) {
+            _onViewResourceInfo(event) {
                 this._handleResourceInfo(event.detail.item);
-            },
+            }
 
-            _onResourceEditAction: function(event) {
+            _onResourceEditAction(event) {
                 this.set('resource', event.detail.item);
-                this.fire('edit-resource', {
-                    resource: event.detail.item
-                });
-            },
+                this.dispatchEvent(new CustomEvent('edit-resource', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        resource: event.detail.item
+                    }
+                }));
+            }
 
-            _onResourceInfoEdit: function() {
-                this.fire('info-edit-resource', {
-                    resource: this.resource
-                });
-            },
+            _onResourceInfoEdit() {
+                this.dispatchEvent(new CustomEvent('info-edit-resource', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        resource: this.resource
+                    }
+                }));
+            }
 
-            _onResourceAction: function(event) {
-
+            _onResourceAction(event) {
                 if (!this.resourceAdmin) {
-
                     if (event.detail.item.activated) {
                         this._onViewResourceInfo(event);
                     }
@@ -610,130 +714,124 @@
                         this.setDefaultResource();
                     }
                 }
-            },
+            }
 
-            _onResourceSelectAction: function(event) {
-                var resource = event.detail.item;
+            _onResourceSelectAction(event) {
+                const resource = event.detail.item;
 
                 clearTimeout(this._resourceSelectAction);
 
                 this._resourceSelectAction = setTimeout(function() {
-
                     if (resource.selected) {
                         this._showBulkActions();
                     }
                     else {
-                        var selectedResource = this.$.appscoResources.getFirstSelectedItem();
-
-                        for (key in selectedResource) {
+                        const selectedResource = this.$.appscoResources.getFirstSelectedItem();
+                        for (const key in selectedResource) {
                             return false;
                         }
-
                         this._hideBulkActions();
                     }
-
                 }.bind(this), 10);
 
                 this._handleItemsSelectedState();
-            },
+            }
 
-            _onShareResource: function() {
-                this.fire('share-company-resource', {
-                    resource: this.resource
-                });
-            },
+            _onShareResource() {
+                const dialog = this.shadowRoot.getElementById('appscoShareResource');
+                dialog.setResources([this.resource]);
+                dialog.toggle();
+                this._hideProgressBar();
+            }
 
-            reloadResources: function() {
+            reloadResources() {
                 this.$.appscoResources.reloadItems();
-            },
+            }
 
-            addResources: function(resources) {
+            addResources(resources) {
                 this.$.appscoResources.addItems(resources);
 
                 if (!this.resource) {
                     this.set('resource', resources[resources.length - 1]);
                 }
-            },
+            }
 
-            modifyResources: function(resources) {
+            modifyResources(resources) {
                 this.$.appscoResources.modifyItems(resources);
-            },
+            }
 
-            removeResources: function(resources) {
+            removeResources(resources) {
                 this.$.appscoResources.removeItems(resources);
                 this.setDefaultResource();
-            },
+            }
 
-            getSelectedResources: function() {
+            getSelectedResources() {
                 return this.$.appscoResources.getSelectedItems();
-            },
+            }
 
-            _onResourcesRemoved: function() {
+            _onResourcesRemoved() {
                 this._hideBulkActions();
                 this.setDefaultResource();
-            },
+            }
 
-            setDefaultResource: function() {
+            setDefaultResource() {
                 this.set('resource', this.$.appscoResources.getFirstItem());
-            },
+            }
 
-            filterResourcesByTerm: function(term) {
+            filterResourcesByTerm(term) {
                 this.$.appscoResources.filterByTerm(term);
-            },
+            }
 
-            resetListFilters: function() {
+            resetListFilters() {
                 this._resetFilters();
-                this.$$('#appscoSearch').reset();
+                this.shadowRoot.getElementById('appscoSearch').reset();
                 this._resetPageActions();
-            },
+            }
 
-            _onSelectedFilterChanged: function() {
-
+            _onSelectedFilterChanged() {
                 if (this.pageLoaded) {
                     this.resetPage();
                 }
-            },
+            }
 
-            _resetFilters: function() {
-
-                if (this.$$('#appscoCompanyGroups')) {
-                    this.$$('#appscoCompanyGroups').reset();
+            _resetFilters() {
+                if (this.shadowRoot.getElementById('appscoCompanyGroups')) {
+                    this.shadowRoot.getElementById('appscoCompanyGroups').reset();
                 }
-            },
+            }
 
-            _searchGroups: function(term) {
-                this.$$('#appscoCompanyGroups').filterByTerm(term);
-            },
+            _searchGroups(term) {
+                this.shadowRoot.getElementById('appscoCompanyGroups').filterByTerm(term);
+            }
 
-            _onSearchGroups: function(event) {
+            _onSearchGroups(event) {
                 this._searchGroups(event.detail.term);
-            },
+            }
 
-            _onSearchGroupsClear: function() {
-                this.$$('#appscoSearch').reset();
+            _onSearchGroupsClear() {
+                this.shadowRoot.getElementById('appscoSearch').reset();
                 this._searchGroups('');
-            },
+            }
 
-            _loadResourcesForGroup: function(group) {
+            _loadResourcesForGroup(group) {
                 this.$.appscoResources.filterByGroup(group);
-            },
+            }
 
-            _onGroupSelected: function(event) {
+            _onGroupSelected(event) {
                 this._loadResourcesForGroup(event.detail.item);
-            },
+            }
 
-            _onEditAdditionalOptionsAction: function() {
-                this.fire('edit-additional-options');
-            },
+            _onEditAdditionalOptionsAction() {
+                this.dispatchEvent(new CustomEvent('edit-additional-options', { bubbles: true, composed: true }));
+            }
 
-            _getHasSamlIdpRequest: function(api, token) {
-
+            _getHasSamlIdpRequest(api, token) {
                 if (!api || !token) {
                     this._hasSamlIdp = false;
                     return false;
                 }
 
-                var request = document.createElement('iron-request'),
+                const request = document.createElement('iron-request'),
                     options = {
                         url: api,
                         method: 'GET',
@@ -749,6 +847,122 @@
                     this._hasSamlIdp = false;
                 }.bind(this));
             }
-        });
+
+            _filterCompanyApplicationsByTerm(term) {
+                this._showProgressBar();
+                this.filterResourcesByTerm(term);
+            }
+
+            _onSearchCompanyApplications(event) {
+                this._filterCompanyApplicationsByTerm(event.detail.term);
+            }
+
+            _onSearchCompanyApplicationsClear() {
+                this._filterCompanyApplicationsByTerm('');
+            }
+
+            _onRemoveApplications() {
+                const selectedApplications = this.getSelectedResources();
+
+                if (selectedApplications.length > 0) {
+                    this.set('_selectedApplications', selectedApplications);
+                    this.shadowRoot.getElementById('appscoCompanyApplicationsRemove').toggle();
+                }
+            }
+
+            _onApplicationsRemoveFailed() {
+                this.set('_selectedApplications', []);
+                this._notify('An error occurred. Selected resources were not removed from the company. Please try again.');
+            }
+
+            _onAddCompanyItemAction(event) {
+                const action = event.detail.action,
+                    applicationTemplate = event.detail.applicationTemplate;
+
+                switch (action) {
+                    case 'sso-application':
+                        const ssoDialog = this.shadowRoot.getElementById('appscoCompanySSOApplicationsAdd');
+                        ssoDialog.setAction(action);
+                        ssoDialog.toggle();
+                        break;
+                    case 'catalogue-application':
+                        const catalogDialog = this.shadowRoot.getElementById('appscoCompanyApplicationsAdd')
+                        catalogDialog.setAction(action);
+                        catalogDialog.toggle();
+                        break;
+                    default:
+                        const request = document.createElement('iron-request'),
+                            options = {
+                                url: this.domain + applicationTemplate,
+                                method: 'GET',
+                                handleAs: 'json',
+                                headers: this._headers
+                            };
+
+                        request.send(options).then(function() {
+                            if (200 === request.status) {
+                                const dialog = this.shadowRoot.getElementById('appscoDialogApplicationCompanyAdd');
+                                dialog.setApplicationTemplate(request.response.application);
+                                dialog.setAction(action);
+                                dialog.toggle();
+                            }
+
+                        }.bind(this));
+                        break;
+                }
+            }
+
+            _onCompanyApplicationAdded(event) {
+                const application = event.detail.application,
+                    message = application.title + ' was successfully saved.';
+                if ('none' === application.auth_type) {
+                    this.addResources([application]);
+                }
+                this._notify(message);
+            }
+
+            _onCompanyApplicationClaimsUpdated (event) {
+                const application = event.detail.application,
+                    applications = [application];
+                this.addResources(applications);
+            }
+
+            _onShareResources() {
+                const selectedApplications = this.getSelectedResources();
+
+                if (selectedApplications.length > 0) {
+                    const dialog = this.shadowRoot.getElementById('appscoShareResource');
+                    dialog.setResources(selectedApplications);
+                    dialog.toggle();
+                    this._hideProgressBar();
+                }
+            }
+
+            _onImportResourcesAction() {
+                this.shadowRoot.getElementById('appscoImportResources').toggle();
+            }
+
+            _onImportCompanyResourcesFinished(event) {
+                const response = event.detail.response;
+                let message = response.numberOfCustomApplications + response.numberOfSecureNotes + ' resources imported out of '
+                    + response.total + ', '
+                    + response.numberOfCustomApplications + ' custom applications created, '
+                    + response.numberOfSecureNotes + ' secure notes created, '
+                    + 'number of failed imports ' + response.numberOfFailed + '.';
+
+                if (0 < response.numberOfCustomApplications || 0 < response.numberOfSecureNotes) {
+                    this.reloadResources();
+                }
+
+                this._notify(message, true);
+            }
+
+            _onEditSharedApplication(event) {
+                const dialog = this.shadowRoot.getElementById('appscoCompanyResourceSettingsDialog');
+                dialog.setApplication(event.detail.application);
+                dialog.toggle();
+            }
+        }
+        window.customElements.define(AppscoResourcesPage.is, AppscoResourcesPage);
     </script>
 </dom-module>

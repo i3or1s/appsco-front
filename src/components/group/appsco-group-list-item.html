@@ -45,14 +45,14 @@
     </template>
 
     <script>
-        Polymer({
-
-            is: 'appsco-group-list-item',
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ]
-        });
+        class AppscoGroupListItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() {
+                return 'appsco-group-list-item';
+            }
+        }
+        window.customElements.define(AppscoGroupListItem.is, AppscoGroupListItem);
     </script>
 </dom-module>

@@ -17,9 +17,9 @@
     <template>
         <style>
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
 
                 --application-action-icon-color: var(--app-primary-color);
             }
@@ -27,26 +27,26 @@
                 width: 100%;
                 padding-left: 10px;
                 border-left: 1px solid var(--divider-color);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-justified;
             }
             :host .action {
                 margin-right: 10px;
                 position: relative;
-                @apply(--layout-vertical);
-                @apply(--layout-center);
+                @apply --layout-vertical;
+                @apply --layout-center;
             }
             appsco-search {
                 max-width: 200px;
             }
             .action-button {
                 min-width: 100px;
-                @apply(--add-item-action);
+                @apply --add-item-action;
             }
             :host .new-folder-action {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 background: none;
                 border: none;
                 color: var(--primary-text-color);
@@ -62,11 +62,11 @@
                 margin-right: 5px;
             }
             :host .flex-horizontal {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .flex-none {
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host > * {
                 height: 100%;
@@ -121,111 +121,108 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyHomePageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-company-home-page-actions'; }
 
-            is: 'appsco-company-home-page-actions',
+            static get properties() {
+                return {
+                    authorizationToken: {
+                        type: String,
+                        value: ''
+                    },
 
-            properties: {
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    pageConfigApi: {
+                        type: String
+                    },
 
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    pageConfig: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
+
+                    page: {
+                        type: String,
+                        value: ''
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                pageConfigApi: {
-                    type: String,
-                    value: ''
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen)'
+                ];
+            }
 
-                pageConfig: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
+            ready() {
+                super.ready();
 
-                page: {
-                    type: String,
-                    value: ''
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 200,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 200,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen)'
-            ],
-
-            attached: function() {
-
-                if (this.mobileScreen || this.tabletScreen) {
-                    this.updateStyles();
-                }
-
-            },
-
-            resetPage: function() {
-                this.$$('#appscoSearch').reset();
-            },
-
-            _updateScreen: function(mobile, tablet) {
-                this.updateStyles();
-            },
-
-            _onAddNewFolderAction: function() {
-                this.fire('add-new-folder');
-            },
-
-            _onShowPageSettings: function(event) {
-                this.$$('#resourcePageConfigDropdown').toggle(event.target);
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    if (this.mobileScreen || this.tabletScreen) {
+                        this.updateStyles();
+                    }
+                });
             }
-        });
+
+            resetPage() {
+                this.shadowRoot.getElementById('appscoSearch').reset();
+            }
+
+            _updateScreen(mobile, tablet) {
+                this.updateStyles();
+            }
+
+            _onAddNewFolderAction() {
+                this.dispatchEvent(new CustomEvent('add-new-folder', { bubbles: true, composed: true }));
+            }
+
+            _onShowPageSettings(event) {
+                this.shadowRoot.getElementById('resourcePageConfigDropdown').toggle(event.target);
+            }
+        }
+        window.customElements.define(AppscoCompanyHomePageActions.is, AppscoCompanyHomePageActions);
     </script>
 </dom-module>
 

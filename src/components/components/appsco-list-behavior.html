@@ -23,8 +23,7 @@
             },
 
             listApi: {
-                type: String,
-                value: ''
+                type: String
             },
 
             size: {
@@ -68,8 +67,7 @@
             },
 
             _nextListPageApi: {
-                type: String,
-                value: ''
+                type: String
             },
 
             _searchListApi: {
@@ -381,9 +379,13 @@
             this.set('_allListItems', []);
             this.set('_allListItems', allListItems);
 
-            this.fire('items-removed', {
-                items: items
-            });
+            this.dispatchEvent(new CustomEvent('items-removed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    items: items
+                }
+            }));
 
             if (0 === this._listItems.length) {
                 this._showMessage('You have removed all ' + this._typeDisplay + 's from company.');
@@ -563,7 +565,7 @@
                 ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
                     ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                     '')) :
-                '';
+                null;
         },
 
         _computeSearchListApi: function(listApi, term, sort) {
@@ -572,7 +574,7 @@
                 ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
                     ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                     '')) :
-                '';
+                null;
         },
 
         _computeNextPageListApi: function(nextPageApi, size, sort) {
@@ -581,7 +583,7 @@
                 ((sort && sort.orderBy && 'undefined' !== typeof sort.ascending) ?
                     ('&order_by=' + sort.orderBy + '&ascending=' + (sort.ascending ? 1 : 0)) :
                     '')) :
-                '';
+                null;
         },
 
         _computeTypeDisplay: function(type) {
@@ -619,34 +621,31 @@
         },
 
         _showProgressBar: function() {
-            this.fire('show-page-progress-bar');
+            this.dispatchEvent(new CustomEvent('show-page-progress-bar', { bubbles: true, composed: true }));
             
-            if (this.$$('#paperProgress')) {
-                this.$$('#paperProgress').hidden = false;
+            if (this.shadowRoot.getElementById('paperProgress')) {
+                this.shadowRoot.getElementById('paperProgress').hidden = false;
             }
         },
 
         _hideProgressBar: function() {
-
-            if (this.$$('#paperProgress')) {
+            if (this.shadowRoot.getElementById('paperProgress')) {
                 setTimeout(function() {
-                    this.$$('#paperProgress').hidden = true;
+                    this.shadowRoot.getElementById('paperProgress').hidden = true;
                 }.bind(this), 300);
             }
         },
 
         _showLoadMoreProgressBar: function() {
-
-            if (this.$$('#loadMoreProgress')) {
-                this.$$('#loadMoreProgress').hidden = false;
+            if (this.shadowRoot.getElementById('loadMoreProgress')) {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
             }
         },
 
         _hideLoadMoreProgressBar: function() {
-
-            if (this.$$('#loadMoreProgress')) {
+            if (this.shadowRoot.getElementById('loadMoreProgress')) {
                 setTimeout(function() {
-                    this.$$('#loadMoreProgress').hidden = true;
+                    this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
                 }.bind(this), 300);
             }
         },
@@ -696,12 +695,7 @@
             this._hideLoadMoreProgressBar();
             this._listEmpty = true;
 
-            /**
-             * Fired when there are no items.
-             *
-             * @event list-empty
-             */
-            this.fire('list-empty');
+            this.dispatchEvent(new CustomEvent('list-empty', { bubbles: true, composed: true }));
         },
 
         _loadItems: function() {
@@ -841,7 +835,6 @@
                     this._listEmpty = false;
 
                     itemList.forEach(function(el, index) {
-
                         this._listLoaders.push(setTimeout(function() {
                             el.activated = false;
                             el.selected = false;
@@ -852,26 +845,21 @@
 
                             this.push('_allListItems', el);
 
-                            if (index == itemListCount) {
+                            if (index === itemListCount) {
                                 this._hideProgressBar();
                                 this._hideLoadMoreProgressBar();
                                 this._setLoadMoreAction();
 
-                                /**
-                                 * Fired when items are loaded
-                                 *
-                                 * @event loaded
-                                 * @param {Object} items[]
-                                 */
-                                this.fire('list-loaded', {
-                                    items: itemList
-                                });
+                                this.dispatchEvent(new CustomEvent('list-loaded', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        items: itemList
+                                    }
+                                }));
                             }
-
                         }.bind(this), (index + 1) * 30 ));
-
                     }.bind(this));
-
                 }
                 else {
                     (itemList && !itemList.length) ?
@@ -1059,7 +1047,7 @@
                     break;
 
                 default:
-                    return '';
+                    return null;
             }
 
             return this._computeListApi(url, this.size, this._sort);
@@ -1109,7 +1097,7 @@
                 }
 
                 this.set('_filterGroup', {});
-                this.fire('filter-done');
+                this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                 return false;
             }
 
@@ -1207,7 +1195,7 @@
                     }.bind(this));
                 }
 
-                this.fire('filter-done');
+                this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
             }.bind(this));
         },
 
@@ -1237,7 +1225,7 @@
                     this._setLoadMoreAction();
                 }
 
-                this.fire('filter-done');
+                this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                 return false;
             }
 
@@ -1253,7 +1241,7 @@
                 if (this._listEmpty) {
                     this.set('_searchedListItems', []);
                     this.set('_listItems', []);
-                    this.fire('filter-done');
+                    this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
                     return false;
                 }
 
@@ -1295,7 +1283,7 @@
                     }.bind(this));
                 }
 
-                this.fire('filter-done');
+                this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
             }.bind(this));
         },
 
@@ -1343,7 +1331,7 @@
                 }
 
                 this.set('_filterOrgunit', {});
-                this.fire('filter-done');
+                this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
             }
             else {
                 var searchedListItemsLength = this._searchedListItems.length,
@@ -1429,7 +1417,7 @@
                     this._handleEmptyLoad();
                 }
 
-                this.fire('filter-done');
+                this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
             }
         },
 
@@ -1441,7 +1429,7 @@
                 this.animationConfig.entry.nodes = [];
 
                 for (var i = 0; i <= index; i++) {
-                    var addedItem = this.$$('#appscoListItem_' + i);
+                    var addedItem = this.shadowRoot.getElementById('appscoListItem_' + i);
                     this.animationConfig.entry.nodes.push(addedItem);
                 }
 

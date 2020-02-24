@@ -16,11 +16,11 @@
 <link rel="import" href="../components/appsco-list-item-styles.html">
 <link rel="import" href="../components/appsco-loader.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-integration-template-item">
     <template>
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 position: relative;
             }
@@ -35,7 +35,7 @@
                 height: 24px;
                 margin: 0;
                 position: relative;
-                @apply(--layout-flex-none);
+                @apply --layout-flex-none;
             }
             :host .template-icon {
                 width: 24px;
@@ -48,6 +48,9 @@
                 margin: auto;
 
                 --iron-icon-fill-color: var(--primary-text-color, #ffffff);
+            }
+            :host .item {
+                padding: 10px;
             }
             :host appsco-loader {
                 background-color: rgba(255, 255, 255, 0.3);
@@ -101,84 +104,72 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoIntegrationTemplateItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior,
+            Polymer.AppLocalizeBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-integration-template-item'; }
 
-            is: 'appsco-integration-template-item',
-
-            properties: {
-
-                integration: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
-
-                language: {
-                    type: String,
-                    value: 'en'
-                },
-
-                _headers: {
-                    type: String,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _itemIcon: {
-                    type: String,
-                    computed: '_computeItemIcon(item)'
-                },
-
-                _templateTitle: {
-                    type: String,
-                    computed: '_computeTemplateTitle(item, integration)'
-                },
-
-                _templateDescription: {
-                    type: String,
-                    computed: '_computeTemplateDescription(item, integration)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _errored: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior,
-                Polymer.AppLocalizeBehavior
-            ],
-
-            observers: [
-                '_updateScreen(mobileScreen, tabletScreen)'
-            ],
-
-            attached: function() {
-                this.loadResources(this.resolveUrl('data/integration-template-descriptions.json'));
-            },
-
-            _computeHeaders: function(authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                };
-            },
+                    integration: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _computeItemIcon: function(item) {
-                var icon = '',
+                    language: {
+                        type: String,
+                        value: 'en'
+                    },
+
+                    _itemIcon: {
+                        type: String,
+                        computed: '_computeItemIcon(item)'
+                    },
+
+                    _templateTitle: {
+                        type: String,
+                        computed: '_computeTemplateTitle(item, integration)'
+                    },
+
+                    _templateDescription: {
+                        type: String,
+                        computed: '_computeTemplateDescription(item, integration)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errored: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, tabletScreen)'
+                ];
+            }
+
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.loadResources(this.resolveUrl('data/integration-template-descriptions.json'));
+                });
+            }
+
+            _computeItemIcon(item) {
+                let icon = '',
                     groupSync = (-1 < item.source_pso.split('\\').pop().toLowerCase().indexOf('group'));
 
                 switch (item.source_event) {
@@ -207,9 +198,9 @@
                 }
 
                 return icon;
-            },
+            }
 
-            _computeTemplateTitle: function(item, integration) {
+            _computeTemplateTitle(item, integration) {
                 return (integration && integration.integration) ?
                     (((-1 !== integration.integration.title.toLowerCase().indexOf('azure')) ?
                         'azure' :
@@ -220,9 +211,9 @@
                         item.target_pso.split('\\').pop() :
                         item.source_pso.split('\\').pop()) + '_title') :
                     '';
-            },
+            }
 
-            _computeTemplateDescription: function(item, integration) {
+            _computeTemplateDescription(item, integration) {
                 return (integration && integration.integration) ?
                     (((-1 !== integration.integration.title.toLowerCase().indexOf('azure')) ?
                         'azure' :
@@ -233,28 +224,27 @@
                         item.target_pso.split('\\').pop() :
                         item.source_pso.split('\\').pop()) + '_description') :
                     '';
-            },
+            }
 
-            _showLoader: function() {
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function() {
+            _showError() {
                 this._errored = true;
-            },
+            }
 
-            _hideError: function() {
+            _hideError() {
                 this._errored = false;
-            },
+            }
 
-            _createIntegrationRecipe: function(template) {
-
+            _createIntegrationRecipe(template) {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         options = {
                             url: template.meta.create_recipe,
                             method: 'POST',
@@ -262,16 +252,15 @@
                             headers: this._headers,
                             body: 'integration_recipe[name]=' + encodeURIComponent(
                                 this.localize(this._templateTitle) ?
-                                this.localize(this._templateTitle) :
-                                (this.integration.name +  ' rule')) +
-                            '&integration_recipe[fromMethod]=' + encodeURIComponent(template.source_event) +
-                            '&integration_recipe[fromPSO]=' + encodeURIComponent(template.source_pso) +
-                            '&integration_recipe[toMethod]=' + encodeURIComponent(template.target_action) +
-                            '&integration_recipe[toPSO]=' + encodeURIComponent(template.target_pso)
+                                    this.localize(this._templateTitle) :
+                                    (this.integration.name + ' rule')) +
+                                '&integration_recipe[fromMethod]=' + encodeURIComponent(template.source_event) +
+                                '&integration_recipe[fromPSO]=' + encodeURIComponent(template.source_pso) +
+                                '&integration_recipe[toMethod]=' + encodeURIComponent(template.target_action) +
+                                '&integration_recipe[toPSO]=' + encodeURIComponent(template.target_pso)
                         };
 
                     request.send(options).then(function() {
-
                         if (200 === request.status) {
                             resolve(request.response);
                         }
@@ -280,12 +269,11 @@
                         reject();
                     }.bind(this));
                 }.bind(this));
-            },
+            }
 
-            _registerIntegrationWatcher: function(template) {
-
+            _registerIntegrationWatcher(template) {
                 return new Promise(function(resolve, reject) {
-                    var request = document.createElement('iron-request'),
+                    const request = document.createElement('iron-request'),
                         options = {
                             url: template.meta.activate_watcher,
                             method: 'POST',
@@ -295,40 +283,45 @@
                         };
 
                     request.send(options).then(function() {
-
                         if (200 === request.status) {
                             resolve(request.response);
                         }
-
                     }.bind(this), function() {
                         reject();
                     }.bind(this));
                 }.bind(this));
-            },
+            }
 
-            _onAddItemAction: function(event) {
-                var item = this.item;
+            _onAddItemAction(event) {
+                const item = this.item;
 
                 event.stopPropagation();
 
                 if (!item.is_existing && item.meta && item.meta.create_recipe) {
-
                     this._showLoader();
 
                     this._createIntegrationRecipe(item).then(function(response) {
                         this.item.is_existing = true;
-                        this.fire('integration-rule-added', {
-                            integration: this.integration,
-                            rule: response
-                        });
+                        this.dispatchEvent(new CustomEvent('integration-rule-added', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                integration: this.integration,
+                                rule: response
+                            }
+                        }));
 
                         if (item.is_webhook_required && item.meta &&
                             item.meta.web_hook_self && item.meta.activate_watcher) {
                             this._registerIntegrationWatcher(item).then(function(response) {
-                                this.fire('integration-webhook-registered', {
-                                    integration: this.integration,
-                                    watcher: response
-                                });
+                                this.dispatchEvent(new CustomEvent('integration-webhook-registered', {
+                                    bubbles: true,
+                                    composed: true,
+                                    detail: {
+                                        integration: this.integration,
+                                        watcher: response
+                                    }
+                                }));
 
                                 this._hideItem();
                                 this._hideError();
@@ -353,10 +346,14 @@
                     item.meta.web_hook_self && item.meta.activate_watcher) {
                     this._showLoader();
                     this._registerIntegrationWatcher(item).then(function(response) {
-                        this.fire('integration-webhook-registered', {
-                            integration: this.integration,
-                            watcher: response
-                        });
+                        this.dispatchEvent(new CustomEvent('integration-webhook-registered', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                integration: this.integration,
+                                watcher: response
+                            }
+                        }));
 
                         this._hideItem();
                         this._hideError();
@@ -367,6 +364,7 @@
                     }.bind(this));
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoIntegrationTemplateItem.is, AppscoIntegrationTemplateItem);
     </script>
 </dom-module>

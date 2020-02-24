@@ -6,6 +6,8 @@
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-authorized-app`
 Is used to represent authorized app.
@@ -37,7 +39,7 @@ Example:
                 display: none;
                 padding: 16px 0 10px 6px;
                 border-top: 1px solid var(--divider-color);
-                @apply(--account-authorized-app);
+                @apply --account-authorized-app;
 
             --paper-icon-button: {
                  width: 32px;
@@ -49,17 +51,17 @@ Example:
             :host .application {
                 position: relative;
                 padding-top: 20px;
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--authorized-app);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --authorized-app;
             }
             :host .application-info-container {
-                @apply(--layout-vertical);
-                @apply(--layout-flex);
+                @apply --layout-vertical;
+                @apply --layout-flex;
             }
             :host .application-basic {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
             }
             :host .application-date {
                 font-size: 11px;
@@ -67,20 +69,20 @@ Example:
                 top: 5px;
                 right: 6px;
                 opacity: 0.5;
-                @apply(--authorized-app-date);
+                @apply --authorized-app-date;
             }
             :host .application-icon {
                 min-width: 32px;
                 margin-right: 10px;
-                @apply(--layout-flex-none);
-                @apply(--authorized-app-icon);
+                @apply --layout-flex-none;
+                @apply --authorized-app-icon;
             }
             :host .application-info {
-                @apply(--layout-vertical);
-                @apply(--authorized-app-info);
+                @apply --layout-vertical;
+                @apply --authorized-app-info;
             }
             :host .application-title {
-                @apply(--authorized-app-title);
+                @apply --authorized-app-title;
             }
             :host .application-scope {
                 font-size: 12px;
@@ -93,8 +95,8 @@ Example:
                 margin-top: 10px;
                 font-size: 12px;
                 opacity: 0.8;
-                @apply(--layout-vertical);
-                @apply(--authorized-app-additional-info);
+                @apply --layout-vertical;
+                @apply --authorized-app-additional-info;
             }
             :host .application-description {
                 margin-top: 4px;
@@ -168,107 +170,86 @@ Example:
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccountAuthorizedApp extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-account-authorized-app'; }
 
-            is: 'appsco-account-authorized-app',
+            static get properties() {
+                return {
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    /**
+                     * Indicates if short view should be displayed.
+                     */
+                    shortView: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                /**
-                 * Application to display.
-                 *
-                 * @type {OAuthAuthorization}
-                 */
-                application: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                /**
-                 * Indicates if short view should be displayed.
-                 */
-                shortView: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'block';
+                });
 
-            attached: function() {
-                this.style.display = 'block';
-                this.playAnimation('entry');
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
 
-            /**
-             * Formats date and returns formatted date as string.
-             *
-             * @param {String} value
-             * @returns {string}
-             * @private
-             */
-            _dateFormat: function(value) {
-
+            _dateFormat(value) {
                 if (value) {
-
-                    var options = {
+                    const options = {
                         weekday: "long", year: "numeric", month: "short",
                         day: "numeric", hour: "2-digit", minute: "2-digit"
                     };
 
                     return (new Date(value)).toLocaleDateString('en', options);
                 }
-
-            },
-
-            /**
-             * Called when clicked on revoke action.
-             * Fires an event.
-             *
-             * @private
-             */
-            _onRevokeAction: function() {
-
-                /**
-                 * Fired when revoke action is tapped.
-                 *
-                 * @event revoke-authorized-application
-                 * @param {OAuthAuthorization} application Which application to revoke.
-                 */
-                this.fire('revoke-authorized-application', {
-                    application: this.application
-                });
-
             }
-        });
+
+            _onRevokeAction() {
+                this.dispatchEvent(new CustomEvent('revoke-authorized-application', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.application
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoAccountAuthorizedApp.is, AppscoAccountAuthorizedApp);
     </script>
 </dom-module>

@@ -45,11 +45,11 @@ Custom property | Description | Default
             }
             :host([resource-admin]) .item {
                 cursor: default;
-                @apply(--appsco-list-item);
+                @apply --appsco-list-item;
             }
             :host([resource-admin]) .item:hover, :host([resource-admin][activated]) .item {
-                @apply(--shadow-elevation-2dp);
-                @apply(--appsco-list-item-activated);
+                @apply --shadow-elevation-2dp;
+                @apply --appsco-list-item-activated;
             }
         </style>
 
@@ -119,93 +119,88 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyResourceItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-company-resource-item'; }
 
-            is: 'appsco-company-resource-item',
+            static get properties() {
+                return {
+                    resourceAdmin: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-            properties: {
+                    _selectable: {
+                        type: Boolean,
+                        computed: '_computeSelectableState(selectable, resourceAdmin)'
+                    },
 
-                resourceAdmin: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+                    _resourceIcon: {
+                        type: String,
+                        computed: '_computeResourceIcon(item)'
+                    },
 
-                _selectable: {
-                    type: Boolean,
-                    computed: '_computeSelectableState(selectable, resourceAdmin)'
-                },
+                    _resourceType: {
+                        type: String,
+                        computed: '_computeResourceType(item)'
+                    },
 
-                _resourceIcon: {
-                    type: String,
-                    computed: '_computeResourceIcon(item)'
-                },
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                _resourceType: {
-                    type: String,
-                    computed: '_computeResourceType(item)'
-                },
+                    displayGrid: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-                tabletScreen: {
-                   type: Boolean,
-                   value: false,
-                   reflectToAttribute: true
-                },
-
-                displayGrid: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            _computeSelectableState: function(selectable, resourceAdmin) {
+            _computeSelectableState(selectable, resourceAdmin) {
                 return (selectable && !resourceAdmin);
-            },
+            }
 
-            _computeResourceIcon: function(resource) {
-                return resource.application_url ? resource.application_url : (resource.icon_url ? resource.icon_url : '');
-            },
+            _computeResourceIcon(resource) {
+                return resource.application_url ? resource.application_url : (resource.icon_url ? resource.icon_url : null);
+            }
 
-            _computeResourceType: function(resource) {
-
+            _computeResourceType(resource) {
                 switch (resource.auth_type) {
                     case 'login':
                         return 'Login';
-
                     case 'cc':
                         return 'Credit Card';
-
                     case 'softwarelicence':
                         return 'Software Licence';
-
                     case 'passport':
                         return 'Passport';
-
                     case 'securenote':
                         return 'Secure Note';
-
                     case 'none':
                         return 'Link';
-
                     default:
                         return 'Application';
                 }
-            },
-
-            _onItemSettingsAction: function(evt) {
-                evt.preventDefault();
-                evt.bubbles = false;
-                evt.cancelBubble = true;
-                this.fire('resource-settings', {
-                    application: this.item
-                });
             }
-        });
+
+            _onItemSettingsAction(evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                this.dispatchEvent(new CustomEvent('resource-settings', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: this.item
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyResourceItem.is, AppscoCompanyResourceItem);
     </script>
 </dom-module>

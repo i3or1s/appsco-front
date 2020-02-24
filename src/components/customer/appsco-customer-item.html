@@ -12,6 +12,8 @@
 <link rel="import" href="../components/appsco-list-item-styles.html">
 <link rel="import" href="../account/appsco-account-image.html">
 
+<link rel="import" href="../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-customer-item`
 Presents customer in form of an item.
@@ -47,7 +49,7 @@ Custom property | Description | Default
                 height: 52px;
                 margin: 0;
                 border-radius: 26px;
-                background-color: var(--customer-icon-background-color, --account-initials-background-color);
+                background-color: var(--customer-icon-background-color, var(--account-initials-background-color));
                 position: relative;
             }
             :host .customer-icon {
@@ -143,141 +145,130 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCustomerItem extends Polymer.mixinBehaviors([
+            Polymer.NeonAnimationRunnerBehavior,
+            Polymer.AppscoListItemBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-customer-item'; }
 
-            is: 'appsco-customer-item',
+            static get properties() {
+                return {
+                    listApi: {
+                        type: String
+                    },
 
-            properties: {
+                    _partnerAdminsApiUrl: {
+                        type: String,
+                        computed: '_computePartnerAdminsApiUrl(item, listApi)'
+                    },
 
-                listApi: {
-                    type: String,
-                    value: ''
-                },
+                    _licencesApiUrl: {
+                        type: String,
+                        computed: '_computeLicencesApiUrl(item, listApi)'
+                    },
 
-                authorizationToken: {
-                    type: String,
-                    value: ''
-                },
+                    _partnerAdminsCount: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _headers: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
+                    _partnerAdminsLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _partnerAdminsApiUrl: {
-                    type: String,
-                    computed: '_computePartnerAdminsApiUrl(item, listApi)'
-                },
+                    _licencesCount: {
+                        type: Number,
+                        value: 0
+                    },
 
-                _licencesApiUrl: {
-                    type: String,
-                    computed: '_computeLicencesApiUrl(item, listApi)'
-                },
+                    _licencesLoaded: {
+                        type: Boolean,
+                        value: false
+                    },
 
-                _partnerAdminsCount: {
-                    type: Number,
-                    value: 0
-                },
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+                };
+            }
 
-                _partnerAdminsLoaded: {
-                    type: Boolean,
-                    value: false
-                },
+            static get observers() {
+                return [
+                    '_listenForItemInfoLoad(_partnerAdminsLoaded, _licencesLoaded)'
+                ];
+            }
 
-                _licencesCount: {
-                    type: Number,
-                    value: 0
-                },
-
-                _licencesLoaded: {
-                    type: Boolean,
-                    value: false
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior,
-                Polymer.AppscoListItemBehavior
-            ],
-
-            observers: [
-                '_listenForItemInfoLoad(_partnerAdminsLoaded, _licencesLoaded)'
-            ],
-
-            listeners: {
-                'tap': '_onItemAction'
-            },
-
-            attached: function() {
+            ready() {
+                super.ready();
 
                 if (!this.item.partner) {
                     this.item.partner = this.listApi;
                 }
-            },
 
-            reloadInfo: function() {
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('tap', this._onItemAction);
+            }
+
+            reloadInfo() {
                 this.$.getPartnerAdminsApiRequest.generateRequest();
                 this.$.getLicencesApiRequest.generateRequest();
-            },
+            }
 
-            _computeHeaders: function(authorizationToken) {
-                return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
-
-            _computePartnerAdminsApiUrl: function(customer, listApi) {
+            _computePartnerAdminsApiUrl(customer, listApi) {
                 return (customer.partner && listApi && customer.partner !== listApi) ?
                     customer.partner :
                     (customer.alias && listApi) ?
                     (listApi + '/' + customer.alias + '/partner-admins') :
-                    '';
-            },
+                    null;
+            }
 
-            _computeLicencesApiUrl: function (customer, listApi) {
+            _computeLicencesApiUrl(customer, listApi) {
                 return (customer.partner && listApi && customer.partner !== listApi) ?
                     customer.partner :
                     (customer.alias && listApi) ?
                         (listApi + '/' + customer.alias + '/licences') :
-                        '';
-            },
+                        null;
+            }
 
-            _onPartnerAdminsError: function() {
+            _onPartnerAdminsError() {
                 this._partnerAdminsCount = 0;
                 this._partnerAdminsLoaded = true;
-            },
+            }
 
-            _onPartnerAdminsResponse: function(event) {
+            _onPartnerAdminsResponse(event) {
                 var response = event.detail.response;
 
                 this._partnerAdminsCount = (response && response.meta) ? response.meta.total : 0;
                 this._partnerAdminsLoaded = true;
-            },
+            }
 
-            _onLicencesError: function() {
+            _onLicencesError() {
                 this._licencesCount = 0;
                 this._licencesLoaded = true;
-            },
+            }
 
-            _onLicencesResponse: function(event) {
-                var response = event.detail.response;
+            _onLicencesResponse(event) {
+                const response = event.detail.response;
 
                 this._licencesCount = (response && response.appscoLicences) ? response.appscoLicences : 0;
                 this._licencesLoaded = true;
-            },
+            }
 
-            _listenForItemInfoLoad: function(partnerAdminsLoaded, licencesLoaded) {
-
+            _listenForItemInfoLoad(partnerAdminsLoaded, licencesLoaded) {
                 if (this.noAutoDisplay && partnerAdminsLoaded && licencesLoaded) {
                     this._showItem();
                 }
             }
-        });
+        }
+        window.customElements.define(AppscoCustomerItem.is, AppscoCustomerItem);
     </script>
 </dom-module>

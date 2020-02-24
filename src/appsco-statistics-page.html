@@ -16,6 +16,9 @@
 <link rel="import" href="components/components/appsco-loader.html">
 <link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 
+<link rel="import" href="lib/mixins/appsco-page-mixin.html">
+<link rel="import" href="lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-statistics-page">
     <template>
         <style include="appsco-page-styles">
@@ -27,19 +30,19 @@
                 };
             }
             .one-chart {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             .two-charts {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             .one-chart .chart-container {
                 width: 100%;
-                @apply(--layout-flex);
+                @apply --layout-flex;
                 position: relative;
             }
             .two-charts .chart-container {
                 width: var(--chart-container-width);
-                @apply(--layout-flex);
+                @apply --layout-flex;
                 position: relative;
             }
             google-chart {
@@ -85,7 +88,7 @@
                 font-style: italic;
             }
             .info {
-                @apply(--info-message);
+                @apply --info-message;
                 text-align: center;
             }
             paper-dropdown-menu {
@@ -103,29 +106,29 @@
                 line-height: 18px;
             }
             :host paper-item:hover {
-                @apply(--paper-item-hover);
+                @apply --paper-item-hover;
             }
             .filter {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
                 padding-bottom: 20px;
                 position: relative;
                 box-sizing: border-box;
             }
             :host([medium-screen]) .two-charts {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
                 width: 100%;
             }
             :host([medium-screen]) .chart-container {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
             :host([tablet-screen]) .two-charts {
-                @apply(--layout-vertical);
+                @apply --layout-vertical;
                 width: 100%;
             }
             :host([tablet-screen]) .chart-container {
-                @apply(--layout-flex);
+                @apply --layout-flex;
                 width: 100%;
             }
 
@@ -136,7 +139,7 @@
                 auto
                 url="[[ _applicationSecurityApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleApplicationSecurityResponse"
                 on-error="_handleApplicationSecurityError"
         ></iron-ajax>
@@ -146,7 +149,7 @@
                 auto
                 url="[[ _userSecurityApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleUserPasswordsScoresResponse"
                 on-error="_handleUserPasswordsScoresError"
                 ></iron-ajax>
@@ -157,7 +160,7 @@
                 method="POST"
                 url="[[ _loginAttemptsApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleLoginAttemptsResponse"
                 on-error="_handleLoginAttemptsError"
         ></iron-ajax>
@@ -167,7 +170,7 @@
                 auto
                 url="[[ _twoFaApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleTwoFaResponse"
                 on-error="_handleTwoFaError"
                 ></iron-ajax>
@@ -177,7 +180,7 @@
                 auto
                 url="[[ _licenceApi ]]"
                 handle-as="json"
-                headers="[[ _computedHeaders ]]"
+                headers="[[ _headers ]]"
                 on-response="_handleLicencesResponse"
                 on-error="_handleLicencesError"
                 ></iron-ajax>
@@ -187,7 +190,7 @@
 
         <appsco-content id="appscoContent">
 
-            <div content>
+            <div content slot="content">
 
                 <div class="one-chart">
 
@@ -237,7 +240,7 @@
                                     <paper-listbox id="filterList"
                                                    class="dropdown-content"
                                                    attr-for-selected="value"
-                                                   selected="[[ _filterAccountType ]]">
+                                                   selected="[[ _filterAccountType ]]" slot="dropdown-content">
                                         <template is="dom-repeat" items="[[ _accountTypeList ]]">
                                             <paper-item value$="[[ item.value ]]"
                                                         name$="[[ item.name ]]">
@@ -416,261 +419,237 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'appsco-statistics-page',
+        class AppscoStatisticsPage extends Polymer.mixinBehaviors([
+            Polymer.IronResizableBehavior,
+            Appsco.HeadersMixin,
+            Appsco.PageMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-statistics-page'; }
 
-            behaviors: [
-                Polymer.IronResizableBehavior
-            ],
-
-            properties: {
-
-                companyApi: {
-                    type: String
-                },
-
-                authorizationToken: {
-                    type: String
-                },
-
-                /**
-                 * Computed headers.
-                 * It contains authorization token.
-                 */
-                _computedHeaders: {
-                    type: Object,
-                    computed: "_computeHeaders(authorizationToken)"
-                },
-
-                _applicationSecurityApi: {
-                    type: String,
-                    computed: '_computeApplicationSecurityApi(companyApi)'
-                },
-
-                _applicationSecurityChartLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _applicationSecurityMessage: {
-                    type: String,
-                    value: ''
-                },
-
-                _userSecurityApi: {
-                    type: String,
-                    computed: '_computeUserSecurityApi(companyApi)'
-                },
-
-                _userSecurityChartLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _userSecurityMessage: {
-                    type: String,
-                    value: ''
-                },
-
-                _loginAttemptsApi: {
-                    type: String,
-                    computed: '_computeLoginAttemptsApi(companyApi, _filterAccountType)'
-                },
-
-                _loginAttemptsChartLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _loginAttemptsMessage: {
-                    type: String,
-                    value: ''
-                },
-
-                _showLoginAttemptsExampleChart: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _accountTypeList: {
-                    type: Array,
-                    value: function () {
-                        return [
-                            {
-                                name: 'All',
-                                value: 'all'
-                            },
-                            {
-                                name: 'Users',
-                                value: 'roles'
-                            },
-                            {
-                                name: 'Contacts',
-                                value: 'contacts'
-                            }];
-                    }
-                },
-
-                _filterAccountType: {
-                    type: String,
-                    value: 'all'
-                },
-
-                _twoFaApi: {
-                    type: String,
-                    computed: '_computeTwoFaApi(companyApi)'
-                },
-
-                _twoFaChartLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _twoFaInfo: {
-                    type: String,
-                    value: ''
-                },
-
-                _twoFaTotal: {
-                    type: Number,
-                    value: 0
-                },
-
-                _twoFaMessage: {
-                    type: String,
-                    value: ''
-                },
-
-                _licenceApi: {
-                    type: String,
-                    computed: '_computeLicenceApi(companyApi)'
-                },
-
-                _licenceChartLoader: {
-                    type: Boolean,
-                    value: true
-                },
-
-                _licenceMessage: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Indicates if it is medium screen size.
-                 * It uses iron-media-query.
-                 */
-                mediumScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                tabletScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                pageLoaded: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-
-            observers: [
-                '_updateScreen(mediumScreen)'
-            ],
-
-            listeners: {
-                'iron-resize': "_onIronResize"
-            },
-
-            attached: function() {
-                this.pageLoaded = false;
-
-                this._pageLoaded();
-            },
-
-            initializePage: function() {
-                this.reloadStatistics();
-            },
-
-            resetPage: function() {
-                this._filterAccountType = 'all';
-            },
-
-            _updateScreen: function() {
-                this.updateStyles();
-            },
-
-            /**
-             * Computes authorization headers.
-             *
-             * @param {Object} authorizationToken
-             * @returns {{ Authorization: string }}
-             * @private
-             */
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken
-                }
-            },
+                    companyApi: {
+                        type: String
+                    },
 
-            _computeApplicationSecurityApi: function(companyApi) {
-                return companyApi ? companyApi + '/statistics/application-security' : '';
-            },
+                    _applicationSecurityApi: {
+                        type: String,
+                        computed: '_computeApplicationSecurityApi(companyApi)'
+                    },
 
-            _computeUserSecurityApi: function(companyApi) {
-                return companyApi ? companyApi + '/statistics/user-password-scores' : '';
-            },
+                    _applicationSecurityChartLoader: {
+                        type: Boolean,
+                        value: true
+                    },
 
-            _computeLoginAttemptsApi: function(companyApi, filterAccountType) {
+                    _applicationSecurityMessage: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _userSecurityApi: {
+                        type: String,
+                        computed: '_computeUserSecurityApi(companyApi)'
+                    },
+
+                    _userSecurityChartLoader: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _userSecurityMessage: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _loginAttemptsApi: {
+                        type: String,
+                        computed: '_computeLoginAttemptsApi(companyApi, _filterAccountType)'
+                    },
+
+                    _loginAttemptsChartLoader: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _loginAttemptsMessage: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _showLoginAttemptsExampleChart: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _accountTypeList: {
+                        type: Array,
+                        value: function () {
+                            return [
+                                {
+                                    name: 'All',
+                                    value: 'all'
+                                },
+                                {
+                                    name: 'Users',
+                                    value: 'roles'
+                                },
+                                {
+                                    name: 'Contacts',
+                                    value: 'contacts'
+                                }];
+                        }
+                    },
+
+                    _filterAccountType: {
+                        type: String,
+                        value: 'all'
+                    },
+
+                    _twoFaApi: {
+                        type: String,
+                        computed: '_computeTwoFaApi(companyApi)'
+                    },
+
+                    _twoFaChartLoader: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _twoFaInfo: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _twoFaTotal: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _twoFaMessage: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _licenceApi: {
+                        type: String,
+                        computed: '_computeLicenceApi(companyApi)'
+                    },
+
+                    _licenceChartLoader: {
+                        type: Boolean,
+                        value: true
+                    },
+
+                    _licenceMessage: {
+                        type: String,
+                        value: ''
+                    },
+
+                    mediumScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    tabletScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    pageLoaded: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_updateScreen(mediumScreen)'
+                ];
+            }
+
+            ready() {
+                super.ready();
+
+                this.pageLoaded = false;
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._pageLoaded();
+                    this._addListeners();
+                });
+            }
+
+            _addListeners() {
+                this.addEventListener('iron-resize', this._onIronResize);
+            }
+
+            initializePage() {
+                this.reloadStatistics();
+            }
+
+            resetPage() {
+                this._filterAccountType = 'all';
+            }
+
+            _updateScreen() {
+                this.updateStyles();
+            }
+
+            _computeApplicationSecurityApi(companyApi) {
+                return companyApi ? companyApi + '/statistics/application-security' : null;
+            }
+
+            _computeUserSecurityApi(companyApi) {
+                return companyApi ? companyApi + '/statistics/user-password-scores' : null;
+            }
+
+            _computeLoginAttemptsApi(companyApi, filterAccountType) {
                 return companyApi ?
                     ((companyApi + '/statistics/login-attempts') +
                     (filterAccountType ? ('?type=' + filterAccountType) : ''))
-                    : '';
-            },
+                    : null;
+            }
 
-            _computeTwoFaApi: function(companyApi) {
-                return companyApi ? companyApi + '/statistics/twofa' : '';
-            },
+            _computeTwoFaApi(companyApi) {
+                return companyApi ? companyApi + '/statistics/twofa' : null;
+            }
 
-            _computeLicenceApi: function(companyApi) {
-                return companyApi ? companyApi + '/statistics/licences' : '';
-            },
+            _computeLicenceApi(companyApi) {
+                return companyApi ? companyApi + '/statistics/licences' : null;
+            }
 
-            _pageLoaded: function() {
+            _pageLoaded() {
                 this.pageLoaded = true;
-                this.fire('page-loaded');
-            },
+                this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+            }
 
-            _showLoader: function(loader) {
+            _showLoader(loader) {
                 this.set(loader, true);
-            },
+            }
 
-            _hideLoader: function(loader) {
+            _hideLoader(loader) {
                 this.set(loader, false);
-            },
+            }
 
-            _onIronResize: function () {
+            _onIronResize () {
                 var charts = Polymer.dom(this.root).querySelectorAll('google-chart');
 
-                this.customStyle['--chart-container-width'] = '50%;';
-                this.updateStyles();
+                this.updateStyles({'--chart-container-width': '50%;'});
 
                 charts.forEach(function(chart, index) {
                     chart.redraw();
                 });
-            },
+            }
 
-            _onFilterApplicationUsageByAccountTypeAction: function(event) {
+            _onFilterApplicationUsageByAccountTypeAction(event) {
                 event.stopPropagation();
                 this._showLoader('_loginAttemptsChartLoader');
                 this._filterAccountType = event.detail.item.getAttribute('value');
-            },
+            }
 
-            reloadStatistics: function() {
+            reloadStatistics() {
                 this._showLoader('_applicationSecurityChartLoader');
                 this.$.applicationSecurityAjax.generateRequest();
 
@@ -685,9 +664,9 @@
 
                 this._showLoader('_licenceChartLoader');
                 this.$.licenceAjax.generateRequest();
-            },
+            }
 
-            _handleApplicationSecurityResponse: function(event) {
+            _handleApplicationSecurityResponse(event) {
                 var response = event.detail.response,
                     chartOptions = {
                         titlePosition: 'none',
@@ -718,14 +697,14 @@
                             easing: 'in'
                         }
                     },
-                    chart = this.$$('#applicationSecurityChart'),
+                    chart = this.shadowRoot.getElementById('applicationSecurityChart'),
                     dataApplications = ['Resource', 'Resource score', 'Configured instances'];
 
                 if (null == response || (response && !response.length)) {
                     this._applicationSecurityMessage = 'There are no configured resources. Please configure some in order to create statistics.';
 
                     setTimeout(function() {
-                        var exampleChart = this.$$('#applicationSecurityChartExample');
+                        var exampleChart = this.shadowRoot.getElementById('applicationSecurityChartExample');
 
                         exampleChart.options = chartOptions;
                         exampleChart.data = [
@@ -763,18 +742,18 @@
                         }
                     }
                 }
-            },
+            }
 
-            _handleApplicationSecurityError: function(event) {
+            _handleApplicationSecurityError(event) {
                 this._applicationSecurityMessage = 'We couldn\'t load statistics at the moment. Please try again later.';
                 this._hideLoader('_applicationSecurityChartLoader');
-            },
+            }
 
-            _onApplicationSecurityChartReady: function() {
+            _onApplicationSecurityChartReady() {
                 this._hideLoader('_applicationSecurityChartLoader');
-            },
+            }
 
-            _handleUserPasswordsScoresResponse: function(event) {
+            _handleUserPasswordsScoresResponse(event) {
                 var response = event.detail.response,
                     chartOptions = {
                         titlePosition: 'none',
@@ -805,7 +784,7 @@
                             easing: 'in'
                         }
                     },
-                    chart = this.$$('#userSecurityChart'),
+                    chart = this.shadowRoot.getElementById('userSecurityChart'),
                     dataUsers = ['User', 'Overall score', 'Number of configured resources'];
 
                 if (null == response || (response && !response.length)) {
@@ -870,7 +849,7 @@
                         return false;
                     }
                 }
-            },
+            }
 
             /**
              * Shows default user security chart in case there is no resources or resources are not configured
@@ -879,8 +858,8 @@
              * @param {Array} dataUsers
              * @private
              */
-            _showExampleUserSecurityChart: function(chartOptions, dataUsers) {
-                var exampleChart = this.$$('#userSecurityChartExample');
+            _showExampleUserSecurityChart(chartOptions, dataUsers) {
+                var exampleChart = this.shadowRoot.getElementById('userSecurityChartExample');
 
                 exampleChart.options = chartOptions;
                 exampleChart.data = [
@@ -888,19 +867,19 @@
                     ['John Doe', 56, 12],
                     ['Jane Jonson', 93, 6]
                 ];
-            },
+            }
 
-            _handleUserPasswordsScoresError: function(event) {
+            _handleUserPasswordsScoresError(event) {
                 this._userSecurityMessage = 'We couldn\'t load statistics at the moment. Please try again later.';
                 this._hideLoader('_userSecurityChartLoader');
-            },
+            }
 
-            _onUserSecurityChartReady: function() {
+            _onUserSecurityChartReady() {
                 this._hideLoader('_userSecurityChartLoader');
-            },
+            }
 
-            _drawLoginAttemptsExampleChart: function(options) {
-                var exampleChart = this.$$('#loginAttemptsChartExample'),
+            _drawLoginAttemptsExampleChart(options) {
+                var exampleChart = this.shadowRoot.getElementById('loginAttemptsChartExample'),
                     chartOptions = options ? options : {
                         titlePosition: 'none',
                         hAxis: {
@@ -952,9 +931,9 @@
 
                    exampleChart.data.push([chartDay, Math.floor(Math.random() * 21), Math.floor(Math.random() * 21)]);
                 }
-            },
+            }
 
-            _handleLoginAttemptsResponse: function(event) {
+            _handleLoginAttemptsResponse(event) {
                 var response = event.detail.response,
                     chartOptions = {
                         titlePosition: 'none',
@@ -987,7 +966,7 @@
                         },
                         focusTarget: 'category'
                     },
-                    chart = this.$$('#loginAttemptsChart'),
+                    chart = this.shadowRoot.getElementById('loginAttemptsChart'),
                     length = response ? response.length : 0,
                     chartApplications = ['Day in month'],
                     innerData = [];
@@ -1068,20 +1047,20 @@
                         chart.data.push(chartData);
                     }
                 }
-            },
+            }
 
-            _handleLoginAttemptsError: function(event) {
+            _handleLoginAttemptsError(event) {
                 this._loginAttemptsMessage = 'We couldn\'t load statistics at the moment. Please try again later.';
                 this._showLoginAttemptsExampleChart = true;
                 this._drawLoginAttemptsExampleChart();
                 this._hideLoader('_loginAttemptsChartLoader');
-            },
+            }
 
-            _onLoginAttemptsChartReady: function() {
+            _onLoginAttemptsChartReady() {
                 this._hideLoader('_loginAttemptsChartLoader');
-            },
+            }
 
-            _handleTwoFaResponse: function(event) {
+            _handleTwoFaResponse(event) {
                 var response = event.detail.response,
                     chartOptions = {
                         titleTextStyle: {
@@ -1103,12 +1082,12 @@
                             }
                         }
                     },
-                    chart = this.$$('#twoFaChart');
+                    chart = this.shadowRoot.getElementById('twoFaChart');
 
                 this._twoFaMessage = '';
                 this._twoFaInfo = '';
 
-                for (key in response) {
+                for (let key in response) {
 
                     if (response) {
 
@@ -1138,7 +1117,7 @@
                 this._twoFaMessage = 'There are no users added to the company. Please add some in order to create statistics.';
 
                 setTimeout(function() {
-                    var exampleChart = this.$$('#twoFaChartExample');
+                    var exampleChart = this.shadowRoot.getElementById('twoFaChartExample');
 
                     chartOptions.title = 'Total users: 25';
                     exampleChart.options = chartOptions;
@@ -1150,18 +1129,18 @@
                 }.bind(this), 1000);
 
                 this._hideLoader('_twoFaChartLoader');
-            },
+            }
 
-            _handleTwoFaError: function(event) {
+            _handleTwoFaError(event) {
                 this._twoFaMessage = 'We couldn\'t load statistics at the moment. Please try again later.';
                 this._hideLoader('_twoFaChartLoader');
-            },
+            }
 
-            _onTwoFaChartReady: function() {
+            _onTwoFaChartReady() {
                 this._hideLoader('_twoFaChartLoader');
-            },
+            }
 
-            _handleLicencesResponse: function(event) {
+            _handleLicencesResponse(event) {
                 var response = event.detail.response,
                     chartOptions = {
                         titleTextStyle: {
@@ -1186,9 +1165,9 @@
                             }
                         }
                     },
-                    chart = this.$$('#licenceChart');
+                    chart = this.shadowRoot.getElementById('licenceChart');
 
-                for (key in response) {
+                for (let key in response) {
                     this._licenceMessage = '';
 
                     if (response) {
@@ -1209,7 +1188,7 @@
                 this._licenceMessage = 'There are no data related to AppsCo licences. Statistics will be created when you create subscription plan.';
 
                 setTimeout(function() {
-                    var exampleChart = this.$$('#licenceChartExample');
+                    var exampleChart = this.shadowRoot.getElementById('licenceChartExample');
 
                     chartOptions.title = 'Total licences: ' + 10 + '\nActive users: ' + 5;
                     exampleChart.options = chartOptions;
@@ -1222,16 +1201,17 @@
                 }.bind(this), 1000);
 
                 this._hideLoader('_licenceChartLoader');
-            },
+            }
 
-            _handleLicencesError: function(event) {
+            _handleLicencesError(event) {
                 this._licenceMessage = 'We couldn\'t load statistics at the moment. Please try again later.';
                 this._hideLoader('_licenceChartLoader');
-            },
+            }
 
-            _onLicenceChartReady: function() {
+            _onLicenceChartReady() {
                 this._hideLoader('_licenceChartLoader');
             }
-        });
+        }
+        window.customElements.define(AppscoStatisticsPage.is, AppscoStatisticsPage);
     </script>
 </dom-module>

@@ -13,11 +13,13 @@
 <link rel="import" href="../components/components/appsco-loader.html">
 <link rel="import" href="../components/components/appsco-form-error.html">
 
+<link rel="import" href="../lib/mixins/appsco-headers-mixin.html">
+
 <dom-module id="appsco-application-compliance-page">
     <template>
         <style include="webkit-scrollbar-style">
             :host {
-                @apply(--full-page);
+                @apply --full-page;
 
                 --paper-card-header: {
                     border-bottom: 1px solid var(--divider-color);
@@ -26,21 +28,21 @@
                 --item-background-color: var(--body-background-color);
             }
             paper-card {
-                @apply(--full-page-paper-card);
+                @apply --full-page-paper-card;
 
                 --paper-card-header-text: {
                     color: var(--primary-text-color);
                 };
             }
             .page-close-action {
-                @apply(--page-close-action);
+                @apply --page-close-action;
             }
             :host .info {
                 margin-bottom: 0;
             }
             :host .submit-button {
                 margin: 20px 0 0 0;
-                @apply(--form-action);
+                @apply --form-action;
             }
         </style>
 
@@ -55,219 +57,197 @@
 
                 <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color></appsco-loader>
 
-                <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
 
-                <form is="iron-form"
-                      id="form"
-                      action="[[ _complianceUpdateApi ]]"
-                      method="POST"
-                      headers="[[ _computedHeaders ]]"
-                      on-iron-form-presubmit="_onFormPresubmit"
-                      on-iron-form-error="_onFormError"
-                      on-iron-form-response="_onFormResponse">
+                <iron-form
+                        id="form"
+                        headers="[[ _headers ]]"
+                        on-iron-form-presubmit="_onFormPresubmit"
+                        on-iron-form-error="_onFormError"
+                        on-iron-form-response="_onFormResponse">
+                    <form
+                            action="[[ _complianceUpdateApi ]]"
+                            method="POST">
 
-                <p class="info">
-                    Enter description about this resource and its purpose.
-                </p>
+                        <p class="info">
+                            Enter description about this resource and its purpose.
+                        </p>
 
-                <div class="input-container">
-                    <paper-input id="description"
-                                 name="compliance[description]"
-                                 value="[[ _descriptionValue ]]"
-                                 label="Description"
-                                 data-stripe="name"></paper-input>
-                </div>
+                        <div class="input-container">
+                            <paper-input id="description"
+                                         name="compliance[description]"
+                                         value="[[ _descriptionValue ]]"
+                                         label="Description"
+                                         data-stripe="name"></paper-input>
+                        </div>
 
-                <p class="info">
-                    Enter coma-separated user information stored by this resource.
-                </p>
+                        <p class="info">
+                            Enter coma-separated user information stored by this resource.
+                        </p>
 
-                <div class="input-container">
-                    <paper-input id="fields"
-                                 name="compliance[fields]"
-                                 value="[[ _fieldsValue ]]"
-                                 label="Fields"
-                                 data-stripe="name"></paper-input>
-                </div>
-
+                        <div class="input-container">
+                            <paper-input id="fields"
+                                         name="compliance[fields]"
+                                         value="[[ _fieldsValue ]]"
+                                         label="Fields"
+                                         data-stripe="name"></paper-input>
+                        </div>
                     </form>
+                </iron-form>
 
                 <paper-button id="submit"
                               class="submit-button"
                               on-tap="_onSaveAction">Save</paper-button>
-
             </div>
         </paper-card>
 
     </template>
 
     <script>
-        Polymer({
+        class AppscoApplicationCompliancePage extends Polymer.mixinBehaviors([
+            Polymer.NeonSharedElementAnimatableBehavior,
+            Appsco.HeadersMixin
+        ], Polymer.Element) {
+            static get is() { return 'appsco-application-compliance-page'; }
 
-            is: 'appsco-application-compliance-page',
-
-            properties: {
-
-                /**
-                 * Application
-                 */
-                application: {
-                    type: Object,
-                    value: function () {
-                        return {};
-                    },
-                    observer: '_computeValues',
-                    notify: true
-                },
-
-                apiErrors: {
-                    type: Object,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                authorizationToken: {
-                    type: String
-                },
-
-                _computedHeaders: {
-                    type: Object,
-                    computed: '_computeHeaders(authorizationToken)'
-                },
-
-                _complianceUpdateApi: {
-                    type: String,
-                    computed: '_computeComplianceUpdateApi(application)'
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                _error: {
-                    type: String
-                },
-
-                _complianceFieldsValue: {
-                    type: String,
-                    compute: '_computeComplianceFieldsValue(application)'
-                },
-
-                _descriptionValue: {
-                    type: String,
-                    value: ''
-                },
-
-                _fieldsValue: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * Animation config with hero animation.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': [{
-                                name: 'hero-animation',
-                                id: 'hero',
-                                toPage: this,
-                                timing: {
-                                    duration: 300
-                                }
-                            }, {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 500
-                                }
-                            }],
-                            'exit': {
-                                name: 'slide-right-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
-                        }
-                    }
-                },
-
-                /**
-                 * Defines shared element of hero animation.
-                 */
-                sharedElements: {
-                    value: function() {
-                        return {
-                            'hero': this.$.card
-                        }
-                    }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonSharedElementAnimatableBehavior
-            ],
-
-            _computeHeaders: function (authorizationToken) {
+            static get properties() {
                 return {
-                    'Authorization': 'token ' + authorizationToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            },
+                    application: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        },
+                        observer: '_computeValues',
+                        notify: true
+                    },
 
-            _computeComplianceUpdateApi: function(application) {
-                return application ? application.self + '/compliance' : '';
-            },
+                    apiErrors: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            _showLoader: function() {
+                    _complianceUpdateApi: {
+                        type: String,
+                        computed: '_computeComplianceUpdateApi(application)'
+                    },
+
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
+                    },
+
+                    _complianceFieldsValue: {
+                        type: String,
+                        compute: '_computeComplianceFieldsValue(application)'
+                    },
+
+                    _descriptionValue: {
+                        type: String,
+                        value: ''
+                    },
+
+                    _fieldsValue: {
+                        type: String,
+                        value: ''
+                    },
+
+                    animationConfig: {
+                        type: Object
+                    },
+
+                    sharedElements: {
+                        type: Object
+                    }
+                };
+            }
+
+            ready(){
+                super.ready();
+
+                this.animationConfig = {
+                    'entry': [{
+                        name: 'hero-animation',
+                        id: 'hero',
+                        toPage: this,
+                        timing: {
+                            duration: 300
+                        }
+                    }, {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 500
+                        }
+                    }],
+                    'exit': {
+                        name: 'slide-right-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    }
+                };
+
+                this.sharedElements = {
+                    'hero': this.$.card
+                };
+            }
+
+            _computeComplianceUpdateApi(application) {
+                return application ? application.self + '/compliance' : null;
+            }
+
+            _showLoader() {
                 this._loader = true;
-            },
+            }
 
-            _hideLoader: function() {
+            _hideLoader() {
                 this._loader = false;
-            },
+            }
 
-            _showError: function(message) {
-                this._error = message;
-            },
+            _showError(message) {
+                this._errorMessage = message;
+            }
 
-            _hideError: function() {
-                this._error = '';
-            },
+            _hideError() {
+                this._errorMessage = '';
+            }
 
-            _onBack: function() {
-                this.fire('back');
-            },
+            _onBack() {
+                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+            }
 
-            _onSaveAction: function() {
+            _onSaveAction() {
                 this.$.form.submit();
-            },
+            }
 
-            _onFormPresubmit: function() {
+            _onFormPresubmit() {
                 this._showLoader();
                 this.$.form.request.method = 'PATCH';
-            },
+            }
 
-            _onFormError: function(event) {
+            _onFormError(event) {
                 this._showError(this.apiErrors.getError(event.detail.request.response.code));
                 this._hideLoader();
-            },
+            }
 
-            _onFormResponse: function() {
+            _onFormResponse() {
                 this._hideLoader();
-                this.fire('compliance-info-updated');
-            },
+                this.dispatchEvent(new CustomEvent('compliance-info-updated', { bubbles: true, composed: true }));
+            }
 
-            _computeValues: function(newValue) {
+            _computeValues(newValue) {
                 this._descriptionValue = (newValue && newValue.compliance && newValue.compliance.description) ? newValue.compliance.description : '';
                 this._fieldsValue = (newValue && newValue.compliance && newValue.compliance.fields) ? newValue.compliance.fields: '';
             }
-
-        });
+        }
+        window.customElements.define(AppscoApplicationCompliancePage.is, AppscoApplicationCompliancePage);
     </script>
 </dom-module>
 

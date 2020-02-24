@@ -9,6 +9,8 @@
 <link rel="import" href="../../components/appsco-loader.html">
 <link rel="import" href="../../components/appsco-form-error.html">
 
+<link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+
 <!--
 `appsco-account-remove-orgunit`
 Shows dialog screen with confirmation for account removal from organization unit.
@@ -29,7 +31,7 @@ Shows dialog screen with confirmation for account removal from organization unit
             :host {
                 display: block;
                 position: relative;
-                @apply(--appsco-account-remove);
+                @apply --appsco-account-remove;
 
                 --form-error-box: {
                      margin-top: 0;
@@ -38,23 +40,22 @@ Shows dialog screen with confirmation for account removal from organization unit
             :host paper-dialog {
                 width: 670px;
                 top: 20vh;
-                @apply(--appsco-paper-dialog);
+                @apply --appsco-paper-dialog;
             }
             :host paper-dialog-scrollable > * {
-                @apply(--paper-dialog-scrollable-child);
+                @apply --paper-dialog-scrollable-child;
             }
             :host .buttons paper-button {
-                @apply(--paper-dialog-button);
+                @apply --paper-dialog-button;
             }
             :host .buttons paper-button[dialog-dismiss] {
-                @apply(--paper-dialog-dismiss-button);
+                @apply --paper-dialog-dismiss-button;
             }
             :host appsco-loader {
-                @apply(--paper-dialog-appsco-loader);
+                @apply --paper-dialog-appsco-loader;
             }
         </style>
         <paper-dialog
-                with-backdrop
                 id="dialog"
                 entry-animation="scale-up-animation"
                 exit-animation="fade-out-animation"
@@ -66,7 +67,7 @@ Shows dialog screen with confirmation for account removal from organization unit
 
             <paper-dialog-scrollable>
                 <div class="remove-container">
-                    <appsco-form-error message="[[ _error ]]"></appsco-form-error>
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
                     <p>Please confirm removal of [[ account.account.name ]] from [[ orgunit.name ]] organization unit.</p>
                 </div>
             </paper-dialog-scrollable>
@@ -79,98 +80,84 @@ Shows dialog screen with confirmation for account removal from organization unit
 
     </template>
     <script>
-        Polymer({
+        class AppscoAccountRemoveOrgunit extends Polymer.mixinBehaviors([Appsco.HeadersMixin], Polymer.Element) {
+            static get is() { return 'appsco-account-remove-orgunit'; }
 
-            is: 'appsco-account-remove-orgunit',
+            static get properties() {
+                return {
+                    account: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    orgunit: {
+                        type: Array,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-                /**
-                 * Account to remove from organization unit.
-                 */
-                account: {
-                    type: Array,
-                    value: function() {
-                        return {};
+                    _loader: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _errorMessage: {
+                        type: String
                     }
-                },
+                };
+            }
 
-                /**
-                 * Organization unit to remove from.
-                 */
-                orgunit: {
-                    type: Array,
-                    value: function() {
-                        return {};
-                    }
-                },
-
-                /**
-                 * Authorization token.
-                 */
-                authorizationToken: {
-                    type: String
-                },
-
-                _loader: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * Error message.
-                 */
-                _error: {
-                    type: String
-                }
-            },
-
-            toggle: function () {
+            toggle() {
                 this.$.dialog.open();
-            },
+            }
 
-            _onDialogClosed: function() {
-                this._error = '';
+            setOrgUnit(orgunit) {
+                this.orgunit = orgunit;
+            }
+
+            setAccount(account) {
+                this.account = account;
+            }
+
+            _onDialogClosed() {
+                this._errorMessage = '';
                 this._loader = false;
-            },
+            }
 
-            _remove: function() {
-                var appRequest = document.createElement('iron-request'),
-                        options = {
-                            url: this.orgunit.meta.remove,
-                            method: 'DELETE',
-                            handleAs: 'json',
-                            headers: {
-                                'Authorization': 'token ' + this.authorizationToken,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        };
+            _remove() {
+                const appRequest = document.createElement('iron-request'),
+                    options = {
+                        url: this.orgunit.meta.remove,
+                        method: 'DELETE',
+                        handleAs: 'json',
+                        headers: this._headers
+                    };
 
                 this._loader = true;
 
                 appRequest.send(options).then(function(request) {
                     this.$.dialog.close();
 
-                    /**
-                     * Fired when applications are deleted.
-                     *
-                     * @event application-removed-from-orgunit
-                     * @param [Array] applications
-                     */
-                    this.fire('account-removed-from-orgunit', {
-                        account: request.response,
-                        orgunit: this.orgunit
-                    });
-
+                    this.dispatchEvent(new CustomEvent('account-removed-from-orgunit', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            account: request.response,
+                            orgunit: this.orgunit
+                        }
+                    }));
                 }.bind(this), function() {
-
                     if (appRequest.status === 404) {
-                        this._error = 'This account doesn\'t belong to your company.';
+                        this._errorMessage = 'This account doesn\'t belong to your company.';
                     }
 
                     this._loader = false;
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(AppscoAccountRemoveOrgunit.is, AppscoAccountRemoveOrgunit);
     </script>
 </dom-module>

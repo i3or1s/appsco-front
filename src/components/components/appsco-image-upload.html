@@ -9,8 +9,7 @@
 
 <dom-module id="appsco-image-upload">
     <template>
-        <style include="appsco-upload-image-styles">
-        </style>
+        <style include="appsco-upload-image-styles"></style>
 
         <div class="upload-container">
 
@@ -45,66 +44,68 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoImageUpload extends Polymer.mixinBehaviors([Polymer.AppscoUploadImageBehavior], Polymer.Element) {
+            static get is() { return 'appsco-image-upload'; }
 
-            is: 'appsco-image-upload',
+            static get properties() {
+                return {
+                    image: {
+                        type: String,
+                        value: '',
+                        notify: true
+                    },
 
-            properties: {
-                image: {
-                    type: String,
-                    value: '',
-                    notify: true
-                },
+                    loaderAlt: {
+                        type: String,
+                        value: 'AppsCo is saving image'
+                    },
 
-                loaderAlt: {
-                    type: String,
-                    value: 'AppsCo is saving image'
-                },
+                    imageAlt: {
+                        type: String,
+                        value: 'AppsCo image'
+                    },
 
-                imageAlt: {
-                    type: String,
-                    value: 'AppsCo image'
-                },
+                    _imagePreview: {
+                        type: String,
+                        computed: '_computeImagePreviewClass(image)'
+                    }
+                };
+            }
 
-                _imagePreview: {
-                    type: String,
-                    computed: '_computeImagePreviewClass(image)'
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoUploadImageBehavior
-            ],
-
-            reset: function() {
+            reset() {
                 this.set('image', '');
-            },
+            }
 
-            _computeImagePreviewClass: function(image) {
+            _computeImagePreviewClass(image) {
                 return image ? 'has-image' : 'no-image';
-            },
+            }
 
-            _setNewImage: function(file) {
-                var reader = new FileReader();
+            _setNewImage(file) {
+                const reader = new FileReader();
 
                 reader.onload = function(e) {
                     this.set('image', e.target.result);
                 }.bind(this);
 
                 reader.readAsDataURL(file);
-            },
+            }
 
-            _fireChangeEvent: function(response) {
-                this.fire('image-changed', {
-                    response: JSON.parse(response)
-                });
-            },
+            _fireChangeEvent(response) {
+                this.dispatchEvent(new CustomEvent('image-changed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        response: JSON.parse(response)
+                    }
+                }));
+            }
 
-            _setStateAfterImageIsRemoved: function(response) {
+            _setStateAfterImageIsRemoved(response) {
                 this.set('image', '');
                 this._fireChangeEvent(JSON.stringify(response));
                 this._hideLoader();
             }
-        });
+        }
+        window.customElements.define(AppscoImageUpload.is, AppscoImageUpload);
     </script>
 </dom-module>

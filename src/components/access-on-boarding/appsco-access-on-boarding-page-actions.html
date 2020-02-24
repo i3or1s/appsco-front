@@ -11,9 +11,9 @@
     <template>
         <style include="shared-styles">
             :host {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-end-justified);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-end-justified;
             }
             :host paper-icon-button::shadow paper-ripple {
                 width: 150%;
@@ -34,43 +34,44 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoAccessOnBoardingPageActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+            static get is() { return 'appsco-access-on-boarding-page-actions'; }
 
-            is: 'appsco-access-on-boarding-page-actions',
+            static get properties() {
+                return {
+                    animationConfig: {
+                        type: Object
+                    }
+                };
+            }
 
-            properties: {
+            ready() {
+                super.ready();
 
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    delay: 300,
-                                    duration: 300
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            delay: 300,
+                            duration: 300
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
                         }
                     }
-                }
-            },
-
-            behaviors: [
-                Polymer.NeonAnimatableBehavior
-            ],
-
-            _onResourceAction: function() {
-                this.fire('resource-section');
+                };
             }
-        });
+
+            _onResourceAction() {
+                this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+            }
+        }
+        window.customElements.define(AppscoAccessOnBoardingPageActions.is, AppscoAccessOnBoardingPageActions);
     </script>
 </dom-module>
 

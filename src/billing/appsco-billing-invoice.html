@@ -16,8 +16,8 @@
                 display: none;
             }
             :host .invoice {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 width: 100%;
                 height: 50px;
                 padding: 10px;
@@ -29,7 +29,7 @@
                 transition: all 0.1s ease-out;
             }
             :host .invoice:hover {
-                @apply(--shadow-elevation-3dp);
+                @apply --shadow-elevation-3dp;
             }
             :host([active]) .invoice {
                 background: var(--brand-color);
@@ -37,7 +37,7 @@
                 transition: all 0.2s ease-in;
             }
             :host appsco-date-format {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
         </style>
 
@@ -51,66 +51,67 @@
 
     </template>
     <script>
-        Polymer({
+        class AppscoBillingInvoice extends Polymer.mixinBehaviors([Polymer.NeonAnimationRunnerBehavior], Polymer.Element) {
+            static get is() { return 'appsco-billing-invoice'; }
 
-            is: 'appsco-billing-invoice',
+            static get properties() {
+                return {
+                    invoice: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    active: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
 
-                invoice: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    animationConfig: {
+                        type: Object
                     }
-                },
+                };
+            }
 
-                active: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
+            ready() {
+                super.ready();
 
-                /**
-                 * Animation for loader appearance.
-                 */
-                animationConfig: {
-                    value: function() {
-                        return {
-                            'entry': {
-                                name: 'fade-in-animation',
-                                node: this,
-                                timing: {
-                                    duration: 200
-                                }
-                            },
-                            'exit': {
-                                name: 'fade-out-animation',
-                                node: this,
-                                timing: {
-                                    duration: 100
-                                }
-                            }
+                this.animationConfig = {
+                    'entry': {
+                        name: 'fade-in-animation',
+                        node: this,
+                        timing: {
+                            duration: 200
+                        }
+                    },
+                    'exit': {
+                        name: 'fade-out-animation',
+                        node: this,
+                        timing: {
+                            duration: 100
                         }
                     }
-                }
-            },
+                };
 
-            behaviors: [
-                Polymer.NeonAnimationRunnerBehavior
-            ],
+                Polymer.RenderStatus.beforeNextRender(this, function() {
+                    this.style.display = 'block';
+                });
 
-            attached: function() {
-                this.style.display = 'block';
-                this.playAnimation('entry');
-            },
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.playAnimation('entry');
+                });
+            }
 
-            select: function() {
+            select() {
                 this.active = true;
-            },
+            }
 
-            deselect: function() {
+            deselect() {
                 this.active = false;
             }
-        });
+        }
+        window.customElements.define(AppscoBillingInvoice.is, AppscoBillingInvoice);
     </script>
 </dom-module>

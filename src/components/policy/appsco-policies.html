@@ -10,13 +10,11 @@
 
 <dom-module id="appsco-policies">
     <template>
-        <style include="appsco-list-styles"></style>
-
-        <style>
+        <style include="appsco-list-styles">
             :host appsco-policy-item {
                 width: 100%;
                 margin: 0 0 10px 0;
-                @apply(--appsco-policy-item);
+                @apply --appsco-policy-item;
             }
         </style>
 
@@ -67,23 +65,23 @@
     </template>
 
     <script>
-        Polymer({
+        class AppscoPolicies extends Polymer.mixinBehaviors([
+            Polymer.AppscoListBehavior,
+            Polymer.AppscoListObserverBehavior
+        ], Polymer.Element) {
+            static get is() { return 'appsco-policies'; }
 
-            is: 'appsco-policies',
+            static get observers() {
+                return [
+                    '_observeItems(_listItems)'
+                ];
+            }
 
-            behaviors: [
-                Polymer.AppscoListBehavior,
-                Polymer.AppscoListObserverBehavior
-            ],
-
-            observers: [
-                '_observeItems(_listItems)'
-            ],
-
-            _observeItems: function(items) {
+            _observeItems(items) {
                 this.setObservableType('policies');
                 this.populateItems(items);
             }
-        });
+        }
+        window.customElements.define(AppscoPolicies.is, AppscoPolicies);
     </script>
 </dom-module>

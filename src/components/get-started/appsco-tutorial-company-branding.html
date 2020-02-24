@@ -4,9 +4,6 @@
 <link rel="import" href="appsco-tutorial-behaviour.html">
 <link rel="import" href="../components/appsco-cover-behaviour.html">
 
-<script src="../../../bower_components/popper.js/dist/umd/popper.js"></script>
-<script src="../../../bower_components/popper.js/dist/umd/popper-utils.js"></script>
-
 <dom-module id="appsco-tutorial-company-branding">
     <template>
         <style>
@@ -19,14 +16,14 @@
                 border: 1px solid rgba(0,0,0,0.3);
 
                 padding: 10px;
-                @apply(--shadow-elevation-8dp);
+                @apply --shadow-elevation-8dp;
                 margin-left:10px;
             }
             .flex-horizontal {
-                @apply(--layout-horizontal);
+                @apply --layout-horizontal;
             }
             .empty {
-                @apply(--layout-flex);
+                @apply --layout-flex;
             }
         </style>
         <div id="step-1" class="step" hidden>
@@ -83,26 +80,49 @@
         </div>
     </template>
     <script>
-        Polymer({
+        class AppscoTutorialCompanyBranding extends Polymer.mixinBehaviors([
+            Polymer.AppscoTutorialBehaviour,
+            Polymer.AppscoCoverBehaviour
+        ], Polymer.Element) {
+            static get is() { return 'appsco-tutorial-company-branding'; }
 
-            is: 'appsco-tutorial-company-branding',
+            static get properties() {
+                return {
+                    page: {
+                        type: String
+                    }
+                };
+            }
 
-            _readMore: function () {
+            ready() {
+                super.ready();
+
+                this.tutorialId = 'company_branding';
+                this.tutorialTitle = 'Company branding';
+                this.description = ' Upload logo and set company branding';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109512-Company-Branding';
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                this.tutorialId = 'company_branding';
+                this.tutorialTitle = 'Company branding';
+                this.description = ' Upload logo and set company branding';
+                this.icon = 'icons:settings';
+                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109512-Company-Branding';
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.init();
+                });
+            }
+
+            _readMore() {
                 window.open(this.readme, '_blank');
-            },
+            }
 
-            property: {
-                page: {
-                    type: String
-                }
-            },
-
-            behaviors: [
-                Polymer.AppscoTutorialBehaviour,
-                Polymer.AppscoCoverBehaviour
-            ],
-
-            pageChanged: function() {
+            pageChanged() {
                 if(this.page !== 'company' && this.step === 2) {
                     this.reset();
                 }
@@ -111,26 +131,9 @@
                         this.nextStep();
                     }.bind(this), 3000);
                 }
-            },
+            }
 
-            ready: function() {
-                this.tutorialId = 'company_branding';
-                this.tutorialTitle = 'Company branding';
-                this.description = ' Upload logo and set company branding';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109512-Company-Branding';
-            },
-
-            attached: function() {
-                this.tutorialId = 'company_branding';
-                this.tutorialTitle = 'Company branding';
-                this.description = ' Upload logo and set company branding';
-                this.icon = 'icons:settings';
-                this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109512-Company-Branding';
-                this.init();
-            },
-
-            getPopperConfig: function() {
+            getPopperConfig() {
                 return {
                     step1: {
                         reference: '* /deep/ #menuBurger',
@@ -168,26 +171,28 @@
                         }
                     },
                 };
-            },
+            }
 
-            step4: function(index, item, doneBuildingPopperHandler) {
+            step4(index, item, doneBuildingPopperHandler) {
                 // wait 400 msec for animation to finish
                 setTimeout(function() {
                     this.handleStep(index, item, doneBuildingPopperHandler);
                 }.bind(this), 400);
-            },
+            }
 
-            start: function() {
+            start() {
                 this.step = 0;
                 this.nextStep();
-            },
+            }
 
-            _nextStep: function() {
+            _nextStep() {
                 this.currentStep.reference.click();
-            },
-            _nextStep5: function() {
+            }
+
+            _nextStep5() {
                 this.nextStep();
             }
-        });
+        }
+        window.customElements.define(AppscoTutorialCompanyBranding.is, AppscoTutorialCompanyBranding);
     </script>
 </dom-module>

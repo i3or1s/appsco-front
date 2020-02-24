@@ -50,19 +50,19 @@ Custom property | Description | Default
                 position: relative;
                 background-color: var(--item-background-color, #ffffff);
                 border-radius: 3px;
-                @apply(--shadow-elevation-2dp);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --shadow-elevation-2dp;
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 transition: all 0.1s ease-out;
-                @apply(--appsco-company-idp-domain-item);
+                @apply --appsco-company-idp-domain-item;
             }
             .item:hover {
-                @apply(--shadow-elevation-4dp);
+                @apply --shadow-elevation-4dp;
             }
 
             .actions {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply --layout-horizontal;
+                @apply --layout-center;
                 position: absolute;
                 right: 4px;
                 bottom: 4px;
@@ -85,66 +85,68 @@ Custom property | Description | Default
     </template>
 
     <script>
-        Polymer({
+        class AppscoCompanyIdpSettingsCertificateItem extends Polymer.Element {
+            static get is() { return 'appsco-company-idp-settings-certificate-item'; }
 
-            is: 'appsco-company-idp-settings-certificate-item',
+            static get properties() {
+                return {
+                    certificate: {
+                        type: Object,
+                        value: function () {
+                            return {};
+                        }
+                    },
 
-            properties: {
+                    displayValue: {
+                        type: String,
+                        computed: '_computeDisplayValue(certificate)'
+                    },
 
-                /**
-                 * Domain that is to be rendered
-                 */
-                certificate: {
-                    type: Object,
-                    value: function() {
-                        return {};
+                    onRemoveIdpConfigCertificate: {
+                        type: Object,
+                        value: {}
+                    },
+
+                    mobileScreen: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+
+                    screen1000: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
                     }
-                },
+                };
+            }
 
-                displayValue: {
-                    type: String,
-                    computed: '_computeDisplayValue(certificate)'
-                },
+            static get observers() {
+                return [
+                    '_updateScreen(mobileScreen, screen1000)'
+                ];
+            }
 
-                onRemoveIdpConfigCertificate: {
-                    type: Object,
-                    value: {}
-                },
-
-                mobileScreen: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
-
-                screen1000: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                }
-
-            },
-
-            observers: [
-                '_updateScreen(mobileScreen, screen1000)'
-            ],
-
-            _updateScreen: function() {
+            _updateScreen() {
                 this.updateStyles();
-            },
+            }
 
-            _computeDisplayValue: function(certificate) {
+            _computeDisplayValue(certificate) {
                 certificate = certificate.replace('-----BEGIN CERTIFICATE-----', '');
                 certificate = certificate .replace('\n', '');
                 return certificate .substring(0, 40) + '...';
-            },
-
-            _onDeleteAction: function() {
-                this.fire('remove-idp-certificate', {
-                    certificate: this.certificate
-                });
             }
 
-        });
+            _onDeleteAction() {
+                this.dispatchEvent(new CustomEvent('remove-idp-certificate', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        certificate: this.certificate
+                    }
+                }));
+            }
+        }
+        window.customElements.define(AppscoCompanyIdpSettingsCertificateItem.is, AppscoCompanyIdpSettingsCertificateItem);
     </script>
 </dom-module>
