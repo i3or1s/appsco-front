@@ -29,7 +29,6 @@
 
 <dom-module id="appsco-groups-page">
     <template>
-
         <style include="appsco-page-styles">
             :host {
                 --group-role-initials-background-color: var(--body-background-color-darker);
@@ -86,7 +85,6 @@
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent">
-
             <div content slot="content">
                 <div class="content-container">
                     <appsco-company-groups id="appscoGroups"
@@ -186,6 +184,7 @@
                 authorization-token="[[ authorizationToken ]]"
                 company-groups-api="[[ groupsApi ]]"
                 company-notifications-api="[[ companyNotificationsApi ]]"
+                on-groups-loaded="_hideProgressBar"
                 on-notification-sent="_onNotificationSent">
         </appsco-company-group-notification-dialog>
 

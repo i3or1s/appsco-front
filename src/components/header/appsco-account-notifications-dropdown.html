@@ -33,40 +33,44 @@ Example:
                 display: inline-block;
                 position: relative;
 
-            --paper-card-header-text: {
-                 padding-top: 6px;
-                 padding-bottom: 6px;
-                 font-size: 20px;
-                 @apply --notifications-paper-card-header-text;
-             };
-            --paper-card-actions: {
-                 padding: 0;
-             };
-            --paper-card-content: {
-                 padding: 0;
-             };
+                --paper-card-header-text: {
+                     padding-top: 6px;
+                     padding-bottom: 6px;
+                     font-size: 20px;
+                     @apply --notifications-paper-card-header-text;
+                 };
+                --paper-card-actions: {
+                     padding: 0;
+                 };
+                --paper-card-content: {
+                     padding: 0;
+                 };
 
-            --appsco-account-notifications-container: {
-                 padding-top: 0;
-             };
+                --appsco-account-notifications-dropdown: {
+                    width: 350px;
+                };
 
-            --appsco-account-notifications-paper-progress: {
-                 width: 96%;
-                 top: -6px;
-             };
+                --appsco-account-notifications-container: {
+                     padding-top: 0;
+                 };
 
-            --account-notifications-appsco-list-item: {
-                 padding: 16px 6px 6px 10px;
-             };
-            
-            --appsco-list-item-date: {
-                 top: 2px;
-             };
+                --appsco-account-notifications-paper-progress: {
+                     width: 96%;
+                     top: -6px;
+                 };
+
+                --account-notifications-appsco-list-item: {
+                     padding: 16px 6px 6px 10px;
+                 };
+
+                --appsco-list-item-date: {
+                     top: 2px;
+                 };
             }
             :host appsco-dropdown {
                 top: 12px;
                 right: 1px;
-            @apply --appsco-account-notifications-dropdown;
+                @apply --appsco-account-notifications-dropdown;
             }
             :host paper-card {
                 width: 100%;
@@ -80,7 +84,7 @@ Example:
                 font-size: 14px;
                 color: var(--primary-text-color, #273441);
                 border: none;
-            @apply --appsco-account-notifications-all-action;
+                @apply --appsco-account-notifications-all-action;
             }
         </style>
 
