@@ -24,8 +24,7 @@
 
 <dom-module id="appsco-company-group-notification-dialog">
     <template>
-        <style include="appsco-list-item-styles"></style>
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 display: block;
                 position: relative;
@@ -274,7 +273,6 @@
     <script>
         class AppscoCompanyGroupNotificationDialog extends Polymer.mixinBehaviors([
             Polymer.NeonAnimationRunnerBehavior,
-            Polymer.AppscoListItemBehavior,
             Appsco.HeadersMixin
         ], Polymer.Element) {
             static get is() { return 'appsco-company-group-notification-dialog'; }
@@ -431,6 +429,7 @@
                 this.set('_groupListAll', listItems);
                 this._groupsCount = this._groupList.length;
                 this._hidegroupListProgress();
+                this.dispatchEvent(new CustomEvent('groups-loaded', { bubbles: true, composed: true }));
             }
 
             _onBulkSelect() {
