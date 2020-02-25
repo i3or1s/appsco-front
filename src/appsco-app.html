@@ -1080,6 +1080,7 @@
                             company="[[ currentCompany.company ]]"
                             api-errors="[[ _apiErrors ]]"
                             link="[[ _copyObject(link) ]]"
+                            company-applications-api="[[ _companyApplicationsApi ]]"
                             toolbar="[[ $.appscoAdditionalOptionsPageActions ]]">
                     </appsco-additional-options-page>
 
@@ -1925,6 +1926,7 @@
             _pageChanged(page) {
                 this._setProgressBar(page);
                 this._closeToastMessage();
+                this.$.appDrawer.close();
 
                 // Load page import on demand. Show 404 page if fails
                 const resolvedPageUrl = this.resolveUrl('appsco-' + page + '-page.html');
@@ -1935,8 +1937,6 @@
                 if(currentElement !== undefined && typeof currentElement.pageSelected === 'function') {
                     currentElement.pageSelected();
                 }
-
-                this.$.appDrawer.close();
             }
 
             _computePageName(page) {

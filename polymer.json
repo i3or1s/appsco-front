@@ -71,8 +71,7 @@
       "addServiceWorker": true,
       "addPushManifest": true,
       "insertPrefetchLinks": true,
-      "stripComments": true,
-      "sourcemaps": false
+      "stripComments": true
     }
   ]
 }

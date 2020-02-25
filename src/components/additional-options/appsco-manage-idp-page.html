@@ -37,7 +37,7 @@
                 @apply --full-page-paper-card;
 
                 --paper-card-header-text: {
-                    color: var(--primary-text-color);
+                    @apply --full-page-paper-card-header-text;
                 };
             }
             :host .page-close-action {
@@ -77,7 +77,8 @@
                         load-more
                         authorization-token="[[ authorizationToken ]]"
                         list-api="[[ _getAvailableResourcesApi ]]"
-                        api-errors="[[ apiErrors ]]"></appsco-integration-resources>
+                        api-errors="[[ apiErrors ]]">
+                </appsco-integration-resources>
             </div>
         </paper-card>
 

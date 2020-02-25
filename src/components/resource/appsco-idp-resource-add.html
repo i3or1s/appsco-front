@@ -6,6 +6,7 @@
 <link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../../bower_components/iron-form/iron-form.html">
 
 <link rel="import" href="../components/appsco-loader.html">
 <link rel="import" href="../components/appsco-form-error.html">
@@ -217,8 +218,7 @@
 
             _onAddResourceAction() {
                 this._hideError();
-
-                if (this.$.saveResourceForm.validate()) {
+                if (this.shadowRoot.getElementById('saveResourceForm').validate()) {
                     this._showLoader();
                     this._target.submit();
                 }
