@@ -1080,6 +1080,7 @@
                             company="[[ currentCompany.company ]]"
                             api-errors="[[ _apiErrors ]]"
                             link="[[ _copyObject(link) ]]"
+                            company-applications-api="[[ _companyApplicationsApi ]]"
                             toolbar="[[ $.appscoAdditionalOptionsPageActions ]]">
                     </appsco-additional-options-page>
 
@@ -1102,7 +1103,7 @@
 
         <!--endRegion Shared-->
 
-        <iron-ajax auto
+        <iron-ajax
                    id = "getPageConfigRequest"
                    url="[[ api.pageConfigApi ]]"
                    on-response="_onGetPageConfig"
@@ -1618,6 +1619,10 @@
                         notify: true
                     },
 
+                    pageConfigResponse: {
+                        type: Object
+                    },
+
                     _pageConfig: {
                         type: Object,
                         value: function() {
@@ -1653,7 +1658,8 @@
                     '_changeTheme(_companyPage, currentCompany)',
                     '_redirectToCompany(page, currentCompany, account)',
                     '_setupCompanyAccountPage(page, account)',
-                    '_handlePagePermission(currentCompany, page)'
+                    '_handlePagePermission(currentCompany, page)',
+                    '_processPageConfigResponse(pageConfigResponse)'
                 ];
             }
 
@@ -1766,6 +1772,9 @@
                         }
                         if (undefined === this.contactCompaniesResponse) {
                             this.shadowRoot.getElementById('getCompaniesAccountIsContactIn').generateRequest();
+                        }
+                        if (undefined === this.pageConfigResponse) {
+                            this.shadowRoot.getElementById('getPageConfigRequest').generateRequest();
                         }
                     }.bind(this), 0);
                 }
@@ -1925,6 +1934,7 @@
             _pageChanged(page) {
                 this._setProgressBar(page);
                 this._closeToastMessage();
+                this.$.appDrawer.close();
 
                 // Load page import on demand. Show 404 page if fails
                 const resolvedPageUrl = this.resolveUrl('appsco-' + page + '-page.html');
@@ -1935,8 +1945,6 @@
                 if(currentElement !== undefined && typeof currentElement.pageSelected === 'function') {
                     currentElement.pageSelected();
                 }
-
-                this.$.appDrawer.close();
             }
 
             _computePageName(page) {
@@ -2230,8 +2238,11 @@
             }
 
             _onGetPageConfig(event) {
-                const pageConfig = event.detail.response,
-                    _pageConfig = JSON.parse(JSON.stringify(this._pageConfig));
+                this.set('pageConfigResponse', event.detail.response);
+            }
+
+            _processPageConfigResponse(pageConfig) {
+                const _pageConfig = JSON.parse(JSON.stringify(this._pageConfig));
 
                 for (const key in pageConfig) {
                     _pageConfig[key] = pageConfig[key];

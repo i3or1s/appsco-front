@@ -16,6 +16,11 @@
 <dom-module id="appsco-additional-options-page">
     <template>
         <style include="appsco-manage-page-styles">
+            :host {
+                --item-basic-info: {
+                    padding: 0 10px;
+                };
+            }
             :host div[resource] .resource-header {
                 padding: 10px;
             }
@@ -68,6 +73,8 @@
                                 authorization-token="[[ authorizationToken ]]"
                                 company="[[ company ]]"
                                 api-errors="[[ apiErrors ]]"
+                                on-add-item="_onAddIdPItemAction"
+                                on-list-loaded="_hideProgressBar"
                                 on-back="_onBack">
                         </appsco-manage-idp-page>
                     </neon-animated-pages>
@@ -79,7 +86,7 @@
         <appsco-idp-resource-add
                 id="appscoIdpResourceAdd"
                 authorization-token="[[ authorizationToken ]]"
-                add-resource-api="[[ _companyApplicationsApi ]]"
+                add-resource-api="[[ companyApplicationsApi ]]"
                 link="[[ link ]]"
                 api-errors="[[ apiErrors ]]"
                 on-resource-added="_onIdpResourceAdded">
@@ -110,6 +117,10 @@
                         value: function () {
                             return {};
                         }
+                    },
+
+                    CompanyApplicationsApi: {
+                        type: String
                     },
 
                     apiErrors: {
