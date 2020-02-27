@@ -175,8 +175,9 @@ Custom property | Description | Default
                     this.animationConfig.exit.node = this.$.resource;
                     this.animationConfig.entry.name = 'slide-from-left-animation';
                     this.animationConfig.exit.name = 'slide-left-animation';
-                    active ? this.showSection('resource') : this.hideSection('resource');
                 });
+
+                active ? this.showSection('resource') : this.hideSection('resource');
             }
 
             _onInfoActiveChanged(active) {
@@ -185,9 +186,9 @@ Custom property | Description | Default
                     this.animationConfig.exit.node = this.$.info;
                     this.animationConfig.entry.name = 'slide-from-right-animation';
                     this.animationConfig.exit.name = 'slide-right-animation';
-
-                    active ? this.showSection('info') : this.hideSection('info');
                 });
+
+                active ? this.showSection('info') : this.hideSection('info');
             }
 
             _onContentTopActiveChanged(active) {
