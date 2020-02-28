@@ -4,26 +4,43 @@
     <title>appsco-application demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-snippet.html">
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
 
-    <link rel="import" href="../appsco-application-remove.html">
-    <link rel="import" href="../appsco-application-info.html">
-    <link rel="import" href="../../../../bower_components/iron-ajax/iron-ajax.html">
-    <link rel="import" href="../../../../bower_components/iron-meta/iron-meta.html">
-    <link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+    <script type="module" src="../appsco-application-remove.js"></script>
+    <script type="module" src="../appsco-application-info.js"></script>
+    <script type="module" src="../../../../../../@polymer/iron-ajax/iron-ajax.js"></script>
+    <script type="module" src="../../../../../../@polymer/iron-meta/iron-meta.js"></script>
+    <script type="module" src="../../../../../../@polymer/paper-button/paper-button.js"></script>
 
-    <link rel="import" href="../../../lib/mixins/appsco-headers-mixin.html">
+    <script type="module" src="../../../lib/mixins/appsco-headers-mixin.js"></script>
 
-    <custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
         <style include="demo-pages-shared-styles"></style>
-    </custom-style>
+    </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </head>
 <body>
 
-<div class="vertical-section-container centered">
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
     <h3>appsco-application-remove Demo</h3>
 
 
@@ -34,33 +51,24 @@
         </template>
 
     </demo-snippet>
-</div>
-<dom-module id="appsco-application-remove-demo">
+</div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<dom-module id="appsco-application-remove-demo">
     <template>
-        <iron-ajax
-                id="iconsRequest"
-                url="https://my-dev.appsco.com/api/v2/dashboards/483/icons"
-                last-response="{{ajaxResponse}}"
-                headers="{{ _headers }}"
-                debounce-duration="300">
+        <iron-ajax id="iconsRequest" url="https://my-dev.appsco.com/api/v2/dashboards/483/icons" last-response="{{ajaxResponse}}" headers="{{ _headers }}" debounce-duration="300">
         </iron-ajax>
         <template is="dom-repeat" items="{{ ajaxResponse.icons }}" as="icon" id="icons">
 
-            <iron-ajax
-                    auto
-                    url="{{ icon }}"
-                    last-response="{{ applicationResponse }}"
-                    on-response="handleIconResponse"
-                    headers="{{ _headers }}"
-                    debounce-duration="300">
+            <iron-ajax auto="" url="{{ icon }}" last-response="{{ applicationResponse }}" on-response="handleIconResponse" headers="{{ _headers }}" debounce-duration="300">
             </iron-ajax>
             <appsco-application-info id="appInfo_{{index}}"></appsco-application-info>
-            <appsco-application-remove
-                    id="removeMe_{{ index}}"
-                    authorization-token="1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44"
-                    on-application-removed="reset"
-            ></appsco-application-remove>
-            <paper-button id="removeMeBtn_{{ index}}" remove>Remove</paper-button>
+            <appsco-application-remove id="removeMe_{{ index}}" authorization-token="1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44" on-application-removed="reset"></appsco-application-remove>
+            <paper-button id="removeMeBtn_{{ index}}" remove="">Remove</paper-button>
 
         </template>
     </template>
@@ -72,12 +80,12 @@
                 super.ready();
 
                 Polymer.RenderStatus.beforeNextRender(this, function() {
-                    this.$.iconsRequest.generateRequest();
+                    this.\$.iconsRequest.generateRequest();
                 });
             }
 
             reset() {
-                this.$.iconsRequest.generateRequest();
+                this.\$.iconsRequest.generateRequest();
             }
 
             handleIconResponse(e) {
@@ -90,7 +98,19 @@
             }
         }
         window.customElements.define(AppscoApplicationRemoveDemo.is, AppscoApplicationRemoveDemo);
-    </script>
+    &lt;/script>
+</dom-module>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>index).application = e.detail.response.icon;
+        this.shadowRoot.getElementById("removeMe_" + e.model.index).application = e.detail.response;
+        this.shadowRoot.getElementById("removeMeBtn_" + e.model.index).addEventListener('tap', function () {
+            appRemove.open();
+        });
+    }
+}
+window.customElements.define(AppscoApplicationRemoveDemo.is, AppscoApplicationRemoveDemo);
+</script>
 </dom-module>
 </body>
 </html>

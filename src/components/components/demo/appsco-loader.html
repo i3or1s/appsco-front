@@ -4,14 +4,25 @@
     <title>appsco-loader demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-snippet.html">
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
 
-    <link rel="import" href="../appsco-loader.html">
+    <script type="module" src="../appsco-loader.js"></script>
 
-    <custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
         <style include="demo-pages-shared-styles">
           :root appsco-loader {
               --paper-spinner-color: red;
@@ -32,44 +43,63 @@
               position: relative;
           }
         </style>
-    </custom-style>
+    </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </head>
 <body>
 
-<div class="vertical-section-container centered">
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
     <h3>Basic appsco-loader Demo</h3>
     <demo-snippet>
         <template is="dom-bind">
 
             <div class="loader-container">
-                <appsco-loader
-                        id="appscoLoaderSingle"
-                        loader-alt="Loading....">
+                <appsco-loader id="appscoLoaderSingle" loader-alt="Loading....">
                 </appsco-loader>
             </div>
 
             <script type="text/javascript">
                 document.getElementById('appscoLoaderSingle').active = true;
-            </script>
+            &lt;/script>
+        </template>
+    </demo-snippet>
+</div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>nt.getElementById('appscoLoaderSingle').active = true;
+</script>
         </template>
     </demo-snippet>
 </div>
 
-<div class="vertical-section-container centered">
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
     <h3>Multicolor appsco-loader Demo</h3>
     <demo-snippet>
         <template>
 
             <div class="loader-container">
-                <appsco-loader
-                        id="appscoLoaderMulti"
-                        loader-alt="Loading...." multi-color>
+                <appsco-loader id="appscoLoaderMulti" loader-alt="Loading...." multi-color="">
                 </appsco-loader>
             </div>
 
             <script type="text/javascript">
                 document.getElementById('appscoLoaderMulti').active = true;
-            </script>
+            &lt;/script>
+        </template>
+    </demo-snippet>
+</div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>ent.getElementById('appscoLoaderMulti').active = true;
+</script>
         </template>
     </demo-snippet>
 </div>

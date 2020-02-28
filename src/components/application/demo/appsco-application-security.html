@@ -4,15 +4,26 @@
     <title>appsco-application demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-snippet.html">
-    <link rel="import" href="../../../../bower_components/iron-ajax/iron-ajax.html">
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
+    <script type="module" src="../../../../../../@polymer/iron-ajax/iron-ajax.js"></script>
 
-    <link rel="import" href="../appsco-application-security.html">
+    <script type="module" src="../appsco-application-security.js"></script>
 
-    <custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
         <style include="demo-pages-shared-styles">
           appsco-application-security {
               --appsco-application-security: {
@@ -20,21 +31,30 @@
               };
           }
         </style>
-    </custom-style>
+    </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </head>
 <body>
 
-<div class="vertical-section-container centered">
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
     <h3>appsco-application-security Demo</h3>
     <demo-snippet>
         <template>
 
-            <appsco-application-security application='{"security":{"password_strength":99,"info":{"upper_case":true,"lower_case":true,"digits":true,"special_chars":true,"length8":true,"length16":false,"entropy":3.9068905956085},"last_update":0,"score":99} }'></appsco-application-security>
-            <appsco-application-security application='{"security":{"password_strength":74,"info":{"upper_case":true,"lower_case":true,"digits":true,"special_chars":true,"length8":true,"length16":false,"entropy":3.9068905956085},"last_update":0,"score":74} }'></appsco-application-security>
-            <appsco-application-security info application='{"security":{"password_strength":68.8888888,"info":{"upper_case":true,"lower_case":true,"digits":true,"special_chars":true,"length8":true,"length16":false,"entropy":3.9068905956085},"last_update":0,"score":24.222222} }'></appsco-application-security>
+            <appsco-application-security application="{&quot;security&quot;:{&quot;password_strength&quot;:99,&quot;info&quot;:{&quot;upper_case&quot;:true,&quot;lower_case&quot;:true,&quot;digits&quot;:true,&quot;special_chars&quot;:true,&quot;length8&quot;:true,&quot;length16&quot;:false,&quot;entropy&quot;:3.9068905956085},&quot;last_update&quot;:0,&quot;score&quot;:99} }"></appsco-application-security>
+            <appsco-application-security application="{&quot;security&quot;:{&quot;password_strength&quot;:74,&quot;info&quot;:{&quot;upper_case&quot;:true,&quot;lower_case&quot;:true,&quot;digits&quot;:true,&quot;special_chars&quot;:true,&quot;length8&quot;:true,&quot;length16&quot;:false,&quot;entropy&quot;:3.9068905956085},&quot;last_update&quot;:0,&quot;score&quot;:74} }"></appsco-application-security>
+            <appsco-application-security info="" application="{&quot;security&quot;:{&quot;password_strength&quot;:68.8888888,&quot;info&quot;:{&quot;upper_case&quot;:true,&quot;lower_case&quot;:true,&quot;digits&quot;:true,&quot;special_chars&quot;:true,&quot;length8&quot;:true,&quot;length16&quot;:false,&quot;entropy&quot;:3.9068905956085},&quot;last_update&quot;:0,&quot;score&quot;:24.222222} }"></appsco-application-security>
         </template>
     </demo-snippet>
-</div>
+</div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 
 </body>
 </html>

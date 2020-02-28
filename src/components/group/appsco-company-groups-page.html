@@ -1,9 +1,9 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<script type="module" src="../../../../../@polymer/polymer/polymer-legacy.js"></script>
+<script type="module" src="../../../../../@polymer/iron-flex-layout/iron-flex-layout.js"></script>
+<script type="module" src="../../../../../@polymer/paper-card/paper-card.js"></script>
+<script type="module" src="../../../../../@polymer/paper-icon-button/paper-icon-button.js"></script>
 
-<link rel="import" href="appsco-company-groups.html">
+<script type="module" src="./appsco-company-groups.js"></script>
 
 <dom-module id="appsco-company-groups-page">
     <template>
@@ -49,71 +49,77 @@
 
     </template>
 
-    <script>
-        class AppscoCompanyGroupsPage extends Polymer.Element {
-            static get is() { return 'appsco-company-groups-page'; }
+    <script type="module">
+import '@polymer/polymer/polymer-legacy.js';
+import '@polymer/iron-flex-layout/iron-flex-layout.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import './appsco-company-groups.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+class AppscoCompanyGroupsPage extends PolymerElement {
+    static get is() { return 'appsco-company-groups-page'; }
 
-            static get properties() {
-                return {
-                    authorizationToken: {
-                        type: String
-                    },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String
+            },
 
-                    groupsApi: {
-                        type: String
-                    }
-                };
+            groupsApi: {
+                type: String
             }
+        };
+    }
 
-            _onBack() {
-                this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    _onBack() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
+
+    searchGroups(term) {
+        this.$.apspcoCompanyGroups.search(term);
+    }
+
+    addGroup(group) {
+        this.$.apspcoCompanyGroups.addGroup(group);
+    }
+
+    modifyGroup(group) {
+        this.$.apspcoCompanyGroups.modifyGroup(group);
+    }
+
+    removeGroup(group) {
+        this.$.apspcoCompanyGroups.removeGroup(group);
+    }
+
+    addGroupsCompanyRoles(groups, items) {
+        this.$.apspcoCompanyGroups.addGroupsCompanyRoles(groups, items);
+    }
+
+    removeGroupsCompanyRoles(group, items) {
+        this.$.apspcoCompanyGroups.removeGroupCompanyRoles(group, items);
+    }
+
+    setupPage() {
+        this.dispatchEvent(new CustomEvent('show-groups-page-actions', { bubbles: true, composed: true }));
+    }
+
+    resetPage() {
+        this.dispatchEvent(new CustomEvent('hide-groups-page-actions', { bubbles: true, composed: true }));
+    }
+
+    _onRemoveGroup(event) {
+        event.stopPropagation();
+
+        this.dispatchEvent(new CustomEvent('remove-group', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                group: event.detail.group
             }
-
-            searchGroups(term) {
-                this.$.apspcoCompanyGroups.search(term);
-            }
-
-            addGroup(group) {
-                this.$.apspcoCompanyGroups.addGroup(group);
-            }
-
-            modifyGroup(group) {
-                this.$.apspcoCompanyGroups.modifyGroup(group);
-            }
-
-            removeGroup(group) {
-                this.$.apspcoCompanyGroups.removeGroup(group);
-            }
-
-            addGroupsCompanyRoles(groups, items) {
-                this.$.apspcoCompanyGroups.addGroupsCompanyRoles(groups, items);
-            }
-
-            removeGroupsCompanyRoles(group, items) {
-                this.$.apspcoCompanyGroups.removeGroupCompanyRoles(group, items);
-            }
-
-            setupPage() {
-                this.dispatchEvent(new CustomEvent('show-groups-page-actions', { bubbles: true, composed: true }));
-            }
-
-            resetPage() {
-                this.dispatchEvent(new CustomEvent('hide-groups-page-actions', { bubbles: true, composed: true }));
-            }
-
-            _onRemoveGroup(event) {
-                event.stopPropagation();
-
-                this.dispatchEvent(new CustomEvent('remove-group', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        group: event.detail.group
-                    }
-                }));
-            }
-        }
-        window.customElements.define(AppscoCompanyGroupsPage.is, AppscoCompanyGroupsPage);
-    </script>
+        }));
+    }
+}
+window.customElements.define(AppscoCompanyGroupsPage.is, AppscoCompanyGroupsPage);
+</script>
 </dom-module>
 

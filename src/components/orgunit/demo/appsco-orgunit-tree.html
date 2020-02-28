@@ -6,15 +6,26 @@
 
     <title>appsco-orgunit demo</title>
 
-    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-snippet.html">
-    <link rel="import" href="../../../../bower_components/paper-toast/paper-toast.html">
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
+    <script type="module" src="../../../../../../@polymer/paper-toast/paper-toast.js"></script>
 
-    <link rel="import" href="../appsco-orgunit-tree.html">
+    <script type="module" src="../appsco-orgunit-tree.js"></script>
 
-    <custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
         <style include="demo-pages-shared-styles">
           html {
               --appsco-orgunit-item-selected: {
@@ -22,32 +33,35 @@
               }
           }
         </style>
-    </custom-style>
+    </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </head>
 <body>
-<div class="vertical-section-container centered">
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
     <h3>Organization unit tree presentation</h3>
     <demo-snippet>
         <template>
-            <appsco-orgunit-tree
-                    id="orgunits"
-                    org-units='
+            <appsco-orgunit-tree id="orgunits" org-units="
                         [
-                            {"name":"appsco.com","alias":1,"description":null,"parent":"","self":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/1"},
-                            {"name":"Developers","alias":2,"description":null,"parent":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/1","self":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/2"},
-                            {"name":"Marketing","alias":3,"description":null,"parent":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/1","self":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/3"},
-                            {"name":"Sub Org","alias":4,"description":null,"parent":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/2","self":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/4"},
-                            {"name":"Sub Org 2","alias":5,"description":null,"parent":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/2","self":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/5"},
-                            {"name":"Sub Org 3","alias":6,"description":null,"parent":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/4","self":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/6"},
-                            {"name":"Sub Org","alias":7,"description":null,"parent":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/3","self":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/7"}
+                            {&quot;name&quot;:&quot;appsco.com&quot;,&quot;alias&quot;:1,&quot;description&quot;:null,&quot;parent&quot;:&quot;&quot;,&quot;self&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/1&quot;},
+                            {&quot;name&quot;:&quot;Developers&quot;,&quot;alias&quot;:2,&quot;description&quot;:null,&quot;parent&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/1&quot;,&quot;self&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/2&quot;},
+                            {&quot;name&quot;:&quot;Marketing&quot;,&quot;alias&quot;:3,&quot;description&quot;:null,&quot;parent&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/1&quot;,&quot;self&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/3&quot;},
+                            {&quot;name&quot;:&quot;Sub Org&quot;,&quot;alias&quot;:4,&quot;description&quot;:null,&quot;parent&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/2&quot;,&quot;self&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/4&quot;},
+                            {&quot;name&quot;:&quot;Sub Org 2&quot;,&quot;alias&quot;:5,&quot;description&quot;:null,&quot;parent&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/2&quot;,&quot;self&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/5&quot;},
+                            {&quot;name&quot;:&quot;Sub Org 3&quot;,&quot;alias&quot;:6,&quot;description&quot;:null,&quot;parent&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/4&quot;,&quot;self&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/6&quot;},
+                            {&quot;name&quot;:&quot;Sub Org&quot;,&quot;alias&quot;:7,&quot;description&quot;:null,&quot;parent&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/3&quot;,&quot;self&quot;:&quot;http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/7&quot;}
                         ]
-                    '
-            ></appsco-orgunit-tree>
+                    "></appsco-orgunit-tree>
             <paper-toast id="toast"></paper-toast>
             <script>
                 var me = this;
                 setTimeout(function(){
-                    me.orgunits.push('orgUnits', {"name":"Developers","alias":8,"description":null,"parent":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/1","self":"http:\/\/appsco.loc\/app_dev.php\/api\/v2\/companies\/2\/org-units\/8"});
+                    me.orgunits.push('orgUnits', {"name":"Developers","alias":8,"description":null,"parent":"http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/1","self":"http:\\/\\/appsco.loc\\/app_dev.php\\/api\\/v2\\/companies\\/2\\/org-units\\/8"});
                     me.toast.text = 'Added new organization';
                     me.toast.show();
                 }, 2000);
@@ -76,9 +90,10 @@
                     me.toast.text = 'Currently selected node ' + orgUnit.name + " [ " + selectedNodes + " ]";
                     me.toast.show();
                 });
-            </script>
+            &lt;/script>
         </template>
     </demo-snippet>
-</div>
-</body>
-</html>
+</div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>

@@ -4,18 +4,29 @@
     <title>appsco-application-assignee demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <link rel="import" href="../../../../../bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../../../../bower_components/iron-demo-helpers/demo-snippet.html">
+    <script type="module" src="../../../../../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="../../../../../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
 
-    <link rel="import" href="../../../../../bower_components/iron-ajax/iron-ajax.html">
-    <link rel="import" href="../../../../../bower_components/paper-toast/paper-toast.html">
+    <script type="module" src="../../../../../../../@polymer/iron-ajax/iron-ajax.js"></script>
+    <script type="module" src="../../../../../../../@polymer/paper-toast/paper-toast.js"></script>
 
-    <link rel="import" href="../../../components/appsco-api.html">
-    <link rel="import" href="../../company/appsco-application-assignee.html">
+    <script type="module" src="../../../components/appsco-api.js"></script>
+    <script type="module" src="../../company/appsco-application-assignee.js"></script>
 
-    <custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
         <style include="demo-pages-shared-styles">
           html {
               --appsco-application-assignee: {
@@ -26,36 +37,30 @@
               max-width: 800px;
           }
         </style>
-    </custom-style>
+    </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </head>
 <body>
 
-<div class="vertical-section-container centered">
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
     <h3>appsco-application-assignee Demo</h3>
     <demo-snippet>
         <template is="dom-bind">
 
             <appsco-api id="api" domain="https://my-dev.appsco.com" name="{{ api }}"></appsco-api>
 
-            <iron-ajax id="getCompanies"
-                       auto
-                       url="[[ api.companies ]]"
-                       headers='{"Authorization": "token 1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44"}'
-                    ></iron-ajax>
+            <iron-ajax id="getCompanies" auto="" url="[[ api.companies ]]" headers="{&quot;Authorization&quot;: &quot;token 1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44&quot;}"></iron-ajax>
 
-            <iron-ajax id="getApps"
-                       auto
-                       headers='{"Authorization": "token 1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44"}'
-                    ></iron-ajax>
+            <iron-ajax id="getApps" auto="" headers="{&quot;Authorization&quot;: &quot;token 1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44&quot;}"></iron-ajax>
 
-            <iron-ajax id="getAssignees"
-                       auto
-                       headers='{"Authorization": "token 1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44"}'
-                    ></iron-ajax>
+            <iron-ajax id="getAssignees" auto="" headers="{&quot;Authorization&quot;: &quot;token 1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44&quot;}"></iron-ajax>
 
-            <appsco-application-assignee id="component"
-                    application
-                    assignee></appsco-application-assignee>
+            <appsco-application-assignee id="component" application="" assignee=""></appsco-application-assignee>
 
             <paper-toast id="toast"></paper-toast>
 
@@ -87,10 +92,10 @@
                     toast.text = 'Revoke assignee action. Event: revoke-assignee.';
                     toast.open();
                 });
-            </script>
+            &lt;/script>
         </template>
     </demo-snippet>
-</div>
+</div>`;
 
-</body>
-</html>
+document.body.appendChild($_documentContainer.content);
+</script>

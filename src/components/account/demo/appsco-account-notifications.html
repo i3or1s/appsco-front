@@ -4,30 +4,42 @@
     <title>appsco-account-notifications demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-snippet.html">
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="../../../../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
 
-    <link rel="import" href="../appsco-account-notifications.html">
+    <script type="module" src="../appsco-account-notifications.js"></script>
 
-    <custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
         <style include="demo-pages-shared-styles"></style>
-    </custom-style>
+    </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </head>
 <body>
 
-<div class="vertical-section-container centered">
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
     <h3>Basic appsco-account-notifications Demo</h3>
     <demo-snippet>
         <template is="dom-bind">
 
-            <appsco-account-notifications
-                    id="appscoAccountNotifications"
-                    authorization-token="1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44"
-                    notifications-api="https://my-dev.appsco.com/api/v2/notifications"
-                    size="5"
-                    load-more>
+            <appsco-account-notifications id="appscoAccountNotifications" authorization-token="1o833krv0s68osk4skckkwsgws844o480ko48wsco0k4o4kook4wnkgimtqyo0g0ko0g8wok4go40kgwgksw84wcs808wwcgg44" notifications-api="https://my-dev.appsco.com/api/v2/notifications" size="5" load-more="">
             </appsco-account-notifications>
 
             <script type="text/javascript">
@@ -36,7 +48,14 @@
                 });
 
                 appscoAccountNotifications.loadNotifications();
-            </script>
+            &lt;/script>
+        </template>
+    </demo-snippet>
+</div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>untNotifications.loadNotifications();
+</script>
         </template>
     </demo-snippet>
 </div>
