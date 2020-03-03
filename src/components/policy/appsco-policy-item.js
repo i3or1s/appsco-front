@@ -15,13 +15,14 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoPolicyItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host .policy-icon-container {
                 width: 52px;
@@ -99,83 +100,83 @@ class AppscoPolicyItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-policy-item'; }
+    static get is() { return 'appsco-policy-item'; }
 
-  static get properties() {
-      return {
-          policyActive: {
-              type: Boolean,
-              computed: '_computeActiveStatus(item)',
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            policyActive: {
+                type: Boolean,
+                computed: '_computeActiveStatus(item)',
+                reflectToAttribute: true
+            },
 
-          policyConfigured: {
-              type: Boolean,
-              computed: '_computeConfiguredStatus(item, policyActive)',
-              reflectToAttribute: true
-          },
+            policyConfigured: {
+                type: Boolean,
+                computed: '_computeConfiguredStatus(item, policyActive)',
+                reflectToAttribute: true
+            },
 
-          _icon: {
-              type: String,
-              computed: '_computeIcon(policyActive)'
-          },
+            _icon: {
+                type: String,
+                computed: '_computeIcon(policyActive)'
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function () {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function () {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('tap', this._onItemAction);
-  }
+    _addListeners() {
+        this.addEventListener('tap', this._onItemAction);
+    }
 
-  _computeActiveStatus(policy) {
-      return ('active' === policy.status);
-  }
+    _computeActiveStatus(policy) {
+        return ('active' === policy.status);
+    }
 
-  _computeConfiguredStatus(policy, policyActive) {
-      return (policyActive && !policy.missing_config);
-  }
+    _computeConfiguredStatus(policy, policyActive) {
+        return (policyActive && !policy.missing_config);
+    }
 
-  _computeIcon(active) {
-      return (active ? 'icons:check' : 'icons:clear');
-  }
+    _computeIcon(active) {
+        return (active ? 'icons:check' : 'icons:clear');
+    }
 
-  _onEnableItemAction(event) {
-      event.stopPropagation();
+    _onEnableItemAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('enable-policy', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              policy: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('enable-policy', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                policy: this.item
+            }
+        }));
+    }
 
-  _onDisableItemAction(event) {
-      event.stopPropagation();
+    _onDisableItemAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('disable-policy', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              policy: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('disable-policy', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                policy: this.item
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoPolicyItem.is, AppscoPolicyItem);

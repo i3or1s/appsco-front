@@ -1,26 +1,4 @@
-/**
-`appsco-application-subscriber`
-Is used to represent subscriber item for application.
-
-Example:
-
-    <body>
-      <appsco-application-subscriber subscriber="{}">
-     </appsco-application-subscriber>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-application-subscriber` | Mixin applied to root element | `{}`
-
-@demo demo/appsco-application-subscriber.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/neon-animation/animations/fade-in-animation.js';
@@ -34,9 +12,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationSubscriber extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: none;
@@ -153,91 +132,91 @@ class AppscoApplicationSubscriber extends mixinBehaviors([NeonAnimationRunnerBeh
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-subscriber'; }
+    static get is() { return 'appsco-application-subscriber'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          subscriber: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            subscriber: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          preview: {
-              type: Boolean,
-              value: false
-          },
+            preview: {
+                type: Boolean,
+                value: false
+            },
 
-          _owner: {
-              type: Boolean,
-              computed: '_computeOwner(subscriber, account)'
-          },
+            _owner: {
+                type: Boolean,
+                computed: '_computeOwner(subscriber, account)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'inline-block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'inline-block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _computeOwner(subscriber, account) {
-      return account && subscriber.email === account.email;
-  }
+    _computeOwner(subscriber, account) {
+        return account && subscriber.email === account.email;
+    }
 
-  _onRevokeAccessAction() {
-      this.dispatchEvent(new CustomEvent('subscription-revoke', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: this.application,
-              account: this.subscriber
-          }
-      }));
-  }
+    _onRevokeAccessAction() {
+        this.dispatchEvent(new CustomEvent('subscription-revoke', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: this.application,
+                account: this.subscriber
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoApplicationSubscriber.is, AppscoApplicationSubscriber);

@@ -18,8 +18,8 @@ class AppscoProvisioningPage extends mixinBehaviors([
     NeonAnimatableBehavior,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-page-styles">
             :host {
                 --appsco-active-integration-item: {
@@ -57,117 +57,117 @@ class AppscoProvisioningPage extends mixinBehaviors([
         <appsco-run-integration-force-sync id="appscoRunIntegrationForceSync" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-integration-force-sync-done="_onForceSyncRun">
         </appsco-run-integration-force-sync>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-provisioning-page'; }
+    static get is() { return 'appsco-provisioning-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String
+            },
 
-          activeIntegrationsApi: {
-              type: String
-          },
+            activeIntegrationsApi: {
+                type: String
+            },
 
-          availableIntegrationsApi: {
-              type: String
-          },
+            availableIntegrationsApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+    ready() {
+        super.ready();
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.pageLoaded = false;
+        this.pageLoaded = false;
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.toolbar.addEventListener('add-integration', this._onAddIntegrationAction.bind(this));
-  }
+    _addListeners() {
+        this.toolbar.addEventListener('add-integration', this._onAddIntegrationAction.bind(this));
+    }
 
-  reloadIntegrations() {
-      this.$.appscoActiveIntegrations.reloadIntegrations();
-  }
+    reloadIntegrations() {
+        this.$.appscoActiveIntegrations.reloadIntegrations();
+    }
 
-  setIntegration(integration) {
-      this.$.appscoActiveIntegrations.modifyItems([integration]);
-  }
+    setIntegration(integration) {
+        this.$.appscoActiveIntegrations.modifyItems([integration]);
+    }
 
-  _pageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _pageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _onIntegrationsLoadFinished() {
-      this._pageLoaded();
-  }
+    _onIntegrationsLoadFinished() {
+        this._pageLoaded();
+    }
 
-  _onIntegrationEditAction(event) {
-      this.dispatchEvent(new CustomEvent('edit-integration', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: event.detail.item
-          }
-      }));
-  }
+    _onIntegrationEditAction(event) {
+        this.dispatchEvent(new CustomEvent('edit-integration', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: event.detail.item
+            }
+        }));
+    }
 
-  _onAddIntegrationAction() {
-      this.shadowRoot.getElementById('appscoAddIntegration').open();
-  }
+    _onAddIntegrationAction() {
+        this.shadowRoot.getElementById('appscoAddIntegration').open();
+    }
 
-  _onIntegrationRequested(event) {
-      if (event.detail.authorizationUrl) {
-          window.location.href = event.detail.authorizationUrl;
-      }
-  }
+    _onIntegrationRequested(event) {
+        if (event.detail.authorizationUrl) {
+            window.location.href = event.detail.authorizationUrl;
+        }
+    }
 
-  _onIntegrationForceSync(event) {
-      const dialog = this.shadowRoot.getElementById('appscoRunIntegrationForceSync');
-      dialog.setIntegration(event.detail.integration);
-      dialog.open();
-  }
+    _onIntegrationForceSync(event) {
+        const dialog = this.shadowRoot.getElementById('appscoRunIntegrationForceSync');
+        dialog.setIntegration(event.detail.integration);
+        dialog.open();
+    }
 
-  _onForceSyncRun(event) {
-      this._notify('Resync for ' + event.detail.integration.name + ' has been finished.');
-  }
+    _onForceSyncRun(event) {
+        this._notify('Resync for ' + event.detail.integration.name + ' has been finished.');
+    }
 }
 window.customElements.define(AppscoProvisioningPage.is, AppscoProvisioningPage);

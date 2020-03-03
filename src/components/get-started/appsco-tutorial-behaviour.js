@@ -5,7 +5,6 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
  * @polymerBehavior Polymer.AppscoTutorialBehaviour
  */
 export const AppscoTutorialBehaviour = {
-
     properties: {
         status: {
             type: String,

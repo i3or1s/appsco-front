@@ -1,28 +1,4 @@
-/*
-`appsco-company-group-role-item`
-Account item is used to present account in form of an item.
-
-    <appsco-company-group-role-item>
-    </appsco-company-group-role-item>
-
-### Styling
-
-`<appsco-company-group-role-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--item-background-color` | Background color applied to the root element | `#fff`
-`--color` | Color applied to all the text | `#33`
-`--appsco-company-group-role-item` | Mixin applied to role item | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
@@ -36,9 +12,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyGroupRoleItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -184,99 +161,99 @@ class AppscoCompanyGroupRoleItem extends mixinBehaviors([NeonAnimationRunnerBeha
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-group-role-item'; }
+    static get is() { return 'appsco-company-group-role-item'; }
 
-  static get properties() {
-      return {
-          group: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            group: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          role: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            role: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _orgUnits: {
-              type: String,
-              computed: '_computeOrganizationUnits(role)'
-          },
+            _orgUnits: {
+                type: String,
+                computed: '_computeOrganizationUnits(role)'
+            },
 
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'inline-block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'inline-block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _computeOrganizationUnits(role) {
-      if (role.account.org_units) {
-          let result = '',
-              orgUnits = role.account.org_units,
-              length = orgUnits.length;
+    _computeOrganizationUnits(role) {
+        if (role.account.org_units) {
+            let result = '',
+                orgUnits = role.account.org_units,
+                length = orgUnits.length;
 
-          for (let i = 0; i < length; i++) {
-              result += orgUnits[i].name;
-              result += (i === length -1) ? '' : ', ';
-          }
-          return result;
-      }
+            for (let i = 0; i < length; i++) {
+                result += orgUnits[i].name;
+                result += (i === length -1) ? '' : ', ';
+            }
+            return result;
+        }
 
-      return '';
-  }
+        return '';
+    }
 
-  _onRemoveAction (event) {
-      event.stopPropagation();
+    _onRemoveAction (event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('remove-company-role-from-group', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              group: this.group,
-              role: this.role
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('remove-company-role-from-group', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                group: this.group,
+                role: this.role
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoCompanyGroupRoleItem.is, AppscoCompanyGroupRoleItem);

@@ -1,34 +1,4 @@
-/**
-`appsco-account-info`
-Representation of user identity
-
-Example:
-
-    <body>
-        <appsco-account-info></appsco-account-info>
-        <appsco-account-info display-name></appsco-account-info>
-        <appsco-account-info account="{{ account }}" display-short></appsco-account-info>
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--light-background-color` | Background color for additional accounts | `#f5f5f5`
-`--hover-background-color` | Hover for additional accounts | `#f9f7f7`
-`--info-background-color` | Background color for info inside element | `#edf9ff`
-`--appsco-account-info-box` | Mixin for info box | `{}`
-`--appsco-account-info` | Mixin applied to root appsco-account-info element | `{}`
-`--appsco-account-info-user-holder` | Mixin applied to user container within root element | `{}`
-`--appsco-account-info-account-img` | Mixin applied to account image | `{}`
-`--appsco-account-info-dropdown` | Mixin applied to inner appsco-account-info-dropdown element | `{}`
-
-@demo demo/appsco-account-info.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-button/paper-button.js';
@@ -41,9 +11,10 @@ import '../account/appsco-account-image.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountInfo extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 min-width: 32px;
@@ -256,131 +227,131 @@ class AppscoAccountInfo extends PolymerElement {
         <iron-localstorage id="localStorageAccounts" name="appsco-login-accounts" value="{{ accounts }}">
         </iron-localstorage>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-info'; }
+    static get is() { return 'appsco-account-info'; }
 
-  static get properties() {
-      return {
-          mobile: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            mobile: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          /**
-           * Active account from AppsCo dashboard.
-           */
-          account: {
-              type: Object,
-              observer: '_accountChanged'
-          },
+            /**
+             * Active account from AppsCo dashboard.
+             */
+            account: {
+                type: Object,
+                observer: '_accountChanged'
+            },
 
-          _accountExists: {
-              type: Boolean,
-              value: false
-          },
+            _accountExists: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * Additional accounts from AppsCo dashboard - currently inactive.
-           */
-          accounts: {
-              type: Array,
-              value: []
-          },
+            /**
+             * Additional accounts from AppsCo dashboard - currently inactive.
+             */
+            accounts: {
+                type: Array,
+                value: []
+            },
 
-          /**
-           * Info related to active account.
-           */
-          info: {
-              type: String
-          },
+            /**
+             * Info related to active account.
+             */
+            info: {
+                type: String
+            },
 
-          /**
-           * Indicates if account info should display account name or not.
-           */
-          displayName: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            /**
+             * Indicates if account info should display account name or not.
+             */
+            displayName: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          logoutApi: {
-              type: String
-          }
-      };
-  }
+            logoutApi: {
+                type: String
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._triggerDropdown = this.shadowRoot.getElementById('triggerDropdown');
+        this._triggerDropdown = this.shadowRoot.getElementById('triggerDropdown');
 
-      beforeNextRender(this, function() {
-          this._checkAccountInfo();
-          this._checkIfAccountExists();
-      });
-  }
+        beforeNextRender(this, function() {
+            this._checkAccountInfo();
+            this._checkIfAccountExists();
+        });
+    }
 
-  _checkIfAccountExists() {
-      const account = this.account;
+    _checkIfAccountExists() {
+        const account = this.account;
 
-      if (account) {
-          for (const key in account) {
-              this._accountExists = true;
-              break;
-          }
-      }
-      else {
-          this._accountExists = false;
-      }
-  }
+        if (account) {
+            for (const key in account) {
+                this._accountExists = true;
+                break;
+            }
+        }
+        else {
+            this._accountExists = false;
+        }
+    }
 
-  _checkAccountInfo() {
-      const accountInfoDropdown = this.$.accountInfoDropdown;
+    _checkAccountInfo() {
+        const accountInfoDropdown = this.$.accountInfoDropdown;
 
-      if (this.info && this.info.trim() !== '') {
-          accountInfoDropdown.customStyle['--dropdown-caret-background-color'] = 'var(--info-background-color, #edf9ff)';
-          accountInfoDropdown.updateStyles();
-      }
-  }
+        if (this.info && this.info.trim() !== '') {
+            accountInfoDropdown.customStyle['--dropdown-caret-background-color'] = 'var(--info-background-color, #edf9ff)';
+            accountInfoDropdown.updateStyles();
+        }
+    }
 
-  _accountChanged() {
-      this._checkIfAccountExists();
-      if(this.account.company) {
-          this.info = "This account is managed by " + this.account.company.name;
-      }
-  }
+    _accountChanged() {
+        this._checkIfAccountExists();
+        if(this.account.company) {
+            this.info = "This account is managed by " + this.account.company.name;
+        }
+    }
 
-  _toggleDropdown() {
-      this.$.accountInfoDropdown.toggle();
-  }
+    _toggleDropdown() {
+        this.$.accountInfoDropdown.toggle();
+    }
 
-  _onAccountSettingsAction() {
-      this.dispatchEvent(new CustomEvent('account-settings', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              account: this.account
-          }
-      }));
-      this._toggleDropdown();
-  }
+    _onAccountSettingsAction() {
+        this.dispatchEvent(new CustomEvent('account-settings', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                account: this.account
+            }
+        }));
+        this._toggleDropdown();
+    }
 
-  _onAddAccountAction() {
-      this.dispatchEvent(new CustomEvent('account-add', { bubbles: true, composed: true }));
-  }
+    _onAddAccountAction() {
+        this.dispatchEvent(new CustomEvent('account-add', { bubbles: true, composed: true }));
+    }
 
-  _onLogoutAccountAction() {
-      this.dispatchEvent(new CustomEvent('account-logout', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              account: this.account
-          }
-      }));
+    _onLogoutAccountAction() {
+        this.dispatchEvent(new CustomEvent('account-logout', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                account: this.account
+            }
+        }));
 
-      this._toggleDropdown();
-  }
+        this._toggleDropdown();
+    }
 }
 window.customElements.define(AppscoAccountInfo.is, AppscoAccountInfo);

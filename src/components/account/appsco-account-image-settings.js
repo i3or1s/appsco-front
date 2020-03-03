@@ -9,9 +9,10 @@ import '../components/appsco-upload-image-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountImageSettings extends mixinBehaviors([AppscoUploadImageBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-upload-image-styles">
             :host appsco-loader,
             :host .upload-container,
@@ -48,53 +49,53 @@ class AppscoAccountImageSettings extends mixinBehaviors([AppscoUploadImageBehavi
 
         <slot name="info" old-content-selector="[info]"></slot>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-image-settings'; }
+    static get is() { return 'appsco-account-image-settings'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {}
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {}
+                },
+                notify: true
+            },
 
-          _imagePreview: {
-              type: String,
-              computed: '_computeImagePreviewClass(account)'
-          }
-      };
-  }
+            _imagePreview: {
+                type: String,
+                computed: '_computeImagePreviewClass(account)'
+            }
+        };
+    }
 
-  reset() {
-      const account = JSON.parse(JSON.stringify(this.account));
+    reset() {
+        const account = JSON.parse(JSON.stringify(this.account));
 
-      this.set('account', {});
-      this.set('account', account);
-  }
+        this.set('account', {});
+        this.set('account', account);
+    }
 
-  _computeImagePreviewClass(account) {
-      return (account && account.picture_url) ? 'has-image' : 'no-image';
-  }
+    _computeImagePreviewClass(account) {
+        return (account && account.picture_url) ? 'has-image' : 'no-image';
+    }
 
-  _setNewImage(file) {
-      const reader = new FileReader();
+    _setNewImage(file) {
+        const reader = new FileReader();
 
-      reader.onload = function(e) {
-          this._setObjectAttribute('account', 'picture_url', e.target.result);
-      }.bind(this);
+        reader.onload = function(e) {
+            this._setObjectAttribute('account', 'picture_url', e.target.result);
+        }.bind(this);
 
-      reader.readAsDataURL(file);
-  }
+        reader.readAsDataURL(file);
+    }
 
-  _fireChangeEvent() {}
+    _fireChangeEvent() {}
 
-  _setStateAfterImageIsRemoved() {
-      this._setObjectAttribute('account', 'picture_url', '');
-      this._hideLoader();
-  }
+    _setStateAfterImageIsRemoved() {
+        this._setObjectAttribute('account', 'picture_url', '');
+        this._hideLoader();
+    }
 }
 window.customElements.define(AppscoAccountImageSettings.is, AppscoAccountImageSettings);

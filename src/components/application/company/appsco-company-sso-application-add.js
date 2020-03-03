@@ -19,12 +19,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanySSOApplicationAdd extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -99,297 +100,297 @@ class AppscoCompanySSOApplicationAdd extends mixinBehaviors([
         <iron-a11y-keys keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-sso-application-add'; }
+    static get is() { return 'appsco-company-sso-application-add'; }
 
-  static get properties() {
-      return {
-          _selected: {
-              type: String,
-              value: 'appsco-application-add-search',
-              notify: true
-          },
+    static get properties() {
+        return {
+            _selected: {
+                type: String,
+                value: 'appsco-application-add-search',
+                notify: true
+            },
 
-          _selectedApplication: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+            _selectedApplication: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          item: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            item: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _itemTemplate: {
-              type: Object,
-              computed: '_computeItemTemplate(item)'
-          },
+            _itemTemplate: {
+                type: Object,
+                computed: '_computeItemTemplate(item)'
+            },
 
-          applicationsTemplateApi: {
-              type: String
-          },
+            applicationsTemplateApi: {
+                type: String
+            },
 
-          addApplicationApi: {
-              type: String
-          },
+            addApplicationApi: {
+                type: String
+            },
 
-          _dialogTitle: {
-              type: String,
-              value: 'Add application'
-          },
+            _dialogTitle: {
+                type: String,
+                value: 'Add application'
+            },
 
-          /**
-           * Indicates weather search action should be displayed or not.
-           * It depends on which page is currently displayed.
-           */
-          _searchAction: {
-              type: Boolean,
-              value: false,
-              notify: true
-          },
+            /**
+             * Indicates weather search action should be displayed or not.
+             * It depends on which page is currently displayed.
+             */
+            _searchAction: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
 
-          /**
-           * Indicates weather add action should be displayed or not.
-           * It depends on which page is currently displayed.
-           */
-          _addAction: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates weather add action should be displayed or not.
+             * It depends on which page is currently displayed.
+             */
+            _addAction: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * Indicates if appsco loader should be displayed.
-           */
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if appsco loader should be displayed.
+             */
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this.$.addApplicationAction,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this.$.addApplicationAction,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this.$.addApplicationAction,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this.$.addApplicationAction,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('_selected-changed', this._onSelectedChanged);
-      this.addEventListener('_search-action-changed', this._onSearchActionChanged);
-      this.addEventListener('neon-animation-finish', this._onAddActionAnimationFinish);
-  }
+    _addListeners() {
+        this.addEventListener('_selected-changed', this._onSelectedChanged);
+        this.addEventListener('_search-action-changed', this._onSearchActionChanged);
+        this.addEventListener('neon-animation-finish', this._onAddActionAnimationFinish);
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onFormError() {
-      this._hideLoader();
-  }
+    _onFormError() {
+        this._hideLoader();
+    }
 
-  _computeItemTemplate(item) {
-      item.title = 'Application title';
-      return item;
-  }
+    _computeItemTemplate(item) {
+        item.title = 'Application title';
+        return item;
+    }
 
-  _onSearch(event) {
-      this.$.appscoApplicationAddSearch.filterResourcesByTerm(event.detail.term);
-  }
+    _onSearch(event) {
+        this.$.appscoApplicationAddSearch.filterResourcesByTerm(event.detail.term);
+    }
 
-  _onSearchClear() {
-      this._onSearch({
-          detail: {
-              term: ''
-          }
-      });
-  }
+    _onSearchClear() {
+        this._onSearch({
+            detail: {
+                term: ''
+            }
+        });
+    }
 
-  _setupAppscoSearch() {
-      if (this.shadowRoot.getElementById('appscoSearch')) {
-          this.shadowRoot.getElementById('appscoSearch').setup();
-      }
-  }
+    _setupAppscoSearch() {
+        if (this.shadowRoot.getElementById('appscoSearch')) {
+            this.shadowRoot.getElementById('appscoSearch').setup();
+        }
+    }
 
-  _resetAppscoSearch() {
-      if (this.shadowRoot.getElementById('appscoSearch')) {
-          this.shadowRoot.getElementById('appscoSearch').reset();
-      }
-  }
+    _resetAppscoSearch() {
+        if (this.shadowRoot.getElementById('appscoSearch')) {
+            this.shadowRoot.getElementById('appscoSearch').reset();
+        }
+    }
 
-  _onSearchActionChanged(event) {
-      event.detail.value ? this._setupAppscoSearch() : this._resetAppscoSearch();
-  }
+    _onSearchActionChanged(event) {
+        event.detail.value ? this._setupAppscoSearch() : this._resetAppscoSearch();
+    }
 
-  /**
-   * Called after selected page has been changed.
-   * According to selected page it shows / hides add application action (_addAction).
-   *
-   * @private
-   */
-  _onSelectedChanged() {
-      if (this._selected !== 'appsco-application-add-search') {
-          this._searchAction = false;
-          this.$.addApplicationAction.style.display = 'block';
-          this.playAnimation('entry');
-          this._addAction = true;
-      }
-      else {
-          this._searchAction = true;
-          this._addAction = false;
-          this.playAnimation('exit');
-      }
-  }
+    /**
+     * Called after selected page has been changed.
+     * According to selected page it shows / hides add application action (_addAction).
+     *
+     * @private
+     */
+    _onSelectedChanged() {
+        if (this._selected !== 'appsco-application-add-search') {
+            this._searchAction = false;
+            this.$.addApplicationAction.style.display = 'block';
+            this.playAnimation('entry');
+            this._addAction = true;
+        }
+        else {
+            this._searchAction = true;
+            this._addAction = false;
+            this.playAnimation('exit');
+        }
+    }
 
-  /**
-   * Called after add application action animation is finished.
-   * It hides action if it shouldn't be visible.
-   *
-   * @private
-   */
-  _onAddActionAnimationFinish() {
-      if (!this._addAction) {
-          this.$.addApplicationAction.style.display = 'none';
-      }
-  }
+    /**
+     * Called after add application action animation is finished.
+     * It hides action if it shouldn't be visible.
+     *
+     * @private
+     */
+    _onAddActionAnimationFinish() {
+        if (!this._addAction) {
+            this.$.addApplicationAction.style.display = 'none';
+        }
+    }
 
-  /**
-   * Called after application has been selected from search list.
-   * It shows appsco-application-add-settings page.
-   *
-   * @private
-   */
-  _onApplicationSelect() {
-      this._selected = 'appsco-application-add-settings';
-  }
+    /**
+     * Called after application has been selected from search list.
+     * It shows appsco-application-add-settings page.
+     *
+     * @private
+     */
+    _onApplicationSelect() {
+        this._selected = 'appsco-application-add-settings';
+    }
 
-  /**
-   * Called after clicked on Add Custom Application action.
-   * It sets selected application to Item resource.
-   *
-   * @private
-   */
-  _onAddItem() {
-      this.set('_selectedApplication', this._itemTemplate);
-      this._onApplicationSelect();
-      this._dialogTitle = 'Add custom application';
-  }
+    /**
+     * Called after clicked on Add Custom Application action.
+     * It sets selected application to Item resource.
+     *
+     * @private
+     */
+    _onAddItem() {
+        this.set('_selectedApplication', this._itemTemplate);
+        this._onApplicationSelect();
+        this._dialogTitle = 'Add custom application';
+    }
 
-  /**
-   * Called after dialog has been opened.
-   *
-   * @private
-   */
-  _onDialogOpened(event) {
-      this._dialogTitle = 'Add application';
-      this.$.appscoApplicationAddSearch.setup();
-      this._setupAppscoSearch();
-  }
+    /**
+     * Called after dialog has been opened.
+     *
+     * @private
+     */
+    _onDialogOpened(event) {
+        this._dialogTitle = 'Add application';
+        this.$.appscoApplicationAddSearch.setup();
+        this._setupAppscoSearch();
+    }
 
-  /**
-   * Called after dialog has been closed.
-   * It resets search and settings pages.
-   * It sets selected page to appsco-application-add-search.
-   *
-   * @private
-   */
-  _onDialogClosed() {
-      this._resetAppscoSearch();
-      this._selectedApplication = {};
-      this.$.appscoApplicationAddSearch.reset();
-      this.$.appscoApplicationAddSettings.reset();
-      this._selected = 'appsco-application-add-search';
-      this._dialogTitle = 'Add application';
-      this._hideLoader();
-  }
+    /**
+     * Called after dialog has been closed.
+     * It resets search and settings pages.
+     * It sets selected page to appsco-application-add-search.
+     *
+     * @private
+     */
+    _onDialogClosed() {
+        this._resetAppscoSearch();
+        this._selectedApplication = {};
+        this.$.appscoApplicationAddSearch.reset();
+        this.$.appscoApplicationAddSettings.reset();
+        this._selected = 'appsco-application-add-search';
+        this._dialogTitle = 'Add application';
+        this._hideLoader();
+    }
 
-  /**
-   * Submits signup form on ENTER key using iron-a11y-keys component.
-   *
-   * @private
-   */
-  _onEnter() {
-      this._onAddApplication();
-  }
+    /**
+     * Submits signup form on ENTER key using iron-a11y-keys component.
+     *
+     * @private
+     */
+    _onEnter() {
+        this._onAddApplication();
+    }
 
-  /**
-   * Called when user wants to save chosen application.
-   * It calls addApplication method of appsco-application-add-settings page.
-   *
-   * @private
-   */
-  _onAddApplication() {
-      this._showLoader();
-      this.$.appscoApplicationAddSettings.addApplication();
-  }
+    /**
+     * Called when user wants to save chosen application.
+     * It calls addApplication method of appsco-application-add-settings page.
+     *
+     * @private
+     */
+    _onAddApplication() {
+        this._showLoader();
+        this.$.appscoApplicationAddSettings.addApplication();
+    }
 
-  /**
-   * Called after application has been successfully added.
-   * It closes the dialog.
-   *
-   * @private
-   */
-  _onApplicationAdded() {
-      this._closeDialog();
-  }
+    /**
+     * Called after application has been successfully added.
+     * It closes the dialog.
+     *
+     * @private
+     */
+    _onApplicationAdded() {
+        this._closeDialog();
+    }
 
-  _closeDialog() {
-      this.$.addApplicationDialog.close();
-      this.$.addApplicationAction.disabled = false;
-  }
+    _closeDialog() {
+        this.$.addApplicationDialog.close();
+        this.$.addApplicationAction.disabled = false;
+    }
 
-  setAction (action) {
-      this.$.appscoApplicationAddSettings.setAction(action);
-  }
+    setAction (action) {
+        this.$.appscoApplicationAddSettings.setAction(action);
+    }
 
-  toggle() {
-      this.$.addApplicationDialog.toggle();
-  }
+    toggle() {
+        this.$.addApplicationDialog.toggle();
+    }
 
-  _onPageAnimationFinish(event) {
-      const fromPage = event.detail.fromPage,
-          toPage = event.detail.toPage;
+    _onPageAnimationFinish(event) {
+        const fromPage = event.detail.fromPage,
+            toPage = event.detail.toPage;
 
-      if('appsco-application-add-settings' === fromPage.getAttribute('name') ||
-          'appsco-application-add-search' === fromPage.getAttribute('name')) {
-          fromPage.reset();
-      }
+        if('appsco-application-add-settings' === fromPage.getAttribute('name') ||
+            'appsco-application-add-search' === fromPage.getAttribute('name')) {
+            fromPage.reset();
+        }
 
-      if('appsco-application-add-search' === toPage.getAttribute('name')) {
-          toPage.setup();
-      }
-  }
+        if('appsco-application-add-search' === toPage.getAttribute('name')) {
+            toPage.setup();
+        }
+    }
 }
 window.customElements.define(AppscoCompanySSOApplicationAdd.is, AppscoCompanySSOApplicationAdd);

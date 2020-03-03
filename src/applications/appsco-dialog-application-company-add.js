@@ -14,9 +14,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDialogApplicationCompanyAdd extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -69,91 +70,91 @@ class AppscoDialogApplicationCompanyAdd extends mixinBehaviors([Appsco.HeadersMi
 
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-dialog-application-company-add'; }
+    static get is() { return 'appsco-dialog-application-company-add'; }
 
-  static get properties() {
-      return {
-          applicationTemplate: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            applicationTemplate: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          addApplicationApi: {
-              type: String
-          },
+            addApplicationApi: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('application-added', this.toggle);
-      this.addEventListener('form-error', this._hideLoader);
-  }
+    _addListeners() {
+        this.addEventListener('application-added', this.toggle);
+        this.addEventListener('form-error', this._hideLoader);
+    }
 
-  setAction(action) {
-      this.$.appscoApplicationAddSettings.setAction(action);
-  }
+    setAction(action) {
+        this.$.appscoApplicationAddSettings.setAction(action);
+    }
 
-  setApplicationTemplate(applicationTpl) {
-      this.applicationTemplate = applicationTpl;
-  }
+    setApplicationTemplate(applicationTpl) {
+        this.applicationTemplate = applicationTpl;
+    }
 
-  /**
-   * Toggles add applications dialog.
-   */
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    /**
+     * Toggles add applications dialog.
+     */
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  /**
-   * Called after dialog has been closed.
-   *
-   * @private
-   */
-  _onDialogClosed() {
-      this._hideLoader();
-      this.reset();
-  }
+    /**
+     * Called after dialog has been closed.
+     *
+     * @private
+     */
+    _onDialogClosed() {
+        this._hideLoader();
+        this.reset();
+    }
 
-  _onSelectInputClosed (event) {
-      event.stopPropagation();
-  }
+    _onSelectInputClosed (event) {
+        event.stopPropagation();
+    }
 
-  _onSave() {
-      this._showLoader();
-      this.$.appscoApplicationAddSettings.addApplication();
-  }
+    _onSave() {
+        this._showLoader();
+        this.$.appscoApplicationAddSettings.addApplication();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onFormError() {
-      this._hideLoader();
-  }
+    _onFormError() {
+        this._hideLoader();
+    }
 
-  reset() {
-      this.$.appscoApplicationAddSettings.reset();
-  }
+    reset() {
+        this.$.appscoApplicationAddSettings.reset();
+    }
 }
 window.customElements.define(AppscoDialogApplicationCompanyAdd.is, AppscoDialogApplicationCompanyAdd);

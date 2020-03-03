@@ -11,9 +11,10 @@ import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountApproveDevice extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -61,117 +62,117 @@ class AppscoAccountApproveDevice extends mixinBehaviors([Appsco.HeadersMixin], P
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-approve-device'; }
+    static get is() { return 'appsco-account-approve-device'; }
 
-  static get properties() {
-      return {
-          device: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            device: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _approveDeviceApi: {
-              type: String,
-              computed: '_computeApproveApi(device)'
-          },
+            _approveDeviceApi: {
+                type: String,
+                computed: '_computeApproveApi(device)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  setDevice(device) {
-      this.set('device', device);
-  }
+    setDevice(device) {
+        this.set('device', device);
+    }
 
-  setAccount(account) {
-      this.set('account', account);
-  }
+    setAccount(account) {
+        this.set('account', account);
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  _computeApproveApi(device) {
-      return device.meta ? device.meta.approve : '';
-  }
+    _computeApproveApi(device) {
+        return device.meta ? device.meta.approve : '';
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogClosed() {
-      this._hideError();
-      this._hideLoader();
-  }
+    _onDialogClosed() {
+        this._hideError();
+        this._hideLoader();
+    }
 
-  _onApproveAction() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._approveDeviceApi,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onApproveAction() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._approveDeviceApi,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._showLoader();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('device-approve-finished', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      device: this.device
-                  }
-              }));
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('device-approve-finished', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        device: this.device
+                    }
+                }));
 
-              this.close();
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+                this.close();
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoAccountApproveDevice.is, AppscoAccountApproveDevice);

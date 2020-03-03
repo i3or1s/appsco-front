@@ -35,8 +35,8 @@ class AppscoManageResourcePage extends mixinBehaviors([
     Appsco.HeadersMixin,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-manage-page-styles">
             :host {
                 --account-initials-background-color: var(--body-background-color-darker);
@@ -219,495 +219,495 @@ class AppscoManageResourcePage extends mixinBehaviors([
         <appsco-resource-admin-revoke id="appscoResourceAdminRevoke" authorization-token="[[ authorizationToken ]]" on-access-revoked="_onResourceAdminRevoked">
         </appsco-resource-admin-revoke>
 `;
-  }
-
-  static get is() { return 'appsco-manage-resource-page'; }
-
-  static get properties() {
-      return {
-          route: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onApplicationChanged'
-          },
-
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          domain: {
-              type: String
-          },
-
-          resourceAdmin: {
-              type: Boolean,
-              value: false,
-              observer: '_onResourceAdminChanged'
-          },
-
-          _lastEditedDate: {
-              type: String,
-              computed: '_computeLastEditedDate(application)'
-          },
-
-          _setByInfo: {
-              type: String,
-              computed: '_computeSetByInfo(application)'
-          },
-
-          /**
-           * Selected page.
-           * It has value of component's 'name' attribute.
-           */
-          _selected: {
-              type: String,
-              value: 'appsco-application-components-page',
-              notify: true
-          },
-
-          companyIdpSamlMetadataApi: {
-              type: String
-          },
-
-          accountsApi: {
-              type: String
-          },
-
-          companyApi: {
-              type: String,
-              observer: '_onCompanyApiChanged'
-          },
-
-          companyContactsApi: {
-              type: String
-          },
-
-          companyRolesApi: {
-              type: String
-          },
-
-          companyGroupsApi: {
-              type: String
-          },
-
-          _groupsApi: {
-              type: String,
-              computed: '_computeGroupsForApplication(application)'
-          },
-
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _subscribers: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _resourceImageSettingApi: {
-              type: String,
-              computed: '_computeResourceImageSettingsApi(application)'
-          },
-
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          animationConfig: {
-              type: Object
-          },
-
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
-
-  static get observers() {
-      return [
-          '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-      ];
-  }
-
-  ready() {
-      super.ready();
-
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
-
-      afterNextRender(this, function() {
-          this._getApplication();
-          this._addListeners();
-      });
-  }
-
-  _addListeners() {
-      this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
-      this.toolbar.addEventListener('search-assignees', this._onSearchAssignees.bind(this));
-      this.toolbar.addEventListener('search-assignees-clear', this._onSearchAssigneesClear.bind(this));
-      this.toolbar.addEventListener('advanced-settings', this._showAdvancedManageResourcePageOptions.bind(this));
-  }
-
-  _onCompanyApiChanged() {
-      this._getApplication();
-  }
-
-  _updateScreen(medium, tablet, mobile) {
-      this.updateStyles();
-
-      if (mobile) {
-          this.$.appscoContent.hideSection('resource');
-      }
-      else if(!this.$.appscoContent.resourceActive) {
-          this.$.appscoContent.showSection('resource');
-      }
-  }
-
-  _computeGroupsForApplication(application) {
-      return application.meta ? application.meta.groups + '?extended=1' : null;
-  }
-
-  _computeResourceImageSettingsApi(application) {
-      return application.meta ? application.meta.change_application_image : null;
-  }
-
-  _computeLastEditedDate(application) {
-      return (application && application.last_modified) ? this._dateFormat(application.last_modified.date.date) : '';
-  }
-
-  _computeSetByInfo(application) {
-      return (application.claim_type && application.claim_type === 'individual') ?
-          'Resource is set to be configured individually by subscribers.' :
-          'Resource is set to be configured by admin for all subscribers.';
-  }
-
-  /**
-   * Formats date and returns formatted date as string.
-   *
-   * @param {String} value
-   * @returns {string}
-   * @private
-   */
-  _dateFormat(value) {
-      if (value) {
-          const options = {
-              year: 'numeric', month: 'short', day: 'numeric',
-              hour: 'numeric', minute: 'numeric', second: 'numeric'
-          };
-          return (new Date(value)).toLocaleDateString('en', options);
-      }
-  }
-
-  _pageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
-
-  _getApplication() {
-      if (!this.application.self && this.companyApi && this._headers) {
-          this.$.ironAjaxGetApplication.url = this.companyApi + '/applications' + this.route.path;
-          this.$.ironAjaxGetApplication.generateRequest();
-      }
-
-  }
-
-  _onApplicationResponse(event) {
-      this.application = event.detail.response;
-  }
-
-  _onApplicationChanged(application) {
-      if (application.self) {
-          if (this.shadowRoot.getElementById('appscoManageApplicationComponentsPage') && this.shadowRoot.getElementById('appscoManageApplicationComponentsPage').$) {
-              this.shadowRoot.getElementById('appscoManageApplicationComponentsPage').load();
-          }
-
-          if (this.shadowRoot.getElementById('appscoApplicationGroupsPage') && this.shadowRoot.getElementById('appscoApplicationGroupsPage').$) {
-              this.shadowRoot.getElementById('appscoApplicationGroupsPage').loadGroups();
-          }
-      }
-  }
-
-  _onResourceAdminChanged(value) {
-      if (value) {
-          this._pageLoaded();
-      }
-  }
-
-  _onApplicationError() {
-      this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
-  }
-
-  _onResourceSettings() {
-      this._selected = 'appsco-resource-settings-page';
-  }
-
-  _onAllAssignees() {
-      this._selected = 'appsco-application-assignees-page';
-  }
-
-  _onAllLog() {
-      this._selected = 'appsco-application-log-page';
-  }
-
-  _onManageGroups() {
-      this._selected = 'appsco-application-groups-page';
-  }
-
-  _onManageCompliance() {
-      this._selected = 'appsco-application-compliance-page';
-  }
-
-  _onManageResourceAdmins() {
-      this._selected = 'appsco-resource-admins-page';
-  }
-
-  _onResourceSettingsSaved(event) {
-      this.application = event.detail.application;
-      this._showApplicationComponentsPage();
-  }
-
-  _onComplianceInfoUpdated() {
-      this._showApplicationComponentsPage();
-      this._notify('Compliance information successfully modified.');
-  }
-
-  _onResourceSettingsBack() {
-      this._showApplicationComponentsPage();
-  }
-
-  _onResourceBack() {
-      this._showApplicationComponentsPage();
-  }
-
-  removeGroup(group) {
-      this.shadowRoot.getElementById('appscoApplicationGroupsPage').removeGroup(group);
-  }
-
-  _showApplicationComponentsPage() {
-      this._selected = 'appsco-application-components-page';
-  }
-
-  _onShareApplication() {
-      const dialog = this.shadowRoot.getElementById('appscoShareResource');
-      dialog.setResources([this.application]);
-      dialog.toggle();
-      this._hideProgressBar();
-  }
-
-  reloadAssignees() {
-      this.shadowRoot.getElementById('appscoApplicationAssignees').reload();
-      this.$.appscoManageApplicationComponentsPage.reloadAssignees();
-      this.shadowRoot.getElementById('appscoApplicationAssigneesPage').reloadAssignees();
-  }
-
-  searchAssignees(term) {
-      this.shadowRoot.getElementById('appscoApplicationAssigneesPage').searchAssignees(term);
-  }
-
-  reloadResourceAdmins() {
-      this.shadowRoot.getElementById('appscoResourceAdminsPage').reload();
-  }
-
-  removeApplicationAssignee(application, assignee) {
-      if (application.alias === this.application.alias) {
-          this._removeAssignee(assignee);
-      }
-  }
-
-  _removeAssignee(assignee) {
-      this.shadowRoot.getElementById('appscoApplicationAssignees').removeAssignee(assignee);
-      this.$.appscoManageApplicationComponentsPage.removeAssignee(assignee);
-      this.shadowRoot.getElementById('appscoApplicationAssigneesPage').removeAssignee(assignee);
-  }
-
-  _onAssigneeClaims(event) {
-      this.dispatchEvent(new CustomEvent('change-assignee-claims', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: this.application,
-              assignee: event.detail.assignee
-          }
-      }));
-  }
-
-  _onRemoveApplication() {
-      const dialog = this.shadowRoot.getElementById('appscoCompanyApplicationsRemove');
-      dialog.setApplications([this.application]);
-      dialog.toggle();
-  }
-
-  resetPage() {
-      this._showApplicationComponentsPage();
-  }
-
-  toggleResource() {
-      this.$.appscoContent.toggleSection('resource');
-  }
-
-  _onPageAnimationFinish(event) {
-      const fromPage = event.detail.fromPage,
-          toPage = event.detail.toPage;
-
-      if('appsco-application-assignees-page' === fromPage.getAttribute('name')) {
-          fromPage.resetPage();
-      }
-      switch(toPage.getAttribute('name')) {
-          case 'appsco-application-settings-page':
-              toPage.setPage();
-              break;
-          case 'appsco-application-assignees-page':
-              toPage.setupPage();
-              break;
-          default:
-              break;
-      }
-  }
-
-  reload() {
-      this.$.appscoManageApplicationComponentsPage.load();
-  }
-
-  showAdvanced() {
-      this.$.appscoManageApplicationComponentsPage.showAdvanced();
-  }
-
-  hideAdvanced() {
-      this.$.appscoManageApplicationComponentsPage.hideAdvanced();
-  }
-
-  _searchAssignees(term) {
-      this._showProgressBar();
-      this.searchAssignees(term);
-  }
-
-  _onSearchAssignees(event) {
-      this._searchAssignees(event.detail.term);
-  }
-
-  _onSearchAssigneesClear() {
-      this._searchAssignees('');
-  }
-
-  _showAdvancedManageResourcePageOptions(event) {
-      if (event.detail.showAdvanced) {
-          this.showAdvanced();
-          return;
-      }
-
-      this.hideAdvanced();
-  }
-
-  _onApplicationsRemoveFailed() {
-      this._notify('An error occurred. Selected resources were not removed from company. Please try again.');
-  }
-
-  _onRevokeAssigneeAccess(event) {
-      const dialog = this.shadowRoot.getElementById('appscoApplicationAssigneeRevoke');
-
-      dialog.setAssignee(event.detail.assignee);
-      dialog.toggle();
-  }
-
-  _onRemoveApplicationFromGroup(event) {
-      const dialog = this.shadowRoot.getElementById('appscoApplicationRemoveGroup');
-      dialog.setGroup(event.detail.group);
-      dialog.setApplication(event.detail.application);
-      dialog.toggle();
-  }
-
-  _onAddResourceAdmin(event) {
-      const dialog = this.shadowRoot.getElementById('appscoAddResourceAdmin');
-      dialog.setResources([event.detail.resource]);
-      dialog.toggle();
-      this._hideProgressBar();
-  }
-
-  _onResourceAdminAdded(event) {
-      event.stopPropagation();
-      this.dispatchEvent(new CustomEvent('resource-admin-added', { bubbles: true, composed: true }));
-  }
-
-  _onRevokeResourceAdmin(event) {
-      const dialog = this.shadowRoot.getElementById('appscoResourceAdminRevoke');
-
-      dialog.setAssignee(event.detail.assignee);
-      dialog.setApplication(event.detail.application);
-      dialog.toggle();
-  }
-
-  _onResourceAdminRevoked(event) {
-      event.stopPropagation();
-      this.dispatchEvent(new CustomEvent('resource-admin-revoked', {
-          bubbles: true,
-          composed: true,
-          detail: event.detail
-      }));
-  }
-
-  _onApplicationSettingsNoChanges() {
-      this._notify('No changes have been made to ' + this.application.title + '.');
-  }
-
-  _onEnableAssigneesSearchAction() {
-      this.toolbar.enableAssigneesSearchAction();
-  }
-
-  _onDisableAssigneesSearchAction() {
-      this.toolbar.disableAssigneesSearchAction();
-  }
+    }
+
+    static get is() { return 'appsco-manage-resource-page'; }
+
+    static get properties() {
+        return {
+            route: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onApplicationChanged'
+            },
+
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            domain: {
+                type: String
+            },
+
+            resourceAdmin: {
+                type: Boolean,
+                value: false,
+                observer: '_onResourceAdminChanged'
+            },
+
+            _lastEditedDate: {
+                type: String,
+                computed: '_computeLastEditedDate(application)'
+            },
+
+            _setByInfo: {
+                type: String,
+                computed: '_computeSetByInfo(application)'
+            },
+
+            /**
+             * Selected page.
+             * It has value of component's 'name' attribute.
+             */
+            _selected: {
+                type: String,
+                value: 'appsco-application-components-page',
+                notify: true
+            },
+
+            companyIdpSamlMetadataApi: {
+                type: String
+            },
+
+            accountsApi: {
+                type: String
+            },
+
+            companyApi: {
+                type: String,
+                observer: '_onCompanyApiChanged'
+            },
+
+            companyContactsApi: {
+                type: String
+            },
+
+            companyRolesApi: {
+                type: String
+            },
+
+            companyGroupsApi: {
+                type: String
+            },
+
+            _groupsApi: {
+                type: String,
+                computed: '_computeGroupsForApplication(application)'
+            },
+
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _subscribers: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _resourceImageSettingApi: {
+                type: String,
+                computed: '_computeResourceImageSettingsApi(application)'
+            },
+
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            animationConfig: {
+                type: Object
+            },
+
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
+
+    static get observers() {
+        return [
+            '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+        ];
+    }
+
+    ready() {
+        super.ready();
+
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
+
+        afterNextRender(this, function() {
+            this._getApplication();
+            this._addListeners();
+        });
+    }
+
+    _addListeners() {
+        this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+        this.toolbar.addEventListener('search-assignees', this._onSearchAssignees.bind(this));
+        this.toolbar.addEventListener('search-assignees-clear', this._onSearchAssigneesClear.bind(this));
+        this.toolbar.addEventListener('advanced-settings', this._showAdvancedManageResourcePageOptions.bind(this));
+    }
+
+    _onCompanyApiChanged() {
+        this._getApplication();
+    }
+
+    _updateScreen(medium, tablet, mobile) {
+        this.updateStyles();
+
+        if (mobile) {
+            this.$.appscoContent.hideSection('resource');
+        }
+        else if(!this.$.appscoContent.resourceActive) {
+            this.$.appscoContent.showSection('resource');
+        }
+    }
+
+    _computeGroupsForApplication(application) {
+        return application.meta ? application.meta.groups + '?extended=1' : null;
+    }
+
+    _computeResourceImageSettingsApi(application) {
+        return application.meta ? application.meta.change_application_image : null;
+    }
+
+    _computeLastEditedDate(application) {
+        return (application && application.last_modified) ? this._dateFormat(application.last_modified.date.date) : '';
+    }
+
+    _computeSetByInfo(application) {
+        return (application.claim_type && application.claim_type === 'individual') ?
+            'Resource is set to be configured individually by subscribers.' :
+            'Resource is set to be configured by admin for all subscribers.';
+    }
+
+    /**
+     * Formats date and returns formatted date as string.
+     *
+     * @param {String} value
+     * @returns {string}
+     * @private
+     */
+    _dateFormat(value) {
+        if (value) {
+            const options = {
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: 'numeric', minute: 'numeric', second: 'numeric'
+            };
+            return (new Date(value)).toLocaleDateString('en', options);
+        }
+    }
+
+    _pageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
+
+    _getApplication() {
+        if (!this.application.self && this.companyApi && this._headers) {
+            this.$.ironAjaxGetApplication.url = this.companyApi + '/applications' + this.route.path;
+            this.$.ironAjaxGetApplication.generateRequest();
+        }
+
+    }
+
+    _onApplicationResponse(event) {
+        this.application = event.detail.response;
+    }
+
+    _onApplicationChanged(application) {
+        if (application.self) {
+            if (this.shadowRoot.getElementById('appscoManageApplicationComponentsPage') && this.shadowRoot.getElementById('appscoManageApplicationComponentsPage').$) {
+                this.shadowRoot.getElementById('appscoManageApplicationComponentsPage').load();
+            }
+
+            if (this.shadowRoot.getElementById('appscoApplicationGroupsPage') && this.shadowRoot.getElementById('appscoApplicationGroupsPage').$) {
+                this.shadowRoot.getElementById('appscoApplicationGroupsPage').loadGroups();
+            }
+        }
+    }
+
+    _onResourceAdminChanged(value) {
+        if (value) {
+            this._pageLoaded();
+        }
+    }
+
+    _onApplicationError() {
+        this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
+    }
+
+    _onResourceSettings() {
+        this._selected = 'appsco-resource-settings-page';
+    }
+
+    _onAllAssignees() {
+        this._selected = 'appsco-application-assignees-page';
+    }
+
+    _onAllLog() {
+        this._selected = 'appsco-application-log-page';
+    }
+
+    _onManageGroups() {
+        this._selected = 'appsco-application-groups-page';
+    }
+
+    _onManageCompliance() {
+        this._selected = 'appsco-application-compliance-page';
+    }
+
+    _onManageResourceAdmins() {
+        this._selected = 'appsco-resource-admins-page';
+    }
+
+    _onResourceSettingsSaved(event) {
+        this.application = event.detail.application;
+        this._showApplicationComponentsPage();
+    }
+
+    _onComplianceInfoUpdated() {
+        this._showApplicationComponentsPage();
+        this._notify('Compliance information successfully modified.');
+    }
+
+    _onResourceSettingsBack() {
+        this._showApplicationComponentsPage();
+    }
+
+    _onResourceBack() {
+        this._showApplicationComponentsPage();
+    }
+
+    removeGroup(group) {
+        this.shadowRoot.getElementById('appscoApplicationGroupsPage').removeGroup(group);
+    }
+
+    _showApplicationComponentsPage() {
+        this._selected = 'appsco-application-components-page';
+    }
+
+    _onShareApplication() {
+        const dialog = this.shadowRoot.getElementById('appscoShareResource');
+        dialog.setResources([this.application]);
+        dialog.toggle();
+        this._hideProgressBar();
+    }
+
+    reloadAssignees() {
+        this.shadowRoot.getElementById('appscoApplicationAssignees').reload();
+        this.$.appscoManageApplicationComponentsPage.reloadAssignees();
+        this.shadowRoot.getElementById('appscoApplicationAssigneesPage').reloadAssignees();
+    }
+
+    searchAssignees(term) {
+        this.shadowRoot.getElementById('appscoApplicationAssigneesPage').searchAssignees(term);
+    }
+
+    reloadResourceAdmins() {
+        this.shadowRoot.getElementById('appscoResourceAdminsPage').reload();
+    }
+
+    removeApplicationAssignee(application, assignee) {
+        if (application.alias === this.application.alias) {
+            this._removeAssignee(assignee);
+        }
+    }
+
+    _removeAssignee(assignee) {
+        this.shadowRoot.getElementById('appscoApplicationAssignees').removeAssignee(assignee);
+        this.$.appscoManageApplicationComponentsPage.removeAssignee(assignee);
+        this.shadowRoot.getElementById('appscoApplicationAssigneesPage').removeAssignee(assignee);
+    }
+
+    _onAssigneeClaims(event) {
+        this.dispatchEvent(new CustomEvent('change-assignee-claims', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: this.application,
+                assignee: event.detail.assignee
+            }
+        }));
+    }
+
+    _onRemoveApplication() {
+        const dialog = this.shadowRoot.getElementById('appscoCompanyApplicationsRemove');
+        dialog.setApplications([this.application]);
+        dialog.toggle();
+    }
+
+    resetPage() {
+        this._showApplicationComponentsPage();
+    }
+
+    toggleResource() {
+        this.$.appscoContent.toggleSection('resource');
+    }
+
+    _onPageAnimationFinish(event) {
+        const fromPage = event.detail.fromPage,
+            toPage = event.detail.toPage;
+
+        if('appsco-application-assignees-page' === fromPage.getAttribute('name')) {
+            fromPage.resetPage();
+        }
+        switch(toPage.getAttribute('name')) {
+            case 'appsco-application-settings-page':
+                toPage.setPage();
+                break;
+            case 'appsco-application-assignees-page':
+                toPage.setupPage();
+                break;
+            default:
+                break;
+        }
+    }
+
+    reload() {
+        this.$.appscoManageApplicationComponentsPage.load();
+    }
+
+    showAdvanced() {
+        this.$.appscoManageApplicationComponentsPage.showAdvanced();
+    }
+
+    hideAdvanced() {
+        this.$.appscoManageApplicationComponentsPage.hideAdvanced();
+    }
+
+    _searchAssignees(term) {
+        this._showProgressBar();
+        this.searchAssignees(term);
+    }
+
+    _onSearchAssignees(event) {
+        this._searchAssignees(event.detail.term);
+    }
+
+    _onSearchAssigneesClear() {
+        this._searchAssignees('');
+    }
+
+    _showAdvancedManageResourcePageOptions(event) {
+        if (event.detail.showAdvanced) {
+            this.showAdvanced();
+            return;
+        }
+
+        this.hideAdvanced();
+    }
+
+    _onApplicationsRemoveFailed() {
+        this._notify('An error occurred. Selected resources were not removed from company. Please try again.');
+    }
+
+    _onRevokeAssigneeAccess(event) {
+        const dialog = this.shadowRoot.getElementById('appscoApplicationAssigneeRevoke');
+
+        dialog.setAssignee(event.detail.assignee);
+        dialog.toggle();
+    }
+
+    _onRemoveApplicationFromGroup(event) {
+        const dialog = this.shadowRoot.getElementById('appscoApplicationRemoveGroup');
+        dialog.setGroup(event.detail.group);
+        dialog.setApplication(event.detail.application);
+        dialog.toggle();
+    }
+
+    _onAddResourceAdmin(event) {
+        const dialog = this.shadowRoot.getElementById('appscoAddResourceAdmin');
+        dialog.setResources([event.detail.resource]);
+        dialog.toggle();
+        this._hideProgressBar();
+    }
+
+    _onResourceAdminAdded(event) {
+        event.stopPropagation();
+        this.dispatchEvent(new CustomEvent('resource-admin-added', { bubbles: true, composed: true }));
+    }
+
+    _onRevokeResourceAdmin(event) {
+        const dialog = this.shadowRoot.getElementById('appscoResourceAdminRevoke');
+
+        dialog.setAssignee(event.detail.assignee);
+        dialog.setApplication(event.detail.application);
+        dialog.toggle();
+    }
+
+    _onResourceAdminRevoked(event) {
+        event.stopPropagation();
+        this.dispatchEvent(new CustomEvent('resource-admin-revoked', {
+            bubbles: true,
+            composed: true,
+            detail: event.detail
+        }));
+    }
+
+    _onApplicationSettingsNoChanges() {
+        this._notify('No changes have been made to ' + this.application.title + '.');
+    }
+
+    _onEnableAssigneesSearchAction() {
+        this.toolbar.enableAssigneesSearchAction();
+    }
+
+    _onDisableAssigneesSearchAction() {
+        this.toolbar.disableAssigneesSearchAction();
+    }
 }
 window.customElements.define(AppscoManageResourcePage.is, AppscoManageResourcePage);

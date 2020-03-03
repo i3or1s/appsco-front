@@ -5,9 +5,10 @@ import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationDetailsIdp extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host div[label] {
                 color: var(--secondary-text-color);
@@ -164,30 +165,30 @@ class AppscoApplicationDetailsIdp extends PolymerElement {
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-details-idp'; }
+    static get is() { return 'appsco-application-details-idp'; }
 
-  static get properties() {
-      return {
-          idpMetadata: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          }
-      };
-  }
+    static get properties() {
+        return {
+            idpMetadata: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            }
+        };
+    }
 
-  _onDownloadCertificate(event) {
-      event.preventDefault();
-      window.location.href = this.idpMetadata.certificateUrl;
-  }
+    _onDownloadCertificate(event) {
+        event.preventDefault();
+        window.location.href = this.idpMetadata.certificateUrl;
+    }
 
-  _onDownloadMetadataXml(event) {
-      event.preventDefault();
-      window.location.href = this.idpMetadata.metadataUrl + '?download=1';
-  }
+    _onDownloadMetadataXml(event) {
+        event.preventDefault();
+        window.location.href = this.idpMetadata.metadataUrl + '?download=1';
+    }
 }
 window.customElements.define(AppscoApplicationDetailsIdp.is, AppscoApplicationDetailsIdp);

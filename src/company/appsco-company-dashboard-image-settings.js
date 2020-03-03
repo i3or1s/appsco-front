@@ -9,9 +9,10 @@ import '../components/components/appsco-upload-image-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyDashboardImageSettings extends mixinBehaviors([AppscoUploadImageBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-upload-image-styles">
         </style>
 
@@ -35,62 +36,62 @@ class AppscoCompanyDashboardImageSettings extends mixinBehaviors([AppscoUploadIm
             </template>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-dashboard-image-settings'; }
+    static get is() { return 'appsco-company-dashboard-image-settings'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {}
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {}
+                },
+                notify: true
+            },
 
-          _imagePreview: {
-              type: String,
-              computed: '_computeImagePreviewClass(company)'
-          }
-      };
-  }
+            _imagePreview: {
+                type: String,
+                computed: '_computeImagePreviewClass(company)'
+            }
+        };
+    }
 
-  reset() {
-      const company = JSON.parse(JSON.stringify(this.company));
+    reset() {
+        const company = JSON.parse(JSON.stringify(this.company));
 
-      this.set('company', {});
-      this.set('company', company);
-  }
+        this.set('company', {});
+        this.set('company', company);
+    }
 
-  _computeImagePreviewClass(company) {
-      return (company && company.dashboard_image) ? 'has-image' : 'no-image';
-  }
+    _computeImagePreviewClass(company) {
+        return (company && company.dashboard_image) ? 'has-image' : 'no-image';
+    }
 
-  _setNewImage(file) {
-      const reader = new FileReader();
+    _setNewImage(file) {
+        const reader = new FileReader();
 
-      reader.onload = function(e) {
-          this._setObjectAttribute('company', 'dashboard_image', e.target.result);
-      }.bind(this);
+        reader.onload = function(e) {
+            this._setObjectAttribute('company', 'dashboard_image', e.target.result);
+        }.bind(this);
 
-      reader.readAsDataURL(file);
-  }
+        reader.readAsDataURL(file);
+    }
 
-  _fireChangeEvent(response) {
-      this.dispatchEvent(new CustomEvent('company-dashboard-logo-changed', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              company: JSON.parse(response)
-          }
-      }));
-  }
+    _fireChangeEvent(response) {
+        this.dispatchEvent(new CustomEvent('company-dashboard-logo-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                company: JSON.parse(response)
+            }
+        }));
+    }
 
-  _setStateAfterImageIsRemoved(response) {
-      this.set('company', response);
-      this._fireChangeEvent(JSON.stringify(response));
-      this._hideLoader();
-  }
+    _setStateAfterImageIsRemoved(response) {
+        this.set('company', response);
+        this._fireChangeEvent(JSON.stringify(response));
+        this._hideLoader();
+    }
 }
 window.customElements.define(AppscoCompanyDashboardImageSettings.is, AppscoCompanyDashboardImageSettings);

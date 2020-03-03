@@ -20,9 +20,10 @@ import * as gestures from '@polymer/polymer/lib/utils/gestures.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCustomersActions extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -155,234 +156,234 @@ class AppscoCustomersActions extends mixinBehaviors([NeonAnimationRunnerBehavior
             <paper-button class="add-action" on-tap="_onAddAction">Add customer</paper-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-customers-actions'; }
+    static get is() { return 'appsco-customers-actions'; }
 
-  static get properties() {
-      return {
-          _importActionsVisible: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            _importActionsVisible: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _actionList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'import-customers',
-                          name: 'Customers',
-                          icon: 'icons:social:domain'
-                      },
-                      {
-                          value: 'import-customer-resources',
-                          name: 'Resources',
-                          icon: 'icons:apps'
-                      }
-                  ]
-              }
-          },
+            _actionList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'import-customers',
+                            name: 'Customers',
+                            icon: 'icons:social:domain'
+                        },
+                        {
+                            value: 'import-customer-resources',
+                            name: 'Resources',
+                            icon: 'icons:apps'
+                        }
+                    ]
+                }
+            },
 
-          _bulkActions: {
-              type: Boolean,
-              value: false,
-              observer: '_onBulkActionsChanged'
-          },
+            _bulkActions: {
+                type: Boolean,
+                value: false,
+                observer: '_onBulkActionsChanged'
+            },
 
-          _bulkSelectAll: {
-              type: Boolean,
-              value: true,
-              observer: '_onBulkSelectAllChanged'
-          },
+            _bulkSelectAll: {
+                type: Boolean,
+                value: true,
+                observer: '_onBulkSelectAllChanged'
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: [],
-              nodeDelay: 50,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'cascaded-animation',
-              animation: 'fade-out-animation',
-              nodes: [],
-              nodeDelay: 0,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: [],
+                nodeDelay: 50,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'cascaded-animation',
+                animation: 'fade-out-animation',
+                nodes: [],
+                nodeDelay: 0,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
 
-  }
+    }
 
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
-      gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-  }
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+        gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+    }
 
-  /**
-   * Evaluates if item is in given path.
-   *
-   * @param {HTMLElement} element The element to be evaluated.
-   * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
-   * @return {Boolean}
-   *
-   * @private
-   */
-  _isInPath(path, element) {
-      path = path || [];
+    /**
+     * Evaluates if item is in given path.
+     *
+     * @param {HTMLElement} element The element to be evaluated.
+     * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
+     * @return {Boolean}
+     *
+     * @private
+     */
+    _isInPath(path, element) {
+        path = path || [];
 
-      for (let i = 0; i < path.length; i++) {
-          if (path[i] === element) {
-              return true;
-          }
-      }
+        for (let i = 0; i < path.length; i++) {
+            if (path[i] === element) {
+                return true;
+            }
+        }
 
-      return false;
-  }
+        return false;
+    }
 
-  /**
-   * Listens for click outside import drop-down.
-   * @private
-   */
-  _handleDocumentClick(event) {
-      const path = dom(event).path;
+    /**
+     * Listens for click outside import drop-down.
+     * @private
+     */
+    _handleDocumentClick(event) {
+        const path = dom(event).path;
 
-      if (!this._isInPath(path, this.$.importAction)) {
-          this._importActionsVisible = false;
-      }
-  }
+        if (!this._isInPath(path, this.$.importAction)) {
+            this._importActionsVisible = false;
+        }
+    }
 
-  reset() {
-      this.resetActions();
-  }
+    reset() {
+        this.resetActions();
+    }
 
-  resetActions() {
-      this.$.appscoSearch.reset();
-      this.hideBulkActions();
-  }
+    resetActions() {
+        this.$.appscoSearch.reset();
+        this.hideBulkActions();
+    }
 
-  _onAddAction() {
-      this.dispatchEvent(new CustomEvent('add-customer', { bubbles: true, composed: true }));
-  }
+    _onAddAction() {
+        this.dispatchEvent(new CustomEvent('add-customer', { bubbles: true, composed: true }));
+    }
 
-  _onSelectAllAction() {
-      this.dispatchEvent(new CustomEvent('select-all-customers', { bubbles: true, composed: true }));
-  }
+    _onSelectAllAction() {
+        this.dispatchEvent(new CustomEvent('select-all-customers', { bubbles: true, composed: true }));
+    }
 
-  _onRemoveCustomersAction() {
-      this.dispatchEvent(new CustomEvent('remove-customers', { bubbles: true, composed: true }));
-  }
+    _onRemoveCustomersAction() {
+        this.dispatchEvent(new CustomEvent('remove-customers', { bubbles: true, composed: true }));
+    }
 
-  _onAddPartnerAdmin () {
-      this.dispatchEvent(new CustomEvent('add-partner-admin', { bubbles: true, composed: true }));
-  }
+    _onAddPartnerAdmin () {
+        this.dispatchEvent(new CustomEvent('add-partner-admin', { bubbles: true, composed: true }));
+    }
 
-  showBulkActions () {
-      this._bulkActions = true;
-  }
+    showBulkActions () {
+        this._bulkActions = true;
+    }
 
-  hideBulkActions () {
-      this._bulkActions = false;
-  }
+    hideBulkActions () {
+        this._bulkActions = false;
+    }
 
-  _onBulkActionsChanged () {
-      const bulkActions = dom(this.root).querySelectorAll('.bulk-action');
+    _onBulkActionsChanged () {
+        const bulkActions = dom(this.root).querySelectorAll('.bulk-action');
 
-      if (this.animationConfig) {
-          this.animationConfig.entry.nodes = bulkActions;
-          this.animationConfig.exit.nodes = bulkActions;
-      }
+        if (this.animationConfig) {
+            this.animationConfig.entry.nodes = bulkActions;
+            this.animationConfig.exit.nodes = bulkActions;
+        }
 
-      if (this._bulkActions) {
-          const length = bulkActions.length;
+        if (this._bulkActions) {
+            const length = bulkActions.length;
 
-          for (let i = 0; i < length; i++) {
-              bulkActions[i].style.display = 'flex';
-          }
+            for (let i = 0; i < length; i++) {
+                bulkActions[i].style.display = 'flex';
+            }
 
-          this.playAnimation('entry');
-      }
-      else {
-          this.playAnimation('exit');
-      }
-  }
+            this.playAnimation('entry');
+        }
+        else {
+            this.playAnimation('exit');
+        }
+    }
 
-  showBulkSelectAll() {
-      this._bulkSelectAll = true;
-  }
+    showBulkSelectAll() {
+        this._bulkSelectAll = true;
+    }
 
-  hideBulkSelectAll() {
-      this._bulkSelectAll = false;
-  }
+    hideBulkSelectAll() {
+        this._bulkSelectAll = false;
+    }
 
-  _onBulkSelectAllChanged () {
-      const bulkSelectAll = dom(this.root).querySelectorAll('.bulk-select-all');
-      if (this._bulkSelectAll) {
-          bulkSelectAll[0].style.display = 'block';
-      }else {
-          bulkSelectAll[0].style.display = 'none';
-      }
-  }
+    _onBulkSelectAllChanged () {
+        const bulkSelectAll = dom(this.root).querySelectorAll('.bulk-select-all');
+        if (this._bulkSelectAll) {
+            bulkSelectAll[0].style.display = 'block';
+        }else {
+            bulkSelectAll[0].style.display = 'none';
+        }
+    }
 
-  _onNeonAnimationFinish() {
-      if (!this._bulkActions) {
-          const bulkActions = dom(this.root).querySelectorAll('.bulk-action'),
-              length = bulkActions.length;
+    _onNeonAnimationFinish() {
+        if (!this._bulkActions) {
+            const bulkActions = dom(this.root).querySelectorAll('.bulk-action'),
+                length = bulkActions.length;
 
-          for (let i = 0; i < length; i++) {
-              bulkActions[i].style.display = 'none';
-          }
-      }
-  }
+            for (let i = 0; i < length; i++) {
+                bulkActions[i].style.display = 'none';
+            }
+        }
+    }
 
-  _onImportAction() {
-      this._toggleActionList();
-  }
+    _onImportAction() {
+        this._toggleActionList();
+    }
 
-  _toggleActionList() {
-      this._importActionsVisible = !this._importActionsVisible;
-  }
+    _toggleActionList() {
+        this._importActionsVisible = !this._importActionsVisible;
+    }
 
-  _onImportActionItemSelect(event) {
-      this.dispatchEvent(new CustomEvent(event.detail.item.value, { bubbles: true, composed: true }));
+    _onImportActionItemSelect(event) {
+        this.dispatchEvent(new CustomEvent(event.detail.item.value, { bubbles: true, composed: true }));
 
-      this._importActionsVisible = false;
-      this.shadowRoot.getElementById('actionList').selected = -1;
-  }
+        this._importActionsVisible = false;
+        this.shadowRoot.getElementById('actionList').selected = -1;
+    }
 
-  _onExportToCsvAction() {
-      this.dispatchEvent(new CustomEvent('export-customers', { bubbles: true, composed: true }));
-  }
+    _onExportToCsvAction() {
+        this.dispatchEvent(new CustomEvent('export-customers', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoCustomersActions.is, AppscoCustomersActions);

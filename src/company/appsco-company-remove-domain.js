@@ -1,22 +1,4 @@
-/*
-`appsco-company-remove-domain`
-Shows dialog screen with confirmation for account removal from organization unit.
-
-    <appsco-company-remove-domain domain="{}" authorization-token="">
-    </appsco-company-remove-domain>
-
-### Styling
-
-`<appsco-company-remove-domain>` provides the following custom properties and mixins for styling:
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -30,9 +12,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-class AppscoCompanyRemoveDomain extends mixinBehaviors([NeonAnimatableBehavior, Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+
+class AppscoCompanyRemoveDomain extends mixinBehaviors([
+    NeonAnimatableBehavior,
+    Appsco.HeadersMixin
+], PolymerElement) {
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -80,104 +66,104 @@ class AppscoCompanyRemoveDomain extends mixinBehaviors([NeonAnimatableBehavior, 
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-remove-domain'; }
+    static get is() { return 'appsco-company-remove-domain'; }
 
-  static get properties() {
-      return {
-          domain: {
-              type: Array,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            domain: {
+                type: Array,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _removeDomainApi: {
-              type: String,
-              computed: '_computeRemoveDomainApi(domain)'
-          },
+            _removeDomainApi: {
+                type: String,
+                computed: '_computeRemoveDomainApi(domain)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  setDomain(domain) {
-      this.domain = domain;
-  }
+    setDomain(domain) {
+        this.domain = domain;
+    }
 
-  open () {
-      this.$.dialog.open();
-  }
+    open () {
+        this.$.dialog.open();
+    }
 
-  close () {
-      this.$.dialog.close();
-  }
+    close () {
+        this.$.dialog.close();
+    }
 
-  toggle () {
-      this.$.dialog.toggle();
-  }
+    toggle () {
+        this.$.dialog.toggle();
+    }
 
-  _computeRemoveDomainApi(domain) {
-      return domain.self ? domain.self : '';
-  }
+    _computeRemoveDomainApi(domain) {
+        return domain.self ? domain.self : '';
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogClosed() {
-      this._hideError();
-      this._hideLoader();
-  }
+    _onDialogClosed() {
+        this._hideError();
+        this._hideLoader();
+    }
 
-  _remove() {
-      var request = document.createElement('iron-request'),
-              options = {
-                  url: this._removeDomainApi,
-                  method: 'DELETE',
-                  handleAs: 'json',
-                  headers: this._headers
-              };
+    _remove() {
+        var request = document.createElement('iron-request'),
+            options = {
+                url: this._removeDomainApi,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._showLoader();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          this.close();
+        request.send(options).then(function() {
+            this.close();
 
-          this.dispatchEvent(new CustomEvent('domain-removed', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  domain: this.domain
-              }
-          }));
-      }.bind(this), function() {
-          if (request.status === 404) {
-              this._showError('We couldn\'t remove domain from company. Please try again in a minute.');
-          }
+            this.dispatchEvent(new CustomEvent('domain-removed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    domain: this.domain
+                }
+            }));
+        }.bind(this), function() {
+            if (request.status === 404) {
+                this._showError('We couldn\'t remove domain from company. Please try again in a minute.');
+            }
 
-          this._hideLoader();
-      }.bind(this));
-  }
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoCompanyRemoveDomain.is, AppscoCompanyRemoveDomain);

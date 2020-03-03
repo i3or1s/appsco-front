@@ -1,28 +1,4 @@
-/**
-`appsco-orgunit-item`
-Representation of organization unit item
-
-    <appsco-orgunit-item>
-    </appsco-orgunit-item>
-
-### Styling
-
-`<appsco-orgunit-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-orgunit-item-selected` | Mixin for the root element if it is selected | `{}`
-`--appsco-orgunit-item` | Mixin for the root element | `{}`
-
-@demo demo/appsco-orgunit-item.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-styles/typography.js';
@@ -39,9 +15,10 @@ import * as gestures from '@polymer/polymer/lib/utils/gestures.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOrgUnitItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
             @apply --paper-font-body1;
@@ -125,205 +102,205 @@ class AppscoOrgUnitItem extends mixinBehaviors([NeonAnimationRunnerBehavior], Po
             </paper-material>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-orgunit-item'; }
+    static get is() { return 'appsco-orgunit-item'; }
 
-  static get properties() {
-      return {
-          /**
-           * [OrgUnit]() that is to be rendered
-           */
-          orgUnit: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            /**
+             * [OrgUnit]() that is to be rendered
+             */
+            orgUnit: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          modify: {
-              type: Boolean,
-              value: false
-          },
+            modify: {
+                type: Boolean,
+                value: false
+            },
 
-          add: {
-              type: Boolean,
-              value: false
-          },
+            add: {
+                type: Boolean,
+                value: false
+            },
 
-          remove: {
-              type: Boolean,
-              value: false
-          },
+            remove: {
+                type: Boolean,
+                value: false
+            },
 
-          selected: {
-              type: Boolean,
-              computed: '_computeSelected(orgUnit.*)',
-              reflectToAttribute: true
-          },
+            selected: {
+                type: Boolean,
+                computed: '_computeSelected(orgUnit.*)',
+                reflectToAttribute: true
+            },
 
-          _showOptions: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true,
-              observer: '_onShowOptionsChange'
-          },
+            _showOptions: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true,
+                observer: '_onShowOptionsChange'
+            },
 
-          animationConfig: {
-              value: function () {
-                  return {
+            animationConfig: {
+                value: function () {
+                    return {
 
-                  }
-              }
-          }
-      };
-  }
+                    }
+                }
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'scale-up-animation',
-              node: this.$.options,
-              transformOrigin: '0 0',
-              axis: 'y',
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this.$.options,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'scale-up-animation',
+                node: this.$.options,
+                transformOrigin: '0 0',
+                axis: 'y',
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this.$.options,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      afterNextRender(this, function () {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function () {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onAnimationFinish);
-      gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-  }
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+        gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+    }
 
-  /**
-   * Evaluates if item is in given path.
-   *
-   * @param {HTMLElement} element The element to be evaluated.
-   * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
-   * @return {Boolean}
-   *
-   * @private
-   */
-  _isInPath(path, element) {
-      path = path || [];
+    /**
+     * Evaluates if item is in given path.
+     *
+     * @param {HTMLElement} element The element to be evaluated.
+     * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
+     * @return {Boolean}
+     *
+     * @private
+     */
+    _isInPath(path, element) {
+        path = path || [];
 
-      for (let i = 0; i < path.length; i++) {
-          if (path[i] == element) {
-              return true;
-          }
-      }
+        for (let i = 0; i < path.length; i++) {
+            if (path[i] == element) {
+                return true;
+            }
+        }
 
-      return false;
-  }
+        return false;
+    }
 
-  /**
-   * Listens for click outside.
-   * @private
-   */
-  _handleDocumentClick(event) {
-      const path = dom(event).path;
+    /**
+     * Listens for click outside.
+     * @private
+     */
+    _handleDocumentClick(event) {
+        const path = dom(event).path;
 
-      if (!this._isInPath(path, this.$.iconOptions) && !this._isInPath(path, this.$.options)) {
-          this._hideOptions();
-      }
+        if (!this._isInPath(path, this.$.iconOptions) && !this._isInPath(path, this.$.options)) {
+            this._hideOptions();
+        }
 
-  }
+    }
 
-  _computeSelected(change) {
-      return this.orgUnit && this.orgUnit.selected;
-  }
+    _computeSelected(change) {
+        return this.orgUnit && this.orgUnit.selected;
+    }
 
-  _onShowOptionsChange() {
-      this._animateOptions();
-  }
+    _onShowOptionsChange() {
+        this._animateOptions();
+    }
 
-  _hideOptions() {
-      this._showOptions = false;
-  }
+    _hideOptions() {
+        this._showOptions = false;
+    }
 
-  _animateOptions() {
-      if (this._showOptions) {
-          this.$.options.style.display = 'block';
-          this.playAnimation('entry');
-      }
-      else {
-          this.playAnimation('exit');
-      }
+    _animateOptions() {
+        if (this._showOptions) {
+            this.$.options.style.display = 'block';
+            this.playAnimation('entry');
+        }
+        else {
+            this.playAnimation('exit');
+        }
 
-  }
+    }
 
-  _toggleOptions() {
-      this._showOptions = !this._showOptions;
-  }
+    _toggleOptions() {
+        this._showOptions = !this._showOptions;
+    }
 
-  _modify() {
-      this._hideOptions();
-      this.dispatchEvent(new CustomEvent('modify-orgunit', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              orgUnit: this.orgUnit
-          }
-      }));
-  }
+    _modify() {
+        this._hideOptions();
+        this.dispatchEvent(new CustomEvent('modify-orgunit', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                orgUnit: this.orgUnit
+            }
+        }));
+    }
 
-  _add() {
-      this._hideOptions();
-      this.dispatchEvent(new CustomEvent('add-orgunit', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              orgUnit: this.orgUnit
-          }
-      }));
-  }
+    _add() {
+        this._hideOptions();
+        this.dispatchEvent(new CustomEvent('add-orgunit', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                orgUnit: this.orgUnit
+            }
+        }));
+    }
 
-  _remove() {
-      this._hideOptions();
-      this.dispatchEvent(new CustomEvent('remove-orgunit', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              orgUnit: this.orgUnit
-          }
-      }));
-  }
+    _remove() {
+        this._hideOptions();
+        this.dispatchEvent(new CustomEvent('remove-orgunit', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                orgUnit: this.orgUnit
+            }
+        }));
+    }
 
-  _organizationUnitTapped() {
-      this.dispatchEvent(new CustomEvent('selected', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              orgUnit: this.orgUnit,
-              selected: !this.selected
-          }
-      }));
-  }
+    _organizationUnitTapped() {
+        this.dispatchEvent(new CustomEvent('selected', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                orgUnit: this.orgUnit,
+                selected: !this.selected
+            }
+        }));
+    }
 
-  _onAnimationFinish() {
-      if (!this._showOptions) {
-          this.$.options.style.display = 'none';
-      }
-  }
+    _onAnimationFinish() {
+        if (!this._showOptions) {
+            this.$.options.style.display = 'none';
+        }
+    }
 
-  deSelect() {
-      this.selected = false;
-  }
+    deSelect() {
+        this.selected = false;
+    }
 }
 window.customElements.define(AppscoOrgUnitItem.is, AppscoOrgUnitItem);

@@ -14,9 +14,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountDevicesItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 padding-bottom: 10px;
@@ -157,182 +158,182 @@ class AppscoAccountDevicesItem extends mixinBehaviors([NeonAnimationRunnerBehavi
             </div>
         </iron-collapse>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-devices-item'; }
+    static get is() { return 'appsco-account-devices-item'; }
 
-  static get properties() {
-      return {
-          device: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            device: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          devices: {
-              type: Array,
-              value: function () {
-                  return [];
-              },
-              notify: true
-          },
+            devices: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                notify: true
+            },
 
-          _deviceName: {
-              type: String,
-              computed: "_computeDeviceName(device)"
-          },
+            _deviceName: {
+                type: String,
+                computed: "_computeDeviceName(device)"
+            },
 
-          _deviceImg: {
-              type: String,
-              computed: "_computeDeviceImg(device)"
-          },
+            _deviceImg: {
+                type: String,
+                computed: "_computeDeviceImg(device)"
+            },
 
-          _isADevice: {
-              type: Boolean,
-              computed: "_computeIsADevice(device)"
-          },
+            _isADevice: {
+                type: Boolean,
+                computed: "_computeIsADevice(device)"
+            },
 
-          dateOptions: {
-              type: Object,
-              value: {year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric"}
-          },
+            dateOptions: {
+                type: Object,
+                value: {year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric"}
+            },
 
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _resourcesVisible: {
-              type: Boolean,
-              value: false
-          },
+            _resourcesVisible: {
+                type: Boolean,
+                value: false
+            },
 
-          _approved: {
-              type: Boolean,
-              computed: '_computeApproved(device)'
-          },
+            _approved: {
+                type: Boolean,
+                computed: '_computeApproved(device)'
+            },
 
-          _showTrustedIPs: {
-              type: Boolean,
-              computed: '_computeShowTrustedIPs(device)'
-          },
+            _showTrustedIPs: {
+                type: Boolean,
+                computed: '_computeShowTrustedIPs(device)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-                  node: this,
-                  timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-                  node: this,
-                  timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _computeApproved(device) {
-      return device.approved;
-  }
+    _computeApproved(device) {
+        return device.approved;
+    }
 
-  _computeShowTrustedIPs(device) {
-      return device && device.trustedIpList && device.trustedIpList.length > 0;
-  }
+    _computeShowTrustedIPs(device) {
+        return device && device.trustedIpList && device.trustedIpList.length > 0;
+    }
 
-  _computeIsADevice(device) {
-      return device.vendor !== "unavailable";
-  }
+    _computeIsADevice(device) {
+        return device.vendor !== "unavailable";
+    }
 
-  _computeDeviceName(device) {
-      if(this._computeIsADevice(device)) {
-          return device.browser + " on " + device.vendor + " " + device.device;
-      }
+    _computeDeviceName(device) {
+        if(this._computeIsADevice(device)) {
+            return device.browser + " on " + device.vendor + " " + device.device;
+        }
 
-      return device.browser + " on " + device.operatingSystem;
-  }
+        return device.browser + " on " + device.operatingSystem;
+    }
 
-  _computeDeviceImg(device) {
-      if (this._computeIsADevice(device)) {
-          // It is a mobile
-          if ('android' === device.operatingSystem.toLowerCase())
-              return '/images/devices/mobile-android.png';
-          if ('windows' === device.operatingSystem.toLowerCase())
-              return '/images/devices/mobile-windows.png';
-          return '/images/devices/mobile-ios.png';
-      }
-      else {
-          // It is a desktop
-          if ('windows' === device.operatingSystem.toLowerCase())
-              return '/images/devices/desktop-windows.png';
-          if ('mac' === device.operatingSystem.toLowerCase())
-              return '/images/devices/desktop-mac.png';
-          if ('linux' === device.operatingSystem.toLowerCase())
-              return '/images/devices/desktop-linux.png';
-          return '/images/devices/desktop-windows.png';
-      }
-  }
+    _computeDeviceImg(device) {
+        if (this._computeIsADevice(device)) {
+            // It is a mobile
+            if ('android' === device.operatingSystem.toLowerCase())
+                return '/images/devices/mobile-android.png';
+            if ('windows' === device.operatingSystem.toLowerCase())
+                return '/images/devices/mobile-windows.png';
+            return '/images/devices/mobile-ios.png';
+        }
+        else {
+            // It is a desktop
+            if ('windows' === device.operatingSystem.toLowerCase())
+                return '/images/devices/desktop-windows.png';
+            if ('mac' === device.operatingSystem.toLowerCase())
+                return '/images/devices/desktop-mac.png';
+            if ('linux' === device.operatingSystem.toLowerCase())
+                return '/images/devices/desktop-linux.png';
+            return '/images/devices/desktop-windows.png';
+        }
+    }
 
-  _onApproveAction(event) {
-      this.device.approved = true;
-      event.stopPropagation();
+    _onApproveAction(event) {
+        this.device.approved = true;
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('approve-device', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              device: this.device,
-              account: this.account
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('approve-device', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                device: this.device,
+                account: this.account
+            }
+        }));
+    }
 
-  _onDisapproveAction(event) {
-      this.device.approved = false;
-      event.stopPropagation();
+    _onDisapproveAction(event) {
+        this.device.approved = false;
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('disapprove-device', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              device: this.device,
-              account: this.account
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('disapprove-device', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                device: this.device,
+                account: this.account
+            }
+        }));
+    }
 
-  _onShowResources() {
-      this.$.resources.show();
-      this._resourcesVisible = true;
-  }
+    _onShowResources() {
+        this.$.resources.show();
+        this._resourcesVisible = true;
+    }
 
-  _onHideResources() {
-      this.$.resources.hide();
-      this._resourcesVisible = false;
-  }
+    _onHideResources() {
+        this.$.resources.hide();
+        this._resourcesVisible = false;
+    }
 }
 window.customElements.define(AppscoAccountDevicesItem.is, AppscoAccountDevicesItem);

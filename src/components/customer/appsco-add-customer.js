@@ -22,9 +22,10 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import * as gestures from '@polymer/polymer/lib/utils/gestures.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddCustomer extends mixinBehaviors([Appsco.HeadersMixin, NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -185,497 +186,497 @@ class AppscoAddCustomer extends mixinBehaviors([Appsco.HeadersMixin, NeonAnimati
         <iron-a11y-keys target="[[ _formCustomerNew ]]" keys="enter" on-keys-pressed="_onEnterAction"></iron-a11y-keys>
         <iron-a11y-keys target="[[ _formCustomerConvert ]]" keys="enter" on-keys-pressed="_onEnterAction"></iron-a11y-keys>
 `;
-  }
-
-  static get is() { return 'appsco-add-customer'; }
-
-  static get properties() {
-      return {
-          customersApi: {
-              type: String
-          },
-
-          companyConvertToCustomerApi: {
-              type: String
-          },
-
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          rolesApi: {
-              type: String
-          },
-
-          checkIfCustomerExistsApi: {
-              type: String
-          },
-
-          _rolesApi: {
-              type: String,
-              computed: '_computeRolesApi(rolesApi)'
-          },
-
-          _administrators: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _administratorsToDisplay: {
-              type: Array,
-              value: function () {
-                  return []
-              }
-          },
-
-          _selectedAdministrator: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onSelectedAdministratorChanged'
-          },
-
-          _loader: {
-              type: Boolean,
-              value: false
-          },
-
-          _errorMessage: {
-              type: String
-          },
-
-          _infoShown: {
-              type: Boolean,
-              value: false
-          },
-
-          _customerName: {
-              type: String,
-              value: '',
-              observer: '_onCustomerNameChanged'
-          },
-
-          _customerToken: {
-              type: String,
-              value: ''
-          },
-
-          _formCustomerConvertActive: {
-              type: Boolean,
-              value: true
-          },
-
-          /**
-           * Target for iron-a11y-keys component.
-           * Submit formCustomerNew on enter.
-           */
-          _formCustomerNew: {
-              type: Object
-          },
-
-          /**
-           * Target for iron-a11y-keys component.
-           * Submit formCustomerConvert on enter.
-           */
-          _formCustomerConvert: {
-              type: Object
-          },
-
-          animationConfig: {
-              value: function () {
-                  return {
-
-                  }
-              }
-          }
-      };
-  }
-
-  ready() {
-      super.ready();
-
-      this._formCustomerNew = this.$.formCustomerNew;
-      this._formCustomerConvert = this.$.formCustomerConvert;
-
-      this.animationConfig = {
-          'entry': {
-              name: 'scale-up-animation',
-              axis: 'y',
-              transformOrigin: '0 0',
-              node: this.shadowRoot.getElementById('adminListContainer'),
-              timing: {
-                  delay: 50,
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this.shadowRoot.getElementById('adminListContainer'),
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
-
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
-  }
-
-  open() {
-      this.$.dialog.open();
-  }
-
-  close() {
-      this.$.dialog.close();
-  }
-
-  toggle() {
-      this.$.dialog.toggle();
-  }
-
-  _showLoader() {
-      this._loader = true;
-  }
-
-  _hideLoader() {
-      this._loader = false;
-  }
-
-  _showError(message) {
-      this._errorMessage = message;
-  }
-
-  _hideError() {
-      this._errorMessage = '';
-  }
-
-  _showInfo() {
-      this._infoShown = true;
-  }
-
-  _hideInfo() {
-      this._infoShown = false;
-  }
-
-  _isInPath(path, element) {
-      path = path || [];
-
-      for (let i = 0; i < path.length; i++) {
-          if (path[i] == element) {
-              return true;
-          }
-      }
-
-      return false;
-  }
-
-  _handleDocumentClick(event) {
-      const path = dom(event).path;
-
-      if (!this._isInPath(path, this.shadowRoot.getElementById('searchAdminsContainer'))) {
-          this._hideAdminList();
-      }
-  }
-
-  _computeRolesApi(rolesApi) {
-      return rolesApi ? (rolesApi + '?limit=100&extended=1') : null;
-  }
-
-  _loadRoles() {
-      this.set('_administrators', []);
-      this.$.getRolesApiRequest.generateRequest();
-  }
-
-  _onFormCustomerConvertFocus() {
-      this._formCustomerConvertActive = true;
-
-      this.$.name.disabled = true;
-      this.$.email.disabled = true;
-      this.$.appscoSearchAdmins.disableAppscoSearchInput();
-      this.$.customerToken.disabled = false;
-  }
-
-  _onFormCustomerNewFocus() {
-      this._formCustomerConvertActive = false;
-
-      this.$.name.disabled = false;
-      this.$.email.disabled = false;
-      this.$.appscoSearchAdmins.disabled = false;
-      this.$.customerToken.disabled = true;
-  }
-
-  _focusFirstAdmin() {
-      this.shadowRoot.getElementById('adminList').items[0].focus();
-  }
-
-  _setAppscoSearchValue(value) {
-      this.$.appscoSearchAdmins.setValue(value);
-  }
-
-  _onDialogOpened() {
-      this._loadRoles();
-      gestures.add(this, 'tap', this._handleDocumentClick.bind(this));
-  }
-
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this._hideInfo();
-      this._formCustomerNew.reset();
-      this._formCustomerConvert.reset();
-      this.set('_administrators', []);
-      this.set('_administratorsToDisplay', []);
-      this.set('_selectedAdministrator', {});
-      this._hideAdminList();
-      this.$.appscoSearchAdmins.reset();
-      this._customerName = '';
-      this._enableAllFormFields();
-      gestures.remove(this, 'tap', this._handleDocumentClick.bind(this));
-  }
-
-  _enableAllFormFields() {
-      this.$.name.disabled = false;
-      this.$.email.disabled = false;
-      this.$.appscoSearchAdmins.enableAppscoSearchInput();
-      this.$.customerToken.disabled = false;
-  }
-
-  _onCustomerNameChanged(name) {
-      if (!name) {
-          this._hideInfo();
-      }
-  }
-
-  _onNameInputValueChanged(event) {
-      const name = event.detail.value;
-
-      if (name) {
-          this.debounce('checkIfCustomerExists', function() {
-              this._checkIfCustomerExists(name);
-          }.bind(this), 500);
-      }
-  }
-
-  _onAddAction() {
-      if (this._formCustomerConvertActive) {
-          this._submitFormCustomerConvert();
-      } else {
-          this._submitFormCustomerNew();
-      }
-  }
-
-  /**
-   * Submits form on ENTER key using iron-a11y-keys component.
-   *
-   * @private
-   */
-  _onEnterAction() {
-      this._onAddAction();
-  }
-
-  _checkIfCustomerExists(name) {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this.checkIfCustomerExistsApi,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers,
-              body: 'form[name]=' + encodeURIComponent(name)
-          };
-
-      request.send(options).then(function() {
-
-          if (200 === request.status) {
-              this._showInfo();
-          }
-
-      }.bind(this), function() {
-
-          if (request.response && (1503648194 === request.response.code)) {
-              this._hideInfo();
-          }
-      }.bind(this));
-  }
-
-  _submitFormCustomerNew() {
-      this._hideError();
-
-      if (!this._selectedAdministrator.value) {
-          this._showError('You have not selected partner administrator.');
-          this.$.appscoSearchAdmins.focusAppscoSearchInput();
-          return false;
-      }
-
-      if (this._formCustomerNew.validate()) {
-          this._showLoader();
-          this._formCustomerNew.submit();
-      }
-  }
-
-  _submitFormCustomerConvert() {
-      this._hideError();
-
-      if (this._formCustomerConvert.validate()) {
-          this._showLoader();
-          this._formCustomerConvert.submit();
-      }
-  }
-
-  _onFormPresubmit(event) {
-      event.target.request.body['company_customer[partnerAdmin]'] = this._selectedAdministrator.value;
-  }
-
-  _onFormTokenPresubmit(event) {
-      event.target.request.body['customer_convert[token]'] = this.$.customerToken.value;
-  }
-
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
-
-  /**
-   * Called after group has been added.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onFormResponse(event) {
-      this.close();
-
-      this.dispatchEvent(new CustomEvent('customer-added', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              customer: event.detail.response
-          }
-      }));
-  }
-
-  _onRolesError() {
-      this.set('_administrators', []);
-      this.set('_administratorsToDisplay', []);
-  }
-
-  _onRolesResponse(event) {
-      const response = event.detail.response;
-
-      if (!response || (response && response.meta && 0 === response.meta.total)) {
-          this.set('_administrators', []);
-      }
-      else if (response && response.company_roles) {
-          this.set('_administrators', response.company_roles);
-      }
-
-      this.set('_administratorsToDisplay', this._administrators);
-  }
-
-  _onListboxClosed(event) {
-      event.stopPropagation();
-  }
-
-  _onSelectedAdministratorChanged(admin) {
-      for (let key in admin) {
-          this._setAppscoSearchValue(admin.name);
-          return false;
-      }
-  }
-
-  _onAdminSelected(event) {
-      let item,
-          adminList = this.shadowRoot.getElementById('adminList');
-
-      adminList.select(event.detail.selected);
-      item = adminList.selectedItem;
-      this._hideAdminList();
-      this.set('_administratorsToDisplay', JSON.parse(JSON.stringify(this._administrators)));
-      this.set('_selectedAdministrator', item);
-  }
-
-  _onAdminSearchFocusAction() {
-      this._showAdminList();
-  }
-
-  _onAdminValueChangedAction() {
-      this._onFormCustomerNewFocus();
-  }
-
-  _onAdminSearchKeyupAction(event) {
-      this._onFormCustomerNewFocus();
-
-      var keyCode = event.keyCode;
-
-      if (40 === keyCode) {
-          event.target.blur();
-          this._focusFirstAdmin();
-          return false;
-      }
-  }
-
-  _onAdminSearchAction(event) {
-      this._filterAdminsByTerm(event.detail.term);
-  }
-
-  _onAdminSearchClearAction() {
-      this._filterAdminsByTerm('');
-  }
-
-  _filterAdminsByTerm(term) {
-      const termLength = term.length,
-          admins = JSON.parse(JSON.stringify(this._administrators)),
-          length = admins.length;
-
-      this.set('_administratorsToDisplay', []);
-
-      if (3 > termLength) {
-          this.set('_administratorsToDisplay', admins);
-          return false;
-      }
-
-      for (let i = 0; i < length; i++) {
-          const admin = admins[i];
-
-          if (admin && 0 <= admin.account.name.toLowerCase().indexOf(term.toLowerCase())) {
-              this.push('_administratorsToDisplay', admin);
-          }
-      }
-
-      if (0 === this._administratorsToDisplay.length && 3 <= termLength) {
-          this.push('_administratorsToDisplay', {
-              account: {
-                  name: 'There is no administrator with asked name.'
-              },
-              self: 'no_result'
-          });
-      }
-  }
-
-  _showAdminList() {
-      this.animationConfig.entry.node.style.display = 'block';
-      this.playAnimation('entry');
-  }
-
-  _hideAdminList() {
-      this.playAnimation('exit', {
-          hideAdminSwitcher: true
-      });
-  }
-
-  _onNeonAnimationFinish(event) {
-      if (event.detail.hideAdminSwitcher) {
-          this.animationConfig.exit.node.style.display = 'none';
-      }
-  }
+    }
+
+    static get is() { return 'appsco-add-customer'; }
+
+    static get properties() {
+        return {
+            customersApi: {
+                type: String
+            },
+
+            companyConvertToCustomerApi: {
+                type: String
+            },
+
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            rolesApi: {
+                type: String
+            },
+
+            checkIfCustomerExistsApi: {
+                type: String
+            },
+
+            _rolesApi: {
+                type: String,
+                computed: '_computeRolesApi(rolesApi)'
+            },
+
+            _administrators: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _administratorsToDisplay: {
+                type: Array,
+                value: function () {
+                    return []
+                }
+            },
+
+            _selectedAdministrator: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onSelectedAdministratorChanged'
+            },
+
+            _loader: {
+                type: Boolean,
+                value: false
+            },
+
+            _errorMessage: {
+                type: String
+            },
+
+            _infoShown: {
+                type: Boolean,
+                value: false
+            },
+
+            _customerName: {
+                type: String,
+                value: '',
+                observer: '_onCustomerNameChanged'
+            },
+
+            _customerToken: {
+                type: String,
+                value: ''
+            },
+
+            _formCustomerConvertActive: {
+                type: Boolean,
+                value: true
+            },
+
+            /**
+             * Target for iron-a11y-keys component.
+             * Submit formCustomerNew on enter.
+             */
+            _formCustomerNew: {
+                type: Object
+            },
+
+            /**
+             * Target for iron-a11y-keys component.
+             * Submit formCustomerConvert on enter.
+             */
+            _formCustomerConvert: {
+                type: Object
+            },
+
+            animationConfig: {
+                value: function () {
+                    return {
+
+                    }
+                }
+            }
+        };
+    }
+
+    ready() {
+        super.ready();
+
+        this._formCustomerNew = this.$.formCustomerNew;
+        this._formCustomerConvert = this.$.formCustomerConvert;
+
+        this.animationConfig = {
+            'entry': {
+                name: 'scale-up-animation',
+                axis: 'y',
+                transformOrigin: '0 0',
+                node: this.shadowRoot.getElementById('adminListContainer'),
+                timing: {
+                    delay: 50,
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this.shadowRoot.getElementById('adminListContainer'),
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
+
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+    }
+
+    open() {
+        this.$.dialog.open();
+    }
+
+    close() {
+        this.$.dialog.close();
+    }
+
+    toggle() {
+        this.$.dialog.toggle();
+    }
+
+    _showLoader() {
+        this._loader = true;
+    }
+
+    _hideLoader() {
+        this._loader = false;
+    }
+
+    _showError(message) {
+        this._errorMessage = message;
+    }
+
+    _hideError() {
+        this._errorMessage = '';
+    }
+
+    _showInfo() {
+        this._infoShown = true;
+    }
+
+    _hideInfo() {
+        this._infoShown = false;
+    }
+
+    _isInPath(path, element) {
+        path = path || [];
+
+        for (let i = 0; i < path.length; i++) {
+            if (path[i] == element) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    _handleDocumentClick(event) {
+        const path = dom(event).path;
+
+        if (!this._isInPath(path, this.shadowRoot.getElementById('searchAdminsContainer'))) {
+            this._hideAdminList();
+        }
+    }
+
+    _computeRolesApi(rolesApi) {
+        return rolesApi ? (rolesApi + '?limit=100&extended=1') : null;
+    }
+
+    _loadRoles() {
+        this.set('_administrators', []);
+        this.$.getRolesApiRequest.generateRequest();
+    }
+
+    _onFormCustomerConvertFocus() {
+        this._formCustomerConvertActive = true;
+
+        this.$.name.disabled = true;
+        this.$.email.disabled = true;
+        this.$.appscoSearchAdmins.disableAppscoSearchInput();
+        this.$.customerToken.disabled = false;
+    }
+
+    _onFormCustomerNewFocus() {
+        this._formCustomerConvertActive = false;
+
+        this.$.name.disabled = false;
+        this.$.email.disabled = false;
+        this.$.appscoSearchAdmins.disabled = false;
+        this.$.customerToken.disabled = true;
+    }
+
+    _focusFirstAdmin() {
+        this.shadowRoot.getElementById('adminList').items[0].focus();
+    }
+
+    _setAppscoSearchValue(value) {
+        this.$.appscoSearchAdmins.setValue(value);
+    }
+
+    _onDialogOpened() {
+        this._loadRoles();
+        gestures.add(this, 'tap', this._handleDocumentClick.bind(this));
+    }
+
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this._hideInfo();
+        this._formCustomerNew.reset();
+        this._formCustomerConvert.reset();
+        this.set('_administrators', []);
+        this.set('_administratorsToDisplay', []);
+        this.set('_selectedAdministrator', {});
+        this._hideAdminList();
+        this.$.appscoSearchAdmins.reset();
+        this._customerName = '';
+        this._enableAllFormFields();
+        gestures.remove(this, 'tap', this._handleDocumentClick.bind(this));
+    }
+
+    _enableAllFormFields() {
+        this.$.name.disabled = false;
+        this.$.email.disabled = false;
+        this.$.appscoSearchAdmins.enableAppscoSearchInput();
+        this.$.customerToken.disabled = false;
+    }
+
+    _onCustomerNameChanged(name) {
+        if (!name) {
+            this._hideInfo();
+        }
+    }
+
+    _onNameInputValueChanged(event) {
+        const name = event.detail.value;
+
+        if (name) {
+            this.debounce('checkIfCustomerExists', function() {
+                this._checkIfCustomerExists(name);
+            }.bind(this), 500);
+        }
+    }
+
+    _onAddAction() {
+        if (this._formCustomerConvertActive) {
+            this._submitFormCustomerConvert();
+        } else {
+            this._submitFormCustomerNew();
+        }
+    }
+
+    /**
+     * Submits form on ENTER key using iron-a11y-keys component.
+     *
+     * @private
+     */
+    _onEnterAction() {
+        this._onAddAction();
+    }
+
+    _checkIfCustomerExists(name) {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this.checkIfCustomerExistsApi,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers,
+                body: 'form[name]=' + encodeURIComponent(name)
+            };
+
+        request.send(options).then(function() {
+
+            if (200 === request.status) {
+                this._showInfo();
+            }
+
+        }.bind(this), function() {
+
+            if (request.response && (1503648194 === request.response.code)) {
+                this._hideInfo();
+            }
+        }.bind(this));
+    }
+
+    _submitFormCustomerNew() {
+        this._hideError();
+
+        if (!this._selectedAdministrator.value) {
+            this._showError('You have not selected partner administrator.');
+            this.$.appscoSearchAdmins.focusAppscoSearchInput();
+            return false;
+        }
+
+        if (this._formCustomerNew.validate()) {
+            this._showLoader();
+            this._formCustomerNew.submit();
+        }
+    }
+
+    _submitFormCustomerConvert() {
+        this._hideError();
+
+        if (this._formCustomerConvert.validate()) {
+            this._showLoader();
+            this._formCustomerConvert.submit();
+        }
+    }
+
+    _onFormPresubmit(event) {
+        event.target.request.body['company_customer[partnerAdmin]'] = this._selectedAdministrator.value;
+    }
+
+    _onFormTokenPresubmit(event) {
+        event.target.request.body['customer_convert[token]'] = this.$.customerToken.value;
+    }
+
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
+
+    /**
+     * Called after group has been added.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onFormResponse(event) {
+        this.close();
+
+        this.dispatchEvent(new CustomEvent('customer-added', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                customer: event.detail.response
+            }
+        }));
+    }
+
+    _onRolesError() {
+        this.set('_administrators', []);
+        this.set('_administratorsToDisplay', []);
+    }
+
+    _onRolesResponse(event) {
+        const response = event.detail.response;
+
+        if (!response || (response && response.meta && 0 === response.meta.total)) {
+            this.set('_administrators', []);
+        }
+        else if (response && response.company_roles) {
+            this.set('_administrators', response.company_roles);
+        }
+
+        this.set('_administratorsToDisplay', this._administrators);
+    }
+
+    _onListboxClosed(event) {
+        event.stopPropagation();
+    }
+
+    _onSelectedAdministratorChanged(admin) {
+        for (let key in admin) {
+            this._setAppscoSearchValue(admin.name);
+            return false;
+        }
+    }
+
+    _onAdminSelected(event) {
+        let item,
+            adminList = this.shadowRoot.getElementById('adminList');
+
+        adminList.select(event.detail.selected);
+        item = adminList.selectedItem;
+        this._hideAdminList();
+        this.set('_administratorsToDisplay', JSON.parse(JSON.stringify(this._administrators)));
+        this.set('_selectedAdministrator', item);
+    }
+
+    _onAdminSearchFocusAction() {
+        this._showAdminList();
+    }
+
+    _onAdminValueChangedAction() {
+        this._onFormCustomerNewFocus();
+    }
+
+    _onAdminSearchKeyupAction(event) {
+        this._onFormCustomerNewFocus();
+
+        var keyCode = event.keyCode;
+
+        if (40 === keyCode) {
+            event.target.blur();
+            this._focusFirstAdmin();
+            return false;
+        }
+    }
+
+    _onAdminSearchAction(event) {
+        this._filterAdminsByTerm(event.detail.term);
+    }
+
+    _onAdminSearchClearAction() {
+        this._filterAdminsByTerm('');
+    }
+
+    _filterAdminsByTerm(term) {
+        const termLength = term.length,
+            admins = JSON.parse(JSON.stringify(this._administrators)),
+            length = admins.length;
+
+        this.set('_administratorsToDisplay', []);
+
+        if (3 > termLength) {
+            this.set('_administratorsToDisplay', admins);
+            return false;
+        }
+
+        for (let i = 0; i < length; i++) {
+            const admin = admins[i];
+
+            if (admin && 0 <= admin.account.name.toLowerCase().indexOf(term.toLowerCase())) {
+                this.push('_administratorsToDisplay', admin);
+            }
+        }
+
+        if (0 === this._administratorsToDisplay.length && 3 <= termLength) {
+            this.push('_administratorsToDisplay', {
+                account: {
+                    name: 'There is no administrator with asked name.'
+                },
+                self: 'no_result'
+            });
+        }
+    }
+
+    _showAdminList() {
+        this.animationConfig.entry.node.style.display = 'block';
+        this.playAnimation('entry');
+    }
+
+    _hideAdminList() {
+        this.playAnimation('exit', {
+            hideAdminSwitcher: true
+        });
+    }
+
+    _onNeonAnimationFinish(event) {
+        if (event.detail.hideAdminSwitcher) {
+            this.animationConfig.exit.node.style.display = 'none';
+        }
+    }
 }
 window.customElements.define(AppscoAddCustomer.is, AppscoAddCustomer);

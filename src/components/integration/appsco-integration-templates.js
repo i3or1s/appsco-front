@@ -9,12 +9,13 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationTemplates extends mixinBehaviors([
     AppscoListBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host appsco-integration-template-item {
                 width: 100%;
@@ -49,35 +50,35 @@ class AppscoIntegrationTemplates extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-templates'; }
+    static get is() { return 'appsco-integration-templates'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          }
-      };
-  }
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            }
+        };
+    }
 
-  getAvailableTemplatesExist() {
-      let items = this._allListItems,
-          length = items.length;
+    getAvailableTemplatesExist() {
+        let items = this._allListItems,
+            length = items.length;
 
-      for (let i = 0; i < length; i++) {
-          if (!items[i].is_existing || (items[i].is_webhook_required && !items[i].is_webhook_enabled)) {
-              return true;
-          }
-      }
-      return false;
-  }
+        for (let i = 0; i < length; i++) {
+            if (!items[i].is_existing || (items[i].is_webhook_required && !items[i].is_webhook_enabled)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-  _isValidTemplate(item) {
-      return (!item.is_existing || (item.is_webhook_required && !item.is_webhook_enabled));
-  }
+    _isValidTemplate(item) {
+        return (!item.is_existing || (item.is_webhook_required && !item.is_webhook_enabled));
+    }
 }
 window.customElements.define(AppscoIntegrationTemplates.is, AppscoIntegrationTemplates);

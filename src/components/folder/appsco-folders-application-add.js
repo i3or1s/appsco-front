@@ -13,9 +13,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoFoldersApplicationAdd extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -121,237 +122,237 @@ class AppscoFoldersApplicationAdd extends mixinBehaviors([Appsco.HeadersMixin], 
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-folders-application-add'; }
+    static get is() { return 'appsco-folders-application-add'; }
 
-  static get properties() {
-      return {
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          foldersApi: {
-              type: String
-          },
+            foldersApi: {
+                type: String
+            },
 
-          currentFolder: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            currentFolder: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _applicationIcon: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            _applicationIcon: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _company: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            _company: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _foldersListApi: {
-              type: String,
-              computed: '_computeFoldersListApi(foldersApi, _company)'
-          },
+            _foldersListApi: {
+                type: String,
+                computed: '_computeFoldersListApi(foldersApi, _company)'
+            },
 
-          _foldersListDisplay: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _foldersListDisplay: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _foldersList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _foldersList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _message: {
-              type: String,
-              value: ''
-          },
+            _message: {
+                type: String,
+                value: ''
+            },
 
-          _errorMessage: {
-              type: String,
-              value: ''
-          },
+            _errorMessage: {
+                type: String,
+                value: ''
+            },
 
-          _searchLoader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _searchLoader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-      this._showLoader();
-      this.$.getFoldersListRequest.generateRequest();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+        this._showLoader();
+        this.$.getFoldersListRequest.generateRequest();
+    }
 
-  setApplicationIcon(applicationIcon) {
-      this._applicationIcon = applicationIcon;
-  }
+    setApplicationIcon(applicationIcon) {
+        this._applicationIcon = applicationIcon;
+    }
 
-  setCurrentFolder(currentFolder) {
-      this.currentFolder = currentFolder;
-  }
+    setCurrentFolder(currentFolder) {
+        this.currentFolder = currentFolder;
+    }
 
-  setCompany(company) {
-      this._company = company;
-  }
+    setCompany(company) {
+        this._company = company;
+    }
 
-  _computeFoldersListApi(foldersApi, company) {
-      if (company && company.self) {
-          return company.self + '/dashboard-groups?extended=1';
-      }
-      return foldersApi ? foldersApi + '?extended=1' : null;
-  }
+    _computeFoldersListApi(foldersApi, company) {
+        if (company && company.self) {
+            return company.self + '/dashboard-groups?extended=1';
+        }
+        return foldersApi ? foldersApi + '?extended=1' : null;
+    }
 
-  _onSearch(event) {
-      this._searchList(event.detail.term);
-  }
+    _onSearch(event) {
+        this._searchList(event.detail.term);
+    }
 
-  _onClearSearch() {
-      this._searchList('');
-  }
+    _onClearSearch() {
+        this._searchList('');
+    }
 
-  _showMessage(message) {
-      this._message = message;
-  }
+    _showMessage(message) {
+        this._message = message;
+    }
 
-  _hideMessage() {
-      this._message = '';
-  }
+    _hideMessage() {
+        this._message = '';
+    }
 
-  _showLoader() {
-      this._searchLoader = true;
-  }
+    _showLoader() {
+        this._searchLoader = true;
+    }
 
-  _hideLoader() {
-      this._searchLoader = false;
-  }
+    _hideLoader() {
+        this._searchLoader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _searchList(searchTerm) {
-      const term = decodeURIComponent(searchTerm.toLowerCase()).trim(),
-          termLength = term.length,
-          list = this._foldersList,
-          length = list.length;
+    _searchList(searchTerm) {
+        const term = decodeURIComponent(searchTerm.toLowerCase()).trim(),
+            termLength = term.length,
+            list = this._foldersList,
+            length = list.length;
 
-      this._showLoader();
+        this._showLoader();
 
-      this.set('_foldersListDisplay', []);
+        this.set('_foldersListDisplay', []);
 
-      if (length === 0) {
-          this._showMessage('There are no available folders.');
-          this._hideLoader();
-          return false;
-      }
+        if (length === 0) {
+            this._showMessage('There are no available folders.');
+            this._hideLoader();
+            return false;
+        }
 
-      if (1 === termLength) {
-          this._showMessage('Please type two or more letters.');
-          this._hideLoader();
-          return false;
-      }
+        if (1 === termLength) {
+            this._showMessage('Please type two or more letters.');
+            this._hideLoader();
+            return false;
+        }
 
-      this._hideMessage();
+        this._hideMessage();
 
-      for (let i = 0; i < length; i++) {
-          const item = list[i];
-          if (item && item.title.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
-              this.push('_foldersListDisplay', item);
-          }
-      }
+        for (let i = 0; i < length; i++) {
+            const item = list[i];
+            if (item && item.title.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
+                this.push('_foldersListDisplay', item);
+            }
+        }
 
-      if (0 === this._foldersListDisplay.length && 2 <= termLength) {
-          this._showMessage('There are no available folders with asked term.');
-      }
+        if (0 === this._foldersListDisplay.length && 2 <= termLength) {
+            this._showMessage('There are no available folders with asked term.');
+        }
 
-      this._hideLoader();
-  }
+        this._hideLoader();
+    }
 
-  _onAvailableFoldersResponse(event) {
-      const response = event.detail.response;
+    _onAvailableFoldersResponse(event) {
+        const response = event.detail.response;
 
-      if (response && response.groups) {
-          this.set('_foldersList', response.groups);
-          this.set('_foldersListDisplay', response.groups);
+        if (response && response.groups) {
+            this.set('_foldersList', response.groups);
+            this.set('_foldersListDisplay', response.groups);
 
-          if (response.groups.length === 0 ) {
-              this._showMessage('There are no available folders.');
-          } else {
-              this._hideMessage();
-          }
-      }
-      this._hideLoader();
-  }
+            if (response.groups.length === 0 ) {
+                this._showMessage('There are no available folders.');
+            } else {
+                this._hideMessage();
+            }
+        }
+        this._hideLoader();
+    }
 
-  _onErrorResponse() {
-      this._message = 'We couldn\'t load folders at the moment. Please try again in a minute.';
-      this._hideLoader();
-  }
+    _onErrorResponse() {
+        this._message = 'We couldn\'t load folders at the moment. Please try again in a minute.';
+        this._hideLoader();
+    }
 
-  _onListItemSelectAction(event) {
-      var selectedFolder = event.detail.item,
-              applicationIcon = this._applicationIcon;
-      this._moveToFolder(selectedFolder, applicationIcon);
-  }
+    _onListItemSelectAction(event) {
+        var selectedFolder = event.detail.item,
+            applicationIcon = this._applicationIcon;
+        this._moveToFolder(selectedFolder, applicationIcon);
+    }
 
-  _moveToFolder(selectedFolder, applicationIcon) {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: selectedFolder.self + '/resource/' + applicationIcon.alias,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _moveToFolder(selectedFolder, applicationIcon) {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: selectedFolder.self + '/resource/' + applicationIcon.alias,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._hideError();
-      this._showLoader();
+        this._hideError();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('resource-moved-to-folder', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      resource: applicationIcon,
-                      folder: selectedFolder,
-                      sourceFolder: this.currentFolder
-                  }
-              }));
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('resource-moved-to-folder', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        resource: applicationIcon,
+                        folder: selectedFolder,
+                        sourceFolder: this.currentFolder
+                    }
+                }));
 
-              this._hideLoader();
-              this.close();
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+                this._hideLoader();
+                this.close();
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoFoldersApplicationAdd.is, AppscoFoldersApplicationAdd);

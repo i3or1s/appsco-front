@@ -11,9 +11,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoRunIntegrationForceSync extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -99,189 +100,189 @@ class AppscoRunIntegrationForceSync extends mixinBehaviors([Appsco.HeadersMixin]
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-run-integration-force-sync'; }
+    static get is() { return 'appsco-run-integration-force-sync'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _errorDetails: {
-              type: Object,
-              value: null
-          },
+            _errorDetails: {
+                type: Object,
+                value: null
+            },
 
-          _accountsMissingSource: {
-              type: Array,
-              computed: '_computeAccountsMissingSource(_errorDetails)'
-          },
+            _accountsMissingSource: {
+                type: Array,
+                computed: '_computeAccountsMissingSource(_errorDetails)'
+            },
 
-          _contactsMissingSource: {
-              type: Array,
-              computed: '_computeContactsMissingSource(_errorDetails)'
-          },
+            _contactsMissingSource: {
+                type: Array,
+                computed: '_computeContactsMissingSource(_errorDetails)'
+            },
 
-          _groupsMissingSource: {
-              type: Array,
-              computed: '_computeGroupsMissingSource(_errorDetails)'
-          },
+            _groupsMissingSource: {
+                type: Array,
+                computed: '_computeGroupsMissingSource(_errorDetails)'
+            },
 
-          _resourcesMissingSource: {
-              type: Array,
-              computed: '_computeResourcesMissingSource(_errorDetails)'
-          },
+            _resourcesMissingSource: {
+                type: Array,
+                computed: '_computeResourcesMissingSource(_errorDetails)'
+            },
 
-          _missingSource: {
-              type: Object,
-              computed: '_computeMissingSource(_accountsMissingSource, _contactsMissingSource, _groupsMissingSource, _resourcesMissingSource)'
-          }
-      };
-  }
+            _missingSource: {
+                type: Object,
+                computed: '_computeMissingSource(_accountsMissingSource, _contactsMissingSource, _groupsMissingSource, _resourcesMissingSource)'
+            }
+        };
+    }
 
-  setIntegration(integration) {
-      this.set('integration', integration);
-  }
+    setIntegration(integration) {
+        this.set('integration', integration);
+    }
 
-  open() {
-      this._hideError();
-      this.$.dialog.open();
-  }
+    open() {
+        this._hideError();
+        this.$.dialog.open();
+    }
 
-  close() {
-      this._hideError();
-      this.$.dialog.close();
-  }
+    close() {
+        this._hideError();
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this._hideError();
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this._hideError();
+        this.$.dialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorDetails = '';
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorDetails = '';
+        this._errorMessage = '';
+    }
 
-  _onDialogClosed() {
-      this._hideError();
-      this._hideLoader();
-  }
+    _onDialogClosed() {
+        this._hideError();
+        this._hideLoader();
+    }
 
-  _computeAccountsMissingSource(errorDetails) {
-      if (!errorDetails || !errorDetails.accounts) {
-          return [];
-      }
+    _computeAccountsMissingSource(errorDetails) {
+        if (!errorDetails || !errorDetails.accounts) {
+            return [];
+        }
 
-      return errorDetails.accounts;
-  }
+        return errorDetails.accounts;
+    }
 
-  _computeContactsMissingSource(errorDetails) {
-      if (!errorDetails || !errorDetails.contacts) {
-          return [];
-      }
+    _computeContactsMissingSource(errorDetails) {
+        if (!errorDetails || !errorDetails.contacts) {
+            return [];
+        }
 
-      return errorDetails.contacts;
-  }
+        return errorDetails.contacts;
+    }
 
-  _computeGroupsMissingSource(errorDetails) {
-      if (!errorDetails || !errorDetails.groups) {
-          return [];
-      }
+    _computeGroupsMissingSource(errorDetails) {
+        if (!errorDetails || !errorDetails.groups) {
+            return [];
+        }
 
-      return errorDetails.groups;
-  }
+        return errorDetails.groups;
+    }
 
-  _computeResourcesMissingSource(errorDetails) {
-      if (!errorDetails || !errorDetails.resources) {
-          return [];
-      }
+    _computeResourcesMissingSource(errorDetails) {
+        if (!errorDetails || !errorDetails.resources) {
+            return [];
+        }
 
-      return errorDetails.resources;
-  }
+        return errorDetails.resources;
+    }
 
-  _onConfirmAction() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this.integration.meta.forceSync,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onConfirmAction() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this.integration.meta.forceSync,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._hideError();
-      this._errorDetails = null;
-      this._showLoader();
+        this._hideError();
+        this._errorDetails = null;
+        this._showLoader();
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('integration-force-sync-done', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      integration: this.integration,
-                      rule: request.response
-                  }
-              }));
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('integration-force-sync-done', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        integration: this.integration,
+                        rule: request.response
+                    }
+                }));
 
-              this.close();
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
+                this.close();
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
 
-          if (request.response.code == '1555935569') {
-              this.set('_errorDetails', request.response.details);
-          }
-      }.bind(this));
-  }
+            if (request.response.code == '1555935569') {
+                this.set('_errorDetails', request.response.details);
+            }
+        }.bind(this));
+    }
 
-  _computeMissingSource (
-      accountsMissingSource,
-      contactsMissingSource,
-      groupsMissingSource,
-      resourcesMissingSource
-  ) {
-      const result = {};
-      result.accounts = (accountsMissingSource && accountsMissingSource.length > 0);
-      result.contacts = (contactsMissingSource && contactsMissingSource.length > 0);
-      result.groups = (groupsMissingSource && groupsMissingSource.length > 0);
-      result.resources = (resourcesMissingSource && resourcesMissingSource.length > 0);
+    _computeMissingSource (
+        accountsMissingSource,
+        contactsMissingSource,
+        groupsMissingSource,
+        resourcesMissingSource
+    ) {
+        const result = {};
+        result.accounts = (accountsMissingSource && accountsMissingSource.length > 0);
+        result.contacts = (contactsMissingSource && contactsMissingSource.length > 0);
+        result.groups = (groupsMissingSource && groupsMissingSource.length > 0);
+        result.resources = (resourcesMissingSource && resourcesMissingSource.length > 0);
 
-      return result;
-  }
+        return result;
+    }
 }
 window.customElements.define(AppscoRunIntegrationForceSync.is, AppscoRunIntegrationForceSync);

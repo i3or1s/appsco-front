@@ -14,9 +14,10 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyAddDomain extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -88,129 +89,129 @@ class AppscoCompanyAddDomain extends mixinBehaviors([Appsco.HeadersMixin], Polym
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-add-domain'; }
+    static get is() { return 'appsco-company-add-domain'; }
 
-  static get properties() {
-      return {
-          addDomainApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            addDomainApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _supportLink: {
-              type: Boolean,
-              value: false
-          },
+            _supportLink: {
+                type: Boolean,
+                value: false
+            },
 
-          _target: {
-              type: Object
-          }
-      };
-  }
+            _target: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this.$.form;
-  }
+        this._target = this.$.form;
+    }
 
-  open() {
-      this.$.addCompanyDomainDialog.open();
-  }
+    open() {
+        this.$.addCompanyDomainDialog.open();
+    }
 
-  close() {
-      this.$.addCompanyDomainDialog.close();
-  }
+    close() {
+        this.$.addCompanyDomainDialog.close();
+    }
 
-  toggle() {
-      this.$.addCompanyDomainDialog.toggle();
-  }
+    toggle() {
+        this.$.addCompanyDomainDialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-      this._hideAppscoSupportLink();
-  }
+    _hideError() {
+        this._errorMessage = '';
+        this._hideAppscoSupportLink();
+    }
 
-  _showAppscoSupportLink() {
-      this._supportLink = true;
-  }
+    _showAppscoSupportLink() {
+        this._supportLink = true;
+    }
 
-  _hideAppscoSupportLink() {
-      this._supportLink = false;
-  }
+    _hideAppscoSupportLink() {
+        this._supportLink = false;
+    }
 
-  _onDialogOpened() {
-      this.$.domainName.focus();
-  }
+    _onDialogOpened() {
+        this.$.domainName.focus();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this._target.reset();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this._target.reset();
+    }
 
-  _onEnter() {
-      this._submitForm();
-  }
+    _onEnter() {
+        this._submitForm();
+    }
 
-  _submitForm() {
-      this._hideError();
+    _submitForm() {
+        this._hideError();
 
-      if (this._target.validate()) {
-          this._showLoader();
-          this._target.submit();
-      }
-  }
+        if (this._target.validate()) {
+            this._showLoader();
+            this._target.submit();
+        }
+    }
 
-  _onFormError(event) {
-      var code = event.detail.request.response.code;
-      
-      if (1497441483 == code) {
-          this._showAppscoSupportLink();
-      }
-      
-      this._showError(this.apiErrors.getError(code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        var code = event.detail.request.response.code;
 
-  _onFormResponse(event) {
-      this.close();
-      this.dispatchEvent(new CustomEvent('domain-added', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              domain: event.detail.response
-          }
-      }));
-  }
+        if (1497441483 == code) {
+            this._showAppscoSupportLink();
+        }
+
+        this._showError(this.apiErrors.getError(code));
+        this._hideLoader();
+    }
+
+    _onFormResponse(event) {
+        this.close();
+        this.dispatchEvent(new CustomEvent('domain-added', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                domain: event.detail.response
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoCompanyAddDomain.is, AppscoCompanyAddDomain);

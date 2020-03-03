@@ -1,17 +1,4 @@
-/*
-`appsco-company-resource-settings`
-Used to update company resource - configuration fields and claims.
-
-    <appsco-company-resource-settings resource="{}"
-                                      authorization-token=""></appsco-company-resource-settings>
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
@@ -43,12 +30,13 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyResourceSettings extends mixinBehaviors([
     Appsco.HeadersMixin,
     NeonAnimationRunnerBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -188,497 +176,497 @@ class AppscoCompanyResourceSettings extends mixinBehaviors([
             <paper-button class="save-action" on-tap="_onSaveAction">Save</paper-button>
         </template>
 `;
-  }
-
-  static get is() {
-      return 'appsco-company-resource-settings';
-  }
-
-  static get properties() {
-      return {
-          resource: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          domain: {
-              type: String
-          },
-
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _updateConfigurationAction: {
-              type: String,
-              computed: '_computeUpdateConfigurationAction(resource)'
-          },
-
-          _updateClaimsAction: {
-              type: String,
-              computed: '_computeUpdateClaimsAction(resource)'
-          },
-
-          _loader: {
-              type: Boolean,
-              value: false
-          },
-
-          _errorMessage: {
-              type: String
-          },
-
-          _resourceConfigurationForm: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _resourceClaimsForm: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _resourceClaimsActiveForm: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _claimTypeSwitchPermission: {
-              type: Boolean,
-              computed: '_computeClaimTypeSwitchPermission(resource)'
-          },
-
-          _claimTypeIndividual: {
-              type: Boolean,
-              computed: '_computeClaimTypeIndividual(resource)',
-              observer: '_onClaimTypeChanged'
-          },
-
-          _userCanEdit: {
-              type: Boolean,
-              computed: '_computeUserCanEdit(resource)'
-          },
-
-          _urlValidationPattern: {
-              type: String,
-              computed: '_computeUrlValidationPattern(resource)'
-          },
-
-          _supportedAuthTypes: {
-              type: Array,
-              value: function () {
-                  return [
-                      'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
-                      'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
-                  ]
-              }
-          },
-
-          animationConfig: {
-              type: Object
-          },
-
-          _configureUrlPermission: {
-              type: Boolean,
-              computed: '_computeConfigureUrlPermission(resource)'
-          },
-
-          _unPwAuthType: {
-              type: Boolean,
-              computed: '_computeAuthType(resource, "unpw")'
-          },
-
-          _itemAuthType: {
-              type: Boolean,
-              computed: '_computeAuthType(resource, "item")'
-          },
-
-          _creditCardAuthType: {
-              type: Boolean,
-              computed: '_computeAuthType(resource, "cc")'
-          },
-
-          _loginAuthType: {
-              type: Boolean,
-              computed: '_computeAuthType(resource, "login")'
-          },
-
-          _passportAuthType: {
-              type: Boolean,
-              computed: '_computeAuthType(resource, "passport")'
-          },
-
-          _secureNoteAuthType: {
-              type: Boolean,
-              computed: '_computeAuthType(resource, "securenote")'
-          },
-
-          _softwareLicenceAuthType: {
-              type: Boolean,
-              computed: '_computeAuthType(resource, "softwarelicence")'
-          },
-
-          _samlAuthType: {
-              type: Boolean,
-              computed: '_computeAuthType(resource, "saml")'
-          },
-
-          _openIDAuthType: {
-              type: Boolean,
-              computed: '_computeAuthType(resource, "open_id")'
-          },
-
-          _samlDropBoxAuthType: {
-              type: Boolean,
-              computed: "_computeAuthType(resource, 'saml_dropbox')"
-          },
-
-          _samlOffice365AuthType: {
-              type: Boolean,
-              computed: "_computeAuthType(resource, 'saml_office_365')"
-          },
-
-          isDialog: {
-              type: Boolean,
-              value: false
-          },
-
-          _provisioningSupportList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'none',
-                          name: 'No user management'
-                      },
-                      {
-                          value: 'manual',
-                          name: 'Users handled manually'
-                      },
-                      {
-                          value: 'automatic',
-                          name: 'Users handled by AppsCo automatically'
-                      }
-                  ];
-              }
-          },
-
-          _preselectedProvisioningSupport: {
-              type: String,
-              computed: '_computePreselectedProvisioningSupport(resource, _provisioningSupportList)'
-          }
-      };
-  }
-
-  ready() {
-      super.ready();
-
-      this._resourceConfigurationForm = this.$.saveResourceConfigurationForm;
-      this._resourceClaimsForm = this.$.saveResourceClaimsForm;
-
-      this.animationConfig = {
-          'entry': {
-              name: 'scale-up-animation',
-              node: this.$.saveResourceClaimsForm,
-              transformOrigin: '0 0',
-              axis: 'y',
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'scale-down-animation',
-              node: this.$.saveResourceClaimsForm,
-              transformOrigin: '0 0',
-              axis: 'y',
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-
-      afterNextRender(this, function () {
-          this._addListeners();
-      });
-  }
-
-  _addListeners() {
-      this.addEventListener('iron-overlay-closed', this._stopPropagation);
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
-  }
-
-  setup() {}
-
-  reset() {
-      const resource = JSON.parse(JSON.stringify(this.resource));
-
-      if (this._resourceClaimsActiveForm && this._resourceClaimsActiveForm.$) {
-          this._resourceClaimsActiveForm.reset();
-      }
-
-      this._resourceConfigurationForm.reset();
-      this._resourceClaimsForm.reset();
-      this._hideError();
-      this._hideLoader();
-
-      setTimeout(function () {
-          this.set('resource', {});
-          this.set('resource', resource);
-      }.bind(this), 10);
-  }
-
-  _computePreselectedProvisioningSupport(resource, list) {
-      return (resource && resource.provisioning) ? resource.provisioning : list[0].value;
-  }
-
-  _stopPropagation(event) {
-      event.stopPropagation();
-  }
-
-  _onResourceChanged(resource) {
-      this._claimTypeIndividual = (resource.self && ('individual' === resource.claim_type));
-  }
-
-  _onAuthTypeChanged() {
-      this.set('_resourceClaimsActiveForm', dom(this.root).querySelector('[data-claims]'));
-  }
-
-  _computeClaimTypeSwitchPermission(resource) {
-      return resource.self && resource.claim_type_editable;
-  }
-
-  _computeClaimTypeIndividual(resource) {
-      return resource.self && 'individual' === resource.claim_type;
-  }
-
-  _computeConfigureUrlPermission(resource) {
-      return resource.self && resource.url_editable;
-  }
-
-  _computeUpdateConfigurationAction(resource) {
-      return resource.self ? resource.self : '';
-  }
-
-  _computeUpdateClaimsAction(resource) {
-      return resource.self ? resource.meta.update_claims : '';
-  }
-
-  _computeAuthType(resource, authType) {
-      return (resource.auth_type && resource.auth_type === authType);
-  }
-
-  _computeUrlValidationPattern(resource) {
-      const defaultPattern = '^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
-          allowFtpPattern = '^(http:\\/\\/|https:\\/\\/|ftp:\\/\\/|ftps:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/|https:\\/\\/|ftp:\\/\\/|ftps:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$';
-
-      const auth = resource.auth_type;
-      return (['login', 'none'].indexOf(auth) !== -1) ? allowFtpPattern : defaultPattern;
-  }
-
-  _computeUserCanEdit(resource) {
-      return resource.self && !!resource.user_can_edit;
-  }
-
-  _showLoader() {
-      this._loader = true;
-  }
-
-  _hideLoader() {
-      this._loader = false;
-  }
-
-  _showError(message) {
-      this._errorMessage = message;
-  }
-
-  _hideError() {
-      this._errorMessage = '';
-  }
-
-  _showClaimsForm() {
-      if (Object.keys(this._resourceClaimsForm).length > 0) {
-          this._resourceClaimsForm.updateStyles({'display': 'block'});
-          this.playAnimation('entry');
-      }
-  }
-
-  _hideClaimsForm() {
-      this._resetClaimsForm();
-      this.playAnimation('exit');
-  }
-
-  _resetClaimsForm() {
-      if (this._resourceClaimsForm) {
-          this._resourceClaimsForm.reset();
-      }
-  }
-
-  _onClaimTypeChanged(individual) {
-      individual ? this._hideClaimsForm() : this._showClaimsForm();
-  }
-
-  _onConfigurationFormPresubmit(event) {
-      const form = event.target;
-
-      form.request.method = 'PATCH';
-      form.request.body['configure_application[provisioning]'] = encodeURIComponent(this.$.provisioningSupportList.selectedItem.value);
-  }
-
-  _onConfigurationFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.error.code));
-      this._hideLoader();
-  }
-
-  _onConfigurationFormResponse(event) {
-      if (this._resourceClaimsActiveForm) {
-          this._submitClaimsForm();
-      } else {
-          this._resourceSettingsSaved(event.detail.response);
-      }
-  }
-
-  _onChangeUserCanEdit(event) {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._updateClaimsAction,
-              method: 'PATCH',
-              handleAs: 'json',
-              headers: this._headers,
-              body: 'application_claims[user_can_edit]=' + event.target.checked
-          };
-
-      this._showLoader();
-
-      request.send(options).then(function () {
-          if (200 === request.status) {
-              const resource = request.response;
-              this.set('resource', resource);
-              this._hideLoader();
-          }
-      }.bind(this), function () {
-          this._showError(this.apiErrors.getError(request.error.code));
-      }.bind(this));
-  }
-
-  _onChangeClaimType() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._updateClaimsAction,
-              method: 'PATCH',
-              handleAs: 'json',
-              headers: this._headers,
-              body: 'application_claims[claim_type]=' + !this._claimTypeIndividual
-          };
-
-      this._showLoader();
-
-      request.send(options).then(function () {
-          if (200 === request.status) {
-              const resource = request.response;
-
-              this.set('resource', resource);
-
-              this.dispatchEvent(new CustomEvent('claim-type-changed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      application: resource
-                  }
-              }));
-
-              this._hideLoader();
-          }
-      }.bind(this), function () {
-          this._showError(this.apiErrors.getError(request.error.code));
-      }.bind(this));
-  }
-
-  _onClaimsFormPresubmit(event) {
-      const form = event.target,
-          formSettings = this._resourceClaimsActiveForm;
-
-      this._loader = true;
-      form.request.method = 'PATCH';
-
-      if (formSettings && formSettings.$) {
-          form.request.body = formSettings.encodedBodyValues();
-      }
-  }
-
-  _onClaimsFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.error.code));
-      this._hideLoader();
-  }
-
-  _onClaimsFormResponse(event) {
-      this._resourceSettingsSaved(event.detail.response);
-  }
-
-  _submitConfigurationForm() {
-      if (this._resourceConfigurationForm.validate()) {
-          this._showLoader();
-          this._resourceConfigurationForm.submit();
-      }
-  }
-
-  _submitClaimsForm() {
-      const form = this._resourceClaimsActiveForm;
-
-      if (form) {
-          this._resourceClaimsForm.submit();
-      }
-  }
-
-  _onSaveAction() {
-      this._hideError();
-      if (this._resourceClaimsActiveForm && this._resourceClaimsActiveForm.$ && !this._claimTypeIndividual) {
-          const claimsForm = this._resourceClaimsActiveForm,
-              claimsFormValid = claimsForm.isValid();
-
-          if (claimsFormValid) {
-              this._submitConfigurationForm();
-          }
-      } else {
-          this._submitConfigurationForm();
-      }
-  }
-
-  _resourceSettingsSaved(resource) {
-      if (resource && resource.self) {
-          this.set('resource', resource);
-
-          this.dispatchEvent(new CustomEvent('application-settings-saved', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  application: resource
-              }
-          }));
-      }
-
-      this._hideLoader();
-  }
-
-  _onNeonAnimationFinish() {
-      if (this._claimTypeIndividual && this._resourceClaimsForm) {
-          this._resourceClaimsForm.style.display = 'none';
-      }
-  }
-
-  save(callback) {
-      this._onSaveAction();
-      callback();
-  }
+    }
+
+    static get is() {
+        return 'appsco-company-resource-settings';
+    }
+
+    static get properties() {
+        return {
+            resource: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            domain: {
+                type: String
+            },
+
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _updateConfigurationAction: {
+                type: String,
+                computed: '_computeUpdateConfigurationAction(resource)'
+            },
+
+            _updateClaimsAction: {
+                type: String,
+                computed: '_computeUpdateClaimsAction(resource)'
+            },
+
+            _loader: {
+                type: Boolean,
+                value: false
+            },
+
+            _errorMessage: {
+                type: String
+            },
+
+            _resourceConfigurationForm: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _resourceClaimsForm: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _resourceClaimsActiveForm: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _claimTypeSwitchPermission: {
+                type: Boolean,
+                computed: '_computeClaimTypeSwitchPermission(resource)'
+            },
+
+            _claimTypeIndividual: {
+                type: Boolean,
+                computed: '_computeClaimTypeIndividual(resource)',
+                observer: '_onClaimTypeChanged'
+            },
+
+            _userCanEdit: {
+                type: Boolean,
+                computed: '_computeUserCanEdit(resource)'
+            },
+
+            _urlValidationPattern: {
+                type: String,
+                computed: '_computeUrlValidationPattern(resource)'
+            },
+
+            _supportedAuthTypes: {
+                type: Array,
+                value: function () {
+                    return [
+                        'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
+                        'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
+                    ]
+                }
+            },
+
+            animationConfig: {
+                type: Object
+            },
+
+            _configureUrlPermission: {
+                type: Boolean,
+                computed: '_computeConfigureUrlPermission(resource)'
+            },
+
+            _unPwAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "unpw")'
+            },
+
+            _itemAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "item")'
+            },
+
+            _creditCardAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "cc")'
+            },
+
+            _loginAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "login")'
+            },
+
+            _passportAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "passport")'
+            },
+
+            _secureNoteAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "securenote")'
+            },
+
+            _softwareLicenceAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "softwarelicence")'
+            },
+
+            _samlAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "saml")'
+            },
+
+            _openIDAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "open_id")'
+            },
+
+            _samlDropBoxAuthType: {
+                type: Boolean,
+                computed: "_computeAuthType(resource, 'saml_dropbox')"
+            },
+
+            _samlOffice365AuthType: {
+                type: Boolean,
+                computed: "_computeAuthType(resource, 'saml_office_365')"
+            },
+
+            isDialog: {
+                type: Boolean,
+                value: false
+            },
+
+            _provisioningSupportList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'none',
+                            name: 'No user management'
+                        },
+                        {
+                            value: 'manual',
+                            name: 'Users handled manually'
+                        },
+                        {
+                            value: 'automatic',
+                            name: 'Users handled by AppsCo automatically'
+                        }
+                    ];
+                }
+            },
+
+            _preselectedProvisioningSupport: {
+                type: String,
+                computed: '_computePreselectedProvisioningSupport(resource, _provisioningSupportList)'
+            }
+        };
+    }
+
+    ready() {
+        super.ready();
+
+        this._resourceConfigurationForm = this.$.saveResourceConfigurationForm;
+        this._resourceClaimsForm = this.$.saveResourceClaimsForm;
+
+        this.animationConfig = {
+            'entry': {
+                name: 'scale-up-animation',
+                node: this.$.saveResourceClaimsForm,
+                transformOrigin: '0 0',
+                axis: 'y',
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'scale-down-animation',
+                node: this.$.saveResourceClaimsForm,
+                transformOrigin: '0 0',
+                axis: 'y',
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+
+        afterNextRender(this, function () {
+            this._addListeners();
+        });
+    }
+
+    _addListeners() {
+        this.addEventListener('iron-overlay-closed', this._stopPropagation);
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+    }
+
+    setup() {}
+
+    reset() {
+        const resource = JSON.parse(JSON.stringify(this.resource));
+
+        if (this._resourceClaimsActiveForm && this._resourceClaimsActiveForm.$) {
+            this._resourceClaimsActiveForm.reset();
+        }
+
+        this._resourceConfigurationForm.reset();
+        this._resourceClaimsForm.reset();
+        this._hideError();
+        this._hideLoader();
+
+        setTimeout(function () {
+            this.set('resource', {});
+            this.set('resource', resource);
+        }.bind(this), 10);
+    }
+
+    _computePreselectedProvisioningSupport(resource, list) {
+        return (resource && resource.provisioning) ? resource.provisioning : list[0].value;
+    }
+
+    _stopPropagation(event) {
+        event.stopPropagation();
+    }
+
+    _onResourceChanged(resource) {
+        this._claimTypeIndividual = (resource.self && ('individual' === resource.claim_type));
+    }
+
+    _onAuthTypeChanged() {
+        this.set('_resourceClaimsActiveForm', dom(this.root).querySelector('[data-claims]'));
+    }
+
+    _computeClaimTypeSwitchPermission(resource) {
+        return resource.self && resource.claim_type_editable;
+    }
+
+    _computeClaimTypeIndividual(resource) {
+        return resource.self && 'individual' === resource.claim_type;
+    }
+
+    _computeConfigureUrlPermission(resource) {
+        return resource.self && resource.url_editable;
+    }
+
+    _computeUpdateConfigurationAction(resource) {
+        return resource.self ? resource.self : '';
+    }
+
+    _computeUpdateClaimsAction(resource) {
+        return resource.self ? resource.meta.update_claims : '';
+    }
+
+    _computeAuthType(resource, authType) {
+        return (resource.auth_type && resource.auth_type === authType);
+    }
+
+    _computeUrlValidationPattern(resource) {
+        const defaultPattern = '^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
+            allowFtpPattern = '^(http:\\/\\/|https:\\/\\/|ftp:\\/\\/|ftps:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?|^((http:\\/\\/|https:\\/\\/|ftp:\\/\\/|ftps:\\/\\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$';
+
+        const auth = resource.auth_type;
+        return (['login', 'none'].indexOf(auth) !== -1) ? allowFtpPattern : defaultPattern;
+    }
+
+    _computeUserCanEdit(resource) {
+        return resource.self && !!resource.user_can_edit;
+    }
+
+    _showLoader() {
+        this._loader = true;
+    }
+
+    _hideLoader() {
+        this._loader = false;
+    }
+
+    _showError(message) {
+        this._errorMessage = message;
+    }
+
+    _hideError() {
+        this._errorMessage = '';
+    }
+
+    _showClaimsForm() {
+        if (Object.keys(this._resourceClaimsForm).length > 0) {
+            this._resourceClaimsForm.updateStyles({'display': 'block'});
+            this.playAnimation('entry');
+        }
+    }
+
+    _hideClaimsForm() {
+        this._resetClaimsForm();
+        this.playAnimation('exit');
+    }
+
+    _resetClaimsForm() {
+        if (this._resourceClaimsForm) {
+            this._resourceClaimsForm.reset();
+        }
+    }
+
+    _onClaimTypeChanged(individual) {
+        individual ? this._hideClaimsForm() : this._showClaimsForm();
+    }
+
+    _onConfigurationFormPresubmit(event) {
+        const form = event.target;
+
+        form.request.method = 'PATCH';
+        form.request.body['configure_application[provisioning]'] = encodeURIComponent(this.$.provisioningSupportList.selectedItem.value);
+    }
+
+    _onConfigurationFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.error.code));
+        this._hideLoader();
+    }
+
+    _onConfigurationFormResponse(event) {
+        if (this._resourceClaimsActiveForm) {
+            this._submitClaimsForm();
+        } else {
+            this._resourceSettingsSaved(event.detail.response);
+        }
+    }
+
+    _onChangeUserCanEdit(event) {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._updateClaimsAction,
+                method: 'PATCH',
+                handleAs: 'json',
+                headers: this._headers,
+                body: 'application_claims[user_can_edit]=' + event.target.checked
+            };
+
+        this._showLoader();
+
+        request.send(options).then(function () {
+            if (200 === request.status) {
+                const resource = request.response;
+                this.set('resource', resource);
+                this._hideLoader();
+            }
+        }.bind(this), function () {
+            this._showError(this.apiErrors.getError(request.error.code));
+        }.bind(this));
+    }
+
+    _onChangeClaimType() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._updateClaimsAction,
+                method: 'PATCH',
+                handleAs: 'json',
+                headers: this._headers,
+                body: 'application_claims[claim_type]=' + !this._claimTypeIndividual
+            };
+
+        this._showLoader();
+
+        request.send(options).then(function () {
+            if (200 === request.status) {
+                const resource = request.response;
+
+                this.set('resource', resource);
+
+                this.dispatchEvent(new CustomEvent('claim-type-changed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: resource
+                    }
+                }));
+
+                this._hideLoader();
+            }
+        }.bind(this), function () {
+            this._showError(this.apiErrors.getError(request.error.code));
+        }.bind(this));
+    }
+
+    _onClaimsFormPresubmit(event) {
+        const form = event.target,
+            formSettings = this._resourceClaimsActiveForm;
+
+        this._loader = true;
+        form.request.method = 'PATCH';
+
+        if (formSettings && formSettings.$) {
+            form.request.body = formSettings.encodedBodyValues();
+        }
+    }
+
+    _onClaimsFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.error.code));
+        this._hideLoader();
+    }
+
+    _onClaimsFormResponse(event) {
+        this._resourceSettingsSaved(event.detail.response);
+    }
+
+    _submitConfigurationForm() {
+        if (this._resourceConfigurationForm.validate()) {
+            this._showLoader();
+            this._resourceConfigurationForm.submit();
+        }
+    }
+
+    _submitClaimsForm() {
+        const form = this._resourceClaimsActiveForm;
+
+        if (form) {
+            this._resourceClaimsForm.submit();
+        }
+    }
+
+    _onSaveAction() {
+        this._hideError();
+        if (this._resourceClaimsActiveForm && this._resourceClaimsActiveForm.$ && !this._claimTypeIndividual) {
+            const claimsForm = this._resourceClaimsActiveForm,
+                claimsFormValid = claimsForm.isValid();
+
+            if (claimsFormValid) {
+                this._submitConfigurationForm();
+            }
+        } else {
+            this._submitConfigurationForm();
+        }
+    }
+
+    _resourceSettingsSaved(resource) {
+        if (resource && resource.self) {
+            this.set('resource', resource);
+
+            this.dispatchEvent(new CustomEvent('application-settings-saved', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    application: resource
+                }
+            }));
+        }
+
+        this._hideLoader();
+    }
+
+    _onNeonAnimationFinish() {
+        if (this._claimTypeIndividual && this._resourceClaimsForm) {
+            this._resourceClaimsForm.style.display = 'none';
+        }
+    }
+
+    save(callback) {
+        this._onSaveAction();
+        callback();
+    }
 }
 window.customElements.define(AppscoCompanyResourceSettings.is, AppscoCompanyResourceSettings);

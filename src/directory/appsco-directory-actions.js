@@ -20,9 +20,10 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDirectoryActions extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -203,272 +204,272 @@ class AppscoDirectoryActions extends mixinBehaviors([NeonAnimationRunnerBehavior
             <paper-tooltip for="sendNotificationAction" position="bottom">Send notification</paper-tooltip>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-directory-actions'; }
+    static get is() { return 'appsco-directory-actions'; }
 
-  static get properties() {
-      return {
-          /**
-           * Indicates if bulk actions for applications are visible or not.
-           * Used to show / hide bulk actions.
-           */
-          bulkActions: {
-              type: Boolean,
-              value: false,
-              observer: '_onBulkActionsChanged'
-          },
+    static get properties() {
+        return {
+            /**
+             * Indicates if bulk actions for applications are visible or not.
+             * Used to show / hide bulk actions.
+             */
+            bulkActions: {
+                type: Boolean,
+                value: false,
+                observer: '_onBulkActionsChanged'
+            },
 
-          _bulkSelectAll: {
-              type: Boolean,
-              value: true,
-              observer: '_onBulkSelectAllChanged'
-          },
+            _bulkSelectAll: {
+                type: Boolean,
+                value: true,
+                observer: '_onBulkSelectAllChanged'
+            },
 
-          _filterItems: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'All users',
-                          value: 'all'
-                      },
-                      {
-                          name: 'Managed users',
-                          value: 'managed'
-                      },
-                      {
-                          name: 'Unmanaged users',
-                          value: 'unmanaged'
-                      },
-                      {
-                          name: 'Invitations',
-                          value: 'invitations'
-                      }];
-              }
-          },
+            _filterItems: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'All users',
+                            value: 'all'
+                        },
+                        {
+                            name: 'Managed users',
+                            value: 'managed'
+                        },
+                        {
+                            name: 'Unmanaged users',
+                            value: 'unmanaged'
+                        },
+                        {
+                            name: 'Invitations',
+                            value: 'invitations'
+                        }];
+                }
+            },
 
-          _selectedAll: {
-              type: Boolean,
-              value: false
-          },
+            _selectedAll: {
+                type: Boolean,
+                value: false
+            },
 
-          _subscriptionInfo: {
-              type: Boolean,
-              value: false
-          },
+            _subscriptionInfo: {
+                type: Boolean,
+                value: false
+            },
 
-          _domainInfo: {
-              type: Boolean,
-              value: false
-          },
+            _domainInfo: {
+                type: Boolean,
+                value: false
+            },
 
-          _subscription: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            _subscription: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: [],
-              nodeDelay: 50,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'cascaded-animation',
-              animation: 'fade-out-animation',
-              nodes: [],
-              nodeDelay: 0,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: [],
+                nodeDelay: 50,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'cascaded-animation',
+                animation: 'fade-out-animation',
+                nodes: [],
+                nodeDelay: 0,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      afterNextRender(this, function () {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function () {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
-  }
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+    }
 
-  _selected(e) {
-      this.dispatchEvent(new CustomEvent('group-selected', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              id: e.detail.item.getAttribute('value'),
-              name: e.detail.item.getAttribute('name')
-          }
-      }));
-  }
+    _selected(e) {
+        this.dispatchEvent(new CustomEvent('group-selected', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                id: e.detail.item.getAttribute('value'),
+                name: e.detail.item.getAttribute('name')
+            }
+        }));
+    }
 
-  _onAddAccountAction() {
-      this.dispatchEvent(new CustomEvent('add-account', { bubbles: true, composed: true }));
-  }
+    _onAddAccountAction() {
+        this.dispatchEvent(new CustomEvent('add-account', { bubbles: true, composed: true }));
+    }
 
-  _onImportAccountsAction() {
-      this.dispatchEvent(new CustomEvent('import-accounts', { bubbles: true, composed: true }));
-  }
+    _onImportAccountsAction() {
+        this.dispatchEvent(new CustomEvent('import-accounts', { bubbles: true, composed: true }));
+    }
 
-  _onRemoveAction() {
-      this.dispatchEvent(new CustomEvent('remove', { bubbles: true, composed: true }));
-  }
+    _onRemoveAction() {
+        this.dispatchEvent(new CustomEvent('remove', { bubbles: true, composed: true }));
+    }
 
-  _onSelectAllAction() {
-      this.dispatchEvent(new CustomEvent('select-all-company-roles', { bubbles: true, composed: true }));
-  }
+    _onSelectAllAction() {
+        this.dispatchEvent(new CustomEvent('select-all-company-roles', { bubbles: true, composed: true }));
+    }
 
-  _onAddToGroupAction() {
-      this.dispatchEvent(new CustomEvent('add-groups-to-company-roles', { bubbles: true, composed: true }));
-  }
+    _onAddToGroupAction() {
+        this.dispatchEvent(new CustomEvent('add-groups-to-company-roles', { bubbles: true, composed: true }));
+    }
 
-  _onOrganizationUnitsAction() {
-      this.dispatchEvent(new CustomEvent('orgunits', { bubbles: true, composed: true }));
-  }
+    _onOrganizationUnitsAction() {
+        this.dispatchEvent(new CustomEvent('orgunits', { bubbles: true, composed: true }));
+    }
 
-  _onSendNotificationAction() {
-      this.dispatchEvent(new CustomEvent('send-notification', { bubbles: true, composed: true }));
-  }
+    _onSendNotificationAction() {
+        this.dispatchEvent(new CustomEvent('send-notification', { bubbles: true, composed: true }));
+    }
 
-  _onSearchIcon() {
-      this.dispatchEvent(new CustomEvent('search-icon', { bubbles: true, composed: true }));
-  }
+    _onSearchIcon() {
+        this.dispatchEvent(new CustomEvent('search-icon', { bubbles: true, composed: true }));
+    }
 
-  _onFilterAction(event) {
-      this.dispatchEvent(new CustomEvent('filter-roles', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              filter: event.detail.item.getAttribute('value'),
-              name: event.detail.item.getAttribute('name')
-          }
-      }));
-  }
+    _onFilterAction(event) {
+        this.dispatchEvent(new CustomEvent('filter-roles', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                filter: event.detail.item.getAttribute('value'),
+                name: event.detail.item.getAttribute('name')
+            }
+        }));
+    }
 
-  focusSearch() {
-      this.$.appscoSearch.setup();
-  }
+    focusSearch() {
+        this.$.appscoSearch.setup();
+    }
 
-  _onBulkActionsChanged() {
-      var bulkActions = dom(this.root).querySelectorAll('.bulk-action');
+    _onBulkActionsChanged() {
+        var bulkActions = dom(this.root).querySelectorAll('.bulk-action');
 
-      if (this.animationConfig) {
-          this.animationConfig.entry.nodes = bulkActions;
-          this.animationConfig.exit.nodes = bulkActions;
-      }
+        if (this.animationConfig) {
+            this.animationConfig.entry.nodes = bulkActions;
+            this.animationConfig.exit.nodes = bulkActions;
+        }
 
-      if (this.bulkActions) {
-          var length = bulkActions.length;
+        if (this.bulkActions) {
+            var length = bulkActions.length;
 
-          for (var i = 0; i < length; i++) {
-              bulkActions[i].style.display = 'flex';
-          }
-          this.playAnimation('entry');
-      }
-      else {
-          this.playAnimation('exit');
-      }
-  }
+            for (var i = 0; i < length; i++) {
+                bulkActions[i].style.display = 'flex';
+            }
+            this.playAnimation('entry');
+        }
+        else {
+            this.playAnimation('exit');
+        }
+    }
 
-  showBulkActions() {
-      this.bulkActions = true;
-  }
+    showBulkActions() {
+        this.bulkActions = true;
+    }
 
-  hideBulkActions() {
-      this.bulkActions = false;
-  }
+    hideBulkActions() {
+        this.bulkActions = false;
+    }
 
-  showBulkSelectAll() {
-      this._bulkSelectAll = true;
-  }
+    showBulkSelectAll() {
+        this._bulkSelectAll = true;
+    }
 
-  hideBulkSelectAll() {
-      this._bulkSelectAll = false;
-  }
+    hideBulkSelectAll() {
+        this._bulkSelectAll = false;
+    }
 
-  _onBulkSelectAllChanged () {
-      var bulkSelectAll = dom(this.root).querySelectorAll('.bulk-select-all');
-      if (this._bulkSelectAll) {
-          bulkSelectAll[0].style.display = 'block';
-      }else {
-          bulkSelectAll[0].style.display = 'none';
-      }
-  }
+    _onBulkSelectAllChanged () {
+        var bulkSelectAll = dom(this.root).querySelectorAll('.bulk-select-all');
+        if (this._bulkSelectAll) {
+            bulkSelectAll[0].style.display = 'block';
+        }else {
+            bulkSelectAll[0].style.display = 'none';
+        }
+    }
 
-  showSubscriptionLimitReachedInfo(subscription) {
-      this._subscription = subscription;
-      this._subscriptionInfo = true;
-  }
+    showSubscriptionLimitReachedInfo(subscription) {
+        this._subscription = subscription;
+        this._subscriptionInfo = true;
+    }
 
-  hideSubscriptionLimitReachedInfo() {
-      this._subscriptionInfo = false;
-  }
+    hideSubscriptionLimitReachedInfo() {
+        this._subscriptionInfo = false;
+    }
 
-  showDomainNotVerifiedInfo() {
-      this._domainInfo = true;
-  }
+    showDomainNotVerifiedInfo() {
+        this._domainInfo = true;
+    }
 
-  hideDomainNotVerifiedInfo() {
-      this._domainInfo = false;
-  }
+    hideDomainNotVerifiedInfo() {
+        this._domainInfo = false;
+    }
 
-  _onToggleSubscriptionInfo(event) {
-      this.shadowRoot.getElementById('appscoSubscriptionInfoDropdown').toggle(event.target);
-  }
+    _onToggleSubscriptionInfo(event) {
+        this.shadowRoot.getElementById('appscoSubscriptionInfoDropdown').toggle(event.target);
+    }
 
-  _onToggleDomainInfo(event) {
-      this.shadowRoot.getElementById('appscoDomainInfoDropdown').toggle(event.target);
-  }
+    _onToggleDomainInfo(event) {
+        this.shadowRoot.getElementById('appscoDomainInfoDropdown').toggle(event.target);
+    }
 
-  _onSubscriptionInfoAction() {
-      this.dispatchEvent(new CustomEvent('upgrade', { bubbles: true, composed: true }));
-  }
+    _onSubscriptionInfoAction() {
+        this.dispatchEvent(new CustomEvent('upgrade', { bubbles: true, composed: true }));
+    }
 
-  _onDomainInfoAction() {
-      this.dispatchEvent(new CustomEvent('manage-domains', { bubbles: true, composed: true }));
-  }
+    _onDomainInfoAction() {
+        this.dispatchEvent(new CustomEvent('manage-domains', { bubbles: true, composed: true }));
+    }
 
-  _onNeonAnimationFinish() {
-      if (!this.bulkActions) {
-          var bulkActions = dom(this.root).querySelectorAll('.bulk-action'),
-                  length = bulkActions.length;
+    _onNeonAnimationFinish() {
+        if (!this.bulkActions) {
+            var bulkActions = dom(this.root).querySelectorAll('.bulk-action'),
+                length = bulkActions.length;
 
-          for (var i = 0; i < length; i++) {
-              bulkActions[i].style.display = 'none';
-          }
-      }
-  }
+            for (var i = 0; i < length; i++) {
+                bulkActions[i].style.display = 'none';
+            }
+        }
+    }
 
-  _resetFilter() {
-      this.shadowRoot.getElementById('filterList').selected = 0;
-  }
+    _resetFilter() {
+        this.shadowRoot.getElementById('filterList').selected = 0;
+    }
 
-  reset() {
-      this.$.appscoSearch.reset();
-      this._resetFilter();
-      this.hideBulkActions();
-  }
+    reset() {
+        this.$.appscoSearch.reset();
+        this._resetFilter();
+        this.hideBulkActions();
+    }
 
-  resetTypeFilter() {
-      this._resetFilter();
-  }
+    resetTypeFilter() {
+        this._resetFilter();
+    }
 }
 window.customElements.define(AppscoDirectoryActions.is, AppscoDirectoryActions);

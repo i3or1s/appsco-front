@@ -1,31 +1,4 @@
-/**
-`appsco-application-log`
-Used to present resource log. Each log message is presented in a new row.
-
-    <appsco-application-log>
-    </appsco-application-log>
-
-### Styling
-
-`<appsco-application-log>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-application-log` | Mixin for the root element | `{}`
-`--appsco-application-logs` | Mixin for the log wrapper element | `{}`
-`--application-log-item` | Mixin for the appsco-list-item element | `{}`
-`--application-log-item-first` | Mixin for the first appsco-list-item element in list | `{}`
-`--load-more-button` | Mixin applied to Load More button | `{}`
-
-@demo demo/appsco-application-log.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
@@ -39,6 +12,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationLog extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
   static get template() {
     return html`

@@ -1,27 +1,4 @@
-/**
-`appsco-orgunit-modify`
-Shows dialog screen for adding/editing organization unit.
-
-    <appsco-orgunit-modify>
-    </appsco-orgunit-modify>
-
-### Styling
-
-`<appsco-orgunit-modify>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-orgunit-modify` | Mixin for the root element | `{}`
-
-@demo demo/appsco-orgunit-modify.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -37,9 +14,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOrgUnitModify extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -103,192 +81,192 @@ class AppscoOrgUnitModify extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
         <iron-a11y-keys keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-orgunit-modify'; }
+    static get is() { return 'appsco-orgunit-modify'; }
 
-  static get properties() {
-      return {
-          /**
-           * [OrgUnit]() if this property is present then component will be used for edit functionality
-           */
-          orgUnit: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            /**
+             * [OrgUnit]() if this property is present then component will be used for edit functionality
+             */
+            orgUnit: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          /**
-           * [OrgUnit]() it is used only when adding new org unit. This is parent of the new org unit
-           */
-          parent: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+            /**
+             * [OrgUnit]() it is used only when adding new org unit. This is parent of the new org unit
+             */
+            parent: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  _onKeyup(event) {
-      if (event.code !== 'Enter') {
-          event.target.invalid = false;
-      }
-  }
+    _onKeyup(event) {
+        if (event.code !== 'Enter') {
+            event.target.invalid = false;
+        }
+    }
 
-  /**
-   * Submits form on ENTER key using iron-a11y-keys component.
-   *
-   * @private
-   */
-  _onEnter() {
-      this._isModify(this.orgUnit) ? this._modify() : this._add();
-  }
+    /**
+     * Submits form on ENTER key using iron-a11y-keys component.
+     *
+     * @private
+     */
+    _onEnter() {
+        this._isModify(this.orgUnit) ? this._modify() : this._add();
+    }
 
-  /**
-   * Is orgunit to be modified or added
-   *
-   * @private
-   */
-  _isModify(orgUnit) {
-      return Object.keys(orgUnit).length > 0;
-  }
+    /**
+     * Is orgunit to be modified or added
+     *
+     * @private
+     */
+    _isModify(orgUnit) {
+        return Object.keys(orgUnit).length > 0;
+    }
 
-  open () {
-      this.$.modifyDialog.open();
-  }
+    open () {
+        this.$.modifyDialog.open();
+    }
 
-  _close () {
-      this.$.modifyDialog.close();
-  }
+    _close () {
+        this.$.modifyDialog.close();
+    }
 
-  _onDialogOpened() {
-      this.$.name.value = this.orgUnit.name;
-      this.$.description.value = this.orgUnit.description;
-      this.$.name.focus();
-  }
+    _onDialogOpened() {
+        this.$.name.value = this.orgUnit.name;
+        this.$.description.value = this.orgUnit.description;
+        this.$.name.focus();
+    }
 
-  _onDialogClosed() {
-      this.$.name.value = '';
-      this.$.description.value = '';
-      this.$.name.invalid = false;
-      this._errorMessage = '';
-  }
+    _onDialogClosed() {
+        this.$.name.value = '';
+        this.$.description.value = '';
+        this.$.name.invalid = false;
+        this._errorMessage = '';
+    }
 
-  _validate() {
-      const nameInput = this.$.name,
-          name = nameInput.value ? nameInput.value : '';
+    _validate() {
+        const nameInput = this.$.name,
+            name = nameInput.value ? nameInput.value : '';
 
-      if (name.trim().length === 0) {
-          nameInput.invalid = true;
-          nameInput.focus();
-          return false;
-      }
+        if (name.trim().length === 0) {
+            nameInput.invalid = true;
+            nameInput.focus();
+            return false;
+        }
 
-      return true;
-  }
+        return true;
+    }
 
-  /**
-   * Preform add operation
-   *
-   * @private
-   */
-  _add() {
-      if (this._validate()) {
-          const appRequest = document.createElement('iron-request');
+    /**
+     * Preform add operation
+     *
+     * @private
+     */
+    _add() {
+        if (this._validate()) {
+            const appRequest = document.createElement('iron-request');
 
-          this._loader = true;
+            this._loader = true;
 
-          appRequest.send({
-              url: this.parent.self,
-              method: 'POST',
-              handleAs: 'json',
-              body: this._prepBody(),
-              headers: this._headers
-          }).then(function(request) {
-              this._loader = false;
+            appRequest.send({
+                url: this.parent.self,
+                method: 'POST',
+                handleAs: 'json',
+                body: this._prepBody(),
+                headers: this._headers
+            }).then(function(request) {
+                this._loader = false;
 
-              this.dispatchEvent(new CustomEvent('orgunit-added', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      orgUnit: request.response.orgunit
-                  }
-              }));
+                this.dispatchEvent(new CustomEvent('orgunit-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        orgUnit: request.response.orgunit
+                    }
+                }));
 
-              this.$.modifyDialog.close();
-          }.bind(this), function(e) {
-              this._loader = false;
-              this._errorMessage = 'We couldn\'t save your changes. Please try again in a minute.';
-          }.bind(this));
-      }
-  }
+                this.$.modifyDialog.close();
+            }.bind(this), function(e) {
+                this._loader = false;
+                this._errorMessage = 'We couldn\'t save your changes. Please try again in a minute.';
+            }.bind(this));
+        }
+    }
 
-  /**
-   * Preform update operation
-   *
-   * @private
-   */
-  _modify() {
-      if (this._validate()) {
-          const appRequest = document.createElement('iron-request');
+    /**
+     * Preform update operation
+     *
+     * @private
+     */
+    _modify() {
+        if (this._validate()) {
+            const appRequest = document.createElement('iron-request');
 
-          this._loader = true;
+            this._loader = true;
 
-          appRequest.send({
-              url: this.orgUnit.self,
-              method: 'PATCH',
-              handleAs: 'json',
-              body: this._prepBody(),
-              headers: this._headers
-          }).then(function(request) {
-              this._loader = false;
+            appRequest.send({
+                url: this.orgUnit.self,
+                method: 'PATCH',
+                handleAs: 'json',
+                body: this._prepBody(),
+                headers: this._headers
+            }).then(function(request) {
+                this._loader = false;
 
-              this.dispatchEvent(new CustomEvent('orgunit-modified', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      orgUnit: request.response.orgunit
-                  }
-              }));
+                this.dispatchEvent(new CustomEvent('orgunit-modified', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        orgUnit: request.response.orgunit
+                    }
+                }));
 
-              this.$.modifyDialog.close();
-          }.bind(this), function(e) {
-              this._loader = false;
-              this._errorMessage = 'We couldn\'t save your changes. Please try again in a minute.';
-          }.bind(this));
-      }
-  }
+                this.$.modifyDialog.close();
+            }.bind(this), function(e) {
+                this._loader = false;
+                this._errorMessage = 'We couldn\'t save your changes. Please try again in a minute.';
+            }.bind(this));
+        }
+    }
 
-  /**
-   * Prepare all fields for operations
-   *
-   * @private
-   */
-  _prepBody() {
-      let nameInput = this.$.name,
-          name = nameInput.value ? nameInput.value : '',
-          descriptionInput = this.$.description,
-          description = descriptionInput.value ? descriptionInput.value : '',
-          body = '';
+    /**
+     * Prepare all fields for operations
+     *
+     * @private
+     */
+    _prepBody() {
+        let nameInput = this.$.name,
+            name = nameInput.value ? nameInput.value : '',
+            descriptionInput = this.$.description,
+            description = descriptionInput.value ? descriptionInput.value : '',
+            body = '';
 
-      body = encodeURIComponent(nameInput.name) + '=' + encodeURIComponent(name);
-      body += '&';
-      body += encodeURIComponent(descriptionInput.name) + '=' + encodeURIComponent(description);
+        body = encodeURIComponent(nameInput.name) + '=' + encodeURIComponent(name);
+        body += '&';
+        body += encodeURIComponent(descriptionInput.name) + '=' + encodeURIComponent(description);
 
-      return body;
-  }
+        return body;
+    }
 }
 window.customElements.define(AppscoOrgUnitModify.is, AppscoOrgUnitModify);

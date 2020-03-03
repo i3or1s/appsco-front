@@ -9,12 +9,13 @@ import '../components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationResourceItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles"></style>
         <style>
             :host {
@@ -35,33 +36,33 @@ class AppscoIntegrationResourceItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-resource-item'; }
+    static get is() { return 'appsco-integration-resource-item'; }
 
-  static get properties() {
-      return {
-          _resourceIcon: {
-              type: String,
-              computed: '_computeResourceIcon(item)'
-          }
-      };
-  }
+    static get properties() {
+        return {
+            _resourceIcon: {
+                type: String,
+                computed: '_computeResourceIcon(item)'
+            }
+        };
+    }
 
-  _computeResourceIcon(resource) {
-      return resource.application_url ? resource.application_url : (resource.icon_url ? resource.icon_url : null);
-  }
+    _computeResourceIcon(resource) {
+        return resource.application_url ? resource.application_url : (resource.icon_url ? resource.icon_url : null);
+    }
 
-  _onAddItemAction(event) {
-      event.preventDefault();
+    _onAddItemAction(event) {
+        event.preventDefault();
 
-      this.dispatchEvent(new CustomEvent('add-item', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              item: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('add-item', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                item: this.item
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoIntegrationResourceItem.is, AppscoIntegrationResourceItem);

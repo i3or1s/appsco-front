@@ -1,34 +1,4 @@
-/**
-`appsco-application-security`
-Contains security information: security score (in percentage) displayed as colored circle with percentage number
-    inside it and security info as text.
-
-    <appsco-application-security>
-    </appsco-application-security>
-
-### Styling
-
-`<appsco-application-security>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--strong-color` | Strong color | `#0f9d58`
-`--medium-color` | Medium color | `#4285f4`
-`--weak-color` | Weak color | `#db4437`
-`--icon-pass-color` | Security pass icon color  | `#0f9d58`
-`--icon-fail-color` | Security fail icon color  | `#db4437`
-`--appsco-application-security` | Mixin for the root element | `{}`
-`--security-score` | Mixin for inner score element. | `{}`
-
-@demo demo/appsco-application-security.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
@@ -36,9 +6,10 @@ import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-icons/iron-icons.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationSecurity extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -156,71 +127,71 @@ class AppscoApplicationSecurity extends PolymerElement {
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-security'; }
+    static get is() { return 'appsco-application-security'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_applicationChanged'
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_applicationChanged'
+            },
 
-          info: {
-              type: Boolean,
-              value: false
-          },
+            info: {
+                type: Boolean,
+                value: false
+            },
 
-          _score: {
-              type: Number,
-              value: 0
-          },
+            _score: {
+                type: Number,
+                value: 0
+            },
 
-          strong: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            strong: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          medium: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            medium: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          weak: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            weak: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  _applicationChanged() {
-      if (this.application && this.application.security) {
-          const score = this.application.security.score;
+    _applicationChanged() {
+        if (this.application && this.application.security) {
+            const score = this.application.security.score;
 
-          this._score = Math.round(score);
-          this.weak = false;
-          this.medium = false;
-          this.strong = false;
+            this._score = Math.round(score);
+            this.weak = false;
+            this.medium = false;
+            this.strong = false;
 
-          if (score > 80) {
-              this.strong = true;
-              return;
-          }
+            if (score > 80) {
+                this.strong = true;
+                return;
+            }
 
-          if (score > 60) {
-              this.medium = true;
-              return;
-          }
+            if (score > 60) {
+                this.medium = true;
+                return;
+            }
 
-          this.weak = true;
-      }
-  }
+            this.weak = true;
+        }
+    }
 }
 window.customElements.define(AppscoApplicationSecurity.is, AppscoApplicationSecurity);

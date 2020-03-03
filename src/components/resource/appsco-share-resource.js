@@ -28,9 +28,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoShareResource extends mixinBehaviors([Appsco.HeadersMixin, NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 display: block;
@@ -356,886 +357,886 @@ class AppscoShareResource extends mixinBehaviors([Appsco.HeadersMixin, NeonAnima
             </div>
         </paper-dialog>
 `;
-  }
-
-  static get is() { return 'appsco-share-resource'; }
-
-  static get properties() {
-      return {
-          getRolesApi: {
-              type: String
-          },
-
-          getContactsApi: {
-              type: String
-          },
-
-          resources: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _accountTypeList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'All',
-                          value: 'all'
-                      },
-                      {
-                          name: 'Users',
-                          value: 'user'
-                      },
-                      {
-                          name: 'Contacts',
-                          value: 'contact'
-                      }];
-              }
-          },
-
-          _selectedTab: {
-              type: Number,
-              value: 0
-          },
-
-          _resourcesSharedToAccounts: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _resourcesSharedToGroups: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _accountList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _accountListAll: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _groupList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _groupListAll: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _message: {
-              type: String
-          },
-
-          _selectedAccounts: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _selectedGroups: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _shareLoader: {
-              type: Boolean,
-              value: false
-          },
-
-          _rolesLoaded: {
-              type: Boolean,
-              value: false
-          },
-
-          _contactsLoaded: {
-              type: Boolean,
-              value: false
-          },
-
-          _componentReady: {
-              type: Boolean,
-              value: false
-          },
-
-          _bulkSelectAccount: {
-              type: Boolean,
-              value: false
-          },
-
-          _bulkSelectGroup: {
-              type: Boolean,
-              value: false
-          },
-
-          _ssoResourceExists: {
-              type: Boolean,
-              value: false
-          },
-
-          _accountsCount: {
-              type: Number,
-              value: 0
-          },
-
-          _groupListCount: {
-              type: Number,
-              value: 0
-          },
-
-          _numberOfSelectedAccounts: {
-              type: Number,
-              value: 0
-          },
-
-          _numberOfSelectedGroups: {
-              type: Number,
-              value: 0
-          },
-
-          _filterTerm: {
-              type: String,
-              value: ''
-          },
-
-          _filterType: {
-              type: String,
-              value: 'all'
-          },
-
-          itemsLoaded: {
-              type: Boolean,
-              notify: true,
-              computed: '_computeItemsLoaded(_contactsLoaded, _rolesLoaded)'
-          }
-      };
-  }
-
-  static get observers() {
-      return [
-          '_setAccountList(_rolesLoaded, _contactsLoaded)',
-          '_onSSOResourceExistsChanged(_ssoResourceExists, _accountList)'
-      ];
-  }
-
-  toggle() {
-      this.$.dialog.toggle();
-  }
-
-  close() {
-      this.$.dialog.close();
-  }
-
-  _computeItemsLoaded(contactsLoaded, rolesLoaded) {
-      return contactsLoaded && rolesLoaded;
-  }
-
-  setResources(resources) {
-      this.resources = resources;
-  }
-
-  _reset() {
-      this.$.appscoSearchAccounts.reset();
-      this.$.appscoSearchGroups.reset();
-      this.$.accountTypeList.selected = 0;
-      this.set('_accountList', []);
-      this.set('_accountListAll', []);
-      this.set('_selectedAccounts', []);
-      this.set('_resourcesSharedToAccounts', []);
-      this.set('_groupList', []);
-      this.set('_groupListAll', []);
-      this.set('_selectedGroups', []);
-      this.set('_resourcesSharedToGroups', []);
-      this.set('resources', []);
-      this._componentReady = false;
-      this._rolesLoaded = false;
-      this._contactsLoaded = false;
-      this._filterTerm = '';
-      this._filterType = 'all';
-      this._numberOfSelectedAccounts = 0;
-      this._numberOfSelectedGroups = 0;
-      this._accountsCount = 0;
-      this._groupListCount = 0;
-      this._ssoResourceExists = false;
-      this._bulkSelectAccount = false;
-      this._bulkSelectGroup = false;
-      this._selectedTab = 0;
-      this._hideLoader();
-      this._hideError();
-      this._hideMessage();
-      this._enableContactTypeFilter();
-  }
-
-  _showLoader() {
-      this._shareLoader = true;
-  }
-
-  _hideLoader() {
-      this._shareLoader = false;
-  }
-
-  _showError(message) {
-      this._errorMessage = message;
-  }
-
-  _hideError() {
-      this._errorMessage = '';
-  }
-
-  _showMessage(message) {
-      this._message = message;
-  }
-
-  _hideMessage() {
-      this._message = '';
-  }
-
-  _showAccountListProgress() {
-      this.$.accountListProgress.hidden = false;
-  }
-
-  _hideAccountListProgress() {
-      setTimeout(function() {
-          this.$.accountListProgress.hidden = true;
-      }.bind(this), 500);
-  }
-
-  _showGroupListProgress() {
-      this.$.groupListProgress.hidden = false;
-  }
-
-  _hideGroupListProgress() {
-      setTimeout(function() {
-          this.$.groupListProgress.hidden = true;
-      }.bind(this), 500);
-  }
-
-  _onDialogOpened() {
-      this.$.appscoSearchAccounts.setup();
-      this.$.appscoSearchGroups.setup();
-      this.shadowRoot.getElementById('appscoRoles').reloadItems();
-      this.shadowRoot.getElementById('appscoContacts').reloadItems();
-      this.shadowRoot.getElementById('appscoGroups').reloadItems();
-      this._componentReady = true;
-      this._setAvailableAccounts();
-  }
-
-  _onDialogClosed() {
-      this._reset();
-  }
-
-  _onSSOResourceExistsChanged(exists, accounts) {
-      if (exists && 0 < accounts.length) {
-          this._hideContacts();
-          this._disableContactTypeFilter();
-      }
-  }
-
-  _onAccountsLoadFinished() {
-      this._rolesLoaded = true;
-  }
-
-  _onContactsLoadFinished() {
-      this._contactsLoaded = true;
-  }
-
-  _setAccountList(rolesLoaded, contactsLoaded) {
-      const listItems = [];
-
-      this._showAccountListProgress();
-
-      this.set('_accountList', []);
-      this.set('_accountListAll', []);
-
-      if (rolesLoaded && contactsLoaded) {
-          const rolesComponent = this.shadowRoot.getElementById('appscoRoles'),
-              roles = rolesComponent.getAllItems(),
-              contactsComponents = this.shadowRoot.getElementById('appscoContacts'),
-              contacts = contactsComponents.getAllItems();
-
-          roles.forEach(function(role, index) {
-              role.account.type = 'user';
-              role.account.selected = false;
-              listItems.push(role.account);
-          }.bind(this));
-
-          contacts.forEach(function(contact, index) {
-              contact.account.type = 'contact';
-              contact.account.selected = false;
-              listItems.push(contact.account);
-          }.bind(this));
-      }
-
-      this.set('_accountList', listItems);
-      this.set('_accountListAll', listItems);
-      this._accountsCount = this._accountList.length;
-      this._setAvailableAccounts();
-      this._hideAccountListProgress();
-  }
-
-  _setAvailableAccounts() {
-      const resources = this.resources,
-          length = resources.length;
-
-      this._ssoResourceExists = false;
-
-      for (let i = 0; i < length; i++) {
-          if (['saml', 'saml_dropbox', 'saml_office_365'].indexOf(resources[i].auth_type) !== -1) {
-              this._ssoResourceExists = true;
-              break;
-          }
-      }
-  }
-
-  _hideContacts() {
-      const list = JSON.parse(JSON.stringify(this._accountList)),
-          length = list.length;
-
-      this.set('_accountList', []);
-
-      for (let i = 0; i < length; i++) {
-          if ('user' === list[i].type) {
-              this.push('_accountList', list[i]);
-          }
-      }
-  }
-
-  _enableContactTypeFilter() {
-      const items = this.$.accountTypeList.items,
-          length = items.length;
-
-      for (let i = 0; i < length; i++) {
-          if ('contact' === items[i].getAttribute('value')) {
-              items[i].disabled = false;
-          }
-      }
-  }
-
-  _disableContactTypeFilter() {
-      const items = this.$.accountTypeList.items,
-          length = items.length;
-
-      for (let i = 0; i < length; i++) {
-          if ('contact' === items[i].getAttribute('value')) {
-              items[i].disabled = true;
-          }
-      }
-  }
-
-  _onBulkSelect() {
-      this._hideError();
-
-      if (this._componentReady) {
-          switch (this._selectedTab) {
-              case 0:
-                  this._bulkSelectAccount = !this._bulkSelectAccount;
-                  this._bulkSelectAccount ? this._selectAllAccounts() : this._deselectAllAccounts();
-                  break;
-                  
-              case 1:
-                  this._bulkSelectGroup = !this._bulkSelectGroup;
-                  this._bulkSelectGroup ? this._selectAllGroups() : this._deselectAllGroups();
-          }
-      }
-  }
-
-  _selectAllAccounts() {
-      const list = JSON.parse(JSON.stringify(this._accountList)),
-          length = list.length,
-          listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length;
-
-      for (let i = 0; i < length; i++) {
-          list[i].selected = true;
-
-          for (let j = 0; j < lengthAll; j++) {
-              if (listAll[j].self === list[i].self) {
-                  listAll[j].selected = true;
-              }
-          }
-      }
-
-      this.set('_accountList', []);
-      this.set('_accountList', list);
-
-      this.set('_accountListAll', []);
-      this.set('_accountListAll', listAll);
-
-      this._recalculateInfoAccount();
-  }
-
-  _deselectAllAccounts() {
-      const list = JSON.parse(JSON.stringify(this._accountList)),
-          length = list.length,
-          listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length;
-
-      for (let i = 0; i < length; i++) {
-          list[i].selected = false;
-
-          for (let j = 0; j < lengthAll; j++) {
-              if (listAll[j].self === list[i].self) {
-                  listAll[j].selected = false;
-              }
-          }
-      }
-
-      this.set('_accountList', []);
-      this.set('_accountList', list);
-
-      this.set('_accountListAll', []);
-      this.set('_accountListAll', listAll);
-
-      this._recalculateInfoAccount();
-  }
-
-  _selectAllGroups() {
-      const list = JSON.parse(JSON.stringify(this._groupList)),
-          length = list.length,
-          listAll = JSON.parse(JSON.stringify(this._groupListAll)),
-          lengthAll = listAll.length;
-
-      for (let i = 0; i < length; i++) {
-          list[i].selected = true;
-
-          for (let j = 0; j < lengthAll; j++) {
-              if (listAll[j].self === list[i].self) {
-                  listAll[j].selected = true;
-              }
-          }
-      }
-
-      this.set('_groupList', []);
-      this.set('_groupList', list);
-
-      this.set('_groupListAll', []);
-      this.set('_groupListAll', listAll);
-
-      this._recalculateInfoGroup();
-  }
-
-  _deselectAllGroups() {
-      const list = JSON.parse(JSON.stringify(this._groupList)),
-          length = list.length,
-          listAll = JSON.parse(JSON.stringify(this._groupListAll)),
-          lengthAll = listAll.length;
-
-      for (let i = 0; i < length; i++) {
-          list[i].selected = false;
-
-          for (let j = 0; j < lengthAll; j++) {
-              if (listAll[j].self === list[i].self) {
-                  listAll[j].selected = false;
-              }
-          }
-      }
-
-      this.set('_groupList', []);
-      this.set('_groupList', list);
-
-      this.set('_groupListAll', []);
-      this.set('_groupListAll', listAll);
-
-      this._recalculateInfoGroup();
-  }
-
-  _onAccountListItemSelectChanged(event) {
-      const item = event.detail.item,
-          listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length;
-
-      if (!item.selected) {
-          this._bulkSelectAccount = false;
-      }
-
-      for (let j = 0; j < lengthAll; j++) {
-          if (listAll[j].self === item.self) {
-              listAll[j].selected = item.selected;
-          }
-      }
-
-      this.set('_accountListAll', []);
-      this.set('_accountListAll', listAll);
-
-      this._recalculateInfoAccount();
-      this._setBulkSelectStatusAccount();
-      this._hideError();
-  }
-
-  _onGroupListItemSelectAction(event) {
-      const item = event.detail.item,
-          listAll = JSON.parse(JSON.stringify(this._groupListAll)),
-          lengthAll = listAll.length;
-
-      if (!item.selected) {
-          this._bulkSelectGroup = false;
-      }
-
-      for (let j = 0; j < lengthAll; j++) {
-          if (listAll[j].self === item.self) {
-              listAll[j].selected = item.selected;
-          }
-      }
-
-      this.set('_groupListAll', []);
-      this.set('_groupListAll', listAll);
-
-      this._recalculateInfoGroup();
-      this._setBulkSelectStatusGroup();
-      this._hideError();
-  }
-
-  _recalculateInfoAccount() {
-      const list = this._accountListAll,
-          length = list.length;
-
-      this._numberOfSelectedAccounts = 0;
-
-      for (let i = 0; i < length; i++) {
-          if (list[i].selected) {
-              this._numberOfSelectedAccounts++;
-          }
-      }
-  }
-
-  _recalculateInfoGroup() {
-      const list = this._groupListAll,
-          length = list.length;
-
-      this._numberOfSelectedGroups = 0;
-
-      for (let i = 0; i < length; i++) {
-          if (list[i].selected) {
-              this._numberOfSelectedGroups++;
-          }
-      }
-  }
-
-  _setBulkSelectStatusAccount() {
-      this._bulkSelectAccount = (this._numberOfSelectedAccounts === this._accountListAll.length);
-  }
-
-  _setBulkSelectStatusGroup() {
-      this._bulkSelectGroup = (this._numberOfSelectedGroups === this._groupListAll.length);
-  }
-
-  _onSearchAccounts(event) {
-      const searchValue = event.detail.term,
-          searchLength = searchValue.length;
-
-      this._filterTerm = searchValue;
-
-      if (searchLength < 3) {
-          this._filterTerm = '';
-      }
-
-      this._filterAccountList();
-  }
-
-  _onSearchAccountsClear() {
-      this._filterTerm = '';
-      this._filterAccountList();
-  }
-
-  _onAccountTypeSelected(event) {
-      this._filterType = event.detail.item.getAttribute('value');
-      this._filterAccountList();
-      this._setBulkSelectStatusAccount();
-  }
-
-  _filterAccountList() {
-      const listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length,
-          term = decodeURIComponent(this._filterTerm.toLowerCase()),
-          type = this._filterType;
-
-      this._hideMessage();
-      this.set('_accountList', []);
-
-      if ('all' === type) {
-          if (term) {
-              for (let i = 0; i < lengthAll; i++) {
-                  if ((-1 !== listAll[i].name.toLowerCase().indexOf(term.toLowerCase())) ||
-                      (-1 !== listAll[i].email.toLowerCase().indexOf(term))) {
-                      this.push('_accountList', listAll[i]);
-                  }
-              }
-          }
-          else {
-              this.set('_accountList', listAll);
-          }
-      }
-      else {
-          if (term) {
-              for (let i = 0; i < lengthAll; i++) {
-                  if ((type === listAll[i].type) &&
-                      ((-1 !== listAll[i].name.toLowerCase().indexOf(term)) ||
-                      (-1 !== listAll[i].email.toLowerCase().indexOf(term)))) {
-                      this.push('_accountList', listAll[i]);
-                  }
-              }
-          }
-          else {
-              for (let i = 0; i < lengthAll; i++) {
-                  if (type === listAll[i].type) {
-                      this.push('_accountList', listAll[i]);
-                  }
-              }
-          }
-      }
-
-      this._setAvailableAccounts();
-
-      if (0 === this._accountList.length) {
-          this._showMessage('There are no accounts available according to selected filters.');
-      }
-  }
-
-  _onGroupsLoadFinished(event) {
-      const listItems = event.detail && event.detail.items ? event.detail.items : [];
-
-      this._showGroupListProgress();
-
-      this.set('_groupList', []);
-      this.set('_groupListAll', []);
-
-      if (0 === listItems.length) {
-          this._hideGroupListProgress();
-          return false;
-      }
-
-      listItems.forEach(function(item) {
-          item.selected = false;
-          item.type = 'group';
-      }.bind(this));
-
-      this.set('_groupList', listItems);
-      this.set('_groupListAll', listItems);
-      this._groupListCount = this._groupList.length;
-      this._hideGroupListProgress();
-  }
-
-  _searchGroups(term) {
-      const searchValue = term.toLowerCase(),
-          searchLength = searchValue.length,
-          listAll = JSON.parse(JSON.stringify(this._groupListAll)),
-          lengthAll = listAll.length;
-
-      this.set('_groupList', []);
-
-      if (searchLength < 2) {
-          this.set('_groupList', listAll);
-      }
-      else {
-          for (let i = 0; i < lengthAll; i++) {
-              if ((-1 !== listAll[i].name.toLowerCase().indexOf(searchValue))) {
-                  this.push('_groupList', listAll[i]);
-              }
-          }
-      }
-  }
-
-  _onSearchGroups(event) {
-      this._searchGroups(event.detail.term);
-  }
-
-  _onSearchGroupsClear() {
-      this._searchGroups('');
-  }
-
-  _resourcesShareToAccountsFinished() {
-      this.dispatchEvent(new CustomEvent('resources-shared', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              resources: this._resourcesSharedToAccounts
-          }
-      }));
-  }
-
-  _resourcesShareToGroupsFinished() {
-      this.dispatchEvent(new CustomEvent('groups-added-to-resources', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              groups: this._selectedGroups,
-              items: this._resourcesSharedToGroups,
-              resourceType: 'resource'
-          }
-      }));
-
-      this.close();
-  }
-
-  _shareToAccounts(application) {
-      return new Promise(function(resolve, reject) {
-          const accounts = this._selectedAccounts,
-              length = accounts.length - 1,
-              request = document.createElement('iron-request'),
-              options = {
-                  url: application.self + '/share',
-                  method: 'POST',
-                  handleAs: 'json',
-                  headers: this._headers
-              };
-          let body = '';
-
-          for (let i = 0; i <= length; i++) {
-              let next = (i === length) ? '' : '&';
-              body += 'accounts[]=' + encodeURIComponent(accounts[i].self) + next;
-          }
-
-          options.body = body;
-
-          request.send(options).then(function() {
-              resolve(request.response);
-          }.bind(this), function() {
-              reject(this.apiErrors.getError(request.response.code));
-          }.bind(this));
-      }.bind(this));
-  }
-
-  _shareToGroups(application) {
-      return new Promise(function(resolve, reject) {
-          const groups = this._selectedGroups,
-              length = groups.length - 1,
-              request = document.createElement('iron-request'),
-              options = {
-                  url: application.self + '/groups',
-                  method: 'POST',
-                  handleAs: 'json',
-                  headers: this._headers
-              };
-          let body = '';
-
-          for (let i = 0; i <= length; i++) {
-              let next = (i === length) ? '' : '&';
-              body += 'groups[]=' + encodeURIComponent(groups[i].meta.self) + next;
-          }
-
-          options.body = body;
-
-          request.send(options).then(function() {
-              resolve(request.response);
-          }.bind(this), function() {
-              reject(this.apiErrors.getError(request.response.code));
-          }.bind(this));
-      }.bind(this));
-  }
-
-  _onShareResourcesAction() {
-      const accountList = JSON.parse(JSON.stringify(this._accountListAll)),
-          accountListLength = accountList.length,
-          groupList = JSON.parse(JSON.stringify(this._groupListAll)),
-          groupListLength = groupList.length;
-
-      this.set('_selectedAccounts', []);
-      this.set('_selectedGroups', []);
-
-      for (let i = 0; i < accountListLength; i++) {
-          if (accountList[i].selected) {
-              this._selectedAccounts.push(accountList[i]);
-          }
-      }
-
-      for (let i = 0; i < groupListLength; i++) {
-          if (groupList[i].selected) {
-              this._selectedGroups.push(groupList[i]);
-          }
-      }
-
-      if ((0 === this._selectedAccounts.length) && (0 === this._selectedGroups.length)) {
-          this._showError('Please add at least one user or group to share resources to.');
-          return false;
-      }
-
-      this._showLoader();
-
-      if (0 < this._selectedAccounts.length) {
-          this._shareResourcesToAccountsAction();
-      }
-      else {
-          this._shareResourcesToGroupsAction();
-      }
-  }
-
-  _shareResourcesToAccountsAction() {
-      const resources = this.resources,
-          length = resources.length - 1;
-
-      resources.forEach(function(resource, index) {
-          this._shareToAccounts(resource).then(function(resource) {
-              this.push('_resourcesSharedToAccounts', resource);
-
-              if (index === length) {
-                  this._resourcesShareToAccountsFinished();
-
-                  if (0 < this._selectedGroups.length) {
-                      this._shareResourcesToGroupsAction();
-                  }
-                  else {
-                      this.close();
-                  }
-              }
-          }.bind(this), function(message) {
-              this._showError(message);
-              this._hideLoader();
-              return false;
-          }.bind(this));
-      }.bind(this));
-  }
-
-  _shareResourcesToGroupsAction() {
-      const resources = this.resources,
-          length = resources.length - 1;
-
-      resources.forEach(function(resource, index) {
-          this._shareToGroups(resource).then(function(resource) {
-              this.push('_resourcesSharedToGroups', resource);
-
-              if (index === length) {
-                  this._resourcesShareToGroupsFinished();
-              }
-          }.bind(this), function(message) {
-              this._showError(message);
-              this._hideLoader();
-              return false;
-          }.bind(this));
-      }.bind(this));
-  }
-
-  _onInnerIronOverlay(event) {
-      event.stopPropagation();
-  }
+    }
+
+    static get is() { return 'appsco-share-resource'; }
+
+    static get properties() {
+        return {
+            getRolesApi: {
+                type: String
+            },
+
+            getContactsApi: {
+                type: String
+            },
+
+            resources: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _accountTypeList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'All',
+                            value: 'all'
+                        },
+                        {
+                            name: 'Users',
+                            value: 'user'
+                        },
+                        {
+                            name: 'Contacts',
+                            value: 'contact'
+                        }];
+                }
+            },
+
+            _selectedTab: {
+                type: Number,
+                value: 0
+            },
+
+            _resourcesSharedToAccounts: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _resourcesSharedToGroups: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _accountList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _accountListAll: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _groupList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _groupListAll: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _message: {
+                type: String
+            },
+
+            _selectedAccounts: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _selectedGroups: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _shareLoader: {
+                type: Boolean,
+                value: false
+            },
+
+            _rolesLoaded: {
+                type: Boolean,
+                value: false
+            },
+
+            _contactsLoaded: {
+                type: Boolean,
+                value: false
+            },
+
+            _componentReady: {
+                type: Boolean,
+                value: false
+            },
+
+            _bulkSelectAccount: {
+                type: Boolean,
+                value: false
+            },
+
+            _bulkSelectGroup: {
+                type: Boolean,
+                value: false
+            },
+
+            _ssoResourceExists: {
+                type: Boolean,
+                value: false
+            },
+
+            _accountsCount: {
+                type: Number,
+                value: 0
+            },
+
+            _groupListCount: {
+                type: Number,
+                value: 0
+            },
+
+            _numberOfSelectedAccounts: {
+                type: Number,
+                value: 0
+            },
+
+            _numberOfSelectedGroups: {
+                type: Number,
+                value: 0
+            },
+
+            _filterTerm: {
+                type: String,
+                value: ''
+            },
+
+            _filterType: {
+                type: String,
+                value: 'all'
+            },
+
+            itemsLoaded: {
+                type: Boolean,
+                notify: true,
+                computed: '_computeItemsLoaded(_contactsLoaded, _rolesLoaded)'
+            }
+        };
+    }
+
+    static get observers() {
+        return [
+            '_setAccountList(_rolesLoaded, _contactsLoaded)',
+            '_onSSOResourceExistsChanged(_ssoResourceExists, _accountList)'
+        ];
+    }
+
+    toggle() {
+        this.$.dialog.toggle();
+    }
+
+    close() {
+        this.$.dialog.close();
+    }
+
+    _computeItemsLoaded(contactsLoaded, rolesLoaded) {
+        return contactsLoaded && rolesLoaded;
+    }
+
+    setResources(resources) {
+        this.resources = resources;
+    }
+
+    _reset() {
+        this.$.appscoSearchAccounts.reset();
+        this.$.appscoSearchGroups.reset();
+        this.$.accountTypeList.selected = 0;
+        this.set('_accountList', []);
+        this.set('_accountListAll', []);
+        this.set('_selectedAccounts', []);
+        this.set('_resourcesSharedToAccounts', []);
+        this.set('_groupList', []);
+        this.set('_groupListAll', []);
+        this.set('_selectedGroups', []);
+        this.set('_resourcesSharedToGroups', []);
+        this.set('resources', []);
+        this._componentReady = false;
+        this._rolesLoaded = false;
+        this._contactsLoaded = false;
+        this._filterTerm = '';
+        this._filterType = 'all';
+        this._numberOfSelectedAccounts = 0;
+        this._numberOfSelectedGroups = 0;
+        this._accountsCount = 0;
+        this._groupListCount = 0;
+        this._ssoResourceExists = false;
+        this._bulkSelectAccount = false;
+        this._bulkSelectGroup = false;
+        this._selectedTab = 0;
+        this._hideLoader();
+        this._hideError();
+        this._hideMessage();
+        this._enableContactTypeFilter();
+    }
+
+    _showLoader() {
+        this._shareLoader = true;
+    }
+
+    _hideLoader() {
+        this._shareLoader = false;
+    }
+
+    _showError(message) {
+        this._errorMessage = message;
+    }
+
+    _hideError() {
+        this._errorMessage = '';
+    }
+
+    _showMessage(message) {
+        this._message = message;
+    }
+
+    _hideMessage() {
+        this._message = '';
+    }
+
+    _showAccountListProgress() {
+        this.$.accountListProgress.hidden = false;
+    }
+
+    _hideAccountListProgress() {
+        setTimeout(function() {
+            this.$.accountListProgress.hidden = true;
+        }.bind(this), 500);
+    }
+
+    _showGroupListProgress() {
+        this.$.groupListProgress.hidden = false;
+    }
+
+    _hideGroupListProgress() {
+        setTimeout(function() {
+            this.$.groupListProgress.hidden = true;
+        }.bind(this), 500);
+    }
+
+    _onDialogOpened() {
+        this.$.appscoSearchAccounts.setup();
+        this.$.appscoSearchGroups.setup();
+        this.shadowRoot.getElementById('appscoRoles').reloadItems();
+        this.shadowRoot.getElementById('appscoContacts').reloadItems();
+        this.shadowRoot.getElementById('appscoGroups').reloadItems();
+        this._componentReady = true;
+        this._setAvailableAccounts();
+    }
+
+    _onDialogClosed() {
+        this._reset();
+    }
+
+    _onSSOResourceExistsChanged(exists, accounts) {
+        if (exists && 0 < accounts.length) {
+            this._hideContacts();
+            this._disableContactTypeFilter();
+        }
+    }
+
+    _onAccountsLoadFinished() {
+        this._rolesLoaded = true;
+    }
+
+    _onContactsLoadFinished() {
+        this._contactsLoaded = true;
+    }
+
+    _setAccountList(rolesLoaded, contactsLoaded) {
+        const listItems = [];
+
+        this._showAccountListProgress();
+
+        this.set('_accountList', []);
+        this.set('_accountListAll', []);
+
+        if (rolesLoaded && contactsLoaded) {
+            const rolesComponent = this.shadowRoot.getElementById('appscoRoles'),
+                roles = rolesComponent.getAllItems(),
+                contactsComponents = this.shadowRoot.getElementById('appscoContacts'),
+                contacts = contactsComponents.getAllItems();
+
+            roles.forEach(function(role, index) {
+                role.account.type = 'user';
+                role.account.selected = false;
+                listItems.push(role.account);
+            }.bind(this));
+
+            contacts.forEach(function(contact, index) {
+                contact.account.type = 'contact';
+                contact.account.selected = false;
+                listItems.push(contact.account);
+            }.bind(this));
+        }
+
+        this.set('_accountList', listItems);
+        this.set('_accountListAll', listItems);
+        this._accountsCount = this._accountList.length;
+        this._setAvailableAccounts();
+        this._hideAccountListProgress();
+    }
+
+    _setAvailableAccounts() {
+        const resources = this.resources,
+            length = resources.length;
+
+        this._ssoResourceExists = false;
+
+        for (let i = 0; i < length; i++) {
+            if (['saml', 'saml_dropbox', 'saml_office_365'].indexOf(resources[i].auth_type) !== -1) {
+                this._ssoResourceExists = true;
+                break;
+            }
+        }
+    }
+
+    _hideContacts() {
+        const list = JSON.parse(JSON.stringify(this._accountList)),
+            length = list.length;
+
+        this.set('_accountList', []);
+
+        for (let i = 0; i < length; i++) {
+            if ('user' === list[i].type) {
+                this.push('_accountList', list[i]);
+            }
+        }
+    }
+
+    _enableContactTypeFilter() {
+        const items = this.$.accountTypeList.items,
+            length = items.length;
+
+        for (let i = 0; i < length; i++) {
+            if ('contact' === items[i].getAttribute('value')) {
+                items[i].disabled = false;
+            }
+        }
+    }
+
+    _disableContactTypeFilter() {
+        const items = this.$.accountTypeList.items,
+            length = items.length;
+
+        for (let i = 0; i < length; i++) {
+            if ('contact' === items[i].getAttribute('value')) {
+                items[i].disabled = true;
+            }
+        }
+    }
+
+    _onBulkSelect() {
+        this._hideError();
+
+        if (this._componentReady) {
+            switch (this._selectedTab) {
+                case 0:
+                    this._bulkSelectAccount = !this._bulkSelectAccount;
+                    this._bulkSelectAccount ? this._selectAllAccounts() : this._deselectAllAccounts();
+                    break;
+
+                case 1:
+                    this._bulkSelectGroup = !this._bulkSelectGroup;
+                    this._bulkSelectGroup ? this._selectAllGroups() : this._deselectAllGroups();
+            }
+        }
+    }
+
+    _selectAllAccounts() {
+        const list = JSON.parse(JSON.stringify(this._accountList)),
+            length = list.length,
+            listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length;
+
+        for (let i = 0; i < length; i++) {
+            list[i].selected = true;
+
+            for (let j = 0; j < lengthAll; j++) {
+                if (listAll[j].self === list[i].self) {
+                    listAll[j].selected = true;
+                }
+            }
+        }
+
+        this.set('_accountList', []);
+        this.set('_accountList', list);
+
+        this.set('_accountListAll', []);
+        this.set('_accountListAll', listAll);
+
+        this._recalculateInfoAccount();
+    }
+
+    _deselectAllAccounts() {
+        const list = JSON.parse(JSON.stringify(this._accountList)),
+            length = list.length,
+            listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length;
+
+        for (let i = 0; i < length; i++) {
+            list[i].selected = false;
+
+            for (let j = 0; j < lengthAll; j++) {
+                if (listAll[j].self === list[i].self) {
+                    listAll[j].selected = false;
+                }
+            }
+        }
+
+        this.set('_accountList', []);
+        this.set('_accountList', list);
+
+        this.set('_accountListAll', []);
+        this.set('_accountListAll', listAll);
+
+        this._recalculateInfoAccount();
+    }
+
+    _selectAllGroups() {
+        const list = JSON.parse(JSON.stringify(this._groupList)),
+            length = list.length,
+            listAll = JSON.parse(JSON.stringify(this._groupListAll)),
+            lengthAll = listAll.length;
+
+        for (let i = 0; i < length; i++) {
+            list[i].selected = true;
+
+            for (let j = 0; j < lengthAll; j++) {
+                if (listAll[j].self === list[i].self) {
+                    listAll[j].selected = true;
+                }
+            }
+        }
+
+        this.set('_groupList', []);
+        this.set('_groupList', list);
+
+        this.set('_groupListAll', []);
+        this.set('_groupListAll', listAll);
+
+        this._recalculateInfoGroup();
+    }
+
+    _deselectAllGroups() {
+        const list = JSON.parse(JSON.stringify(this._groupList)),
+            length = list.length,
+            listAll = JSON.parse(JSON.stringify(this._groupListAll)),
+            lengthAll = listAll.length;
+
+        for (let i = 0; i < length; i++) {
+            list[i].selected = false;
+
+            for (let j = 0; j < lengthAll; j++) {
+                if (listAll[j].self === list[i].self) {
+                    listAll[j].selected = false;
+                }
+            }
+        }
+
+        this.set('_groupList', []);
+        this.set('_groupList', list);
+
+        this.set('_groupListAll', []);
+        this.set('_groupListAll', listAll);
+
+        this._recalculateInfoGroup();
+    }
+
+    _onAccountListItemSelectChanged(event) {
+        const item = event.detail.item,
+            listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length;
+
+        if (!item.selected) {
+            this._bulkSelectAccount = false;
+        }
+
+        for (let j = 0; j < lengthAll; j++) {
+            if (listAll[j].self === item.self) {
+                listAll[j].selected = item.selected;
+            }
+        }
+
+        this.set('_accountListAll', []);
+        this.set('_accountListAll', listAll);
+
+        this._recalculateInfoAccount();
+        this._setBulkSelectStatusAccount();
+        this._hideError();
+    }
+
+    _onGroupListItemSelectAction(event) {
+        const item = event.detail.item,
+            listAll = JSON.parse(JSON.stringify(this._groupListAll)),
+            lengthAll = listAll.length;
+
+        if (!item.selected) {
+            this._bulkSelectGroup = false;
+        }
+
+        for (let j = 0; j < lengthAll; j++) {
+            if (listAll[j].self === item.self) {
+                listAll[j].selected = item.selected;
+            }
+        }
+
+        this.set('_groupListAll', []);
+        this.set('_groupListAll', listAll);
+
+        this._recalculateInfoGroup();
+        this._setBulkSelectStatusGroup();
+        this._hideError();
+    }
+
+    _recalculateInfoAccount() {
+        const list = this._accountListAll,
+            length = list.length;
+
+        this._numberOfSelectedAccounts = 0;
+
+        for (let i = 0; i < length; i++) {
+            if (list[i].selected) {
+                this._numberOfSelectedAccounts++;
+            }
+        }
+    }
+
+    _recalculateInfoGroup() {
+        const list = this._groupListAll,
+            length = list.length;
+
+        this._numberOfSelectedGroups = 0;
+
+        for (let i = 0; i < length; i++) {
+            if (list[i].selected) {
+                this._numberOfSelectedGroups++;
+            }
+        }
+    }
+
+    _setBulkSelectStatusAccount() {
+        this._bulkSelectAccount = (this._numberOfSelectedAccounts === this._accountListAll.length);
+    }
+
+    _setBulkSelectStatusGroup() {
+        this._bulkSelectGroup = (this._numberOfSelectedGroups === this._groupListAll.length);
+    }
+
+    _onSearchAccounts(event) {
+        const searchValue = event.detail.term,
+            searchLength = searchValue.length;
+
+        this._filterTerm = searchValue;
+
+        if (searchLength < 3) {
+            this._filterTerm = '';
+        }
+
+        this._filterAccountList();
+    }
+
+    _onSearchAccountsClear() {
+        this._filterTerm = '';
+        this._filterAccountList();
+    }
+
+    _onAccountTypeSelected(event) {
+        this._filterType = event.detail.item.getAttribute('value');
+        this._filterAccountList();
+        this._setBulkSelectStatusAccount();
+    }
+
+    _filterAccountList() {
+        const listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length,
+            term = decodeURIComponent(this._filterTerm.toLowerCase()),
+            type = this._filterType;
+
+        this._hideMessage();
+        this.set('_accountList', []);
+
+        if ('all' === type) {
+            if (term) {
+                for (let i = 0; i < lengthAll; i++) {
+                    if ((-1 !== listAll[i].name.toLowerCase().indexOf(term.toLowerCase())) ||
+                        (-1 !== listAll[i].email.toLowerCase().indexOf(term))) {
+                        this.push('_accountList', listAll[i]);
+                    }
+                }
+            }
+            else {
+                this.set('_accountList', listAll);
+            }
+        }
+        else {
+            if (term) {
+                for (let i = 0; i < lengthAll; i++) {
+                    if ((type === listAll[i].type) &&
+                        ((-1 !== listAll[i].name.toLowerCase().indexOf(term)) ||
+                            (-1 !== listAll[i].email.toLowerCase().indexOf(term)))) {
+                        this.push('_accountList', listAll[i]);
+                    }
+                }
+            }
+            else {
+                for (let i = 0; i < lengthAll; i++) {
+                    if (type === listAll[i].type) {
+                        this.push('_accountList', listAll[i]);
+                    }
+                }
+            }
+        }
+
+        this._setAvailableAccounts();
+
+        if (0 === this._accountList.length) {
+            this._showMessage('There are no accounts available according to selected filters.');
+        }
+    }
+
+    _onGroupsLoadFinished(event) {
+        const listItems = event.detail && event.detail.items ? event.detail.items : [];
+
+        this._showGroupListProgress();
+
+        this.set('_groupList', []);
+        this.set('_groupListAll', []);
+
+        if (0 === listItems.length) {
+            this._hideGroupListProgress();
+            return false;
+        }
+
+        listItems.forEach(function(item) {
+            item.selected = false;
+            item.type = 'group';
+        }.bind(this));
+
+        this.set('_groupList', listItems);
+        this.set('_groupListAll', listItems);
+        this._groupListCount = this._groupList.length;
+        this._hideGroupListProgress();
+    }
+
+    _searchGroups(term) {
+        const searchValue = term.toLowerCase(),
+            searchLength = searchValue.length,
+            listAll = JSON.parse(JSON.stringify(this._groupListAll)),
+            lengthAll = listAll.length;
+
+        this.set('_groupList', []);
+
+        if (searchLength < 2) {
+            this.set('_groupList', listAll);
+        }
+        else {
+            for (let i = 0; i < lengthAll; i++) {
+                if ((-1 !== listAll[i].name.toLowerCase().indexOf(searchValue))) {
+                    this.push('_groupList', listAll[i]);
+                }
+            }
+        }
+    }
+
+    _onSearchGroups(event) {
+        this._searchGroups(event.detail.term);
+    }
+
+    _onSearchGroupsClear() {
+        this._searchGroups('');
+    }
+
+    _resourcesShareToAccountsFinished() {
+        this.dispatchEvent(new CustomEvent('resources-shared', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                resources: this._resourcesSharedToAccounts
+            }
+        }));
+    }
+
+    _resourcesShareToGroupsFinished() {
+        this.dispatchEvent(new CustomEvent('groups-added-to-resources', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                groups: this._selectedGroups,
+                items: this._resourcesSharedToGroups,
+                resourceType: 'resource'
+            }
+        }));
+
+        this.close();
+    }
+
+    _shareToAccounts(application) {
+        return new Promise(function(resolve, reject) {
+            const accounts = this._selectedAccounts,
+                length = accounts.length - 1,
+                request = document.createElement('iron-request'),
+                options = {
+                    url: application.self + '/share',
+                    method: 'POST',
+                    handleAs: 'json',
+                    headers: this._headers
+                };
+            let body = '';
+
+            for (let i = 0; i <= length; i++) {
+                let next = (i === length) ? '' : '&';
+                body += 'accounts[]=' + encodeURIComponent(accounts[i].self) + next;
+            }
+
+            options.body = body;
+
+            request.send(options).then(function() {
+                resolve(request.response);
+            }.bind(this), function() {
+                reject(this.apiErrors.getError(request.response.code));
+            }.bind(this));
+        }.bind(this));
+    }
+
+    _shareToGroups(application) {
+        return new Promise(function(resolve, reject) {
+            const groups = this._selectedGroups,
+                length = groups.length - 1,
+                request = document.createElement('iron-request'),
+                options = {
+                    url: application.self + '/groups',
+                    method: 'POST',
+                    handleAs: 'json',
+                    headers: this._headers
+                };
+            let body = '';
+
+            for (let i = 0; i <= length; i++) {
+                let next = (i === length) ? '' : '&';
+                body += 'groups[]=' + encodeURIComponent(groups[i].meta.self) + next;
+            }
+
+            options.body = body;
+
+            request.send(options).then(function() {
+                resolve(request.response);
+            }.bind(this), function() {
+                reject(this.apiErrors.getError(request.response.code));
+            }.bind(this));
+        }.bind(this));
+    }
+
+    _onShareResourcesAction() {
+        const accountList = JSON.parse(JSON.stringify(this._accountListAll)),
+            accountListLength = accountList.length,
+            groupList = JSON.parse(JSON.stringify(this._groupListAll)),
+            groupListLength = groupList.length;
+
+        this.set('_selectedAccounts', []);
+        this.set('_selectedGroups', []);
+
+        for (let i = 0; i < accountListLength; i++) {
+            if (accountList[i].selected) {
+                this._selectedAccounts.push(accountList[i]);
+            }
+        }
+
+        for (let i = 0; i < groupListLength; i++) {
+            if (groupList[i].selected) {
+                this._selectedGroups.push(groupList[i]);
+            }
+        }
+
+        if ((0 === this._selectedAccounts.length) && (0 === this._selectedGroups.length)) {
+            this._showError('Please add at least one user or group to share resources to.');
+            return false;
+        }
+
+        this._showLoader();
+
+        if (0 < this._selectedAccounts.length) {
+            this._shareResourcesToAccountsAction();
+        }
+        else {
+            this._shareResourcesToGroupsAction();
+        }
+    }
+
+    _shareResourcesToAccountsAction() {
+        const resources = this.resources,
+            length = resources.length - 1;
+
+        resources.forEach(function(resource, index) {
+            this._shareToAccounts(resource).then(function(resource) {
+                this.push('_resourcesSharedToAccounts', resource);
+
+                if (index === length) {
+                    this._resourcesShareToAccountsFinished();
+
+                    if (0 < this._selectedGroups.length) {
+                        this._shareResourcesToGroupsAction();
+                    }
+                    else {
+                        this.close();
+                    }
+                }
+            }.bind(this), function(message) {
+                this._showError(message);
+                this._hideLoader();
+                return false;
+            }.bind(this));
+        }.bind(this));
+    }
+
+    _shareResourcesToGroupsAction() {
+        const resources = this.resources,
+            length = resources.length - 1;
+
+        resources.forEach(function(resource, index) {
+            this._shareToGroups(resource).then(function(resource) {
+                this.push('_resourcesSharedToGroups', resource);
+
+                if (index === length) {
+                    this._resourcesShareToGroupsFinished();
+                }
+            }.bind(this), function(message) {
+                this._showError(message);
+                this._hideLoader();
+                return false;
+            }.bind(this));
+        }.bind(this));
+    }
+
+    _onInnerIronOverlay(event) {
+        event.stopPropagation();
+    }
 }
 window.customElements.define(AppscoShareResource.is, AppscoShareResource);

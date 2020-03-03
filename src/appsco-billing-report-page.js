@@ -20,8 +20,8 @@ import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 class AppscoBillingReportPage extends mixinBehaviors([NeonAnimatableBehavior, AppscoPageBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-page-styles">
             :host {
                 --paper-dropdown-menu: {
@@ -118,235 +118,235 @@ class AppscoBillingReportPage extends mixinBehaviors([NeonAnimatableBehavior, Ap
             </div>
         </appsco-content>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-billing-report-page'; }
+    static get is() { return 'appsco-billing-report-page'; }
 
-  static get properties() {
-      return {
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          },
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            },
 
-          billingReportApi: {
-              type: String
-          },
+            billingReportApi: {
+                type: String
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          _customersList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _customersList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          customersApi: {
-              type: String
-          },
+            customersApi: {
+                type: String
+            },
 
-          searchTerm: {
-              type: String,
-              value: ''
-          },
+            searchTerm: {
+                type: String,
+                value: ''
+            },
 
-          paymentType: {
-              type: String,
-              value: ''
-          },
+            paymentType: {
+                type: String,
+                value: ''
+            },
 
-          period: {
-              type: String,
-              value: ''
-          }
-      };
-  }
+            period: {
+                type: String,
+                value: ''
+            }
+        };
+    }
 
-  static get observers(){
-      return [
-          '_updateScreen(mobileScreen, tabletScreen)'
-      ];
-  }
+    static get observers(){
+        return [
+            '_updateScreen(mobileScreen, tabletScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  _onPageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _onPageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _onCustomersLoaded() {
-      this._onPageLoaded();
-  }
+    _onCustomersLoaded() {
+        this._onPageLoaded();
+    }
 
-  _onCustomersEmptyLoad() {
-      this._onPageLoaded();
-  }
+    _onCustomersEmptyLoad() {
+        this._onPageLoaded();
+    }
 
-  _onFilterCustomersKeyup() {
-      this._showCustomersList();
-  }
+    _onFilterCustomersKeyup() {
+        this._showCustomersList();
+    }
 
-  _onFilterCustomersSearch (event) {
-     this._filterCustomerListByTerm(event.detail.term)
-  }
+    _onFilterCustomersSearch (event) {
+        this._filterCustomerListByTerm(event.detail.term)
+    }
 
-  _filterCustomerListByTerm(term) {
-      this.searchTerm = term;
-      this.set('_customersList', []);
-      this._getCustomersByTerm().then(function(customers) {
+    _filterCustomerListByTerm(term) {
+        this.searchTerm = term;
+        this.set('_customersList', []);
+        this._getCustomersByTerm().then(function(customers) {
 
-          customers.forEach(function (element) {
-              this.push('_customersList', {
-                  value: element.self,
-                  name: element.name
-              });
-          }.bind(this));
+            customers.forEach(function (element) {
+                this.push('_customersList', {
+                    value: element.self,
+                    name: element.name
+                });
+            }.bind(this));
 
-      }.bind(this));
-      this.filterList();
-  }
+        }.bind(this));
+        this.filterList();
+    }
 
-  _onFilterCustomersBlur() {
-      this._hideCustomersList();
-  }
+    _onFilterCustomersBlur() {
+        this._hideCustomersList();
+    }
 
-  _onFilterCustomersSearchClear() {
-      this.$.filterCustomers.reset();
-      this.$.suggestedCustomers.selected = 0;
-      this.searchTerm = '';
-      this.filterList();
-  }
+    _onFilterCustomersSearchClear() {
+        this.$.filterCustomers.reset();
+        this.$.suggestedCustomers.selected = 0;
+        this.searchTerm = '';
+        this.filterList();
+    }
 
-  _onFilterCustomers(event) {
-      var selected = event.detail.selected;
-      this.searchTerm = selected;
-      this.$.filterCustomers.setValue(selected);
-      this.filterList();
-      this._hideCustomersList();
-  }
+    _onFilterCustomers(event) {
+        var selected = event.detail.selected;
+        this.searchTerm = selected;
+        this.$.filterCustomers.setValue(selected);
+        this.filterList();
+        this._hideCustomersList();
+    }
 
-  _showCustomersList() {
-      this.$.suggestedCustomers.hidden = false;
-  }
+    _showCustomersList() {
+        this.$.suggestedCustomers.hidden = false;
+    }
 
-  _hideCustomersList() {
-      this.$.suggestedCustomers.hidden = true;
-  }
+    _hideCustomersList() {
+        this.$.suggestedCustomers.hidden = true;
+    }
 
-  _onPaymentTypeSelect(event) {
-      var selected = event.detail;
-      if (selected) {
-          this.paymentType = selected.value;
-      }
-      this.filterList();
-  }
+    _onPaymentTypeSelect(event) {
+        var selected = event.detail;
+        if (selected) {
+            this.paymentType = selected.value;
+        }
+        this.filterList();
+    }
 
-  _onPeriodSelect(event) {
-      var selected = event.detail;
-      if (selected) {
-          this.period = selected.value;
-      }
-      this.filterList();
-  }
+    _onPeriodSelect(event) {
+        var selected = event.detail;
+        if (selected) {
+            this.period = selected.value;
+        }
+        this.filterList();
+    }
 
-  filterList() {
-      this.$.appscoCustomers.filter(this.searchTerm, this.paymentType, this.period);
-  }
+    filterList() {
+        this.$.appscoCustomers.filter(this.searchTerm, this.paymentType, this.period);
+    }
 
-  _getCustomersByTerm() {
-      var apiUrl = this.customersApi + '?term=' + this.searchTerm + '&extended=true&limit=50';
-      return new Promise(function(resolve, reject) {
-          var request = document.createElement('iron-request'),
-              options = {
-                  url: apiUrl,
-                  method: 'GET',
-                  handleAs: 'json',
-                  headers: {'Authorization': 'token ' + this.authorizationToken}
-              };
+    _getCustomersByTerm() {
+        var apiUrl = this.customersApi + '?term=' + this.searchTerm + '&extended=true&limit=50';
+        return new Promise(function(resolve, reject) {
+            var request = document.createElement('iron-request'),
+                options = {
+                    url: apiUrl,
+                    method: 'GET',
+                    handleAs: 'json',
+                    headers: {'Authorization': 'token ' + this.authorizationToken}
+                };
 
-          request.send(options).then(function() {
-              if (request.response) {
-                  resolve(request.response.customers);
-              }
-          }, function() {
-              reject(request.response.message);
-          });
-      }.bind(this));
-  }
+            request.send(options).then(function() {
+                if (request.response) {
+                    resolve(request.response.customers);
+                }
+            }, function() {
+                reject(request.response.message);
+            });
+        }.bind(this));
+    }
 
-  getFilters () {
-      return {
-          term: this.searchTerm,
-          payment_type: this.paymentType,
-          period: this.period
-      };
-  }
+    getFilters () {
+        return {
+            term: this.searchTerm,
+            payment_type: this.paymentType,
+            period: this.period
+        };
+    }
 
-  getFailMessage() {
-      return 'Export of Billing Report failed. Please contact AppsCo support.';
-  }
+    getFailMessage() {
+        return 'Export of Billing Report failed. Please contact AppsCo support.';
+    }
 
-  getFileName() {
-      return 'Billing Report.xlsx';
-  }
+    getFileName() {
+        return 'Billing Report.xlsx';
+    }
 
-  getOnSuccessEvent() {
-      return 'export-billing-report-finished';
-  }
+    getOnSuccessEvent() {
+        return 'export-billing-report-finished';
+    }
 
-  getOnFailEvent() {
-      return 'export-billing-report-failed';
-  }
+    getOnFailEvent() {
+        return 'export-billing-report-failed';
+    }
 }
 window.customElements.define(AppscoBillingReportPage.is, AppscoBillingReportPage);

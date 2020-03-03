@@ -9,12 +9,13 @@ import '../components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCustomerBillingItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host .customer-logo {
                 @apply --layout-vertical;
@@ -147,52 +148,52 @@ class AppscoCustomerBillingItem extends mixinBehaviors([
             </div>
         </iron-collapse>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-customer-billing-item'; }
+    static get is() { return 'appsco-customer-billing-item'; }
 
-  static get properties() {
-      return {
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _customerInitials: {
-              type: String,
-              computed: "_computeInitials(item)"
-          },
+            _customerInitials: {
+                type: String,
+                computed: "_computeInitials(item)"
+            },
 
-          _licencesVisible: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _licencesVisible: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  _computeInitials(item) {
-      let initials = '';
-      const name = item.name;
-      if (name) {
-          const array = name.split(' ');
-          if (array.length > 1) {
-              initials = array[0].substring(0, 1) + array[1].substring(0, 1);
-          } else {
-              initials = array[0].substring(0, 2);
-          }
-      }
-      return initials;
-  }
+    _computeInitials(item) {
+        let initials = '';
+        const name = item.name;
+        if (name) {
+            const array = name.split(' ');
+            if (array.length > 1) {
+                initials = array[0].substring(0, 1) + array[1].substring(0, 1);
+            } else {
+                initials = array[0].substring(0, 2);
+            }
+        }
+        return initials;
+    }
 
-  _onShowLicences() {
-      this.$.licences.show();
-      this._licencesVisible = true;
-  }
+    _onShowLicences() {
+        this.$.licences.show();
+        this._licencesVisible = true;
+    }
 
-  _onHideLicences() {
-      this.$.licences.hide();
-      this._licencesVisible = false;
-  }
+    _onHideLicences() {
+        this.$.licences.hide();
+        this._licencesVisible = false;
+    }
 }
 window.customElements.define(AppscoCustomerBillingItem.is, AppscoCustomerBillingItem);

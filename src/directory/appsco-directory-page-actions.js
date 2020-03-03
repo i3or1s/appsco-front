@@ -10,9 +10,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDirectoryPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 --add-item-action: {
@@ -170,161 +171,161 @@ class AppscoDirectoryPageActions extends mixinBehaviors([NeonAnimatableBehavior]
             <appsco-page-global id="appscoPageGlobal" info="" filters=""></appsco-page-global>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-directory-page-actions'; }
+    static get is() { return 'appsco-directory-page-actions'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String
+            },
 
-          filterApi: {
-              type: String
-          },
+            filterApi: {
+                type: String
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _searchActive: {
-              type: Boolean,
-              value: false
-          },
+            _searchActive: {
+                type: Boolean,
+                value: false
+            },
 
-          _displayActions: {
-              type: Boolean,
-              value: false
-          },
+            _displayActions: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 200,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 200,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  _updateScreen(mobile, tablet) {
-      this.updateStyles();
-  }
+    _updateScreen(mobile, tablet) {
+        this.updateStyles();
+    }
 
-  _showSearch() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').focusSearch();
-      this.updateStyles({'--paper-input-search-container-tablet': 'width: 100%;'});
-  }
+    _showSearch() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').focusSearch();
+        this.updateStyles({'--paper-input-search-container-tablet': 'width: 100%;'});
+    }
 
-  _closeSearch() {
-      this._searchActive = false;
+    _closeSearch() {
+        this._searchActive = false;
 
-      // Wait for animation to finish.
-      setTimeout(function() {
-          this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
-      }.bind(this), 200);
+        // Wait for animation to finish.
+        setTimeout(function() {
+            this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
+        }.bind(this), 200);
 
-      this.updateStyles();
-  }
+        this.updateStyles();
+    }
 
-  _onSearchIcon() {
-      this._searchActive = !this._searchActive;
-      this._searchActive ? this._showSearch() : this._closeSearch();
-  }
+    _onSearchIcon() {
+        this._searchActive = !this._searchActive;
+        this._searchActive ? this._showSearch() : this._closeSearch();
+    }
 
-  showBulkActions() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').showBulkActions();
-  }
+    showBulkActions() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').showBulkActions();
+    }
 
-  hideBulkActions() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').hideBulkActions();
-  }
+    hideBulkActions() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').hideBulkActions();
+    }
 
-  showBulkSelectAll() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').showBulkSelectAll();
-  }
+    showBulkSelectAll() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').showBulkSelectAll();
+    }
 
-  hideBulkSelectAll() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').hideBulkSelectAll();
-  }
+    hideBulkSelectAll() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').hideBulkSelectAll();
+    }
 
-  showSubscriptionLimitReachedInfo(subscription) {
-      this.shadowRoot.getElementById('appscoDirectoryActions').showSubscriptionLimitReachedInfo(subscription);
-      this._showActions();
-  }
+    showSubscriptionLimitReachedInfo(subscription) {
+        this.shadowRoot.getElementById('appscoDirectoryActions').showSubscriptionLimitReachedInfo(subscription);
+        this._showActions();
+    }
 
-  hideSubscriptionLimitReachedInfo() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').hideSubscriptionLimitReachedInfo();
-      this._showActions();
-  }
+    hideSubscriptionLimitReachedInfo() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').hideSubscriptionLimitReachedInfo();
+        this._showActions();
+    }
 
-  showDomainNotVerifiedInfo() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').showDomainNotVerifiedInfo();
-      this._showActions();
-  }
+    showDomainNotVerifiedInfo() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').showDomainNotVerifiedInfo();
+        this._showActions();
+    }
 
-  hideDomainNotVerifiedInfo() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').hideDomainNotVerifiedInfo();
-      this._showActions();
-  }
+    hideDomainNotVerifiedInfo() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').hideDomainNotVerifiedInfo();
+        this._showActions();
+    }
 
-  _showActions() {
-      this._displayActions = true;
-  }
+    _showActions() {
+        this._displayActions = true;
+    }
 
-  setupPage() {
-      this._showActions();
-  }
+    setupPage() {
+        this._showActions();
+    }
 
-  resetPage() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').reset();
-  }
+    resetPage() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').reset();
+    }
 
-  resetPageActions() {
-      this.resetPage();
-  }
+    resetPageActions() {
+        this.resetPage();
+    }
 
-  resetTypeFilter() {
-      this.shadowRoot.getElementById('appscoDirectoryActions').resetTypeFilter();
-  }
+    resetTypeFilter() {
+        this.shadowRoot.getElementById('appscoDirectoryActions').resetTypeFilter();
+    }
 }
 window.customElements.define(AppscoDirectoryPageActions.is, AppscoDirectoryPageActions);

@@ -13,12 +13,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOAuthApplicationsItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 width: 100%;
@@ -64,45 +65,45 @@ class AppscoOAuthApplicationsItem extends mixinBehaviors([
 
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-oauth-application-item'; }
+    static get is() { return 'appsco-oauth-application-item'; }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          this._addListeners();
-          this.dispatchEvent(new CustomEvent('component-ready', { bubbles: true, composed: true }));
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+            this.dispatchEvent(new CustomEvent('component-ready', { bubbles: true, composed: true }));
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('tap', this._onItemAction);
-  }
+    _addListeners() {
+        this.addEventListener('tap', this._onItemAction);
+    }
 
-  _onEditItemAction(event) {
-      event.stopPropagation();
+    _onEditItemAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('edit-oauth-application', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('edit-oauth-application', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: this.item
+            }
+        }));
+    }
 
-  _onRemoveItemAction(event) {
-      event.stopPropagation();
+    _onRemoveItemAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('remove-oauth-application', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('remove-oauth-application', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: this.item
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoOAuthApplicationsItem.is, AppscoOAuthApplicationsItem);

@@ -19,13 +19,14 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoComplianceReportAccountItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles"></style>
 
         <style>
@@ -132,172 +133,172 @@ class AppscoComplianceReportAccountItem extends mixinBehaviors([
             </div>
         </iron-collapse>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-compliance-report-account-item'; }
+    static get is() { return 'appsco-compliance-report-account-item'; }
 
-  static get properties() {
-      return {
-          numberOfResourcesToDisplay: {
-              type: Number,
-              value: 15
-          },
+    static get properties() {
+        return {
+            numberOfResourcesToDisplay: {
+                type: Number,
+                value: 15
+            },
 
-          loadMore: {
-              type: Boolean,
-              value: false
-          },
+            loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          screen800: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            screen800: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          screen1300: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            screen1300: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _resources: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _resources: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _getResourcesApiUrl: {
-              type: String,
-              computed: '_computeGetResourcesApiUrl(item, numberOfResourcesToDisplay)'
-          },
+            _getResourcesApiUrl: {
+                type: String,
+                computed: '_computeGetResourcesApiUrl(item, numberOfResourcesToDisplay)'
+            },
 
-          _secondResourcesPageApiUrl: {
-              type: String
-          },
+            _secondResourcesPageApiUrl: {
+                type: String
+            },
 
-          _nextResourcesPageApiUrl: {
-              type: String
-          },
+            _nextResourcesPageApiUrl: {
+                type: String
+            },
 
-          _loadMore: {
-              type: Boolean,
-              value: false
-          },
+            _loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          _resourcesCount: {
-              type: Number,
-              value: 0
-          },
+            _resourcesCount: {
+                type: Number,
+                value: 0
+            },
 
-          _resourcesVisible: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _resourcesVisible: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(screen800, screen1300)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(screen800, screen1300)'
+        ];
+    }
 
-  _computeGetResourcesApiUrl(item, numberOfResourcesToDisplay) {
-      return (item.meta && numberOfResourcesToDisplay) ? (item.meta.applications + '?extended=1&limit=' + numberOfResourcesToDisplay) : null;
-  }
+    _computeGetResourcesApiUrl(item, numberOfResourcesToDisplay) {
+        return (item.meta && numberOfResourcesToDisplay) ? (item.meta.applications + '?extended=1&limit=' + numberOfResourcesToDisplay) : null;
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _setLoadMoreAction() {
-      this._hideLoadMoreProgressBar();
-      this._loadMore = (this.loadMore && this._resources.length < this._resourcesCount);
-  }
+    _setLoadMoreAction() {
+        this._hideLoadMoreProgressBar();
+        this._loadMore = (this.loadMore && this._resources.length < this._resourcesCount);
+    }
 
-  _showLoadMoreAction() {
-      this._hideLoadMoreProgressBar();
-      this._loadMore = true;
-  }
+    _showLoadMoreAction() {
+        this._hideLoadMoreProgressBar();
+        this._loadMore = true;
+    }
 
-  _hideLoadMoreAction() {
-      this._hideLoadMoreProgressBar();
-      this._loadMore = false;
-  }
+    _hideLoadMoreAction() {
+        this._hideLoadMoreProgressBar();
+        this._loadMore = false;
+    }
 
-  _showLoadMoreProgressBar() {
-      this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
-  }
+    _showLoadMoreProgressBar() {
+        this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+    }
 
-  _hideLoadMoreProgressBar() {
-      setTimeout(function() {
-          this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
-      }.bind(this), 300);
-  }
+    _hideLoadMoreProgressBar() {
+        setTimeout(function() {
+            this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
+        }.bind(this), 300);
+    }
 
-  _setApiRequestUrl(url) {
-      this.$.getResourcesApiRequest.url = url;
-  }
+    _setApiRequestUrl(url) {
+        this.$.getResourcesApiRequest.url = url;
+    }
 
-  _onGetResourcesError() {
-      this.set('_resources', []);
-      this._resourcesCount = 0;
-      this._hideLoadMoreAction();
-  }
+    _onGetResourcesError() {
+        this.set('_resources', []);
+        this._resourcesCount = 0;
+        this._hideLoadMoreAction();
+    }
 
-  _onGetResourcesResponse(event) {
-      const response = event.detail.response;
+    _onGetResourcesResponse(event) {
+        const response = event.detail.response;
 
-      if (response && response.applications) {
-          const resources = response.applications,
-              listCount = resources.length - 1;
+        if (response && response.applications) {
+            const resources = response.applications,
+                listCount = resources.length - 1;
 
-          this._resourcesCount = response.meta ? response.meta.total : 0;
-          this._nextResourcesPageApiUrl = response.meta.next + '&limit=' + this.numberOfResourcesToDisplay;
+            this._resourcesCount = response.meta ? response.meta.total : 0;
+            this._nextResourcesPageApiUrl = response.meta.next + '&limit=' + this.numberOfResourcesToDisplay;
 
-          if (!this._secondResourcesPageApiUrl) {
-              this._secondResourcesPageApiUrl = response.meta.next + '&limit=' + this.numberOfResourcesToDisplay;
-          }
+            if (!this._secondResourcesPageApiUrl) {
+                this._secondResourcesPageApiUrl = response.meta.next + '&limit=' + this.numberOfResourcesToDisplay;
+            }
 
-          resources.forEach(function(el, index) {
-              setTimeout(function() {
-                  this.push('_resources', el);
+            resources.forEach(function(el, index) {
+                setTimeout(function() {
+                    this.push('_resources', el);
 
-                  if (index === listCount) {
-                      this._hideLoadMoreProgressBar();
-                      this._setLoadMoreAction();
-                  }
-              }.bind(this), (index + 1) * 30 );
-          }.bind(this));
-      }
-  }
+                    if (index === listCount) {
+                        this._hideLoadMoreProgressBar();
+                        this._setLoadMoreAction();
+                    }
+                }.bind(this), (index + 1) * 30 );
+            }.bind(this));
+        }
+    }
 
-  _onShowResources() {
-      this.$.resources.show();
-      this._resourcesVisible = true;
-  }
+    _onShowResources() {
+        this.$.resources.show();
+        this._resourcesVisible = true;
+    }
 
-  _onHideResources() {
-      this.$.resources.hide();
-      this._resourcesVisible = false;
-  }
+    _onHideResources() {
+        this.$.resources.hide();
+        this._resourcesVisible = false;
+    }
 
-  _onLoadMoreAction() {
-      this._showLoadMoreProgressBar();
-      this._setApiRequestUrl(null);
-      this._setApiRequestUrl(this._nextResourcesPageApiUrl);
-  }
+    _onLoadMoreAction() {
+        this._showLoadMoreProgressBar();
+        this._setApiRequestUrl(null);
+        this._setApiRequestUrl(this._nextResourcesPageApiUrl);
+    }
 
-  _onCollapseTransitionChanged(event) {
-      if (!event.detail.value && this._resources) {
-          this._nextResourcesPageApiUrl = this._secondResourcesPageApiUrl;
+    _onCollapseTransitionChanged(event) {
+        if (!event.detail.value && this._resources) {
+            this._nextResourcesPageApiUrl = this._secondResourcesPageApiUrl;
 
-          if (this._resources.length > this.numberOfResourcesToDisplay) {
-              this.set('_resources', this._resources.slice(0, this.numberOfResourcesToDisplay));
-              this._showLoadMoreAction();
-          }
-      }
-  }
+            if (this._resources.length > this.numberOfResourcesToDisplay) {
+                this.set('_resources', this._resources.slice(0, this.numberOfResourcesToDisplay));
+                this._showLoadMoreAction();
+            }
+        }
+    }
 }
 window.customElements.define(AppscoComplianceReportAccountItem.is, AppscoComplianceReportAccountItem);

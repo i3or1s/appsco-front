@@ -4,7 +4,6 @@ import '@polymer/polymer/polymer-legacy.js';
  * @polymerBehavior
  */
 export const AppscoPageBehavior = {
-
     properties: {
 
         _itemsComponent: {

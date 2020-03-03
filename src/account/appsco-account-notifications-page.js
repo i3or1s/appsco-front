@@ -10,9 +10,10 @@ import '../components/account/appsco-account-notifications.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountNotificationsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -52,88 +53,88 @@ class AppscoAccountNotificationsPage extends mixinBehaviors([NeonSharedElementAn
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-notifications-page'; }
+    static get is() { return 'appsco-account-notifications-page'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          authorizationToken: {
-              type: String
-          },
+            authorizationToken: {
+                type: String
+            },
 
-          /**
-           * Get notifications link.
-           */
-          notificationsApi: {
-              type: String,
-              'observer': '_onNotificationsApiChange'
-          },
+            /**
+             * Get notifications link.
+             */
+            notificationsApi: {
+                type: String,
+                'observer': '_onNotificationsApiChange'
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          },
+            sharedElements: {
+                type: Object
+            },
 
-          _target: {
-              type: Object
-          }
-      };
-  }
+            _target: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _onNotificationsApiChange() {
-      this.loadNotifications();
-  }
+    _onNotificationsApiChange() {
+        this.loadNotifications();
+    }
 
-  loadNotifications() {
-      this.$.appscoAccountNotifications.loadNotifications();
-  }
+    loadNotifications() {
+        this.$.appscoAccountNotifications.loadNotifications();
+    }
 
-  _back() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _back() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoAccountNotificationsPage.is, AppscoAccountNotificationsPage);

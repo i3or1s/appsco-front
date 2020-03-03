@@ -1,31 +1,4 @@
-/**
-`appsco-loader`
-appsco-loader is element that holds overlay and loader.
-
-Example:
-
-    <body>
-      <appsco-loader></appsco-loader>
-
-
-### Styling
-
-`<appsco-loader>` provides the following custom mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-loader` | Mixin applied to inner paper-spinner element. It should be used to set width and height of loader spinner. | `{}`
-`--paper-spinner-stroke-width` | Width of loader spinner. This is native variable of paper-spinner component. | `3px`
-
-@demo demo/appsco-loader.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-spinner/paper-spinner.js';
 import '@polymer/paper-spinner/paper-spinner-lite.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
@@ -35,9 +8,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoLoader extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 background-color: rgba(255, 255, 255, 0.8);
@@ -74,90 +48,90 @@ class AppscoLoader extends mixinBehaviors([NeonAnimationRunnerBehavior], Polymer
             <paper-spinner-lite class="paper-spinner" alt="[[ spinnerAlt ]]" active=""></paper-spinner-lite>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-loader'; }
+    static get is() { return 'appsco-loader'; }
 
-  static get properties() {
-      return {
-          /**
-           * Indicates if loader is active or not.
-           */
-          active: {
-              type: Boolean,
-              value: false,
-              observer: '_onActiveChanged'
-          },
+    static get properties() {
+        return {
+            /**
+             * Indicates if loader is active or not.
+             */
+            active: {
+                type: Boolean,
+                value: false,
+                observer: '_onActiveChanged'
+            },
 
-          /**
-           * Alt text for loader.
-           */
-          loaderAlt: {
-              type: String,
-              value: 'Appsco is loading'
-          },
+            /**
+             * Alt text for loader.
+             */
+            loaderAlt: {
+                type: String,
+                value: 'Appsco is loading'
+            },
 
-          /**
-           * Indicates if loader is multicolored ot not.
-           */
-          multiColor: {
-              type: Boolean,
-              value: false,
-              notify: true
-          },
+            /**
+             * Indicates if loader is multicolored ot not.
+             */
+            multiColor: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
-  }
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+    }
 
-  _onActiveChanged(newValue, oldValue) {
-      if (undefined === oldValue && !newValue) {
-          return;
-      }
-      if (this.active) {
-          this.style.display = 'block';
-          this.playAnimation('entry');
-      }
-      else {
-          this.playAnimation('exit');
-      }
-  }
+    _onActiveChanged(newValue, oldValue) {
+        if (undefined === oldValue && !newValue) {
+            return;
+        }
+        if (this.active) {
+            this.style.display = 'block';
+            this.playAnimation('entry');
+        }
+        else {
+            this.playAnimation('exit');
+        }
+    }
 
-  _onNeonAnimationFinish() {
-      if (!this.active) {
-          this.style.display = 'none';
-      }
-  }
+    _onNeonAnimationFinish() {
+        if (!this.active) {
+            this.style.display = 'none';
+        }
+    }
 }
 window.customElements.define(AppscoLoader.is, AppscoLoader);

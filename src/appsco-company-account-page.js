@@ -30,8 +30,8 @@ class AppscoCompanyAccountPage extends mixinBehaviors([
     NeonAnimatableBehavior,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-manage-page-styles">
             :host div[resource] {
                 height: calc(100% - 32px - 20px);
@@ -138,349 +138,349 @@ class AppscoCompanyAccountPage extends mixinBehaviors([
 
         <div id="changePasswordHero" class="change-password-hero"></div>
 `;
-  }
-
-  static get is() { return 'appsco-company-account-page'; }
-
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
-
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          authorizationToken: {
-              type: String
-          },
-
-          notificationsApi: {
-              type: String
-          },
-
-          authorizedAppsApi: {
-              type: String
-          },
-
-          logApi: {
-              type: String
-          },
-
-          twoFaEnforced: {
-              type: Boolean,
-              value: false
-          },
-
-          twoFaApi: {
-              type: String
-          },
-
-          twoFaQrApi: {
-              type: String
-          },
-
-          twoFaCodesApi: {
-              type: String
-          },
-
-          settingsApi: {
-              type: String
-          },
-
-          imageSettingsApi: {
-              type: String
-          },
-
-          changePasswordApi: {
-              type: String
-          },
-
-          applicationTemplateApi: {
-              type: String
-          },
-
-          /**
-           * If attribute is set account display will contain account display name.
-           * Otherwise, account display will contain account picture_url only.
-           */
-          _accountName: {
-              type: String,
-              computed: '_setAccountName(account)'
-          },
-
-          /**
-           * Selected page.
-           * It has value of component's 'name' attribute.
-           */
-          _selected: {
-              type: String,
-              value: 'appsco-account-components-page',
-              notify: true
-          },
-
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          animationConfig: {
-              type: Object
-          },
-
-          showAllNotifications: {
-              type: Boolean,
-              value: false,
-              observer: '_observeSeeAllNotifications'
-          },
-
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
-
-  static get observers(){
-      return [
-          '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-      ];
-  }
-
-  ready() {
-      super.ready();
-
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
-
-      afterNextRender(this, function() {
-         this._addListeners();
-      });
-  }
-
-  _addListeners() {
-      this.addEventListener('twofa-enabled', this.reloadLog.bind(this));
-      this.addEventListener('settings-saved', this.reloadLog.bind(this));
-      this.addEventListener('token-generated', this.reloadLog.bind(this));
-      this.addEventListener('password-changed', this.reloadLog.bind(this));
-      this.addEventListener('image-changed', this.reloadLog.bind(this));
-      this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
-      this.toolbar.addEventListener('advanced-settings', this._onAccountAdvancedSettings.bind(this));
-  }
-
-  setupAfterTwoFaDisabled() {
-      this._showAccountComponentsPage();
-      this.$.appscoAccountComponentsPage.load2FaApi();
-      this.reloadLog();
-  }
-
-  _updateScreen(medium, tablet, mobile) {
-      this.updateStyles();
-
-      if (mobile) {
-          this.$.appscoContent.hideSection('resource');
-      }
-      else if(!this.$.appscoContent.resourceActive) {
-          this.$.appscoContent.showSection('resource');
-      }
-  }
-
-  _pageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
-
-  _observeSeeAllNotifications(seeAll) {
-      if (seeAll) {
-          this.showAllApplications();
-      }
-  }
-
-  /**
-   * Returns display name for account.
-   * @param {Object} account.
-   *
-   * @private
-   */
-  _setAccountName(account) {
-      var displayName = null;
-
-      if (account.first_name) {
-          displayName = account.first_name;
-      }
-
-      if (account.last_name) {
-          displayName = displayName ? (displayName + ' ' + account.last_name) : account.last_name;
-      }
-
-      return displayName;
-  }
-
-  _onResourceBack() {
-      this._showAccountComponentsPage();
-  }
-
-  _onTwoFaEnabled () {
-      this._showAccountComponentsPage();
-      this.$.appscoAccountComponentsPage.load2FaApi();
-  }
-
-  _onSettingsSaved() {
-      this._showAccountComponentsPage();
-  }
-
-  _onPasswordChanged() {
-      this._showAccountComponentsPage();
-  }
-
-  reloadAuthorizedApplications() {
-      this.$.appscoAccountAuthorizedAppsPage.loadAuthorizedApps();
-      this.$.appscoAccountComponentsPage.loadAuthorizedApps();
-  }
-
-  _showAccountComponentsPage() {
-      this._selected = 'appsco-account-components-page';
-  }
-
-  showAllApplications() {
-      this.$.appscoAccountComponentsPage.setSharedElement('notifications');
-
-      setTimeout(function() {
-          this._onAllNotifications();
-          this.showAllNotifications = false;
-      }.bind(this), 50);
-  }
-
-  resetPage() {
-      this.$.appscoAccountComponentsPage.hideAdvancedSettings();
-      this.$.appscoAccountTwoFaPage.resetPage();
-      this._showAccountComponentsPage();
-  }
-
-  toggleResource() {
-      this.$.appscoContent.toggleSection('resource');
-  }
-
-  reloadLog() {
-      this.$.appscoAccountComponentsPage.loadLog();
-      this.$.appscoAccountLogPage.loadLog();
-  }
-
-  _onAccountAdvancedSettings() {
-      this.$.appscoAccountComponentsPage.toggleAdvancedSettings();
-      this._showAccountComponentsPage();
-  }
-
-  _onAccountSettings() {
-      this._selected = 'appsco-account-settings-page';
-  }
-
-  _on2FAEnable() {
-      this._selected = 'appsco-account-2fa-page';
-  }
-
-  _on2FAManage() {
-      this._selected = 'appsco-account-2fa-manage';
-  }
-
-  _onAllNotifications() {
-      this._selected = 'appsco-account-notifications-page';
-  }
-
-  _onManageAuthorizedApps() {
-      this._selected = 'appsco-account-authorized-apps-page';
-  }
-
-  _onWholeLog() {
-      this._selected = 'appsco-account-log-page';
-  }
-
-  _onChangePassword() {
-
-      this.$.appscoAccountComponentsPage.sharedElements = {
-          'hero': this.$.changePasswordHero
-      };
-
-      this._selected = 'appsco-account-change-password-page';
-  }
-
-  _onPageAnimationFinish(event) {
-      const fromPage = event.detail.fromPage,
-          toPage = event.detail.toPage;
-
-      switch(fromPage.getAttribute('name')) {
-          case 'appsco-account-settings-page':
-          case 'appsco-account-change-password-page':
-              fromPage.resetPage();
-              break;
-          default:
-              break;
-      }
-
-      switch(toPage.getAttribute('name')) {
-          case 'appsco-account-settings-page':
-          case 'appsco-account-change-password-page':
-              toPage.setPage();
-              break;
-          default:
-              break;
-      }
-  }
-
-  _onDisableTwoFaAction() {
-      this.shadowRoot.getElementById('appscoAccountDisableTwoFa').open();
-  }
-
-  _onRevokeAuthorizedApplication(event) {
-      const dialog = this.shadowRoot.getElementById('appscoAccountAuthorizedAppRevoke');
-      dialog.setApplication(event.detail.application);
-      dialog.open();
-  }
-
-  _onImportPersonalResourcesAction() {
-      this.shadowRoot.getElementById('appscoImportPersonalResources').toggle();
-  }
+    }
+
+    static get is() { return 'appsco-company-account-page'; }
+
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
+
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            authorizationToken: {
+                type: String
+            },
+
+            notificationsApi: {
+                type: String
+            },
+
+            authorizedAppsApi: {
+                type: String
+            },
+
+            logApi: {
+                type: String
+            },
+
+            twoFaEnforced: {
+                type: Boolean,
+                value: false
+            },
+
+            twoFaApi: {
+                type: String
+            },
+
+            twoFaQrApi: {
+                type: String
+            },
+
+            twoFaCodesApi: {
+                type: String
+            },
+
+            settingsApi: {
+                type: String
+            },
+
+            imageSettingsApi: {
+                type: String
+            },
+
+            changePasswordApi: {
+                type: String
+            },
+
+            applicationTemplateApi: {
+                type: String
+            },
+
+            /**
+             * If attribute is set account display will contain account display name.
+             * Otherwise, account display will contain account picture_url only.
+             */
+            _accountName: {
+                type: String,
+                computed: '_setAccountName(account)'
+            },
+
+            /**
+             * Selected page.
+             * It has value of component's 'name' attribute.
+             */
+            _selected: {
+                type: String,
+                value: 'appsco-account-components-page',
+                notify: true
+            },
+
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            animationConfig: {
+                type: Object
+            },
+
+            showAllNotifications: {
+                type: Boolean,
+                value: false,
+                observer: '_observeSeeAllNotifications'
+            },
+
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
+
+    static get observers(){
+        return [
+            '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+        ];
+    }
+
+    ready() {
+        super.ready();
+
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
+
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
+
+    _addListeners() {
+        this.addEventListener('twofa-enabled', this.reloadLog.bind(this));
+        this.addEventListener('settings-saved', this.reloadLog.bind(this));
+        this.addEventListener('token-generated', this.reloadLog.bind(this));
+        this.addEventListener('password-changed', this.reloadLog.bind(this));
+        this.addEventListener('image-changed', this.reloadLog.bind(this));
+        this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+        this.toolbar.addEventListener('advanced-settings', this._onAccountAdvancedSettings.bind(this));
+    }
+
+    setupAfterTwoFaDisabled() {
+        this._showAccountComponentsPage();
+        this.$.appscoAccountComponentsPage.load2FaApi();
+        this.reloadLog();
+    }
+
+    _updateScreen(medium, tablet, mobile) {
+        this.updateStyles();
+
+        if (mobile) {
+            this.$.appscoContent.hideSection('resource');
+        }
+        else if(!this.$.appscoContent.resourceActive) {
+            this.$.appscoContent.showSection('resource');
+        }
+    }
+
+    _pageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
+
+    _observeSeeAllNotifications(seeAll) {
+        if (seeAll) {
+            this.showAllApplications();
+        }
+    }
+
+    /**
+     * Returns display name for account.
+     * @param {Object} account.
+     *
+     * @private
+     */
+    _setAccountName(account) {
+        let displayName = null;
+
+        if (account.first_name) {
+            displayName = account.first_name;
+        }
+
+        if (account.last_name) {
+            displayName = displayName ? (displayName + ' ' + account.last_name) : account.last_name;
+        }
+
+        return displayName;
+    }
+
+    _onResourceBack() {
+        this._showAccountComponentsPage();
+    }
+
+    _onTwoFaEnabled () {
+        this._showAccountComponentsPage();
+        this.$.appscoAccountComponentsPage.load2FaApi();
+    }
+
+    _onSettingsSaved() {
+        this._showAccountComponentsPage();
+    }
+
+    _onPasswordChanged() {
+        this._showAccountComponentsPage();
+    }
+
+    reloadAuthorizedApplications() {
+        this.$.appscoAccountAuthorizedAppsPage.loadAuthorizedApps();
+        this.$.appscoAccountComponentsPage.loadAuthorizedApps();
+    }
+
+    _showAccountComponentsPage() {
+        this._selected = 'appsco-account-components-page';
+    }
+
+    showAllApplications() {
+        this.$.appscoAccountComponentsPage.setSharedElement('notifications');
+
+        setTimeout(function() {
+            this._onAllNotifications();
+            this.showAllNotifications = false;
+        }.bind(this), 50);
+    }
+
+    resetPage() {
+        this.$.appscoAccountComponentsPage.hideAdvancedSettings();
+        this.$.appscoAccountTwoFaPage.resetPage();
+        this._showAccountComponentsPage();
+    }
+
+    toggleResource() {
+        this.$.appscoContent.toggleSection('resource');
+    }
+
+    reloadLog() {
+        this.$.appscoAccountComponentsPage.loadLog();
+        this.$.appscoAccountLogPage.loadLog();
+    }
+
+    _onAccountAdvancedSettings() {
+        this.$.appscoAccountComponentsPage.toggleAdvancedSettings();
+        this._showAccountComponentsPage();
+    }
+
+    _onAccountSettings() {
+        this._selected = 'appsco-account-settings-page';
+    }
+
+    _on2FAEnable() {
+        this._selected = 'appsco-account-2fa-page';
+    }
+
+    _on2FAManage() {
+        this._selected = 'appsco-account-2fa-manage';
+    }
+
+    _onAllNotifications() {
+        this._selected = 'appsco-account-notifications-page';
+    }
+
+    _onManageAuthorizedApps() {
+        this._selected = 'appsco-account-authorized-apps-page';
+    }
+
+    _onWholeLog() {
+        this._selected = 'appsco-account-log-page';
+    }
+
+    _onChangePassword() {
+
+        this.$.appscoAccountComponentsPage.sharedElements = {
+            'hero': this.$.changePasswordHero
+        };
+
+        this._selected = 'appsco-account-change-password-page';
+    }
+
+    _onPageAnimationFinish(event) {
+        const fromPage = event.detail.fromPage,
+            toPage = event.detail.toPage;
+
+        switch(fromPage.getAttribute('name')) {
+            case 'appsco-account-settings-page':
+            case 'appsco-account-change-password-page':
+                fromPage.resetPage();
+                break;
+            default:
+                break;
+        }
+
+        switch(toPage.getAttribute('name')) {
+            case 'appsco-account-settings-page':
+            case 'appsco-account-change-password-page':
+                toPage.setPage();
+                break;
+            default:
+                break;
+        }
+    }
+
+    _onDisableTwoFaAction() {
+        this.shadowRoot.getElementById('appscoAccountDisableTwoFa').open();
+    }
+
+    _onRevokeAuthorizedApplication(event) {
+        const dialog = this.shadowRoot.getElementById('appscoAccountAuthorizedAppRevoke');
+        dialog.setApplication(event.detail.application);
+        dialog.open();
+    }
+
+    _onImportPersonalResourcesAction() {
+        this.shadowRoot.getElementById('appscoImportPersonalResources').toggle();
+    }
 }
 window.customElements.define(AppscoCompanyAccountPage.is, AppscoCompanyAccountPage);

@@ -17,13 +17,14 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoPoliciesReportPage extends mixinBehaviors([
     NeonAnimatableBehavior,
     AppscoBehaviourReportPage,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-page-styles">
             :host {
                 --content-background-color: #ffffff;
@@ -68,209 +69,209 @@ class AppscoPoliciesReportPage extends mixinBehaviors([
 
         </appsco-content>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-policies-report-page'; }
+    static get is() { return 'appsco-policies-report-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          policiesApi: {
-              type: String
-          },
+            policiesApi: {
+                type: String
+            },
 
-          rolesApi: {
-              type: String
-          },
+            rolesApi: {
+                type: String
+            },
 
-          policiesReportApi: {
-              type: String
-          },
+            policiesReportApi: {
+                type: String
+            },
 
-          exportAccessReportApi: {
-              type: String
-          },
+            exportAccessReportApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          },
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            },
 
-          _rolesApi: {
-              type: String,
-              computed: '_computeRolesApi(rolesApi)'
-          },
+            _rolesApi: {
+                type: String,
+                computed: '_computeRolesApi(rolesApi)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen, screen992)',
-          '_toggleFilters(mobileScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen, screen992)',
+            '_toggleFilters(mobileScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen) {
-              this.updateStyles();
-          }
-      });
+        beforeNextRender(this, function() {
+            if (this.mobileScreen) {
+                this.updateStyles();
+            }
+        });
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
-  }
+    _addListeners() {
+        this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+    }
 
-  hideResource() {
-      this.$.appscoContent.hideSection('resource');
-  }
+    hideResource() {
+        this.$.appscoContent.hideSection('resource');
+    }
 
-  showResource() {
-      this.$.appscoContent.showSection('resource');
-  }
+    showResource() {
+        this.$.appscoContent.showSection('resource');
+    }
 
-  resetPage() {
-      this._reloadLists();
-      this._resetFilters();
-  }
+    resetPage() {
+        this._reloadLists();
+        this._resetFilters();
+    }
 
-  toggleResource() {
-      this.$.appscoContent.toggleSection('resource');
-  }
+    toggleResource() {
+        this.$.appscoContent.toggleSection('resource');
+    }
 
-  getFilters() {
-      var filters = this.$.policyReportPageFilters.getFilters(),
-          roles = this.$.appscoPolicyReportRoles.getAllItems(),
-          data = {
-              limit: 1000
-          };
+    getFilters() {
+        var filters = this.$.policyReportPageFilters.getFilters(),
+            roles = this.$.appscoPolicyReportRoles.getAllItems(),
+            data = {
+                limit: 1000
+            };
 
-      if(filters.policy.policy) {
-          data.policy = filters.policy.policy;
-      }
-      if(filters.dateFrom) {
-          data.from = filters.dateFrom;
-      }
-      if(filters.dateTo) {
-          data.to = filters.dateTo;
-      }
+        if(filters.policy.policy) {
+            data.policy = filters.policy.policy;
+        }
+        if(filters.dateFrom) {
+            data.from = filters.dateFrom;
+        }
+        if(filters.dateTo) {
+            data.to = filters.dateTo;
+        }
 
-      if (0 < roles.length) {
-          data.accounts = [];
-          roles.forEach(function(role, i) {
-              data.accounts.push(role.account.self);
-          });
-      }
-      return data;
-  }
+        if (0 < roles.length) {
+            data.accounts = [];
+            roles.forEach(function(role, i) {
+                data.accounts.push(role.account.self);
+            });
+        }
+        return data;
+    }
 
-  getFileName() {
-      return 'Policy Report.xlsx';
-  }
+    getFileName() {
+        return 'Policy Report.xlsx';
+    }
 
-  getOnSuccessEvent() {
-      return 'export-policies-report-finished';
-  }
+    getOnSuccessEvent() {
+        return 'export-policies-report-finished';
+    }
 
-  getOnFailEvent() {
-      return 'export-policies-report-failed';
-  }
+    getOnFailEvent() {
+        return 'export-policies-report-failed';
+    }
 
-  getFailMessage() {
-      return 'Export of Policies Report failed. Please contact AppsCo support.';
-  }
+    getFailMessage() {
+        return 'Export of Policies Report failed. Please contact AppsCo support.';
+    }
 
-  _computeRolesApi(rolesApi) {
-      return rolesApi ? (rolesApi + '?filter=managed') : null;
-  }
+    _computeRolesApi(rolesApi) {
+        return rolesApi ? (rolesApi + '?filter=managed') : null;
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _toggleFilters(mobile) {
-      if (mobile) {
-          this.hideResource();
-      } else {
-          this.showResource();
-      }
-  }
+    _toggleFilters(mobile) {
+        if (mobile) {
+            this.hideResource();
+        } else {
+            this.showResource();
+        }
+    }
 
-  _reloadLists() {
-      this.$.appscoPolicyReportRoles.reloadItems();
-  }
+    _reloadLists() {
+        this.$.appscoPolicyReportRoles.reloadItems();
+    }
 
-  _resetFilters() {
-      this.$.policyReportPageFilters.reset();
-  }
+    _resetFilters() {
+        this.$.policyReportPageFilters.reset();
+    }
 
-  _onListLoaded() {
-      this.$.appscoPolicyReportRoles.filterRoles({
-          policy: {}
-      });
-      this._onPageLoaded();
-  }
+    _onListLoaded() {
+        this.$.appscoPolicyReportRoles.filterRoles({
+            policy: {}
+        });
+        this._onPageLoaded();
+    }
 
-  _onPageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _onPageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _onFilterReportAction(event) {
-      this.$.appscoPolicyReportRoles.filterRoles(event.detail.filters);
-      this._showProgressBar();
-  }
+    _onFilterReportAction(event) {
+        this.$.appscoPolicyReportRoles.filterRoles(event.detail.filters);
+        this._showProgressBar();
+    }
 }
 window.customElements.define(AppscoPoliciesReportPage.is, AppscoPoliciesReportPage);

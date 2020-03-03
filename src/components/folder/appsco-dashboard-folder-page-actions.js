@@ -12,9 +12,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDashboardFolderPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --layout-horizontal;
@@ -70,74 +71,74 @@ class AppscoDashboardFolderPageActions extends mixinBehaviors([NeonAnimatableBeh
             <paper-icon-button class="back-action" icon="arrow-back" title="Back" on-tap="_onBackToAction"></paper-icon-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-dashboard-folder-page-actions'; }
+    static get is() { return 'appsco-dashboard-folder-page-actions'; }
 
-  static get properties() {
-      return {
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 200,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 200,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  resetPage() {
-      this.$.appscoSearch.reset();
-  }
+    resetPage() {
+        this.$.appscoSearch.reset();
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _onBackToAction() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onBackToAction() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoDashboardFolderPageActions.is, AppscoDashboardFolderPageActions);

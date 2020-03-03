@@ -6,12 +6,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoTutorialShareResources extends mixinBehaviors([
     AppscoTutorialBehaviour,
     AppscoCoverBehaviour
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
             }
@@ -116,200 +117,200 @@ class AppscoTutorialShareResources extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-tutorial-share-resources'; }
+    static get is() { return 'appsco-tutorial-share-resources'; }
 
-  static get properties() {
-      return {
-          page: {
-              type: String
-          },
+    static get properties() {
+        return {
+            page: {
+                type: String
+            },
 
-          resourcesPageLoaded: {
-              type: Boolean,
-              value: false,
-              notify: true
-          },
+            resourcesPageLoaded: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
 
-          resourceShareAccountsLoaded: {
-              type: Boolean,
-              notify: true,
-              value: false
-          }
-      };
-  }
+            resourceShareAccountsLoaded: {
+                type: Boolean,
+                notify: true,
+                value: false
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.tutorialId = 'share_resources';
-      this.tutorialTitle = 'Share resources';
-      this.description = 'Share resources to users';
-      this.icon = 'icons:list';
-      this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000230631-How-to-share-resources-';
-  }
+        this.tutorialId = 'share_resources';
+        this.tutorialTitle = 'Share resources';
+        this.description = 'Share resources to users';
+        this.icon = 'icons:list';
+        this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000230631-How-to-share-resources-';
+    }
 
-  connectedCallback() {
-      super.connectedCallback();
+    connectedCallback() {
+        super.connectedCallback();
 
-      this.tutorialId = 'share_resources';
-      this.tutorialTitle = 'Share resources';
-      this.description = 'Share resources to users';
-      this.icon = 'icons:list';
-      this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000230631-How-to-share-resources-';
+        this.tutorialId = 'share_resources';
+        this.tutorialTitle = 'Share resources';
+        this.description = 'Share resources to users';
+        this.icon = 'icons:list';
+        this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000230631-How-to-share-resources-';
 
-      afterNextRender(this, function() {
-          this.init();
-      });
-  }
+        afterNextRender(this, function() {
+            this.init();
+        });
+    }
 
-  _readMore() {
-      window.open(this.readme, '_blank');
-  }
+    _readMore() {
+        window.open(this.readme, '_blank');
+    }
 
-  pageChanged() {
-      if(this.page !== 'resources' && this.step === 2) {
-          this.reset();
-      }
-  }
+    pageChanged() {
+        if(this.page !== 'resources' && this.step === 2) {
+            this.reset();
+        }
+    }
 
-  getPopperConfig() {
-      return {
-          step1: {
-              reference: '* /deep/ #menuBurger',
-              coverTarget: '* /deep/ #menuBurger',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step2: {
-              reference: '* /deep/ #menuCompanyResourcesText',
-              coverTarget: '* /deep/ #menuContainer',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step3: {
-              reference: '* /deep/ appsco-company-resource-item /deep/ div.select-action',
-              coverTarget: '* /deep/ appsco-company-resource-item /deep/ div.select-action',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step4: {
-              reference: '* /deep/ appsco-application-actions /deep/ #shareAction',
-              coverTarget: '* /deep/ appsco-application-actions /deep/ #shareAction',
-              popperOptions: {
-                  placement: 'left-start'
-              }
-          },
-          step5: {
-              reference: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog appsco-account-list-item  /deep/ div.select-action',
-              coverTarget: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog appsco-account-list-item',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step6: {
-              reference: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog #shareResourceConfirmShareButton',
-              coverTarget: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog #shareResourceConfirmShareButton',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step7: {
-              reference: '* /deep/ #menuBurger',
-              coverTarget: '* /deep/ #menuBurger',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          }
-      };
-  }
+    getPopperConfig() {
+        return {
+            step1: {
+                reference: '* /deep/ #menuBurger',
+                coverTarget: '* /deep/ #menuBurger',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step2: {
+                reference: '* /deep/ #menuCompanyResourcesText',
+                coverTarget: '* /deep/ #menuContainer',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step3: {
+                reference: '* /deep/ appsco-company-resource-item /deep/ div.select-action',
+                coverTarget: '* /deep/ appsco-company-resource-item /deep/ div.select-action',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step4: {
+                reference: '* /deep/ appsco-application-actions /deep/ #shareAction',
+                coverTarget: '* /deep/ appsco-application-actions /deep/ #shareAction',
+                popperOptions: {
+                    placement: 'left-start'
+                }
+            },
+            step5: {
+                reference: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog appsco-account-list-item  /deep/ div.select-action',
+                coverTarget: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog appsco-account-list-item',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step6: {
+                reference: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog #shareResourceConfirmShareButton',
+                coverTarget: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog #shareResourceConfirmShareButton',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step7: {
+                reference: '* /deep/ #menuBurger',
+                coverTarget: '* /deep/ #menuBurger',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            }
+        };
+    }
 
-  step3(index, item, doneBuildingPopperHandler) {
-      const handleFunction = function () {
-          const firstApplication = this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources /deep/ appsco-company-resource-item'),
-              firstApplicationSelector = this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources /deep/ appsco-company-resource-item /deep/ div.select-action');
+    step3(index, item, doneBuildingPopperHandler) {
+        const handleFunction = function () {
+            const firstApplication = this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources /deep/ appsco-company-resource-item'),
+                firstApplicationSelector = this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources /deep/ appsco-company-resource-item /deep/ div.select-action');
 
-          if (this.resourcesPageLoaded && !firstApplication) {
-              const cover = this.buildCover(this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources /deep/ div.load-more-box')),
-                  failElement = this._querySelector('* /deep/ #popper-fail-share-resource-tutorial'),
-                  closeButton = this._querySelector('* /deep/ #popper-fail-share-resource-tutorial paper-button'),
-                  popper = new Popper(this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources'), failElement, {
-                      placement: 'right-start'
-                  }),
-                  closeListener = function () {
-                      cover.destroy();
-                      popper.destroy();
-                      failElement.hidden = true;
-                      closeButton.removeEventListener('click', closeListener);
-                      this.reset();
-                  }.bind(this);
-              closeButton.addEventListener('click', closeListener);
+            if (this.resourcesPageLoaded && !firstApplication) {
+                const cover = this.buildCover(this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources /deep/ div.load-more-box')),
+                    failElement = this._querySelector('* /deep/ #popper-fail-share-resource-tutorial'),
+                    closeButton = this._querySelector('* /deep/ #popper-fail-share-resource-tutorial paper-button'),
+                    popper = new Popper(this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources'), failElement, {
+                        placement: 'right-start'
+                    }),
+                    closeListener = function () {
+                        cover.destroy();
+                        popper.destroy();
+                        failElement.hidden = true;
+                        closeButton.removeEventListener('click', closeListener);
+                        this.reset();
+                    }.bind(this);
+                closeButton.addEventListener('click', closeListener);
 
-              cover.show();
-              failElement.hidden = false;
+                cover.show();
+                failElement.hidden = false;
 
-              return;
-          }
+                return;
+            }
 
-          if (!firstApplication || !firstApplicationSelector || !this.resourcesPageLoaded) {
-              setTimeout(handleFunction, 200);
-              return;
-          }
+            if (!firstApplication || !firstApplicationSelector || !this.resourcesPageLoaded) {
+                setTimeout(handleFunction, 200);
+                return;
+            }
 
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this);
-      handleFunction();
-  }
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this);
+        handleFunction();
+    }
 
-  step4(index, item, doneBuildingPopperHandler) {
-      setTimeout(function() {
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this), 350);
-  }
+    step4(index, item, doneBuildingPopperHandler) {
+        setTimeout(function() {
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this), 350);
+    }
 
-  step5(index, item, doneBuildingPopperHandler) {
-      setTimeout(function() {
-          let checkerFunction;
-          this._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog').setAttribute(
-              'no-cancel-on-outside-click', true
-          );
-          this._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog').setAttribute(
-              'no-cancel-on-esc-key', true
-          );
+    step5(index, item, doneBuildingPopperHandler) {
+        setTimeout(function() {
+            let checkerFunction;
+            this._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog').setAttribute(
+                'no-cancel-on-outside-click', true
+            );
+            this._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog').setAttribute(
+                'no-cancel-on-esc-key', true
+            );
 
-          checkerFunction = function() {
-              const dialog = this._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog appsco-account-list-item');
-              if (!dialog || !this.resourcesPageLoaded || !this.resourceShareAccountsLoaded) {
-                  setTimeout(checkerFunction, 200);
-                  return;
-              }
-              this.handleStep(index, item, doneBuildingPopperHandler);
-          }.bind(this);
+            checkerFunction = function() {
+                const dialog = this._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog appsco-account-list-item');
+                if (!dialog || !this.resourcesPageLoaded || !this.resourceShareAccountsLoaded) {
+                    setTimeout(checkerFunction, 200);
+                    return;
+                }
+                this.handleStep(index, item, doneBuildingPopperHandler);
+            }.bind(this);
 
-          checkerFunction();
-      }.bind(this), 700);
-  }
+            checkerFunction();
+        }.bind(this), 700);
+    }
 
-  start() {
-      this.step = 0;
-      this.nextStep();
-  }
+    start() {
+        this.step = 0;
+        this.nextStep();
+    }
 
-  _nextStep() {
-      this.currentStep.reference.click();
-  }
+    _nextStep() {
+        this.currentStep.reference.click();
+    }
 
-  afterTutorialDone() {
-      this
-          ._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog')
-          .removeAttribute('no-cancel-on-outside-click');
-      this
-          ._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog')
-          .removeAttribute('no-cancel-on-esc-key');
-  }
+    afterTutorialDone() {
+        this
+            ._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog')
+            .removeAttribute('no-cancel-on-outside-click');
+        this
+            ._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog')
+            .removeAttribute('no-cancel-on-esc-key');
+    }
 }
 window.customElements.define(AppscoTutorialShareResources.is, AppscoTutorialShareResources);

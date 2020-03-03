@@ -1,26 +1,4 @@
-/**
-`appsco-account-orgunit-item`
-Is used to represent account organization unit with actions.
-
-Example:
-
-    <body>
-      <appsco-account-orgunit-item item="{}">
-     </appsco-account-orgunit-item>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-account-orgunit-item` | Mixin applied to root element | `{}`
-
-@demo demo/company/appsco-account-orgunits.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/neon-animation/animations/fade-in-animation.js';
@@ -30,9 +8,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountOrgunitItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: none;
@@ -73,67 +52,67 @@ class AppscoAccountOrgunitItem extends mixinBehaviors([NeonAnimationRunnerBehavi
             <paper-button class="remove-button" on-tap="_onRemoveFromOrgunit">Remove</paper-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-orgunit-item'; }
+    static get is() { return 'appsco-account-orgunit-item'; }
 
-  static get properties() {
-      return {
-          item: {
-              type: Object
-          },
+    static get properties() {
+        return {
+            item: {
+                type: Object
+            },
 
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'flex';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'flex';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _onRemoveFromOrgunit() {
-      this.dispatchEvent(new CustomEvent('remove-from-orgunit', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              orgunit: this.item,
-              account: this.account
-          }
-      }));
-  }
+    _onRemoveFromOrgunit() {
+        this.dispatchEvent(new CustomEvent('remove-from-orgunit', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                orgunit: this.item,
+                account: this.account
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoAccountOrgunitItem.is, AppscoAccountOrgunitItem);

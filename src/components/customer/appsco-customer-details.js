@@ -1,31 +1,4 @@
-/**
-`appsco-customer-details`
-Component holds details about appsco customer.
-
-Example:
-    <body>
-        <appsco-customer-details customer="{}">
-        </appsco-customer-details>
-
-### Styling
-
-`<appsco-customer-details>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--details-container` | Mixin for the inner element that holds label and value. | `{}`
-`--details-label` | Mixin applied to detail label. | `{}`
-`--details-value` | Mixin applied to detail value. | `{}`
-
-@demo demo/appsco-account-details.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/iron-ajax/iron-ajax.js';
@@ -36,9 +9,10 @@ import '../components/appsco-date-format.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCustomerDetails extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -88,54 +62,54 @@ class AppscoCustomerDetails extends mixinBehaviors([NeonAnimationRunnerBehavior]
             <div class="details-value">[[ customer.contact_email ]]</div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-customer-details'; }
+    static get is() { return 'appsco-customer-details'; }
 
-  static get properties() {
-      return {
-          customer: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onCustomerChanged'
-          },
+    static get properties() {
+        return {
+            customer: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onCustomerChanged'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+    }
 
-  _onCustomerChanged() {
-      this._showDetails();
-  }
+    _onCustomerChanged() {
+        this._showDetails();
+    }
 
-  _showDetails() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showDetails() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 }
 window.customElements.define(AppscoCustomerDetails.is, AppscoCustomerDetails);

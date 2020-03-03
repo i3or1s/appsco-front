@@ -5,9 +5,10 @@ import '@polymer/iron-icons/iron-icons.js';
 import '../components/appsco-import-resource.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoImportPersonalResources extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -40,37 +41,37 @@ class AppscoImportPersonalResources extends PolymerElement {
             </div>
         </appsco-import-resource>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-import-personal-resources'; }
+    static get is() { return 'appsco-import-personal-resources'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String
+            },
 
-          applicationTemplateApi: {
-              type: String
-          },
+            applicationTemplateApi: {
+                type: String
+            },
 
-          _importPersonalResourcesApi: {
-              type: String,
-              computed: '_computeImportPersonalResourcesApi(applicationTemplateApi)'
-          }
-      };
-  }
+            _importPersonalResourcesApi: {
+                type: String,
+                computed: '_computeImportPersonalResourcesApi(applicationTemplateApi)'
+            }
+        };
+    }
 
-  toggle() {
-      this.$.appscoImportResource.toggle();
-  }
+    toggle() {
+        this.$.appscoImportResource.toggle();
+    }
 
-  close() {
-      this.$.appscoImportResource.close();
-  }
+    close() {
+        this.$.appscoImportResource.close();
+    }
 
-  _computeImportPersonalResourcesApi(applicationTemplateApi) {
-      return applicationTemplateApi ? applicationTemplateApi + '/import' : null;
-  }
+    _computeImportPersonalResourcesApi(applicationTemplateApi) {
+        return applicationTemplateApi ? applicationTemplateApi + '/import' : null;
+    }
 }
 window.customElements.define(AppscoImportPersonalResources.is, AppscoImportPersonalResources);

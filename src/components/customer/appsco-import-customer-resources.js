@@ -5,9 +5,10 @@ import '@polymer/iron-icons/iron-icons.js';
 import '../components/appsco-import-resource.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoImportCustomerResources extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -60,37 +61,37 @@ class AppscoImportCustomerResources extends PolymerElement {
             </div>
         </appsco-import-resource>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-import-customer-resources'; }
+    static get is() { return 'appsco-import-customer-resources'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String
+            },
 
-          importApi: {
-              type: String
-          },
+            importApi: {
+                type: String
+            },
 
-          domain: {
-              type: String
-          }
-      };
-  }
+            domain: {
+                type: String
+            }
+        };
+    }
 
-  toggle() {
-      this.$.appscoImportResource.toggle();
-  }
+    toggle() {
+        this.$.appscoImportResource.toggle();
+    }
 
-  close() {
-      this.$.appscoImportResource.close();
-  }
+    close() {
+        this.$.appscoImportResource.close();
+    }
 
-  _onDownloadExampleImportFile(event) {
-      event.stopPropagation();
-      window.location.href = this.domain + '/example_customer_resource_import.csv';
-  }
+    _onDownloadExampleImportFile(event) {
+        event.stopPropagation();
+        window.location.href = this.domain + '/example_customer_resource_import.csv';
+    }
 }
 window.customElements.define(AppscoImportCustomerResources.is, AppscoImportCustomerResources);

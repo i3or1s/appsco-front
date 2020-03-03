@@ -1,35 +1,4 @@
-/*
-`appsco-company-domain-item`
-Presents domain in form of an item.
-
-    <appsco-company-domain-item domain="{}"
-                                domains-api=""
-                                authorization-token=""
-                                preview>
-    </appsco-company-domain-item>
-
-### Styling
-
-`<appsco-company-domain-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--item-background-color` | Background color applied to the root element | `#fff`
-`--color` | Color applied to all the text | `#33`
-`--appsco-company-domain-item` | Mixin applied to domain item element | `{}`
-`--domain-basic-info` | Mixin applied to the basic info | `{}`
-`--domain-status-info` | Mixin applied to the status info | `{}`
-`--domain-basic-info-values` | Mixin applied to the basic info values | `{}`
-`--domain-status-info-values` | Mixin applied to the status info values | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
@@ -44,12 +13,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyDomainItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -228,195 +198,195 @@ class AppscoCompanyDomainItem extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-domain-item'; }
+    static get is() { return 'appsco-company-domain-item'; }
 
-  static get properties() {
-      return {
-          domain: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_domainChanged'
-          },
+    static get properties() {
+        return {
+            domain: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_domainChanged'
+            },
 
-          domainsApi: {
-              type: String
-          },
+            domainsApi: {
+                type: String
+            },
 
-          /**
-           * Indicates if domain should be in preview mode rather then full detailed view.
-           */
-          preview: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if domain should be in preview mode rather then full detailed view.
+             */
+            preview: {
+                type: Boolean,
+                value: false
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          screen1000: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            screen1000: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _verificationAction: {
-              type: Boolean,
-              value: false
-          },
+            _verificationAction: {
+                type: Boolean,
+                value: false
+            },
 
-          _verified: {
-              type: Boolean,
-              value: false
-          },
+            _verified: {
+                type: Boolean,
+                value: false
+            },
 
-          _domainStatusApiUrl: {
-              type: String,
-              computed: '_computeDomainStatusApi(domain)'
-          },
+            _domainStatusApiUrl: {
+                type: String,
+                computed: '_computeDomainStatusApi(domain)'
+            },
 
-          _progressBarDisplay: {
-              type: Boolean,
-              value: false
-          },
+            _progressBarDisplay: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, screen1000)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, screen1000)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.screen1000) {
-              this.style.display = 'inline-block';
-              this.updateStyles();
-          }
-      });
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.screen1000) {
+                this.style.display = 'inline-block';
+                this.updateStyles();
+            }
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _notifyDomainStatus() {
-      this.domain.verified = this._verified;
+    _notifyDomainStatus() {
+        this.domain.verified = this._verified;
 
-      if (this._verificationAction) {
-          const eventType = this._verified ? 'domain-verified' : 'domain-not-verified';
-          this.dispatchEvent(new CustomEvent(eventType, {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  domain: this.domain
-              }
-          }));
-      }
-  }
+        if (this._verificationAction) {
+            const eventType = this._verified ? 'domain-verified' : 'domain-not-verified';
+            this.dispatchEvent(new CustomEvent(eventType, {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    domain: this.domain
+                }
+            }));
+        }
+    }
 
-  _domainChanged(domain) {
-      this._verified = domain.verified;
-  }
+    _domainChanged(domain) {
+        this._verified = domain.verified;
+    }
 
-  _computeDomainStatusApi(domain) {
-      return domain.self ? (domain.self + '/verify') : null;
-  }
+    _computeDomainStatusApi(domain) {
+        return domain.self ? (domain.self + '/verify') : null;
+    }
 
-  _showProgressBar() {
-      this._progressBarDisplay = true;
-  }
+    _showProgressBar() {
+        this._progressBarDisplay = true;
+    }
 
-  _hideProgressBar() {
-      setTimeout(function() {
-          this._progressBarDisplay = false;
-      }.bind(this), 500);
-  }
+    _hideProgressBar() {
+        setTimeout(function() {
+            this._progressBarDisplay = false;
+        }.bind(this), 500);
+    }
 
-  _checkDomainStatus() {
-      this._showProgressBar();
-      this.$.getDomainStatus.generateRequest();
-  }
+    _checkDomainStatus() {
+        this._showProgressBar();
+        this.$.getDomainStatus.generateRequest();
+    }
 
-  _onDomainStatusError(event) {
-      if (422 === event.detail.request.status) {
-          this._verified = false;
-          this._notifyDomainStatus();
-      }
+    _onDomainStatusError(event) {
+        if (422 === event.detail.request.status) {
+            this._verified = false;
+            this._notifyDomainStatus();
+        }
 
-      this._hideProgressBar();
-  }
+        this._hideProgressBar();
+    }
 
-  _onDomainStatusResponse(event) {
-      if (event.detail.response && 200 === event.detail.status) {
-          this._verified = true;
-          this._notifyDomainStatus();
-      }
+    _onDomainStatusResponse(event) {
+        if (event.detail.response && 200 === event.detail.status) {
+            this._verified = true;
+            this._notifyDomainStatus();
+        }
 
-      this._hideProgressBar();
-  }
+        this._hideProgressBar();
+    }
 
-  _onGetToken(event) {
-      event.stopPropagation();
+    _onGetToken(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('get-token', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              domain: this.domain
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('get-token', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                domain: this.domain
+            }
+        }));
+    }
 
-  _onVerify() {
-      this._verificationAction = true;
-      this._checkDomainStatus();
-  }
+    _onVerify() {
+        this._verificationAction = true;
+        this._checkDomainStatus();
+    }
 
-  _onRemove(event) {
-      event.stopPropagation();
+    _onRemove(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('remove', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              domain: this.domain
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('remove', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                domain: this.domain
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoCompanyDomainItem.is, AppscoCompanyDomainItem);

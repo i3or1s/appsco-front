@@ -11,12 +11,13 @@ import '../components/components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoActiveIntegrationItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host .item-image {
                 width: 52px;
@@ -81,31 +82,31 @@ class AppscoActiveIntegrationItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-active-integration-item'; }
+    static get is() { return 'appsco-active-integration-item'; }
 
-  static get properties() {
-      return {
-          _forceSyncAvailable: {
-              type: Boolean,
-              computed: '_computeForceSyncAvailable(item)'
-          }
-      };
-  }
+    static get properties() {
+        return {
+            _forceSyncAvailable: {
+                type: Boolean,
+                computed: '_computeForceSyncAvailable(item)'
+            }
+        };
+    }
 
-  _onForceSync() {
-      this.dispatchEvent(new CustomEvent('force-sync', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: this.item
-          }
-      }));
-  }
+    _onForceSync() {
+        this.dispatchEvent(new CustomEvent('force-sync', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: this.item
+            }
+        }));
+    }
 
-  _computeForceSyncAvailable(item) {
-      return (item && item.kind === 'ra');
-  }
+    _computeForceSyncAvailable(item) {
+        return (item && item.kind === 'ra');
+    }
 }
 window.customElements.define(AppscoActiveIntegrationItem.is, AppscoActiveIntegrationItem);

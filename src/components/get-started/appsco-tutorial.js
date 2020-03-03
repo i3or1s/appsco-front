@@ -15,9 +15,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host .done-step {
                 z-index: 9000;
@@ -54,252 +55,252 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-tutorial'; }
+    static get is() { return 'appsco-tutorial'; }
 
-  static get properties() {
-      return {
-          currentPage: {
-              type: String,
-              notify: true,
-              observer: '_pageChanged'
-          },
-          tutorialsApi: {
-              type: String,
-              notify: true,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            currentPage: {
+                type: String,
+                notify: true,
+                observer: '_pageChanged'
+            },
+            tutorialsApi: {
+                type: String,
+                notify: true,
+                reflectToAttribute: true
+            },
 
-          tuts: {
-              type: Array,
-              value: function () {
-                  return [
-                      'companyProfile',
-                      'companyBranding',
-                      'brandedLogin',
-                      'addCompanyUser',
-                      'addResource',
-                      'shareResource',
-                      'companyDomain',
-                      'identityProvider',
-                      'companyProvisioning'
-                  ];
-              }
-          },
+            tuts: {
+                type: Array,
+                value: function () {
+                    return [
+                        'companyProfile',
+                        'companyBranding',
+                        'brandedLogin',
+                        'addCompanyUser',
+                        'addResource',
+                        'shareResource',
+                        'companyDomain',
+                        'identityProvider',
+                        'companyProvisioning'
+                    ];
+                }
+            },
 
-          tutorials: {
-              type: Object,
-              notify: true,
-              reflectToAttribute: true,
-              value: function () {
-                  return {}
-              }
-          },
+            tutorials: {
+                type: Object,
+                notify: true,
+                reflectToAttribute: true,
+                value: function () {
+                    return {}
+                }
+            },
 
-          directoryPageLoaded: {
-              type: Boolean,
-              value: false,
-              notify: true
-          },
+            directoryPageLoaded: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
 
-          resourcesPageLoaded: {
-              type: Boolean,
-              value: false,
-              notify: true
-          },
+            resourcesPageLoaded: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
 
-          companyDomainsLoaded: {
-              type: Boolean,
-              notify: true
-          },
+            companyDomainsLoaded: {
+                type: Boolean,
+                notify: true
+            },
 
-          resourceShareAccountsLoaded: {
-              type: Boolean,
-              value: false,
-              notify: true
-          },
+            resourceShareAccountsLoaded: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
 
-          currentSteps: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            currentSteps: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          isTutorialActive: {
-              type: Boolean,
-              value: false,
-              notify: true
-          }
-      };
-  }
+            isTutorialActive: {
+                type: Boolean,
+                value: false,
+                notify: true
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          this.initTutorials();
-          this.getCurrentState();
-      });
-  }
+        afterNextRender(this, function() {
+            this.initTutorials();
+            this.getCurrentState();
+        });
+    }
 
-  _pageChanged(){
-      this.tuts.forEach(function(item, key){
-          var tutorial = this.shadowRoot.getElementById(item);
-          if(tutorial) {
-              tutorial.pageChanged(this.currentPage);
-          }
-      }.bind(this));
-  }
+    _pageChanged(){
+        this.tuts.forEach(function(item, key){
+            var tutorial = this.shadowRoot.getElementById(item);
+            if(tutorial) {
+                tutorial.pageChanged(this.currentPage);
+            }
+        }.bind(this));
+    }
 
-  getTutorials() {
-      return this.tutorials;
-  }
+    getTutorials() {
+        return this.tutorials;
+    }
 
-  getTutorial(tutorialId) {
-      return this.tutorials[tutorialId];
-  }
+    getTutorial(tutorialId) {
+        return this.tutorials[tutorialId];
+    }
 
-  initTutorials() {
-      this.tuts.forEach(function(item, key){
-          const tutorial = this.shadowRoot.getElementById(item);
-          if(tutorial) {
-              this.tutorials[tutorial.getId()] = tutorial;
-          }
-      }.bind(this));
-  }
+    initTutorials() {
+        this.tuts.forEach(function(item, key){
+            const tutorial = this.shadowRoot.getElementById(item);
+            if(tutorial) {
+                this.tutorials[tutorial.getId()] = tutorial;
+            }
+        }.bind(this));
+    }
 
-  _onTutorialDone(event) {
-      const tutorial = event.detail.tutorial,
-          tutorialsRequest = document.createElement('iron-request');
+    _onTutorialDone(event) {
+        const tutorial = event.detail.tutorial,
+            tutorialsRequest = document.createElement('iron-request');
 
-      tutorialsRequest.send({
-          url: this.tutorialsApi,
-          method: "PUT",
-          handleAs: 'json',
-          headers: this._headers,
-          body: 'tutorial_info[tutorial_id]=' + tutorial.getId()
-                  + '&tutorial_info[status]=DONE'
-                  + '&tutorial_info[step]=' + tutorial.maxSteps
-      }).then(function(request) {
-          this._applyTutorialStatus(request.response);
-      }.bind(this));
+        tutorialsRequest.send({
+            url: this.tutorialsApi,
+            method: "PUT",
+            handleAs: 'json',
+            headers: this._headers,
+            body: 'tutorial_info[tutorial_id]=' + tutorial.getId()
+                + '&tutorial_info[status]=DONE'
+                + '&tutorial_info[step]=' + tutorial.maxSteps
+        }).then(function(request) {
+            this._applyTutorialStatus(request.response);
+        }.bind(this));
 
-      for (const idx in this.tutorials) {
-          if (this.tutorials.hasOwnProperty(idx)) {
-              if (!this.tutorials[idx].isDone()) {
-                  return;
-              }
-          }
-      }
+        for (const idx in this.tutorials) {
+            if (this.tutorials.hasOwnProperty(idx)) {
+                if (!this.tutorials[idx].isDone()) {
+                    return;
+                }
+            }
+        }
 
-      this.showAllTutorialsDoneInfo();
-  }
+        this.showAllTutorialsDoneInfo();
+    }
 
-  showAllTutorialsDoneInfo() {
-      let targetElement = document.querySelector('* paper-icon-button.appsco-get-started-icon');
-      if(null === targetElement) {
-          targetElement = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
-      }
+    showAllTutorialsDoneInfo() {
+        let targetElement = document.querySelector('* paper-icon-button.appsco-get-started-icon');
+        if(null === targetElement) {
+            targetElement = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
+        }
 
-      const cover = this.buildCover(targetElement);
-      let doneElement = document.querySelector('* #done-all-tutorials');
-      if(null === doneElement) {
-          doneElement = document.querySelector('* /deep/ #done-all-tutorials');
-      }
-      let closeButton = document.querySelector('* #done-all-tutorials paper-button');
-      if(null === closeButton) {
-          closeButton = document.querySelector('* /deep/ #done-all-tutorials paper-button');
-      }
+        const cover = this.buildCover(targetElement);
+        let doneElement = document.querySelector('* #done-all-tutorials');
+        if(null === doneElement) {
+            doneElement = document.querySelector('* /deep/ #done-all-tutorials');
+        }
+        let closeButton = document.querySelector('* #done-all-tutorials paper-button');
+        if(null === closeButton) {
+            closeButton = document.querySelector('* /deep/ #done-all-tutorials paper-button');
+        }
 
-      const closeListener = function () {
-          cover.destroy();
-          popper.destroy();
-          doneElement.hidden = true;
+        const closeListener = function () {
+            cover.destroy();
+            popper.destroy();
+            doneElement.hidden = true;
 
-          targetElement.removeEventListener('click', closeListener);
-          closeButton.removeEventListener('click', closeListener);
-      };
-      let popperGetStartedIcon = document.querySelector('* paper-icon-button.appsco-get-started-icon');
-      if(null === popperGetStartedIcon) {
-          popperGetStartedIcon = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
-      }
-      const popper = new Popper(
-          popperGetStartedIcon,
-          doneElement,
-          { placement: 'right-start' }
-      );
+            targetElement.removeEventListener('click', closeListener);
+            closeButton.removeEventListener('click', closeListener);
+        };
+        let popperGetStartedIcon = document.querySelector('* paper-icon-button.appsco-get-started-icon');
+        if(null === popperGetStartedIcon) {
+            popperGetStartedIcon = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
+        }
+        const popper = new Popper(
+            popperGetStartedIcon,
+            doneElement,
+            { placement: 'right-start' }
+        );
 
-      closeButton.addEventListener('click', closeListener);
-      targetElement.addEventListener('click', closeListener);
+        closeButton.addEventListener('click', closeListener);
+        targetElement.addEventListener('click', closeListener);
 
-      cover.show();
-      doneElement.hidden = false;
-  }
+        cover.show();
+        doneElement.hidden = false;
+    }
 
-  _applyTutorialStatus(tutorialsInfo) {
-      for (const idx in tutorialsInfo) {
-          if (tutorialsInfo.hasOwnProperty(idx)) {
-              this.tuts.forEach(function(tut) {
-                  var tutorial = this.shadowRoot.getElementById(tut);
-                  if (!tutorial) { return; }
-                  if (tutorial.getId() === idx) {
-                      tutorial.status = tutorialsInfo[idx]['status'];
-                  }
-              }.bind(this));
-          }
-      }
+    _applyTutorialStatus(tutorialsInfo) {
+        for (const idx in tutorialsInfo) {
+            if (tutorialsInfo.hasOwnProperty(idx)) {
+                this.tuts.forEach(function(tut) {
+                    var tutorial = this.shadowRoot.getElementById(tut);
+                    if (!tutorial) { return; }
+                    if (tutorial.getId() === idx) {
+                        tutorial.status = tutorialsInfo[idx]['status'];
+                    }
+                }.bind(this));
+            }
+        }
 
-      const tutorials = this.tutorials;
-      this.set('tutorials', {});
-      this.set('tutorials', tutorials);
-  }
+        const tutorials = this.tutorials;
+        this.set('tutorials', {});
+        this.set('tutorials', tutorials);
+    }
 
-  getCurrentState() {
-      const tutorialsRequest = document.createElement('iron-request');
+    getCurrentState() {
+        const tutorialsRequest = document.createElement('iron-request');
 
-      tutorialsRequest.send({
-          url: this.tutorialsApi,
-          method: "GET",
-          handleAs: 'json',
-          headers: this._headers
-      }).then(function(request) {
-          this._applyTutorialStatus(request.response);
-      }.bind(this));
-  }
+        tutorialsRequest.send({
+            url: this.tutorialsApi,
+            method: "GET",
+            handleAs: 'json',
+            headers: this._headers
+        }).then(function(request) {
+            this._applyTutorialStatus(request.response);
+        }.bind(this));
+    }
 
-  startTutorial(tutorialId) {
-      this.tuts.forEach(function(tut) {
-          const tutorial = this.shadowRoot.getElementById(tut);
-          if (!tutorial) { return; }
-          if (tutorial.getId() === tutorialId) {
-              tutorial.start();
-          }
-      }.bind(this));
-  }
+    startTutorial(tutorialId) {
+        this.tuts.forEach(function(tut) {
+            const tutorial = this.shadowRoot.getElementById(tut);
+            if (!tutorial) { return; }
+            if (tutorial.getId() === tutorialId) {
+                tutorial.start();
+            }
+        }.bind(this));
+    }
 
-  notifyDomainAdded(domain) {
-      this.$.companyDomain.domainAdded(domain);
-  }
+    notifyDomainAdded(domain) {
+        this.$.companyDomain.domainAdded(domain);
+    }
 
-  _computeIsTutorialActive() {
-      for(const idx in this.currentSteps) {
-          if (this.currentSteps.hasOwnProperty(idx) && this.currentSteps[idx] > 0) {
-              this.isTutorialActive = true;
-              return;
-          }
-      }
+    _computeIsTutorialActive() {
+        for(const idx in this.currentSteps) {
+            if (this.currentSteps.hasOwnProperty(idx) && this.currentSteps[idx] > 0) {
+                this.isTutorialActive = true;
+                return;
+            }
+        }
 
-      this.isTutorialActive = false;
-  }
+        this.isTutorialActive = false;
+    }
 
-  _onStepChanged(event) {
-      if (!this.currentSteps) {
-          this.currentSteps = {};
-      }
-      this.currentSteps[event.detail.id] = event.detail.step;
-      this._computeIsTutorialActive();
-  }
+    _onStepChanged(event) {
+        if (!this.currentSteps) {
+            this.currentSteps = {};
+        }
+        this.currentSteps[event.detail.id] = event.detail.step;
+        this._computeIsTutorialActive();
+    }
 }
 window.customElements.define(AppscoTutorial.is, AppscoTutorial);

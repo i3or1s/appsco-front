@@ -9,12 +9,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationWebhooksCard extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -56,169 +57,169 @@ class AppscoIntegrationWebhooksCard extends mixinBehaviors([
 
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-webhooks-card'; }
+    static get is() { return 'appsco-integration-webhooks-card'; }
 
-  static get properties() {
-      return {
-          webhookApi: {
-              type: String,
-              observer: '_onWebhookApiChanged'
-          },
+    static get properties() {
+        return {
+            webhookApi: {
+                type: String,
+                observer: '_onWebhookApiChanged'
+            },
 
-          _message: {
-              type: String,
-              value: ''
-          },
+            _message: {
+                type: String,
+                value: ''
+            },
 
-          _webhooks: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _webhooks: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _loaders: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _loaders: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          this._showWebhookDetails();
-      });
-  }
+        afterNextRender(this, function() {
+            this._showWebhookDetails();
+        });
+    }
 
-  _onWebhookApiChanged(url) {
-      if (url && url.length > 0) {
-          this._loadWebhooks();
-      } else {
-          this._onError();
-      }
-  }
+    _onWebhookApiChanged(url) {
+        if (url && url.length > 0) {
+            this._loadWebhooks();
+        } else {
+            this._onError();
+        }
+    }
 
-  _showWebhookDetails() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showWebhookDetails() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 
-  _handleEmptyLoad() {
-      this._hideProgressBar();
-      this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
-  }
+    _handleEmptyLoad() {
+        this._hideProgressBar();
+        this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
+    }
 
-  loadWebhooks() {
-      this._loadWebhooks();
-  }
+    loadWebhooks() {
+        this._loadWebhooks();
+    }
 
-  _loadWebhooks() {
-      this._showProgressBar();
-      this._clearWebhooks();
-      this.$.getIntegrationWebhooksApiRequest.generateRequest();
-  }
+    _loadWebhooks() {
+        this._showProgressBar();
+        this._clearWebhooks();
+        this.$.getIntegrationWebhooksApiRequest.generateRequest();
+    }
 
-  _onError() {
-      this._message = 'We couldn\'t load webhooks at the moment. Please try again in a minute.';
-      this._hideProgressBar();
-      this.dispatchEvent(new CustomEvent('webhooks-load-error', { bubbles: true, composed: true }));
-  }
+    _onError() {
+        this._message = 'We couldn\'t load webhooks at the moment. Please try again in a minute.';
+        this._hideProgressBar();
+        this.dispatchEvent(new CustomEvent('webhooks-load-error', { bubbles: true, composed: true }));
+    }
 
-  _clearWebhooks() {
-      this._clearLoaders();
-      this.set('_webhooks', []);
-      this.set('_message', '');
-  }
+    _clearWebhooks() {
+        this._clearLoaders();
+        this.set('_webhooks', []);
+        this.set('_message', '');
+    }
 
-  _clearLoaders() {
-      for (const idx in this._loaders) {
-          clearTimeout(this._loaders[idx]);
-      }
-      this.set('_loaders', []);
-  }
+    _clearLoaders() {
+        for (const idx in this._loaders) {
+            clearTimeout(this._loaders[idx]);
+        }
+        this.set('_loaders', []);
+    }
 
-  _onResponse(event) {
-      const response = event.detail.response;
-      if (response && response.web_hooks) {
-          const webhooks = response.web_hooks,
-              meta = response.meta,
-              webhooksCount = webhooks.length - 1;
+    _onResponse(event) {
+        const response = event.detail.response;
+        if (response && response.web_hooks) {
+            const webhooks = response.web_hooks,
+                meta = response.meta,
+                webhooksCount = webhooks.length - 1;
 
-          if (meta.total === 0) {
-              this._message = 'There are no webhooks for this integration.';
-              this._handleEmptyLoad();
-              this._fireWebHooksLoadedEvent(webhooks);
-              return false;
-          }
+            if (meta.total === 0) {
+                this._message = 'There are no webhooks for this integration.';
+                this._handleEmptyLoad();
+                this._fireWebHooksLoadedEvent(webhooks);
+                return false;
+            }
 
-          this._clearWebhooks();
+            this._clearWebhooks();
 
-          this._message = "";
-          webhooks.forEach(function(el, index) {
-              this._loaders.push(setTimeout(function() {
-                  this.push('_webhooks', el);
+            this._message = "";
+            webhooks.forEach(function(el, index) {
+                this._loaders.push(setTimeout(function() {
+                    this.push('_webhooks', el);
 
-                  if (index === webhooksCount) {
-                      this._hideProgressBar();
-                      this.dispatchEvent(new CustomEvent('loaded', {
-                          bubbles: true,
-                          composed: true,
-                          detail: {
-                              webhooks: webhooks
-                          }
-                      }));
-                  }
-              }.bind(this), (index + 1) * 30));
-          }.bind(this));
-          this._fireWebHooksLoadedEvent(webhooks);
-      }
-  }
+                    if (index === webhooksCount) {
+                        this._hideProgressBar();
+                        this.dispatchEvent(new CustomEvent('loaded', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                webhooks: webhooks
+                            }
+                        }));
+                    }
+                }.bind(this), (index + 1) * 30));
+            }.bind(this));
+            this._fireWebHooksLoadedEvent(webhooks);
+        }
+    }
 
-  _fireWebHooksLoadedEvent(webHooks) {
-      this.dispatchEvent(new CustomEvent('web-hooks-loaded', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              web_hooks: webHooks
-          }
-      }));
-  }
+    _fireWebHooksLoadedEvent(webHooks) {
+        this.dispatchEvent(new CustomEvent('web-hooks-loaded', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                web_hooks: webHooks
+            }
+        }));
+    }
 
-  _showProgressBar() {
-      this.shadowRoot.getElementById('paperProgress').hidden = false;
-  }
+    _showProgressBar() {
+        this.shadowRoot.getElementById('paperProgress').hidden = false;
+    }
 
-  _hideProgressBar() {
-      setTimeout(function() {
-          this.shadowRoot.getElementById('paperProgress').hidden = true;
-      }.bind(this), 300);
-  }
+    _hideProgressBar() {
+        setTimeout(function() {
+            this.shadowRoot.getElementById('paperProgress').hidden = true;
+        }.bind(this), 300);
+    }
 }
 window.customElements.define(AppscoIntegrationWebhooksCard.is, AppscoIntegrationWebhooksCard);

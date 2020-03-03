@@ -13,12 +13,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationResources extends mixinBehaviors([
     AppscoListBehavior,
     AppscoListObserverBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             appsco-integration-resource-item {
                 @apply --appsco-integration-resource-item;
@@ -66,100 +67,100 @@ class AppscoIntegrationResources extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-resources'; }
+    static get is() { return 'appsco-integration-resources'; }
 
-  static get observers() {
-      return [
-          '_observeItems(_listItems)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_observeItems(_listItems)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      beforeNextRender(this, function() {
-          this._showProgressBar();
-      });
-  }
+        beforeNextRender(this, function() {
+            this._showProgressBar();
+        });
+    }
 
-  _observeItems(items) {
-      this.setObservableType('resources');
-      this.populateItems(items);
-  }
+    _observeItems(items) {
+        this.setObservableType('resources');
+        this.populateItems(items);
+    }
 
-  _setFinalItemList(availableItemList, existingItemList) {
-      let availableIndex = availableItemList.length,
-          existingIndex = existingItemList.length;
+    _setFinalItemList(availableItemList, existingItemList) {
+        let availableIndex = availableItemList.length,
+            existingIndex = existingItemList.length;
 
-      for (let i = 0; i < availableIndex; i++) {
-          const availableItem = availableItemList[i];
+        for (let i = 0; i < availableIndex; i++) {
+            const availableItem = availableItemList[i];
 
-          for (let j = 0; j < existingIndex; j++) {
-              if (availableItem.id === existingItemList[j].id) {
-                  availableItem.exists = true;
-                  existingItemList.splice(j, 1);
-                  existingIndex--;
-              }
-          }
-      }
+            for (let j = 0; j < existingIndex; j++) {
+                if (availableItem.id === existingItemList[j].id) {
+                    availableItem.exists = true;
+                    existingItemList.splice(j, 1);
+                    existingIndex--;
+                }
+            }
+        }
 
-      return availableItemList;
-  }
+        return availableItemList;
+    }
 
-  _onGetListResponse(event) {
-      const response = event.detail.response,
-          availableItemList = response.available ? response.available : [],
-          existingItemList = response.existing ? response.existing : [],
-          itemList = (0 < availableItemList.length) ? this._setFinalItemList(availableItemList, existingItemList) : [],
-          itemListCount = itemList.length;
+    _onGetListResponse(event) {
+        const response = event.detail.response,
+            availableItemList = response.available ? response.available : [],
+            existingItemList = response.existing ? response.existing : [],
+            itemList = (0 < availableItemList.length) ? this._setFinalItemList(availableItemList, existingItemList) : [],
+            itemListCount = itemList.length;
 
-      this._hideMessage();
-      this._totalListItems = itemListCount;
+        this._hideMessage();
+        this._totalListItems = itemListCount;
 
-      if (0 === itemListCount) {
-          this._showMessage('There are no resources to display.');
-          this._handleEmptyLoad();
-          return false;
-      }
+        if (0 === itemListCount) {
+            this._showMessage('There are no resources to display.');
+            this._handleEmptyLoad();
+            return false;
+        }
 
-      if (0 < itemListCount) {
-          this._listEmpty = false;
+        if (0 < itemListCount) {
+            this._listEmpty = false;
 
-          itemList.forEach(function(el, index) {
-              this._listLoaders.push(setTimeout(function() {
-                  const items = JSON.parse(JSON.stringify(this._listItems));
+            itemList.forEach(function(el, index) {
+                this._listLoaders.push(setTimeout(function() {
+                    const items = JSON.parse(JSON.stringify(this._listItems));
 
-                  el.activated = false;
-                  el.selected = false;
+                    el.activated = false;
+                    el.selected = false;
 
-                  this._listItems = [];
-                  items.push(el);
-                  this._listItems = items;
-                  this.push('_allListItems', el);
+                    this._listItems = [];
+                    items.push(el);
+                    this._listItems = items;
+                    this.push('_allListItems', el);
 
-                  if (index === itemListCount - 1) {
-                      this._hideProgressBar();
+                    if (index === itemListCount - 1) {
+                        this._hideProgressBar();
 
-                      this.dispatchEvent(new CustomEvent('list-loaded', {
-                          bubbles: true,
-                          composed: true,
-                          detail: {
-                              items: itemList
-                          }
-                      }));
-                  }
-              }.bind(this), (index + 1) * 30 ));
-          }.bind(this));
-      }
-      else {
-          (itemList && !itemListCount) ?
-              this._showMessage('There are no resources to display.') :
-              this._showMessage('We couldn\'t load resources at the moment. Please contact AppsCo support.');
+                        this.dispatchEvent(new CustomEvent('list-loaded', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                items: itemList
+                            }
+                        }));
+                    }
+                }.bind(this), (index + 1) * 30 ));
+            }.bind(this));
+        }
+        else {
+            (itemList && !itemListCount) ?
+                this._showMessage('There are no resources to display.') :
+                this._showMessage('We couldn\'t load resources at the moment. Please contact AppsCo support.');
 
-          this._handleEmptyLoad();
-      }
-  }
+            this._handleEmptyLoad();
+        }
+    }
 }
 window.customElements.define(AppscoIntegrationResources.is, AppscoIntegrationResources);

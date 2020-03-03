@@ -4,8 +4,8 @@ import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 class AppscoApplicationDetailsUnpw extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host div[label] {
                 color: var(--secondary-text-color);
@@ -67,37 +67,37 @@ class AppscoApplicationDetailsUnpw extends PolymerElement {
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-details-unpw'; }
+    static get is() { return 'appsco-application-details-unpw'; }
 
-  static get properties() {
-      return {
-          _showPassword: {
-              type: Boolean,
-              computed: '_computeShowPassword(company, claims)'
-          },
+    static get properties() {
+        return {
+            _showPassword: {
+                type: Boolean,
+                computed: '_computeShowPassword(company, claims)'
+            },
 
-          company: {
-              type: Object,
-              notify: true
-          },
+            company: {
+                type: Object,
+                notify: true
+            },
 
-          claims: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          }
-      };
-  }
+            claims: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            }
+        };
+    }
 
-  _computeShowPassword(company, claims) {
-      return company && company.disable_resource_copy_button ?
-          false :
-          claims.password
-      ;
-  }
+    _computeShowPassword(company, claims) {
+        return company && company.disable_resource_copy_button ?
+            false :
+            claims.password
+            ;
+    }
 }
 window.customElements.define(AppscoApplicationDetailsUnpw.is, AppscoApplicationDetailsUnpw);

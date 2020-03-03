@@ -20,12 +20,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDirectoryAddAccount extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -148,147 +149,147 @@ class AppscoDirectoryAddAccount extends mixinBehaviors([
 
         <iron-a11y-keys keys="enter" on-keys-pressed="_onEnter"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-directory-add-account'; }
+    static get is() { return 'appsco-directory-add-account'; }
 
-  static get properties() {
-      return {
-          addCompanyRoleApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            addCompanyRoleApi: {
+                type: String
+            },
 
-          addInvitationApi: {
-              type: String
-          },
+            addInvitationApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  toggle() {
-      this.$.addAccountDialog.toggle();
-  }
+    toggle() {
+        this.$.addAccountDialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogOpened() {
-      this.$.accountFirstName.focus();
-  }
+    _onDialogOpened() {
+        this.$.accountFirstName.focus();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this.$.form.reset();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this.$.form.reset();
+    }
 
-  _onEnter() {
-      this._submitForm();
-  }
+    _onEnter() {
+        this._submitForm();
+    }
 
-  _submitForm() {
-      const form = this.$.form;
+    _submitForm() {
+        const form = this.$.form;
 
-      if (form.validate()) {
-          this._showLoader();
-          form.submit();
-      }
-  }
+        if (form.validate()) {
+            this._showLoader();
+            form.submit();
+        }
+    }
 
-  _onFormPresubmit(event) {
-      event.target.request.body['register_account[companyRoles][COMPANY_ROLE_EMPLOYEE]'] = 'COMPANY_ROLE_EMPLOYEE';
-  }
+    _onFormPresubmit(event) {
+        event.target.request.body['register_account[companyRoles][COMPANY_ROLE_EMPLOYEE]'] = 'COMPANY_ROLE_EMPLOYEE';
+    }
 
-  _onFormError(event) {
-      const code = event.detail.request.response.code;
+    _onFormError(event) {
+        const code = event.detail.request.response.code;
 
-      if (1499245162 === code) {
-          this._createInvitation(event.target);
-          return false;
-      }
+        if (1499245162 === code) {
+            this._createInvitation(event.target);
+            return false;
+        }
 
-      this._showError(this.apiErrors.getError(code));
-      this._hideLoader();
-  }
+        this._showError(this.apiErrors.getError(code));
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {
-      const response = event.detail.response;
+    _onFormResponse(event) {
+        const response = event.detail.response;
 
-      if (200 === event.detail.status && response) {
-          this.$.addAccountDialog.close();
+        if (200 === event.detail.status && response) {
+            this.$.addAccountDialog.close();
 
-          this.dispatchEvent(new CustomEvent('company-role-created', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  role: response
-              }
-          }));
-      }
-  }
+            this.dispatchEvent(new CustomEvent('company-role-created', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    role: response
+                }
+            }));
+        }
+    }
 
-  _createInvitation(form) {
-      const formData = form.serializeForm(),
-          request = document.createElement('iron-request'),
-          options = {
-              url: this.addInvitationApi,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _createInvitation(form) {
+        const formData = form.serializeForm(),
+            request = document.createElement('iron-request'),
+            options = {
+                url: this.addInvitationApi,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      let body = 'invitation[type]=user';
+        let body = 'invitation[type]=user';
 
-      for (const key in formData) {
-          body += '&' + key.replace('register_account', 'invitation') + '=' + encodeURIComponent(formData[key]);
-      }
+        for (const key in formData) {
+            body += '&' + key.replace('register_account', 'invitation') + '=' + encodeURIComponent(formData[key]);
+        }
 
-      options.body = body;
+        options.body = body;
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.$.addAccountDialog.close();
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.$.addAccountDialog.close();
 
-              this.dispatchEvent(new CustomEvent('invitation-created', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      invitation: request.response
-                  }
-              }));
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+                this.dispatchEvent(new CustomEvent('invitation-created', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        invitation: request.response
+                    }
+                }));
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoDirectoryAddAccount.is, AppscoDirectoryAddAccount);

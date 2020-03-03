@@ -11,9 +11,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoEditOAuthApplicationForm extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -79,137 +80,137 @@ class AppscoEditOAuthApplicationForm extends mixinBehaviors([Appsco.HeadersMixin
 
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnterAction"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-edit-oauth-application-form'; }
+    static get is() { return 'appsco-edit-oauth-application-form'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _oauthApplicationUpdateApi: {
-              type: Object,
-              computed: '_computeUpdateApi(application)'
-          },
+            _oauthApplicationUpdateApi: {
+                type: Object,
+                computed: '_computeUpdateApi(application)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          },
+            _target: {
+                type: Object
+            },
 
-          _applicationIcon: {
-              type: String
-          }
-      };
-  }
+            _applicationIcon: {
+                type: String
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_onApplicationChanged(application)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_onApplicationChanged(application)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this.$.form;
-  }
+        this._target = this.$.form;
+    }
 
-  initialize() {
-      const application = JSON.parse(JSON.stringify(this.application));
+    initialize() {
+        const application = JSON.parse(JSON.stringify(this.application));
 
-      this.set('application', {});
-      this.set('application', application);
-      this.$.title.focus();
-  }
+        this.set('application', {});
+        this.set('application', application);
+        this.$.title.focus();
+    }
 
-  reset() {
-      this._target.reset();
-  }
+    reset() {
+        this._target.reset();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _computeUpdateApi(application) {
-      return application.self ? application.self : null;
-  }
+    _computeUpdateApi(application) {
+        return application.self ? application.self : null;
+    }
 
-  _onApplicationChanged(application) {
-      this._applicationIcon = application.icon_url ? application.icon_url : null;
-  }
+    _onApplicationChanged(application) {
+        this._applicationIcon = application.icon_url ? application.icon_url : null;
+    }
 
-  _onIconInputValueChanged(event) {
-      this.debounce('setIconURL', function() {
-          this._applicationIcon = event.detail.value;
-      }.bind(this), 500);
-  }
+    _onIconInputValueChanged(event) {
+        this.debounce('setIconURL', function() {
+            this._applicationIcon = event.detail.value;
+        }.bind(this), 500);
+    }
 
-  _onEnterAction() {
-      this._onSaveAction();
-  }
+    _onEnterAction() {
+        this._onSaveAction();
+    }
 
-  _onSaveAction() {
-      this._hideError();
+    _onSaveAction() {
+        this._hideError();
 
-      if (this._target.validate()) {
-          this._showLoader();
-          this._target.submit();
-      }
+        if (this._target.validate()) {
+            this._showLoader();
+            this._target.submit();
+        }
 
-  }
+    }
 
-  _onFormPresubmit(event) {
-      event.target.request.method = 'PUT';
-  }
+    _onFormPresubmit(event) {
+        event.target.request.method = 'PUT';
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {
-      this._hideLoader();
+    _onFormResponse(event) {
+        this._hideLoader();
 
-      this.dispatchEvent(new CustomEvent('oauth-application-updated', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: event.detail.response
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('oauth-application-updated', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: event.detail.response
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoEditOAuthApplicationForm.is, AppscoEditOAuthApplicationForm);

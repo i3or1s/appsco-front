@@ -6,9 +6,10 @@ import './components/page/appsco-content.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoSamlAuthnRequestInvalidPage extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 display: block;
@@ -54,35 +55,35 @@ class AppscoSamlAuthnRequestInvalidPage extends PolymerElement {
             </div>
         </appsco-content>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-saml-authn-request-invalid-page'; }
+    static get is() { return 'appsco-saml-authn-request-invalid-page'; }
 
-  static get properties() {
-      return {
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+    static get properties() {
+        return {
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      afterNextRender(this, function() {
-          this._pageLoaded();
-      });
-  }
+        this.pageLoaded = false;
+        afterNextRender(this, function() {
+            this._pageLoaded();
+        });
+    }
 
-  _pageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _pageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _onBackToDashboardAction() {
-      this.dispatchEvent(new CustomEvent('back-to-dashboard', { bubbles: true, composed: true }));
-  }
+    _onBackToDashboardAction() {
+        this.dispatchEvent(new CustomEvent('back-to-dashboard', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoSamlAuthnRequestInvalidPage.is, AppscoSamlAuthnRequestInvalidPage);

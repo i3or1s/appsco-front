@@ -13,12 +13,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactApplication extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: none;
@@ -188,133 +189,133 @@ class AppscoContactApplication extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contact-application'; }
+    static get is() { return 'appsco-contact-application'; }
 
-  static get properties() {
-      return {
-          assignee: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            assignee: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Application which is assigned to contact.
-           */
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            /**
+             * Application which is assigned to contact.
+             */
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _orgUnits: {
-              type: String,
-              computed: '_computeOrganizationUnits(application)'
-          },
+            _orgUnits: {
+                type: String,
+                computed: '_computeOrganizationUnits(application)'
+            },
 
-          preview: {
-              type: Boolean,
-              value: false
-          },
+            preview: {
+                type: Boolean,
+                value: false
+            },
 
-          _individualClaims: {
-              type: Boolean,
-              computed: '_computeIndividualClaims(application)'
-          },
+            _individualClaims: {
+                type: Boolean,
+                computed: '_computeIndividualClaims(application)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'inline-block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'inline-block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _computeOrganizationUnits(application) {
-      if (application.org_units) {
-          let result = '',
-              orgUnits = application.org_units,
-              length = orgUnits.length;
+    _computeOrganizationUnits(application) {
+        if (application.org_units) {
+            let result = '',
+                orgUnits = application.org_units,
+                length = orgUnits.length;
 
-          for (let i = 0; i < length; i++) {
-              result += orgUnits[i].name;
-              result += (i === length -1) ? '' : ', ';
-          }
+            for (let i = 0; i < length; i++) {
+                result += orgUnits[i].name;
+                result += (i === length -1) ? '' : ', ';
+            }
 
-          return result;
-      }
+            return result;
+        }
 
-      return '';
-  }
+        return '';
+    }
 
-  _computeIndividualClaims(application) {
-      return application.claim_type === 'individual';
-  }
+    _computeIndividualClaims(application) {
+        return application.claim_type === 'individual';
+    }
 
-  _onClaimsAction(event) {
-      event.stopPropagation();
+    _onClaimsAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('change-assignee-claims', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              assignee: this.assignee.account,
-              application: this.application
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('change-assignee-claims', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                assignee: this.assignee.account,
+                application: this.application
+            }
+        }));
+    }
 
-  _onRevokeAction(event) {
-      event.stopPropagation();
+    _onRevokeAction(event) {
+        event.stopPropagation();
 
-      const appRequest = document.createElement('iron-request');
+        const appRequest = document.createElement('iron-request');
 
-      appRequest.send({
-          url: this.application.meta.subscribers + '?extended=1&term=' + this.assignee.account.email,
-          method: 'GET',
-          handleAs: 'json',
-          headers: this._headers
-      }).then(function() {
-          this.dispatchEvent(new CustomEvent('revoke-assignee', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  assignee: appRequest.response.accounts[0],
-                  application: this.application
-              }
-          }));
-      }.bind(this));
-  }
+        appRequest.send({
+            url: this.application.meta.subscribers + '?extended=1&term=' + this.assignee.account.email,
+            method: 'GET',
+            handleAs: 'json',
+            headers: this._headers
+        }).then(function() {
+            this.dispatchEvent(new CustomEvent('revoke-assignee', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    assignee: appRequest.response.accounts[0],
+                    application: this.application
+                }
+            }));
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoContactApplication.is, AppscoContactApplication);

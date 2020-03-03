@@ -15,9 +15,10 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddIntegrationSearch extends mixinBehaviors([NeonSharedElementAnimatableBehavior, Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -108,204 +109,204 @@ class AppscoAddIntegrationSearch extends mixinBehaviors([NeonSharedElementAnimat
             </div>
         </paper-dialog-scrollable>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-add-integration-search'; }
+    static get is() { return 'appsco-add-integration-search'; }
 
-  static get properties() {
-      return {
-          availableIntegrationsApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            availableIntegrationsApi: {
+                type: String
+            },
 
-          _availableIntegrationsApi: {
-              type: String,
-              computed: '_computeAvailableIntegrationsApi(availableIntegrationsApi)'
-          },
+            _availableIntegrationsApi: {
+                type: String,
+                computed: '_computeAvailableIntegrationsApi(availableIntegrationsApi)'
+            },
 
-          _searchAvailableIntegrationsApi: {
-              type: String,
-              computed: '_computeSearchAvailableIntegrationsApi(availableIntegrationsApi, _searchTerm)'
-          },
+            _searchAvailableIntegrationsApi: {
+                type: String,
+                computed: '_computeSearchAvailableIntegrationsApi(availableIntegrationsApi, _searchTerm)'
+            },
 
-          _searchTerm: {
-              type: String,
-              value: ''
-          },
+            _searchTerm: {
+                type: String,
+                value: ''
+            },
 
-          _availableIntegrationList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _availableIntegrationList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _availableIntegrationListDisplay: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _availableIntegrationListDisplay: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          /**
-           * Message to display if there is no search result.
-           */
-          _message: {
-              type: String,
-              value: ''
-          },
+            /**
+             * Message to display if there is no search result.
+             */
+            _message: {
+                type: String,
+                value: ''
+            },
 
-          /**
-           * Indicates if appsco loader should be displayed.
-           */
-          _searchLoader: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if appsco loader should be displayed.
+             */
+            _searchLoader: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'scale-up-animation',
-              node: this
-          },
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }]
-      };
-      this.sharedElements = {
-          'hero': {}
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'scale-up-animation',
+                node: this
+            },
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }]
+        };
+        this.sharedElements = {
+            'hero': {}
+        };
+    }
 
-  reset() {
-      this.$.appscoSearch.reset();
-      this.set('_availableIntegrationListDisplay', []);
-      this.set('_availableIntegrationListDisplay', JSON.parse(JSON.stringify(this._availableIntegrationList)));
-      this._hideMessage();
-      this._hideLoader();
-  }
+    reset() {
+        this.$.appscoSearch.reset();
+        this.set('_availableIntegrationListDisplay', []);
+        this.set('_availableIntegrationListDisplay', JSON.parse(JSON.stringify(this._availableIntegrationList)));
+        this._hideMessage();
+        this._hideLoader();
+    }
 
-  _computeAvailableIntegrationsApi(availableIntegrationsApi) {
-      return availableIntegrationsApi ? availableIntegrationsApi + '?extended=1' : null;
-  }
+    _computeAvailableIntegrationsApi(availableIntegrationsApi) {
+        return availableIntegrationsApi ? availableIntegrationsApi + '?extended=1' : null;
+    }
 
-  _computeSearchAvailableIntegrationsApi(availableIntegrationsApi, term) {
-      return (availableIntegrationsApi && term) ? (availableIntegrationsApi + '?extended=1&limit=10&term=' + term) : null;
-  }
+    _computeSearchAvailableIntegrationsApi(availableIntegrationsApi, term) {
+        return (availableIntegrationsApi && term) ? (availableIntegrationsApi + '?extended=1&limit=10&term=' + term) : null;
+    }
 
-  _showMessage(message) {
-      this._message = message;
-  }
+    _showMessage(message) {
+        this._message = message;
+    }
 
-  _hideMessage() {
-      this._message = '';
-  }
+    _hideMessage() {
+        this._message = '';
+    }
 
-  _showLoader() {
-      this._searchLoader = true;
-  }
+    _showLoader() {
+        this._searchLoader = true;
+    }
 
-  _hideLoader() {
-      this._searchLoader = false;
-  }
+    _hideLoader() {
+        this._searchLoader = false;
+    }
 
-  _onAvailableIntegrationsResponse(event) {
-      var response = event.detail.response;
+    _onAvailableIntegrationsResponse(event) {
+        var response = event.detail.response;
 
-      if (response && response.available_integrations) {
-          this.set('_availableIntegrationList', response.available_integrations);
-          this.set('_availableIntegrationListDisplay', response.available_integrations);
-      }
-      this._hideLoader();
-  }
+        if (response && response.available_integrations) {
+            this.set('_availableIntegrationList', response.available_integrations);
+            this.set('_availableIntegrationListDisplay', response.available_integrations);
+        }
+        this._hideLoader();
+    }
 
-  _searchList(searchTerm) {
-      var term = decodeURIComponent(searchTerm.toLowerCase()).trim(),
-          termLength = term.length,
-          list = this._availableIntegrationList,
-          length = list.length;
+    _searchList(searchTerm) {
+        var term = decodeURIComponent(searchTerm.toLowerCase()).trim(),
+            termLength = term.length,
+            list = this._availableIntegrationList,
+            length = list.length;
 
-      this._showLoader();
+        this._showLoader();
 
-      this.set('_availableIntegrationListDisplay', []);
+        this.set('_availableIntegrationListDisplay', []);
 
-      if (1 === termLength) {
-          this._showMessage('Please type two or more letters.');
-          this._hideLoader();
-          return false;
-      }
+        if (1 === termLength) {
+            this._showMessage('Please type two or more letters.');
+            this._hideLoader();
+            return false;
+        }
 
-      this._hideMessage();
+        this._hideMessage();
 
-      for (var i = 0; i < length; i++) {
-          var item = list[i];
+        for (var i = 0; i < length; i++) {
+            var item = list[i];
 
-          if (item && item.title.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
-              this.push('_availableIntegrationListDisplay', item);
-          }
-      }
+            if (item && item.title.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
+                this.push('_availableIntegrationListDisplay', item);
+            }
+        }
 
-      if (0 === this._availableIntegrationListDisplay.length && 2 <= termLength) {
-          this._showMessage('There are no available integrations with asked term.');
-      }
+        if (0 === this._availableIntegrationListDisplay.length && 2 <= termLength) {
+            this._showMessage('There are no available integrations with asked term.');
+        }
 
-      this._hideLoader();
-  }
+        this._hideLoader();
+    }
 
-  _onSearch(event) {
-      this._searchList(event.detail.term);
-  }
+    _onSearch(event) {
+        this._searchList(event.detail.term);
+    }
 
-  _onClearSearch() {
-      this._searchList('');
-  }
+    _onClearSearch() {
+        this._searchList('');
+    }
 
-  _onListItemSelectAction(event) {
-      var alias = parseInt(event.detail.item.alias),
-          list = this._availableIntegrationListDisplay,
-          length = list.length,
-          selectedListItem;
+    _onListItemSelectAction(event) {
+        var alias = parseInt(event.detail.item.alias),
+            list = this._availableIntegrationListDisplay,
+            length = list.length,
+            selectedListItem;
 
-      for (var i = 0; i < length; i++) {
+        for (var i = 0; i < length; i++) {
 
-          if (alias === list[i].alias) {
-              selectedListItem = list[i];
-              break;
-          }
-      }
+            if (alias === list[i].alias) {
+                selectedListItem = list[i];
+                break;
+            }
+        }
 
-      this.sharedElements.hero = this.shadowRoot.getElementById('appscoListItem_' + event.model.index);
-      this.dispatchEvent(new CustomEvent('available-integration-selected', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: selectedListItem
-          }
-      }));
-  }
+        this.sharedElements.hero = this.shadowRoot.getElementById('appscoListItem_' + event.model.index);
+        this.dispatchEvent(new CustomEvent('available-integration-selected', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: selectedListItem
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoAddIntegrationSearch.is, AppscoAddIntegrationSearch);

@@ -1,35 +1,4 @@
-/**
-`appsco-application-actions`
-Actions related to applications page: New Application, Search, Filter.
-- New Application - adding new app <appsco-application-add>.
-- Search: search added applications.
-- Filter: filter added applications.
-
-
-    <appsco-application-actions>
-    </appsco-application-actions>
-
-### Styling
-
-`<appsco-application-actions>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--add-application-icon-color` | Color for add-application-button-icon | `{}`
-`--appsco-application-actions` | Mixin for the root element | `{}`
-`--application-action` | Mixin for the action div container | `{}`
-`--add-item-action` | Mixin for add item action button | `{}`
-`--application-actions-tooltip` | Mixin for action's tooltip | `{}`
-
-@demo demo/appsco-application-actions.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
@@ -52,9 +21,10 @@ import * as gestures from '@polymer/polymer/lib/utils/gestures.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationActions extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -260,394 +230,394 @@ class AppscoApplicationActions extends mixinBehaviors([NeonAnimationRunnerBehavi
             <appsco-page-config-dropdown id="resourcePageConfigDropdown" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" page-config-api="[[ pageConfigApi ]]" page-config="[[ pageConfig ]]" page="[[ page ]]" option-hide-resource-section="[[ pageConfigOptionHideResourceSection ]]" option-display-list="[[ pageConfigOptionDisplayList ]]" option-sort="[[ pageConfigOptionSort ]]"></appsco-page-config-dropdown>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-actions'; }
+    static get is() { return 'appsco-application-actions'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          pageConfigApi: {
-              type: String
-          },
+            pageConfigApi: {
+                type: String
+            },
 
-          pageConfig: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            pageConfig: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          page: {
-              type: String,
-              value: ''
-          },
+            page: {
+                type: String,
+                value: ''
+            },
 
-          pageConfigOptionHideResourceSection: {
-              type: Boolean,
-              value: false
-          },
+            pageConfigOptionHideResourceSection: {
+                type: Boolean,
+                value: false
+            },
 
-          pageConfigOptionDisplayList: {
-              type: Boolean,
-              value: false
-          },
+            pageConfigOptionDisplayList: {
+                type: Boolean,
+                value: false
+            },
 
-          pageConfigOptionSort: {
-              type: Boolean,
-              value: false
-          },
+            pageConfigOptionSort: {
+                type: Boolean,
+                value: false
+            },
 
-          _filterItems: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'All items',
-                          value: 0
-                      },
-                      {
-                          name: 'My items',
-                          value: 1
-                      },
-                      {
-                          name: 'Shared with me',
-                          value: 2
-                      }];
-              }
-          },
+            _filterItems: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'All items',
+                            value: 0
+                        },
+                        {
+                            name: 'My items',
+                            value: 1
+                        },
+                        {
+                            name: 'Shared with me',
+                            value: 2
+                        }];
+                }
+            },
 
-          /**
-           * Indicates if appsco-company actions should be available or not.
-           * Currently, company actions are bulk action and Add application action.
-           */
-          company: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if appsco-company actions should be available or not.
+             * Currently, company actions are bulk action and Add application action.
+             */
+            company: {
+                type: Boolean,
+                value: false
+            },
 
-          addingResourceAllowed: {
-              type: Boolean,
-              value: true
-          },
+            addingResourceAllowed: {
+                type: Boolean,
+                value: true
+            },
 
-          /**
-           * Indicates if bulk actions for applications are visible or not.
-           * Used to show / hide bulk actions.
-           */
-          bulkActions: {
-              type: Boolean,
-              value: false,
-              observer: '_onBulkActionsChanged'
-          },
+            /**
+             * Indicates if bulk actions for applications are visible or not.
+             * Used to show / hide bulk actions.
+             */
+            bulkActions: {
+                type: Boolean,
+                value: false,
+                observer: '_onBulkActionsChanged'
+            },
 
-          _bulkSelectAll: {
-              type: Boolean,
-              value: true,
-              observer: '_onBulkSelectAllChanged'
-          },
+            _bulkSelectAll: {
+                type: Boolean,
+                value: true,
+                observer: '_onBulkSelectAllChanged'
+            },
 
-          _showOptions: {
-              type: Boolean,
-              computed: '_computeShowOptions(resourceAdmin, company)'
-          },
+            _showOptions: {
+                type: Boolean,
+                computed: '_computeShowOptions(resourceAdmin, company)'
+            },
 
-          resourceAdmin: {
-              type: Boolean,
-              value: false
-          },
+            resourceAdmin: {
+                type: Boolean,
+                value: false
+            },
 
-          _actionList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'catalogue-application',
-                          name: 'Application',
-                          icon: 'icons:list',
-                          tpl: ''
-                      },
-                      {
-                          value: 'link',
-                          name: 'Link',
-                          icon: 'icons:link',
-                          tpl: '/api/v2/applications/28'
-                      },
-                      {
-                          value: 'login',
-                          name: 'Login',
-                          icon: 'icons:input',
-                          tpl: '/api/v2/applications/1493886244'
-                      },
-                      {
-                          value: 'credit-card',
-                          name: 'Credit Card',
-                          icon: 'icons:credit-card',
-                          tpl: '/api/v2/applications/1493886242'
-                      },
-                      {
-                          value: 'software-licence',
-                          name: 'Software Licence',
-                          icon: 'communication:vpn-key',
-                          tpl: '/api/v2/applications/1493886247'
-                      },
-                      {
-                          value: 'passport',
-                          name: 'Passport',
-                          icon: 'icons:flight-takeoff',
-                          tpl: '/api/v2/applications/1493886245'
-                      },
-                      {
-                          value: 'secure-note',
-                          name: 'Secure Note',
-                          icon: 'editor:insert-drive-file',
-                          tpl: '/api/v2/applications/1493886246'
-                      }
-                  ]
-              }
-          },
+            _actionList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'catalogue-application',
+                            name: 'Application',
+                            icon: 'icons:list',
+                            tpl: ''
+                        },
+                        {
+                            value: 'link',
+                            name: 'Link',
+                            icon: 'icons:link',
+                            tpl: '/api/v2/applications/28'
+                        },
+                        {
+                            value: 'login',
+                            name: 'Login',
+                            icon: 'icons:input',
+                            tpl: '/api/v2/applications/1493886244'
+                        },
+                        {
+                            value: 'credit-card',
+                            name: 'Credit Card',
+                            icon: 'icons:credit-card',
+                            tpl: '/api/v2/applications/1493886242'
+                        },
+                        {
+                            value: 'software-licence',
+                            name: 'Software Licence',
+                            icon: 'communication:vpn-key',
+                            tpl: '/api/v2/applications/1493886247'
+                        },
+                        {
+                            value: 'passport',
+                            name: 'Passport',
+                            icon: 'icons:flight-takeoff',
+                            tpl: '/api/v2/applications/1493886245'
+                        },
+                        {
+                            value: 'secure-note',
+                            name: 'Secure Note',
+                            icon: 'editor:insert-drive-file',
+                            tpl: '/api/v2/applications/1493886246'
+                        }
+                    ]
+                }
+            },
 
-          _addItemActionsVisible: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            _addItemActionsVisible: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _searchDebounce: {
-              type: Number,
-              value: 0
-          },
+            _searchDebounce: {
+                type: Number,
+                value: 0
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: [],
-              nodeDelay: 50,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'cascaded-animation',
-              animation: 'fade-out-animation',
-              nodes: [],
-              nodeDelay: 0,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: [],
+                nodeDelay: 50,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'cascaded-animation',
+                animation: 'fade-out-animation',
+                nodes: [],
+                nodeDelay: 0,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          if (this.company) {
-              this.unshift('_actionList', {
-                  value: 'sso-application',
-                  name: 'SSO Application',
-                  icon: 'icons:apps',
-                  tpl: ''
-              });
-          }
-          gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            if (this.company) {
+                this.unshift('_actionList', {
+                    value: 'sso-application',
+                    name: 'SSO Application',
+                    icon: 'icons:apps',
+                    tpl: ''
+                });
+            }
+            gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
-  }
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+    }
 
-  /**
-   * Evaluates if item is in given path.
-   *
-   * @param {HTMLElement} element The element to be evaluated.
-   * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
-   * @return {Boolean}
-   *
-   * @private
-   */
-  _isInPath(path, element) {
-      path = path || [];
+    /**
+     * Evaluates if item is in given path.
+     *
+     * @param {HTMLElement} element The element to be evaluated.
+     * @param {Array<HTMLElement>=} path Elements in path to be checked against item element.
+     * @return {Boolean}
+     *
+     * @private
+     */
+    _isInPath(path, element) {
+        path = path || [];
 
-      for (let i = 0; i < path.length; i++) {
-          if (path[i] == element) {
-              return true;
-          }
-      }
+        for (let i = 0; i < path.length; i++) {
+            if (path[i] == element) {
+                return true;
+            }
+        }
 
-      return false;
-  }
+        return false;
+    }
 
-  _computeShowOptions(resourceAdmin, company) {
-      return !resourceAdmin || !company;
-  }
+    _computeShowOptions(resourceAdmin, company) {
+        return !resourceAdmin || !company;
+    }
 
-  /**
-   * Listens for click outside.
-   * @private
-   */
-  _handleDocumentClick(event) {
-      const path = dom(event).path;
+    /**
+     * Listens for click outside.
+     * @private
+     */
+    _handleDocumentClick(event) {
+        const path = dom(event).path;
 
-      if (!this._isInPath(path, this.shadowRoot.getElementById('addItemAction')) && !this._isInPath(path, this.shadowRoot.getElementById('addItemActionIconButton'))
-              && !this._isInPath(path, this.shadowRoot.getElementById('addItemActionIconButton')))
-      {
-          this._addItemActionsVisible = false;
-      }
+        if (!this._isInPath(path, this.shadowRoot.getElementById('addItemAction')) && !this._isInPath(path, this.shadowRoot.getElementById('addItemActionIconButton'))
+            && !this._isInPath(path, this.shadowRoot.getElementById('addItemActionIconButton')))
+        {
+            this._addItemActionsVisible = false;
+        }
 
-      if (!this._isInPath(path, this)) {
-          this.dispatchEvent(new CustomEvent('close-search', { bubbles: true, composed: true }));
-      }
-  }
+        if (!this._isInPath(path, this)) {
+            this.dispatchEvent(new CustomEvent('close-search', { bubbles: true, composed: true }));
+        }
+    }
 
-  _toggleActionList() {
-      this._addItemActionsVisible = !this._addItemActionsVisible;
-  }
+    _toggleActionList() {
+        this._addItemActionsVisible = !this._addItemActionsVisible;
+    }
 
-  _onAddItemActionSelect(event) {
-      this.dispatchEvent(new CustomEvent('add-item-action', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              action: event.detail.item.value,
-              applicationTemplate: event.detail.item.tpl
-          }
-      }));
-      this._addItemActionsVisible = false;
-      this.shadowRoot.getElementById('resourcesActionList').selected = -1;
-  }
+    _onAddItemActionSelect(event) {
+        this.dispatchEvent(new CustomEvent('add-item-action', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                action: event.detail.item.value,
+                applicationTemplate: event.detail.item.tpl
+            }
+        }));
+        this._addItemActionsVisible = false;
+        this.shadowRoot.getElementById('resourcesActionList').selected = -1;
+    }
 
-  _onAddItemAction() {
-      this._toggleActionList();
-  }
+    _onAddItemAction() {
+        this._toggleActionList();
+    }
 
-  _onImportAction() {
-      this.dispatchEvent(new CustomEvent('import-resources', { bubbles: true, composed: true }));
-  }
+    _onImportAction() {
+        this.dispatchEvent(new CustomEvent('import-resources', { bubbles: true, composed: true }));
+    }
 
-  _onShareAction() {
-      this.dispatchEvent(new CustomEvent('share', { bubbles: true, composed: true }));
-  }
+    _onShareAction() {
+        this.dispatchEvent(new CustomEvent('share', { bubbles: true, composed: true }));
+    }
 
-  _onRemoveAction() {
-      this.dispatchEvent(new CustomEvent('remove', { bubbles: true, composed: true }));
-  }
+    _onRemoveAction() {
+        this.dispatchEvent(new CustomEvent('remove', { bubbles: true, composed: true }));
+    }
 
-  _onSelectAllAction() {
-      this.dispatchEvent(new CustomEvent('select-all-resources', { bubbles: true, composed: true }));
-  }
+    _onSelectAllAction() {
+        this.dispatchEvent(new CustomEvent('select-all-resources', { bubbles: true, composed: true }));
+    }
 
-  _onFilterItemsAction(event) {
-      event.stopPropagation();
+    _onFilterItemsAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('filter-items', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              id: event.detail.item.getAttribute('value'),
-              name: event.detail.item.getAttribute('name')
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('filter-items', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                id: event.detail.item.getAttribute('value'),
+                name: event.detail.item.getAttribute('name')
+            }
+        }));
+    }
 
-  focusSearch() {
-      this.shadowRoot.getElementById('appscoSearch').setup();
-  }
+    focusSearch() {
+        this.shadowRoot.getElementById('appscoSearch').setup();
+    }
 
-  _onBulkActionsChanged() {
-      const bulkActions = dom(this.root).querySelectorAll('.bulk-action');
+    _onBulkActionsChanged() {
+        const bulkActions = dom(this.root).querySelectorAll('.bulk-action');
 
-      if (this.animationConfig) {
-          this.animationConfig.entry.nodes = bulkActions;
-          this.animationConfig.exit.nodes = bulkActions;
-      }
+        if (this.animationConfig) {
+            this.animationConfig.entry.nodes = bulkActions;
+            this.animationConfig.exit.nodes = bulkActions;
+        }
 
-      if (this.bulkActions) {
-          const length = bulkActions.length;
+        if (this.bulkActions) {
+            const length = bulkActions.length;
 
-          for (let i = 0; i < length; i++) {
-              bulkActions[i].style.display = 'flex';
-          }
-          this.playAnimation('entry');
-      }
-      else {
-          this.playAnimation('exit');
-      }
-  }
+            for (let i = 0; i < length; i++) {
+                bulkActions[i].style.display = 'flex';
+            }
+            this.playAnimation('entry');
+        }
+        else {
+            this.playAnimation('exit');
+        }
+    }
 
-  showBulkSelectAll() {
-      this._bulkSelectAll = !this.resourceAdmin;
-  }
+    showBulkSelectAll() {
+        this._bulkSelectAll = !this.resourceAdmin;
+    }
 
-  hideBulkSelectAll() {
-      this._bulkSelectAll = false;
-  }
+    hideBulkSelectAll() {
+        this._bulkSelectAll = false;
+    }
 
-  _onBulkSelectAllChanged () {
-      const bulkSelectAll = dom(this.root).querySelectorAll('.bulk-select-all');
-      if (bulkSelectAll.length > 0) {
-          if (this._bulkSelectAll) {
-              bulkSelectAll[0].style.display = 'block';
-          }else {
-              bulkSelectAll[0].style.display = 'none';
-          }
-      }
-  }
+    _onBulkSelectAllChanged () {
+        const bulkSelectAll = dom(this.root).querySelectorAll('.bulk-select-all');
+        if (bulkSelectAll.length > 0) {
+            if (this._bulkSelectAll) {
+                bulkSelectAll[0].style.display = 'block';
+            }else {
+                bulkSelectAll[0].style.display = 'none';
+            }
+        }
+    }
 
-  showBulkActions() {
-      this.bulkActions = true;
-  }
+    showBulkActions() {
+        this.bulkActions = true;
+    }
 
-  hideBulkActions() {
-      this.bulkActions = false;
-  }
+    hideBulkActions() {
+        this.bulkActions = false;
+    }
 
-  _onNeonAnimationFinish() {
-      if (!this.bulkActions) {
-          const bulkActions = dom(this.root).querySelectorAll('.bulk-action'),
-              length = bulkActions.length;
+    _onNeonAnimationFinish() {
+        if (!this.bulkActions) {
+            const bulkActions = dom(this.root).querySelectorAll('.bulk-action'),
+                length = bulkActions.length;
 
-          for (let i = 0; i < length; i++) {
-              bulkActions[i].style.display = 'none';
-          }
-      }
-  }
+            for (let i = 0; i < length; i++) {
+                bulkActions[i].style.display = 'none';
+            }
+        }
+    }
 
-  reset() {
-      if (this.shadowRoot.getElementById('appscoSearch')) {
-          this.shadowRoot.getElementById('appscoSearch').reset();
-      }
-      if (this.shadowRoot.getElementById('filterItemsList')) {
-          this.shadowRoot.getElementById('filterItemsList').selected = 0;
-      }
+    reset() {
+        if (this.shadowRoot.getElementById('appscoSearch')) {
+            this.shadowRoot.getElementById('appscoSearch').reset();
+        }
+        if (this.shadowRoot.getElementById('filterItemsList')) {
+            this.shadowRoot.getElementById('filterItemsList').selected = 0;
+        }
 
-      if (this.company) {
-          this.hideBulkActions();
-      }
-  }
+        if (this.company) {
+            this.hideBulkActions();
+        }
+    }
 
-  _onShowPageSettings(event) {
-      this.shadowRoot.getElementById('resourcePageConfigDropdown').toggle(event.target);
-  }
+    _onShowPageSettings(event) {
+        this.shadowRoot.getElementById('resourcePageConfigDropdown').toggle(event.target);
+    }
 }
 window.customElements.define(AppscoApplicationActions.is, AppscoApplicationActions);

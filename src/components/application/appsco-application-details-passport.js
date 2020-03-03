@@ -3,9 +3,10 @@ import '@polymer/paper-styles/typography.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationDetailsPassport extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host div[label] {
                 color: var(--secondary-text-color);
@@ -115,32 +116,32 @@ class AppscoApplicationDetailsPassport extends PolymerElement {
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-details-passport'; }
+    static get is() { return 'appsco-application-details-passport'; }
 
-  static get properties() {
-      return {
-          claims: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          }
-      };
-  }
+    static get properties() {
+        return {
+            claims: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            }
+        };
+    }
 
-  _dateFormat(value) {
-      if (!value) {
-          return '';
-      }
+    _dateFormat(value) {
+        if (!value) {
+            return '';
+        }
 
-      const options = {
-          year: "numeric", month: "short", day: "numeric"
-      };
+        const options = {
+            year: "numeric", month: "short", day: "numeric"
+        };
 
-      return (new Date(value)).toLocaleDateString('en', options);
-  }
+        return (new Date(value)).toLocaleDateString('en', options);
+    }
 }
 window.customElements.define(AppscoApplicationDetailsPassport.is, AppscoApplicationDetailsPassport);

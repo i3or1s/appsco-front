@@ -1,33 +1,4 @@
-/**
-`appsco-account-log-item`
-Is used to represent list item such as application log, account-log and account notification.
-
-Example:
-
-    <body>
-      <appsco-account-log-item item="{}" short-view>
-     </appsco-account-log-item>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--account-log-item` | Mixin applied to root element | `{}`
-`--log-item` | Mixin applied to inner log item element | `{}`
-`--log-item-image` | Mixin applied to item image | `{}`
-`--log-item-image-contain` | Mixin applied to iron-image #sizedImgDiv | `{}`
-`--log-item-icon` | Mixin applied to item image | `{}`
-`--log-item-message` | Mixin applied to message | `{}`
-`--log-item-date` | Mixin applied to date | `{}`
-`--log-item-additional-info` | Mixin applied log item additional info | `{}`
-
-@demo demo/appsco-account-log.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/neon-animation/animations/fade-in-animation.js';
@@ -45,9 +16,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountLogItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: none;
@@ -141,74 +113,74 @@ class AppscoAccountLogItem extends mixinBehaviors([NeonAnimationRunnerBehavior],
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-log-item'; }
+    static get is() { return 'appsco-account-log-item'; }
 
-  static get properties() {
-      return {
-          item: {
-              type: Object
-          },
+    static get properties() {
+        return {
+            item: {
+                type: Object
+            },
 
-          shortView: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            shortView: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _useDefaultIcon: {
-              type: Boolean,
-              computed: '_shouldUseDefaultIcon(item)'
-          },
+            _useDefaultIcon: {
+                type: Boolean,
+                computed: '_shouldUseDefaultIcon(item)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-      beforeNextRender(this, function() {
-          this.style.display = 'block';
-      });
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+        beforeNextRender(this, function() {
+            this.style.display = 'block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _dateFormat(value) {
-      if (value) {
-          const options = {
-              weekday: "long", year: "numeric", month: "short",
-              day: "numeric", hour: "2-digit", minute: "2-digit"
-          };
+    _dateFormat(value) {
+        if (value) {
+            const options = {
+                weekday: "long", year: "numeric", month: "short",
+                day: "numeric", hour: "2-digit", minute: "2-digit"
+            };
 
-          return (new Date(value)).toLocaleDateString('en', options);
-      }
-  }
+            return (new Date(value)).toLocaleDateString('en', options);
+        }
+    }
 
-  _shouldUseDefaultIcon(item) {
-      return !item.image && !item.icon;
-  }
+    _shouldUseDefaultIcon(item) {
+        return !item.image && !item.icon;
+    }
 }
 window.customElements.define(AppscoAccountLogItem.is, AppscoAccountLogItem);

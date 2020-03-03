@@ -8,9 +8,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationFormPassport extends mixinBehaviors([AppscoApplicationFormBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <appsco-country-list types="{{ _countryList }}"></appsco-country-list>
 
         <div class="form-left">
@@ -72,66 +73,66 @@ class AppscoApplicationFormPassport extends mixinBehaviors([AppscoApplicationFor
 
         <iron-a11y-keys keys="enter"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-form-passport'; }
+    static get is() { return 'appsco-application-form-passport'; }
 
-  static get properties() {
-      return {
-          claims: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: "_onClaimsChange"
-          },
+    static get properties() {
+        return {
+            claims: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: "_onClaimsChange"
+            },
 
-          _countryList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _countryList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _genders: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'Male',
-                          value: 'm'
-                      },
-                      {
-                          name: 'Female',
-                          value: 'f'
-                      }
-                  ];
-              }
-          },
+            _genders: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'Male',
+                            value: 'm'
+                        },
+                        {
+                            name: 'Female',
+                            value: 'f'
+                        }
+                    ];
+                }
+            },
 
-          claimsNamePrefix: {
-              type: String,
-              value: "claims_passport"
-          }
-      };
-  }
+            claimsNamePrefix: {
+                type: String,
+                value: "claims_passport"
+            }
+        };
+    }
 
-  reset() {
-      dom(this.root).querySelectorAll('[data-field]').forEach(function(item, key) {
-          item.value = this.claims[item.getAttribute('id')] ? this.claims[item.getAttribute('id')] : '';
-          item.invalid = false;
-      }.bind(this));
+    reset() {
+        dom(this.root).querySelectorAll('[data-field]').forEach(function(item, key) {
+            item.value = this.claims[item.getAttribute('id')] ? this.claims[item.getAttribute('id')] : '';
+            item.invalid = false;
+        }.bind(this));
 
-      dom(this.root).querySelectorAll('paper-listbox').forEach(function(item, key) {
-          item.selected = -1;
-      });
-  }
+        dom(this.root).querySelectorAll('paper-listbox').forEach(function(item, key) {
+            item.selected = -1;
+        });
+    }
 
-  _onClaimsChange() {
-      if(this.claims) {
-          this.$.paperListboxCountry.select(this.claims.country);
-          this.$.paperListboxGender.select(this.claims.sex);
-      }
-  }
+    _onClaimsChange() {
+        if(this.claims) {
+            this.$.paperListboxCountry.select(this.claims.country);
+            this.$.paperListboxGender.select(this.claims.sex);
+        }
+    }
 }
 window.customElements.define(AppscoApplicationFormPassport.is, AppscoApplicationFormPassport);

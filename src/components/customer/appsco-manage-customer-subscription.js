@@ -12,9 +12,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoManageCustomerSubscription extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -68,131 +69,131 @@ class AppscoManageCustomerSubscription extends mixinBehaviors([Appsco.HeadersMix
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-customer-subscription'; }
+    static get is() { return 'appsco-manage-customer-subscription'; }
 
-  static get properties() {
-      return {
-          customer: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            customer: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          partner: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            partner: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: String
-          },
+            apiErrors: {
+                type: String
+            },
 
-          _isPaidExternally: {
-              type: Boolean,
-              computed: "_computeIsPaidExternally(customer)"
-          },
+            _isPaidExternally: {
+                type: Boolean,
+                computed: "_computeIsPaidExternally(customer)"
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _updateNumberOfLicencesApi: {
-              type: String,
-              computed: '_computeUpdateNumberOfLicencesApi(customer)'
-          }
-      };
-  }
+            _updateNumberOfLicencesApi: {
+                type: String,
+                computed: '_computeUpdateNumberOfLicencesApi(customer)'
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.open();
-  }
+    toggle() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  setCustomer(customer) {
-      this.customer = customer;
-  }
+    setCustomer(customer) {
+        this.customer = customer;
+    }
 
-  _setPartner(partner) {
-      this.set('partner', {});
-      this.set('partner', partner);
-  }
+    _setPartner(partner) {
+        this.set('partner', {});
+        this.set('partner', partner);
+    }
 
-  _setCustomer(customer) {
-      this.set('customer', {});
-      this.set('customer', customer);
-  }
+    _setCustomer(customer) {
+        this.set('customer', {});
+        this.set('customer', customer);
+    }
 
-  _onDialogClosed() {
-      this._loader = false;
-      this._errorMessage = '';
-  }
+    _onDialogClosed() {
+        this._loader = false;
+        this._errorMessage = '';
+    }
 
-  _computeUpdateNumberOfLicencesApi(customer) {
-      return customer ? (customer.self + '/update-number-of-licences') : null;
-  }
+    _computeUpdateNumberOfLicencesApi(customer) {
+        return customer ? (customer.self + '/update-number-of-licences') : null;
+    }
 
-  _computeIsPaidExternally(customer) {
-      return customer && customer.subscription_paid_externally == true;
-  }
+    _computeIsPaidExternally(customer) {
+        return customer && customer.subscription_paid_externally == true;
+    }
 
-  _onManageCustomerState(event) {
-      const customer = event.detail.customer,
-          partner = event.detail.partner;
+    _onManageCustomerState(event) {
+        const customer = event.detail.customer,
+            partner = event.detail.partner;
 
-      this._setCustomer(customer);
-      this._setPartner(partner);
-  }
+        this._setCustomer(customer);
+        this._setPartner(partner);
+    }
 
-  _assign() {
-      const numberOfLicences = this.shadowRoot.getElementById('numOfLicences');
+    _assign() {
+        const numberOfLicences = this.shadowRoot.getElementById('numOfLicences');
 
-      if (numberOfLicences.value.length === 0) {
-          numberOfLicences.invalid = true;
-          numberOfLicences.focus();
-          return false;
-      }
+        if (numberOfLicences.value.length === 0) {
+            numberOfLicences.invalid = true;
+            numberOfLicences.focus();
+            return false;
+        }
 
-      const appRequest = document.createElement('iron-request'),
-          options = {
-              url: this._updateNumberOfLicencesApi,
-              method: 'PUT',
-              handleAs: 'json',
-              headers: this._headers,
-              body: 'form[number_of_licences]=' + numberOfLicences.value
-          };
+        const appRequest = document.createElement('iron-request'),
+            options = {
+                url: this._updateNumberOfLicencesApi,
+                method: 'PUT',
+                handleAs: 'json',
+                headers: this._headers,
+                body: 'form[number_of_licences]=' + numberOfLicences.value
+            };
 
-      this._loader = true;
+        this._loader = true;
 
-      appRequest.send(options).then(function() {
-          this.$.dialog.close();
-          this._setPartner(appRequest.response.partner);
+        appRequest.send(options).then(function() {
+            this.$.dialog.close();
+            this._setPartner(appRequest.response.partner);
 
-          this.dispatchEvent(new CustomEvent('customer-licences-managed', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  'customer' : appRequest.response.customer
-              }
-          }));
-      }.bind(this), function() {
-          if (appRequest.status !== 200) {
-              this._errorMessage = this.apiErrors.getError(appRequest.response.code);
-          }
-          this._loader = false;
-      }.bind(this));
-  }
+            this.dispatchEvent(new CustomEvent('customer-licences-managed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    'customer' : appRequest.response.customer
+                }
+            }));
+        }.bind(this), function() {
+            if (appRequest.status !== 200) {
+                this._errorMessage = this.apiErrors.getError(appRequest.response.code);
+            }
+            this._loader = false;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoManageCustomerSubscription.is, AppscoManageCustomerSubscription);

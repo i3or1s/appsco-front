@@ -1,28 +1,4 @@
-/*
-`appsco-company-brand-settings`
-Update company settings component.
-
-    <appsco-company-brand-settings company={}
-                             authorization-token=""
-                             settings-api="">
-    </appsco-company-brand-settings>
-
-### Styling
-
-`<appsco-company-brand-settings>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-company-brand-settings` | Mixin for the root element | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-form/iron-form.js';
 import '@polymer/paper-input/paper-input.js';
@@ -38,9 +14,10 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyBrandSettings extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -152,139 +129,139 @@ class AppscoCompanyBrandSettings extends mixinBehaviors([Appsco.HeadersMixin], P
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-brand-settings'; }
+    static get is() { return 'appsco-company-brand-settings'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onCompanyChanged'
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onCompanyChanged'
+            },
 
-          settingsApi: {
-              type: String
-          },
+            settingsApi: {
+                type: String
+            },
 
-          imageSettingsApi: {
-              type: String
-          },
+            imageSettingsApi: {
+                type: String
+            },
 
-          dashboardImageSettingsApi: {
-              type: String
-          },
+            dashboardImageSettingsApi: {
+                type: String
+            },
 
-          _brandColor: {
-              type: String,
-              value: ''
-          },
+            _brandColor: {
+                type: String,
+                value: ''
+            },
 
-          _brandColorClass: {
-              type: String,
-              computed: '_computeColorClass(_brandColor)'
-          },
+            _brandColorClass: {
+                type: String,
+                computed: '_computeColorClass(_brandColor)'
+            },
 
-          _brandTextColor: {
-              type: String,
-              value: ''
-          },
+            _brandTextColor: {
+                type: String,
+                value: ''
+            },
 
-          _brandTextColorClass: {
-              type: String,
-              computed: '_computeColorClass(_brandTextColor)'
-          },
+            _brandTextColorClass: {
+                type: String,
+                computed: '_computeColorClass(_brandTextColor)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          }
-      };
-  }
+            _target: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this.$.form;
-  }
+        this._target = this.$.form;
+    }
 
-  _computeColorClass(color) {
-      return (color === '#fff' || color === '#ffffff') ? 'background' : '';
-  }
+    _computeColorClass(color) {
+        return (color === '#fff' || color === '#ffffff') ? 'background' : '';
+    }
 
-  _onCompanyChanged(company) {
-      this._brandColor = company.primary_color ? company.primary_color : '';
-      this._brandTextColor = company.secondary_color ? company.secondary_color : '';
-  }
+    _onCompanyChanged(company) {
+        this._brandColor = company.primary_color ? company.primary_color : '';
+        this._brandTextColor = company.secondary_color ? company.secondary_color : '';
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onEnter() {
-      this._submitForm();
-  }
+    _onEnter() {
+        this._submitForm();
+    }
 
-  _submitForm() {
-      this.$.form.submit();
-  }
+    _submitForm() {
+        this.$.form.submit();
+    }
 
-  _onFormPresubmit() {
-      this._showLoader();
-      this.$.form.request.method = 'PATCH';
-  }
+    _onFormPresubmit() {
+        this._showLoader();
+        this.$.form.request.method = 'PATCH';
+    }
 
-  _onFormError(event) {
-      this._errorMessage = event.detail.error.message;
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._errorMessage = event.detail.error.message;
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {
-      this.set('company', event.detail.response);
+    _onFormResponse(event) {
+        this.set('company', event.detail.response);
 
-      this.dispatchEvent(new CustomEvent('company-brand-settings-changed', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              company: this.company
-          }
-      }));
+        this.dispatchEvent(new CustomEvent('company-brand-settings-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                company: this.company
+            }
+        }));
 
-      this._hideLoader();
-  }
+        this._hideLoader();
+    }
 
-  _onKeyUp() {
-      this._errorMessage = '';
-  }
+    _onKeyUp() {
+        this._errorMessage = '';
+    }
 
-  setup() {
-      this.$.companyName.focus();
-  }
+    setup() {
+        this.$.companyName.focus();
+    }
 
-  reset() {
-      const company = JSON.parse(JSON.stringify(this.company));
+    reset() {
+        const company = JSON.parse(JSON.stringify(this.company));
 
-      this.company = {};
-      this.company = company;
+        this.company = {};
+        this.company = company;
 
-      this._errorMessage = '';
-      this.$.contactEmail.invalid = false;
-      this.$.billingEmail.invalid = false;
-  }
+        this._errorMessage = '';
+        this.$.contactEmail.invalid = false;
+        this.$.billingEmail.invalid = false;
+    }
 }
 window.customElements.define(AppscoCompanyBrandSettings.is, AppscoCompanyBrandSettings);

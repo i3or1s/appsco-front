@@ -10,9 +10,10 @@ import '../components/components/appsco-search.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoManageResourcePageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="shared-styles">
             :host {
                 @apply --layout-horizontal;
@@ -86,144 +87,144 @@ class AppscoManageResourcePageActions extends mixinBehaviors([NeonAnimatableBeha
             <paper-icon-button class="info-action" icon="info-outline" title="Resource section" on-tap="_onResourceAction"></paper-icon-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-resource-page-actions'; }
+    static get is() { return 'appsco-manage-resource-page-actions'; }
 
-  static get properties() {
-      return {
-          _searchAssigneesActive: {
-              type: Boolean,
-              value: false
-          },
+    static get properties() {
+        return {
+            _searchAssigneesActive: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * Indicates if advanced action(s) should be visible or not.
-           */
-          advanced: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if advanced action(s) should be visible or not.
+             */
+            advanced: {
+                type: Boolean,
+                value: false
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 300,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 300,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+    }
 
-  enableAssigneesSearchAction() {
-      this._searchAssigneesActive = true;
-  }
+    enableAssigneesSearchAction() {
+        this._searchAssigneesActive = true;
+    }
 
-  disableAssigneesSearchAction() {
-      this._onSearchClear();
-      this._searchAssigneesActive = false;
-  }
+    disableAssigneesSearchAction() {
+        this._onSearchClear();
+        this._searchAssigneesActive = false;
+    }
 
-  _backToApplications() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _backToApplications() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  _onResourceAction() {
-      this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
-  }
+    _onResourceAction() {
+        this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+    }
 
-  _onSearch(event) {
-      this.dispatchEvent(new CustomEvent('search-assignees', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              term: event.detail.term
-          }
-      }));
-  }
+    _onSearch(event) {
+        this.dispatchEvent(new CustomEvent('search-assignees', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                term: event.detail.term
+            }
+        }));
+    }
 
-  _onSearchClear() {
-      this._resetAssigneesSearch();
+    _onSearchClear() {
+        this._resetAssigneesSearch();
 
-      this.dispatchEvent(new CustomEvent('search-assignees-clear', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              term: ''
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('search-assignees-clear', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                term: ''
+            }
+        }));
+    }
 
-  _resetAssigneesSearch() {
-      if (this._searchAssigneesActive) {
-          this.shadowRoot.getElementById('appscoSearch').reset();
-      }
-  }
+    _resetAssigneesSearch() {
+        if (this._searchAssigneesActive) {
+            this.shadowRoot.getElementById('appscoSearch').reset();
+        }
+    }
 
-  resetApplicationAssigneesPageActions() {
-      this._resetAssigneesSearch();
-  }
+    resetApplicationAssigneesPageActions() {
+        this._resetAssigneesSearch();
+    }
 
-  /**
-   * Called on account advanced settings action.
-   *
-   * @private
-   */
-  _onAdvancedSettingsAction() {
-      /**
-       * Fired when advanced settings action is triggered.
-       *
-       * @event advanced-settings
-       */
-      this.dispatchEvent(new CustomEvent('advanced-settings', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              showAdvanced: this.shadowRoot.getElementById('advancedSettingsAction').active
-          }
-      }));
-  }
+    /**
+     * Called on account advanced settings action.
+     *
+     * @private
+     */
+    _onAdvancedSettingsAction() {
+        /**
+         * Fired when advanced settings action is triggered.
+         *
+         * @event advanced-settings
+         */
+        this.dispatchEvent(new CustomEvent('advanced-settings', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                showAdvanced: this.shadowRoot.getElementById('advancedSettingsAction').active
+            }
+        }));
+    }
 
-  /**
-   * Disables advanced settings action.
-   */
-  disableAdvancedSettings() {
-      this.shadowRoot.getElementById('advancedSettingsAction').disabled = true;
-  }
+    /**
+     * Disables advanced settings action.
+     */
+    disableAdvancedSettings() {
+        this.shadowRoot.getElementById('advancedSettingsAction').disabled = true;
+    }
 
-  /**
-   * Enables advanced settings action.
-   */
-  enableAdvancedSettings() {
-      this.shadowRoot.getElementById('advancedSettingsAction').disabled = false;
-  }
+    /**
+     * Enables advanced settings action.
+     */
+    enableAdvancedSettings() {
+        this.shadowRoot.getElementById('advancedSettingsAction').disabled = false;
+    }
 
-  resetAdvancedSettingsAction() {
-      this.shadowRoot.getElementById('advancedSettingsAction').active = false;
-  }
+    resetAdvancedSettingsAction() {
+        this.shadowRoot.getElementById('advancedSettingsAction').active = false;
+    }
 }
 window.customElements.define(AppscoManageResourcePageActions.is, AppscoManageResourcePageActions);

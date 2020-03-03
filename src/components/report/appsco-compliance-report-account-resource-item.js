@@ -11,12 +11,13 @@ import '../resource/appsco-resource-auth-type.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoComplianceReportAccountResourceItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 @apply --appsco-compliance-report-account-resource;
@@ -60,30 +61,30 @@ class AppscoComplianceReportAccountResourceItem extends mixinBehaviors([
             <span class="resource-compliance-fields">[[ fields ]]</span>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-compliance-report-account-resource-item'; }
+    static get is() { return 'appsco-compliance-report-account-resource-item'; }
 
-  static get properties() {
-      return {
-          item: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            item: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          fields: {
-              type: String,
-              computed: '_computeFields(item)'
-          }
-      };
-  }
+            fields: {
+                type: String,
+                computed: '_computeFields(item)'
+            }
+        };
+    }
 
-  _computeFields(item) {
-      return item && item.compliance && item.compliance.fields
-              ? item.compliance.fields
-              : 'none';
-  }
+    _computeFields(item) {
+        return item && item.compliance && item.compliance.fields
+            ? item.compliance.fields
+            : 'none';
+    }
 }
 window.customElements.define(AppscoComplianceReportAccountResourceItem.is, AppscoComplianceReportAccountResourceItem);

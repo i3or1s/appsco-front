@@ -10,9 +10,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDeleteGroups extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -58,74 +59,74 @@ class AppscoDeleteGroups extends mixinBehaviors([Appsco.HeadersMixin], PolymerEl
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-delete-groups'; }
+    static get is() { return 'appsco-delete-groups'; }
 
-  static get properties() {
-      return {
-          groups: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+    static get properties() {
+        return {
+            groups: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          companyApi: {
-              type: String
-          },
+            companyApi: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _onDeleteAction() {
-      let groups = this.groups,
-          length = groups.length - 1,
-          appRequest = document.createElement('iron-request'),
-          options = {
-              url: this.companyApi + '/group',
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          },
-          body = '';
+    _onDeleteAction() {
+        let groups = this.groups,
+            length = groups.length - 1,
+            appRequest = document.createElement('iron-request'),
+            options = {
+                url: this.companyApi + '/group',
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            },
+            body = '';
 
-      this._loader = true;
+        this._loader = true;
 
-      for (let i = 0; i <= length; i++) {
-          let next = (i === length) ? '' : '&';
-          body += 'groups[]=' + encodeURIComponent(groups[i].self) + next;
-      }
+        for (let i = 0; i <= length; i++) {
+            let next = (i === length) ? '' : '&';
+            body += 'groups[]=' + encodeURIComponent(groups[i].self) + next;
+        }
 
-      options.body = body;
+        options.body = body;
 
-      appRequest.send(options).then(function(request) {
-          this.$.dialog.close();
+        appRequest.send(options).then(function(request) {
+            this.$.dialog.close();
 
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('groups-removed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      contacts: request.response.groups
-                  }
-              }));
-          }
-          else {
-              this.dispatchEvent(new CustomEvent('groups-remove-failed', { bubbles: true, composed: true }));
-          }
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('groups-removed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        contacts: request.response.groups
+                    }
+                }));
+            }
+            else {
+                this.dispatchEvent(new CustomEvent('groups-remove-failed', { bubbles: true, composed: true }));
+            }
 
-          this.set('groups', []);
-          this._loader = false;
-      }.bind(this));
-  }
+            this.set('groups', []);
+            this._loader = false;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoDeleteGroups.is, AppscoDeleteGroups);

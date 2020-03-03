@@ -10,9 +10,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoLoginTimeRestrictionPolicySettings extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --appsco-login-time-restriction-policy-settings;
@@ -95,204 +96,208 @@ class AppscoLoginTimeRestrictionPolicySettings extends mixinBehaviors([Appsco.He
 
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnterAction"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-login-time-restriction-policy-settings'; }
+    static get is() { return 'appsco-login-time-restriction-policy-settings'; }
 
-  static get properties() {
-      return {
-          policy: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_restrictionsChanged'
-          },
+    static get properties() {
+        return {
+            policy: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_restrictionsChanged'
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          },
+            _target: {
+                type: Object
+            },
 
-          _restrictions: {
-              type: Object,
-              computed: '_computeRestrictions(policy)'
-          },
+            _restrictions: {
+                type: Object,
+                computed: '_computeRestrictions(policy)'
+            },
 
-          _timezoneList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _timezoneList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _timeZoneListUrl: {
-              type: String,
-              value: function () {
-                  return this.resolveUrl('./data/timezone-list.json');
-              }
-          }
-      };
-  }
+            _timeZoneListUrl: {
+                type: String,
+                value: function () {
+                    return this.resolveUrl('./data/timezone-list.json');
+                }
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    static get importMeta() {
+        return import.meta;
+    }
 
-      this._target = this;
-  }
+    ready() {
+        super.ready();
 
-  _restrictionsChanged(newValue, oldValue) {
-      if (newValue.restrictions) {
-          this.$.paperListboxTimezone.select(newValue.restrictions.timezone);
-      }
-  }
+        this._target = this;
+    }
 
-  _computeMondayFrom(policy) {
-      return policy.restrictions.mondayFrom;
-  }
+    _restrictionsChanged(newValue, oldValue) {
+        if (newValue.restrictions) {
+            this.$.paperListboxTimezone.select(newValue.restrictions.timezone);
+        }
+    }
 
-  _computeRestrictions(policy) {
-      return policy.restrictions ? policy.restrictions : {};
-  }
+    _computeMondayFrom(policy) {
+        return policy.restrictions.mondayFrom;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _computeRestrictions(policy) {
+        return policy.restrictions ? policy.restrictions : {};
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _onKeyUp(event) {
-      if (13 !== event.keyCode) {
-          this._hideError();
-          event.target.invalid = false;
-      }
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onEnterAction(event) {
-      event.stopPropagation();
-      this._onSaveAction();
-  }
+    _onKeyUp(event) {
+        if (13 !== event.keyCode) {
+            this._hideError();
+            event.target.invalid = false;
+        }
+    }
 
-  _onSaveAction() {
-      this._saveRestrictions();
-  }
+    _onEnterAction(event) {
+        event.stopPropagation();
+        this._onSaveAction();
+    }
 
-  _onTimezoneListResponse(event, ironRequest) {
-      const response = [];
+    _onSaveAction() {
+        this._saveRestrictions();
+    }
 
-      ironRequest.response.forEach(function(zone, i) {
-          if (zone.utc) {
-              zone.utc.forEach(function(utc, index) {
-                  var item = {
-                      value: utc,
-                      text: utc.split('/')[1]
-                  };
+    _onTimezoneListResponse(event, ironRequest) {
+        const response = [];
 
-                  response.push(item);
-              }.bind(this));
-          }
-      }.bind(this));
+        ironRequest.response.forEach(function(zone, i) {
+            if (zone.utc) {
+                zone.utc.forEach(function(utc, index) {
+                    var item = {
+                        value: utc,
+                        text: utc.split('/')[1]
+                    };
 
-      this._timezoneList = response.sort(function(zoneA, zoneB) {
-          zoneA = zoneA.text.toLowerCase();
-          zoneB = zoneB.text.toLowerCase();
+                    response.push(item);
+                }.bind(this));
+            }
+        }.bind(this));
 
-          return zoneA < zoneB ? -1 : zoneA > zoneB ? 1 : 0;
-      });
+        this._timezoneList = response.sort(function(zoneA, zoneB) {
+            zoneA = zoneA.text.toLowerCase();
+            zoneB = zoneB.text.toLowerCase();
 
-  }
+            return zoneA < zoneB ? -1 : zoneA > zoneB ? 1 : 0;
+        });
 
-  _saveRestrictions() {
-      const restrictions = {
-              'timezone': this.$.restrictionTimezone.selectedItem.value,
-              'monday': {
-                  'from': this.$.mondayFrom.value,
-                  'to': this.$.mondayTo.value
-              },
-              'tuesday': {
-                  'from': this.$.tuesdayFrom.value,
-                  'to': this.$.tuesdayTo.value
-              },
-              'wednesday': {
-                  'from': this.$.wednesdayFrom.value,
-                  'to': this.$.wednesdayTo.value
-              },
-              'thursday': {
-                  'from': this.$.thursdayFrom.value,
-                  'to': this.$.thursdayTo.value
-              },
-              'friday': {
-                  'from': this.$.fridayFrom.value,
-                  'to': this.$.fridayTo.value
-              },
-              'saturday': {
-                  'from': this.$.saturdayFrom.value,
-                  'to': this.$.saturdayTo.value
-              },
-              'sunday': {
-                  'from': this.$.sundayFrom.value,
-                  'to': this.$.sundayTo.value
-              }
-          },
-          policy = this.policy;
+    }
 
-      const request = document.createElement('iron-request'),
-          options = {
-              url: policy.self,
-              method: 'PUT',
-              headers: this._headers,
-              handleAs: 'json'
-          };
-      let body = 'policy[name]=' + policy.name + '&policy[description]=' + policy.description +'&';
+    _saveRestrictions() {
+        const restrictions = {
+                'timezone': this.$.restrictionTimezone.selectedItem.value,
+                'monday': {
+                    'from': this.$.mondayFrom.value,
+                    'to': this.$.mondayTo.value
+                },
+                'tuesday': {
+                    'from': this.$.tuesdayFrom.value,
+                    'to': this.$.tuesdayTo.value
+                },
+                'wednesday': {
+                    'from': this.$.wednesdayFrom.value,
+                    'to': this.$.wednesdayTo.value
+                },
+                'thursday': {
+                    'from': this.$.thursdayFrom.value,
+                    'to': this.$.thursdayTo.value
+                },
+                'friday': {
+                    'from': this.$.fridayFrom.value,
+                    'to': this.$.fridayTo.value
+                },
+                'saturday': {
+                    'from': this.$.saturdayFrom.value,
+                    'to': this.$.saturdayTo.value
+                },
+                'sunday': {
+                    'from': this.$.sundayFrom.value,
+                    'to': this.$.sundayTo.value
+                }
+            },
+            policy = this.policy;
 
-      body += 'policy[restrictions]=' + encodeURIComponent(JSON.stringify(restrictions));
-      options.body = body;
+        const request = document.createElement('iron-request'),
+            options = {
+                url: policy.self,
+                method: 'PUT',
+                headers: this._headers,
+                handleAs: 'json'
+            };
+        let body = 'policy[name]=' + policy.name + '&policy[description]=' + policy.description +'&';
 
-      this._showLoader();
+        body += 'policy[restrictions]=' + encodeURIComponent(JSON.stringify(restrictions));
+        options.body = body;
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('policy-updated', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      policy: request.response
-                  }
-              }));
+        this._showLoader();
 
-              this.set('policy', {});
-              this.set('policy', request.response);
-              this._hideLoader();
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('policy-updated', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        policy: request.response
+                    }
+                }));
+
+                this.set('policy', {});
+                this.set('policy', request.response);
+                this._hideLoader();
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoLoginTimeRestrictionPolicySettings.is, AppscoLoginTimeRestrictionPolicySettings);

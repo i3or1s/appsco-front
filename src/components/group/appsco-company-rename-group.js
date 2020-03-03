@@ -14,9 +14,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyRenameGroup extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -73,149 +74,149 @@ class AppscoCompanyRenameGroup extends mixinBehaviors([Appsco.HeadersMixin], Pol
         <iron-a11y-keys keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-rename-group'; }
+    static get is() { return 'appsco-company-rename-group'; }
 
-  static get properties() {
-      return {
-          renameGroupApi: {
-              type: String,
-              computed: '_computeRenameGroupApi(group)'
-          },
+    static get properties() {
+        return {
+            renameGroupApi: {
+                type: String,
+                computed: '_computeRenameGroupApi(group)'
+            },
 
-          group: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onGroupChanged'
-          },
+            group: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onGroupChanged'
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogOpened() {
-      this.$.groupName.focus();
-  }
+    _onDialogOpened() {
+        this.$.groupName.focus();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+    }
 
-  /**
-   * Submits form on ENTER key using iron-a11y-keys component.
-   *
-   * @private
-   */
-  _onEnter() {
-      this._renameGroupRequest();
-  }
+    /**
+     * Submits form on ENTER key using iron-a11y-keys component.
+     *
+     * @private
+     */
+    _onEnter() {
+        this._renameGroupRequest();
+    }
 
-  _renameGroupRequest() {
-      this._hideError();
-      this._showLoader();
+    _renameGroupRequest() {
+        this._hideError();
+        this._showLoader();
 
-      const renameGroupRequest = document.createElement('iron-request');
+        const renameGroupRequest = document.createElement('iron-request');
 
-      renameGroupRequest.send({
-          url: this.renameGroupApi,
-          method: 'PUT',
-          handleAs: 'json',
-          headers: this._headers,
-          body: 'company_group[name]=' + encodeURIComponent(this.$.groupName.value)
-      }).then(function() {
-          this.dispatchEvent(new CustomEvent('group-renamed', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  group: renameGroupRequest.response
-              }
-          }));
-          this.$.dialog.close();
-      }.bind(this), function(e) {
-          this._hideLoader();
-          this._showError(this.apiErrors.getError(renameGroupRequest.response.code));
-      }.bind(this));
-  }
+        renameGroupRequest.send({
+            url: this.renameGroupApi,
+            method: 'PUT',
+            handleAs: 'json',
+            headers: this._headers,
+            body: 'company_group[name]=' + encodeURIComponent(this.$.groupName.value)
+        }).then(function() {
+            this.dispatchEvent(new CustomEvent('group-renamed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    group: renameGroupRequest.response
+                }
+            }));
+            this.$.dialog.close();
+        }.bind(this), function(e) {
+            this._hideLoader();
+            this._showError(this.apiErrors.getError(renameGroupRequest.response.code));
+        }.bind(this));
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  /**
-   * Called after group has been added.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onFormResponse(event) {
-      this.close();
+    /**
+     * Called after group has been added.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onFormResponse(event) {
+        this.close();
 
-      this.dispatchEvent(new CustomEvent('group-renamed', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              group: event.detail.response
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('group-renamed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                group: event.detail.response
+            }
+        }));
+    }
 
-  _computeRenameGroupApi(group) {
-      return group ? group.self : null;
-  }
+    _computeRenameGroupApi(group) {
+        return group ? group.self : null;
+    }
 
-  _onGroupChanged(group) {
-      this.$.groupName.value = group ? group.name : '';
-  }
+    _onGroupChanged(group) {
+        this.$.groupName.value = group ? group.name : '';
+    }
 
-  setGroup(group) {
-      this.group = group;
-  }
+    setGroup(group) {
+        this.group = group;
+    }
 }
 window.customElements.define(AppscoCompanyRenameGroup.is, AppscoCompanyRenameGroup);

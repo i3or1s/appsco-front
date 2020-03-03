@@ -9,9 +9,10 @@ import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoResourceAdminRevoke extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -48,65 +49,65 @@ class AppscoResourceAdminRevoke extends mixinBehaviors([Appsco.HeadersMixin], Po
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-resource-admin-revoke'; }
+    static get is() { return 'appsco-resource-admin-revoke'; }
 
-  static get properties() {
-      return {
-          assignee: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            assignee: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  setAssignee(assignee) {
-      this.set('assignee', assignee);
-  }
+    setAssignee(assignee) {
+        this.set('assignee', assignee);
+    }
 
-  setApplication(application) {
-      this.set('application', application);
-  }
+    setApplication(application) {
+        this.set('application', application);
+    }
 
-  _onRevokeAccessAction () {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this.application.meta.resource_admin_remove,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onRevokeAccessAction () {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this.application.meta.resource_admin_remove,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      options.body = 'accounts[]=' + encodeURIComponent(this.assignee.self);
+        options.body = 'accounts[]=' + encodeURIComponent(this.assignee.self);
 
-      this._loader = true;
+        this._loader = true;
 
-      request.send(options).then(function() {
-          this._loader = false;
+        request.send(options).then(function() {
+            this._loader = false;
 
-          this.dispatchEvent(new CustomEvent('access-revoked', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  assignee: this.assignee,
-                  application: this.application
-              }
-          }));
+            this.dispatchEvent(new CustomEvent('access-revoked', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    assignee: this.assignee,
+                    application: this.application
+                }
+            }));
 
-          this.$.dialog.close();
-      }.bind(this));
-  }
+            this.$.dialog.close();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoResourceAdminRevoke.is, AppscoResourceAdminRevoke);

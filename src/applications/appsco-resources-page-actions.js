@@ -10,9 +10,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoResourcesPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --layout-horizontal;
@@ -156,152 +157,152 @@ class AppscoResourcesPageActions extends mixinBehaviors([NeonAnimatableBehavior]
 
         <appsco-page-global id="appscoPageGlobal" additional-options="" info="" filters=""></appsco-page-global>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-resources-page-actions'; }
+    static get is() { return 'appsco-resources-page-actions'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          pageConfigApi: {
-              type: String
-          },
+            pageConfigApi: {
+                type: String
+            },
 
-          pageConfig: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            pageConfig: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          page: {
-              type: String,
-              value: ''
-          },
+            page: {
+                type: String,
+                value: ''
+            },
 
-          /**
-           * Link to retrieve filters from
-           */
-          filterApi: {
-              type: String
-          },
+            /**
+             * Link to retrieve filters from
+             */
+            filterApi: {
+                type: String
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _searchActive: {
-              type: Boolean,
-              value: false
-          },
+            _searchActive: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 200,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 200,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  _updateScreen(mobile, tablet) {
-      this.updateStyles();
-  }
+    _updateScreen(mobile, tablet) {
+        this.updateStyles();
+    }
 
-  _showSearch() {
-      this.$.appscoApplicationsActions.focusSearch();
+    _showSearch() {
+        this.$.appscoApplicationsActions.focusSearch();
 
-      this.updateStyles({'--paper-input-search-container-tablet': 'width: 100%;'});
-  }
+        this.updateStyles({'--paper-input-search-container-tablet': 'width: 100%;'});
+    }
 
-  _closeSearch() {
-      this._searchActive = false;
+    _closeSearch() {
+        this._searchActive = false;
 
-      // Wait for animation to finish.
-      setTimeout(function() {
-          this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
-      }.bind(this), 200);
+        // Wait for animation to finish.
+        setTimeout(function() {
+            this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
+        }.bind(this), 200);
 
-      this.updateStyles();
-  }
+        this.updateStyles();
+    }
 
-  _onSearchIcon() {
-      this._searchActive = !this._searchActive;
-      this._searchActive ? this._showSearch() : this._closeSearch();
-  }
+    _onSearchIcon() {
+        this._searchActive = !this._searchActive;
+        this._searchActive ? this._showSearch() : this._closeSearch();
+    }
 
-  showBulkActions() {
-      this.$.appscoApplicationsActions.showBulkActions();
-  }
+    showBulkActions() {
+        this.$.appscoApplicationsActions.showBulkActions();
+    }
 
-  hideBulkActions() {
-      this.$.appscoApplicationsActions.hideBulkActions();
-  }
+    hideBulkActions() {
+        this.$.appscoApplicationsActions.hideBulkActions();
+    }
 
-  showBulkSelectAll() {
-      this.$.appscoApplicationsActions.showBulkSelectAll();
-  }
+    showBulkSelectAll() {
+        this.$.appscoApplicationsActions.showBulkSelectAll();
+    }
 
-  hideBulkSelectAll() {
-      this.$.appscoApplicationsActions.hideBulkSelectAll();
-  }
+    hideBulkSelectAll() {
+        this.$.appscoApplicationsActions.hideBulkSelectAll();
+    }
 
-  resetPage() {
-      this.$.appscoApplicationsActions.reset();
-  }
+    resetPage() {
+        this.$.appscoApplicationsActions.reset();
+    }
 
-  resetPageActions() {
-      this.resetPage();
-  }
+    resetPageActions() {
+        this.resetPage();
+    }
 }
 window.customElements.define(AppscoResourcesPageActions.is, AppscoResourcesPageActions);

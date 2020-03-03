@@ -1,28 +1,4 @@
-/*
-`appsco-company-resource-item`
-Presents company resource in form of an item.
-
-    <appsco-company-resource-item item="{}"
-                                  type="resource">
-    </appsco-company-resource-item>
-
-### Styling
-
-`<appsco-company-resource-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-list-item` | Mixin for list item | `{}`
-`--item-background-color` | Background color applied to the item | `#fff`
-`--color` | Color applied to text inside item | `#333`
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-icons/iron-icons.js';
@@ -38,15 +14,14 @@ import '../../components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyResourceItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+    static get template() {
+        return html`
+        <style include="appsco-list-item-styles">
             :host {
                 width: 100%;
                 margin: 0 0 10px 0;
@@ -115,84 +90,84 @@ class AppscoCompanyResourceItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-resource-item'; }
+    static get is() { return 'appsco-company-resource-item'; }
 
-  static get properties() {
-      return {
-          resourceAdmin: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            resourceAdmin: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _selectable: {
-              type: Boolean,
-              computed: '_computeSelectableState(selectable, resourceAdmin)'
-          },
+            _selectable: {
+                type: Boolean,
+                computed: '_computeSelectableState(selectable, resourceAdmin)'
+            },
 
-          _resourceIcon: {
-              type: String,
-              computed: '_computeResourceIcon(item)'
-          },
+            _resourceIcon: {
+                type: String,
+                computed: '_computeResourceIcon(item)'
+            },
 
-          _resourceType: {
-              type: String,
-              computed: '_computeResourceType(item)'
-          },
+            _resourceType: {
+                type: String,
+                computed: '_computeResourceType(item)'
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          displayGrid: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            displayGrid: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  _computeSelectableState(selectable, resourceAdmin) {
-      return (selectable && !resourceAdmin);
-  }
+    _computeSelectableState(selectable, resourceAdmin) {
+        return (selectable && !resourceAdmin);
+    }
 
-  _computeResourceIcon(resource) {
-      return resource.application_url ? resource.application_url : (resource.icon_url ? resource.icon_url : null);
-  }
+    _computeResourceIcon(resource) {
+        return resource.application_url ? resource.application_url : (resource.icon_url ? resource.icon_url : null);
+    }
 
-  _computeResourceType(resource) {
-      switch (resource.auth_type) {
-          case 'login':
-              return 'Login';
-          case 'cc':
-              return 'Credit Card';
-          case 'softwarelicence':
-              return 'Software Licence';
-          case 'passport':
-              return 'Passport';
-          case 'securenote':
-              return 'Secure Note';
-          case 'none':
-              return 'Link';
-          default:
-              return 'Application';
-      }
-  }
+    _computeResourceType(resource) {
+        switch (resource.auth_type) {
+            case 'login':
+                return 'Login';
+            case 'cc':
+                return 'Credit Card';
+            case 'softwarelicence':
+                return 'Software Licence';
+            case 'passport':
+                return 'Passport';
+            case 'securenote':
+                return 'Secure Note';
+            case 'none':
+                return 'Link';
+            default:
+                return 'Application';
+        }
+    }
 
-  _onItemSettingsAction(evt) {
-      evt.preventDefault();
-      evt.stopPropagation();
-      this.dispatchEvent(new CustomEvent('resource-settings', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: this.item
-          }
-      }));
-  }
+    _onItemSettingsAction(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        this.dispatchEvent(new CustomEvent('resource-settings', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: this.item
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoCompanyResourceItem.is, AppscoCompanyResourceItem);

@@ -4,9 +4,10 @@ import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '../components/appsco-copy.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOAuthApplicationInfo extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host div[label] {
                 color: var(--secondary-text-color);
@@ -66,24 +67,24 @@ class AppscoOAuthApplicationInfo extends PolymerElement {
             </template>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-oauth-application-info'; }
+    static get is() { return 'appsco-oauth-application-info'; }
 
-  static get properties() {
-      return {
-          oAuthApplication: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            oAuthApplication: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          displayCopyValuesOnly: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            displayCopyValuesOnly: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 }
 window.customElements.define(AppscoOAuthApplicationInfo.is, AppscoOAuthApplicationInfo);

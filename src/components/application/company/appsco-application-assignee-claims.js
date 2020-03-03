@@ -1,21 +1,4 @@
-/**
-`appsco-application-assignee-claims`
-Shows dialog screen with form for changing claims for application instance.
-
-    <appsco-application-assignee-claims application="{}"
-                                        assignee="{}"
-                                        authorization-token="">
-    </appsco-application-assignee-claims>
-
-@demo demo/company/appsco-application-assignee-claims.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-input/paper-textarea.js';
 import '@polymer/paper-button/paper-button.js';
@@ -40,9 +23,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationAssigneeClaims extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -116,242 +100,242 @@ class AppscoApplicationAssigneeClaims extends mixinBehaviors([Appsco.HeadersMixi
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-assignee-claims'; }
+    static get is() { return 'appsco-application-assignee-claims'; }
 
-  static get properties() {
-      return {
-          /**
-           * Application instance to change claims for.
-           */
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onChange'
-          },
+    static get properties() {
+        return {
+            /**
+             * Application instance to change claims for.
+             */
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onChange'
+            },
 
-          _unPwAuth: {
-              type: Boolean,
-              computed: "_computeAuthType(application, 'unpw')"
-          },
-          _itemAuth: {
-              type: Boolean,
-              computed: "_computeAuthType(application, 'item')"
-          },
-          _creditCardAuth: {
-              type: Boolean,
-              computed: "_computeAuthType(application, 'cc')"
-          },
-          _loginAuth: {
-              type: Boolean,
-              computed: "_computeAuthType(application, 'login')"
-          },
-          _passportAuth: {
-              type: Boolean,
-              computed: "_computeAuthType(application, 'passport')"
-          },
-          _secureNoteAuth: {
-              type: Boolean,
-              computed: "_computeAuthType(application, 'securenote')"
-          },
-          _softwareLicenceAuth: {
-              type: Boolean,
-              computed: "_computeAuthType(application, 'softwarelicence')"
-          },
+            _unPwAuth: {
+                type: Boolean,
+                computed: "_computeAuthType(application, 'unpw')"
+            },
+            _itemAuth: {
+                type: Boolean,
+                computed: "_computeAuthType(application, 'item')"
+            },
+            _creditCardAuth: {
+                type: Boolean,
+                computed: "_computeAuthType(application, 'cc')"
+            },
+            _loginAuth: {
+                type: Boolean,
+                computed: "_computeAuthType(application, 'login')"
+            },
+            _passportAuth: {
+                type: Boolean,
+                computed: "_computeAuthType(application, 'passport')"
+            },
+            _secureNoteAuth: {
+                type: Boolean,
+                computed: "_computeAuthType(application, 'securenote')"
+            },
+            _softwareLicenceAuth: {
+                type: Boolean,
+                computed: "_computeAuthType(application, 'softwarelicence')"
+            },
 
-          _applicationIcon: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            _applicationIcon: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Assignee to change claims for.
-           */
-          assignee: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onChange'
-          },
+            /**
+             * Assignee to change claims for.
+             */
+            assignee: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onChange'
+            },
 
-          _computedAction: {
-              type: Object,
-              computed: "_computeAction(application)"
-          },
+            _computedAction: {
+                type: Object,
+                computed: "_computeAction(application)"
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          /**
-           * Target for iron-a11y-keys component.
-           * Submit form on enter.
-           */
-          _target: {
-              type: Object
-          }
-      };
-  }
+            /**
+             * Target for iron-a11y-keys component.
+             * Submit form on enter.
+             */
+            _target: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this.$.form;
-  }
+        this._target = this.$.form;
+    }
 
-  _computeAuthType(application, authType) {
-      return application.auth_type === authType;
-  }
+    _computeAuthType(application, authType) {
+        return application.auth_type === authType;
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  setApplication(application) {
-      this.set('application', application);
-  }
+    setApplication(application) {
+        this.set('application', application);
+    }
 
-  setAssignee(assignee) {
-      this.set('assignee', assignee);
-  }
+    setAssignee(assignee) {
+        this.set('assignee', assignee);
+    }
 
-  _getApplicationIcon() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this.application.meta.account_icon,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers,
-              body: 'account=' + encodeURIComponent(this.assignee.self)
-          };
+    _getApplicationIcon() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this.application.meta.account_icon,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers,
+                body: 'account=' + encodeURIComponent(this.assignee.self)
+            };
 
-      request.send(options).then(function() {
-          this._applicationIcon = request.response;
-      }.bind(this));
-  }
+        request.send(options).then(function() {
+            this._applicationIcon = request.response;
+        }.bind(this));
+    }
 
-  _onChange() {
-      if (this.application.self && this.assignee.self) {
-          this._getApplicationIcon();
-      }
-  }
+    _onChange() {
+        if (this.application.self && this.assignee.self) {
+            this._getApplicationIcon();
+        }
+    }
 
-  _onDialogOpened() {}
+    _onDialogOpened() {}
 
-  _onDialogClosed() {
-      this.set('application', {});
-      this.set('_applicationIcon', {});
-      this.set('assignee', {});
-      this.reset();
-  }
+    _onDialogClosed() {
+        this.set('application', {});
+        this.set('_applicationIcon', {});
+        this.set('assignee', {});
+        this.reset();
+    }
 
-  _computeAction(application) {
-      return application.meta ? application.meta.account_claims : null;
-  }
+    _computeAction(application) {
+        return application.meta ? application.meta.account_claims : null;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onFormKeyUp() {
-      this._errorMessage = '';
-  }
+    _onFormKeyUp() {
+        this._errorMessage = '';
+    }
 
-  /**
-   * Submits signup form on ENTER key using iron-a11y-keys component.
-   *
-   * @private
-   */
-  _onEnter() {
-      this._submit();
-  }
+    /**
+     * Submits signup form on ENTER key using iron-a11y-keys component.
+     *
+     * @private
+     */
+    _onEnter() {
+        this._submit();
+    }
 
-  _submit() {
-      const form = dom(this.root).querySelector('[data-claims]');
+    _submit() {
+        const form = dom(this.root).querySelector('[data-claims]');
 
-      if(!form.isValid()) {
-          return false;
-      }
-      if(!form.didFieldsChanged()) {
-          this._showLoader();
+        if(!form.isValid()) {
+            return false;
+        }
+        if(!form.didFieldsChanged()) {
+            this._showLoader();
 
-          this.dispatchEvent(new CustomEvent('claims-changed', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  application: this.application,
-                  assignee: this.assignee
-              }
-          }));
+            this.dispatchEvent(new CustomEvent('claims-changed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    application: this.application,
+                    assignee: this.assignee
+                }
+            }));
 
-          this.$.dialog.close();
-          return false;
-      }
+            this.$.dialog.close();
+            return false;
+        }
 
-      this.$.form.submit();
-  }
+        this.$.form.submit();
+    }
 
-  _onFormPresubmit() {
-      const form = this.$.form,
-          formSettings = dom(this.root).querySelector('[data-claims]');
+    _onFormPresubmit() {
+        const form = this.$.form,
+            formSettings = dom(this.root).querySelector('[data-claims]');
 
-      this._showLoader();
-      form.request.method = 'PUT';
-      form.request.body = formSettings.encodedBodyValues();
-      form.request.body += '&' + encodeURIComponent('account_claims[account]') +
-          '=' + encodeURIComponent(this.assignee.self);
-  }
+        this._showLoader();
+        form.request.method = 'PUT';
+        form.request.body = formSettings.encodedBodyValues();
+        form.request.body += '&' + encodeURIComponent('account_claims[account]') +
+            '=' + encodeURIComponent(this.assignee.self);
+    }
 
-  /**
-   * Called on form error when trying to save settings.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onFormError(event) {
-      this._errorMessage = event.detail.error.message;
-      this._hideLoader();
-  }
+    /**
+     * Called on form error when trying to save settings.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onFormError(event) {
+        this._errorMessage = event.detail.error.message;
+        this._hideLoader();
+    }
 
-  /**
-   * Called after settings have been submitted.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onFormResponse(event) {
-      this.dispatchEvent(new CustomEvent('claims-changed', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: event.detail.response,
-              assignee: this.assignee
-          }
-      }));
+    /**
+     * Called after settings have been submitted.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onFormResponse(event) {
+        this.dispatchEvent(new CustomEvent('claims-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: event.detail.response,
+                assignee: this.assignee
+            }
+        }));
 
-      this.reset();
+        this.reset();
 
-      this.$.dialog.close();
-  }
+        this.$.dialog.close();
+    }
 
-  reset() {
-      this._errorMessage = '';
-      this._hideLoader();
-  }
+    reset() {
+        this._errorMessage = '';
+        this._hideLoader();
+    }
 }
 window.customElements.define(AppscoApplicationAssigneeClaims.is, AppscoApplicationAssigneeClaims);

@@ -27,8 +27,8 @@ class AppscoManageOauthApplicationPage extends mixinBehaviors([
     Appsco.PageMixin,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-manage-page-styles">
             :host div[resource] {
                 height: calc(100% - 32px - 20px);
@@ -105,238 +105,238 @@ class AppscoManageOauthApplicationPage extends mixinBehaviors([
         <appsco-remove-oauth-application id="appscoRemoveOAuthApplication" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]">
         </appsco-remove-oauth-application>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-oauth-application-page'; }
+    static get is() { return 'appsco-manage-oauth-application-page'; }
 
-  static get properties() {
-      return {
-          route: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            route: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          oauthApplicationsApi: {
-              type: String
-          },
+            oauthApplicationsApi: {
+                type: String
+            },
 
-          uploadOAuthApplicationIconApi: {
-              type: String
-          },
+            uploadOAuthApplicationIconApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _certificatesApi: {
-              type: String,
-              computed: '_computeCertificatesApi(application)'
-          },
+            _certificatesApi: {
+                type: String,
+                computed: '_computeCertificatesApi(application)'
+            },
 
-          _selected: {
-              type: String,
-              value: 'appsco-application-components-page',
-              notify: true
-          },
+            _selected: {
+                type: String,
+                value: 'appsco-application-components-page',
+                notify: true
+            },
 
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mediumScreen, tabletScreen, mobileScreen)',
-          '_onOAuthApplicationsApiChanged(oauthApplicationsApi)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mediumScreen, tabletScreen, mobileScreen)',
+            '_onOAuthApplicationsApiChanged(oauthApplicationsApi)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
 
-      afterNextRender(this, function() {
-          this._getApplication();
-      });
-  }
+        afterNextRender(this, function() {
+            this._getApplication();
+        });
+    }
 
-  /*on-remove-oauth-application="_onRemoveOAuthApplicationAction"
-  on-add-oauth-application-certificate="_onAddOAuthApplicationCertificateAction"
-  on-remove-oauth-application-certificate="_onRemoveOAuthApplicationCertificateAction"
-  on-oauth-application-updated="_onOAuthApplicationUpdated"*/
+    /*on-remove-oauth-application="_onRemoveOAuthApplicationAction"
+    on-add-oauth-application-certificate="_onAddOAuthApplicationCertificateAction"
+    on-remove-oauth-application-certificate="_onRemoveOAuthApplicationCertificateAction"
+    on-oauth-application-updated="_onOAuthApplicationUpdated"*/
 
-  resetPage() {
-      this._showApplicationComponentsPage();
-  }
+    resetPage() {
+        this._showApplicationComponentsPage();
+    }
 
-  toggleResource() {
-      this.$.appscoContent.toggleSection('resource');
-  }
+    toggleResource() {
+        this.$.appscoContent.toggleSection('resource');
+    }
 
-  setApplication(application) {
-      this.set('application', application);
-  }
+    setApplication(application) {
+        this.set('application', application);
+    }
 
-  reloadCertificates() {
-      this.$.appscoManageApplicationComponentsPage.reloadCertificates();
-      this.$.appscoOAuthApplicationCertificatesPage.reloadCertificates();
-  }
+    reloadCertificates() {
+        this.$.appscoManageApplicationComponentsPage.reloadCertificates();
+        this.$.appscoOAuthApplicationCertificatesPage.reloadCertificates();
+    }
 
-  _updateScreen(medium, tablet, mobile) {
-      this.updateStyles();
+    _updateScreen(medium, tablet, mobile) {
+        this.updateStyles();
 
-      if (mobile) {
-          this.$.appscoContent.hideSection('resource');
-      }
-      else if(!this.$.appscoContent.resourceActive) {
-          this.$.appscoContent.showSection('resource');
-      }
-  }
+        if (mobile) {
+            this.$.appscoContent.hideSection('resource');
+        }
+        else if(!this.$.appscoContent.resourceActive) {
+            this.$.appscoContent.showSection('resource');
+        }
+    }
 
-  _computeCertificatesApi(application) {
-      return application.self ? (application.self + '/certificates') : null;
-  }
+    _computeCertificatesApi(application) {
+        return application.self ? (application.self + '/certificates') : null;
+    }
 
-  _onPageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _onPageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _getApplication() {
-      if (!this.application.self && this.oauthApplicationsApi && this._headers) {
-          this.$.ironAjaxGetApplication.url = this.oauthApplicationsApi + this.route.path;
-          this.$.ironAjaxGetApplication.generateRequest();
-      }
-  }
+    _getApplication() {
+        if (!this.application.self && this.oauthApplicationsApi && this._headers) {
+            this.$.ironAjaxGetApplication.url = this.oauthApplicationsApi + this.route.path;
+            this.$.ironAjaxGetApplication.generateRequest();
+        }
+    }
 
-  _showApplicationComponentsPage() {
-      this._selected = 'appsco-application-components-page';
-  }
+    _showApplicationComponentsPage() {
+        this._selected = 'appsco-application-components-page';
+    }
 
-  _onOAuthApplicationsApiChanged(api) {
-      if (api) {
-          this._getApplication();
-      }
-  }
+    _onOAuthApplicationsApiChanged(api) {
+        if (api) {
+            this._getApplication();
+        }
+    }
 
-  _onApplicationError() {
-      this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
-  }
+    _onApplicationError() {
+        this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
+    }
 
-  _onApplicationResponse(event) {
-      this.set('application', event.detail.response);
-  }
+    _onApplicationResponse(event) {
+        this.set('application', event.detail.response);
+    }
 
-  _onManageApplicationSettings() {
-      this._selected = 'appsco-application-settings-page';
-  }
+    _onManageApplicationSettings() {
+        this._selected = 'appsco-application-settings-page';
+    }
 
-  _onManageApplicationCertificates() {
-      this._selected = 'appsco-application-certificates-page';
-  }
+    _onManageApplicationCertificates() {
+        this._selected = 'appsco-application-certificates-page';
+    }
 
-  _onApplicationUpdated(event) {
-      this.set('application', event.detail.application);
-      this._showApplicationComponentsPage();
-  }
+    _onApplicationUpdated(event) {
+        this.set('application', event.detail.application);
+        this._showApplicationComponentsPage();
+    }
 
-  _onInnerPageClosed() {
-      this._showApplicationComponentsPage();
-  }
+    _onInnerPageClosed() {
+        this._showApplicationComponentsPage();
+    }
 
-  _onRemoveApplication() {
-      const dialog = this.shadowRoot.getElementById('appscoRemoveOAuthApplication');
-      dialog.setApplication(this.application);
-      dialog.open();
-  }
+    _onRemoveApplication() {
+        const dialog = this.shadowRoot.getElementById('appscoRemoveOAuthApplication');
+        dialog.setApplication(this.application);
+        dialog.open();
+    }
 
-  _onPageAnimationFinish(event) {
-      const toPage = event.detail.toPage;
+    _onPageAnimationFinish(event) {
+        const toPage = event.detail.toPage;
 
-      if('appsco-application-settings-page' === toPage.getAttribute('name')) {
-          toPage.setPage();
-      }
-  }
+        if('appsco-application-settings-page' === toPage.getAttribute('name')) {
+            toPage.setPage();
+        }
+    }
 
-  _onAddOAuthApplicationCertificateAction(event) {
-      const dialog = this.shadowRoot.getElementById('appscoAddOauthApplicationCertificate');
-      dialog.setApplication(event.detail.application);
-      dialog.open();
-  }
+    _onAddOAuthApplicationCertificateAction(event) {
+        const dialog = this.shadowRoot.getElementById('appscoAddOauthApplicationCertificate');
+        dialog.setApplication(event.detail.application);
+        dialog.open();
+    }
 
-  _onOauthApplicationCertificateAdded(event) {
-      this.reloadCertificates();
-      this._notify('Certificate for OAuth application ' + event.detail.application.title + ' has been successfully added.');
-  }
+    _onOauthApplicationCertificateAdded(event) {
+        this.reloadCertificates();
+        this._notify('Certificate for OAuth application ' + event.detail.application.title + ' has been successfully added.');
+    }
 
-  _onRemoveOAuthApplicationCertificateAction(event) {
-      const dialog = this.shadowRoot.getElementById('appscoRemoveCertificate');
-      dialog.setCertificate(event.detail.certificate);
-      dialog.open();
-  }
+    _onRemoveOAuthApplicationCertificateAction(event) {
+        const dialog = this.shadowRoot.getElementById('appscoRemoveCertificate');
+        dialog.setCertificate(event.detail.certificate);
+        dialog.open();
+    }
 
-  _onOAuthApplicationCertificateRemoved() {
-      this.reloadCertificates();
-      this._notify('OAuth application certificate has been successfully removed.');
-  }
+    _onOAuthApplicationCertificateRemoved() {
+        this.reloadCertificates();
+        this._notify('OAuth application certificate has been successfully removed.');
+    }
 }
 window.customElements.define(AppscoManageOauthApplicationPage.is, AppscoManageOauthApplicationPage);

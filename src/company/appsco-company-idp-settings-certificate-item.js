@@ -1,35 +1,4 @@
-/*
-`appsco-company-idp-settings-certificate-item`
-Presents certificate in form of an item.
-
-    <appsco-company-certificate-item certificate="{}"
-                                certificates-api=""
-                                authorization-token=""
-                                preview>
-    </appsco-company-certificate-item>
-
-### Styling
-
-`<appsco-company-certificate-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--item-background-color` | Background color applied to the root element | `#fff`
-`--color` | Color applied to all the text | `#33`
-`--appsco-company-certificate-item` | Mixin applied to certificate item element | `{}`
-`--certificate-basic-info` | Mixin applied to the basic info | `{}`
-`--certificate-status-info` | Mixin applied to the status info | `{}`
-`--certificate-basic-info-values` | Mixin applied to the basic info values | `{}`
-`--certificate-status-info-values` | Mixin applied to the status info values | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/neon-animation/neon-animation-runner-behavior.js';
@@ -41,9 +10,10 @@ import '@polymer/iron-media-query/iron-media-query.js';
 import '../components/components/appsco-date-format.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyIdpSettingsCertificateItem extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
 
             .item {
@@ -88,67 +58,67 @@ class AppscoCompanyIdpSettingsCertificateItem extends PolymerElement {
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-idp-settings-certificate-item'; }
+    static get is() { return 'appsco-company-idp-settings-certificate-item'; }
 
-  static get properties() {
-      return {
-          certificate: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            certificate: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          displayValue: {
-              type: String,
-              computed: '_computeDisplayValue(certificate)'
-          },
+            displayValue: {
+                type: String,
+                computed: '_computeDisplayValue(certificate)'
+            },
 
-          onRemoveIdpConfigCertificate: {
-              type: Object,
-              value: {}
-          },
+            onRemoveIdpConfigCertificate: {
+                type: Object,
+                value: {}
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          screen1000: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            screen1000: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, screen1000)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, screen1000)'
+        ];
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _computeDisplayValue(certificate) {
-      certificate = certificate.replace('-----BEGIN CERTIFICATE-----', '');
-      certificate = certificate .replace('\n', '');
-      return certificate .substring(0, 40) + '...';
-  }
+    _computeDisplayValue(certificate) {
+        certificate = certificate.replace('-----BEGIN CERTIFICATE-----', '');
+        certificate = certificate .replace('\n', '');
+        return certificate .substring(0, 40) + '...';
+    }
 
-  _onDeleteAction() {
-      this.dispatchEvent(new CustomEvent('remove-idp-certificate', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              certificate: this.certificate
-          }
-      }));
-  }
+    _onDeleteAction() {
+        this.dispatchEvent(new CustomEvent('remove-idp-certificate', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                certificate: this.certificate
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoCompanyIdpSettingsCertificateItem.is, AppscoCompanyIdpSettingsCertificateItem);

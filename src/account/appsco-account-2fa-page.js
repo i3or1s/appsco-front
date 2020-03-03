@@ -11,9 +11,10 @@ import '../components/account/appsco-account-2fa-enable.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccount2faPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -52,96 +53,96 @@ class AppscoAccount2faPage extends mixinBehaviors([NeonSharedElementAnimatableBe
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-2fa-page'; }
+    static get is() { return 'appsco-account-2fa-page'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          authorizationToken: {
-              type: String
-          },
+            authorizationToken: {
+                type: String
+            },
 
-          twoFaApi: {
-              type: String,
-              notify: true
-          },
+            twoFaApi: {
+                type: String,
+                notify: true
+            },
 
-          twoFaQrApi: {
-              type: String,
-              notify: true
-          },
+            twoFaQrApi: {
+                type: String,
+                notify: true
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          },
+            sharedElements: {
+                type: Object
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  resetPage() {
-      this.$.appscoAccount2FA.reset();
-  }
+    resetPage() {
+        this.$.appscoAccount2FA.reset();
+    }
 
-  _onClosePageAction() {
-      this.resetPage();
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onClosePageAction() {
+        this.resetPage();
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoAccount2faPage.is, AppscoAccount2faPage);

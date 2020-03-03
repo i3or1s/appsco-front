@@ -11,9 +11,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactRemoveGroup extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -61,89 +62,89 @@ class AppscoContactRemoveGroup extends mixinBehaviors([Appsco.HeadersMixin], Pol
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contact-remove-group'; }
+    static get is() { return 'appsco-contact-remove-group'; }
 
-  static get properties() {
-      return {
-          /**
-           * Account to remove from group.
-           */
-          contact: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            /**
+             * Account to remove from group.
+             */
+            contact: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Group to remove from.
-           */
-          group: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            /**
+             * Group to remove from.
+             */
+            group: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.open();
-  }
+    toggle() {
+        this.$.dialog.open();
+    }
 
-  _onDialogClosed() {
-      this._errorMessage = '';
-      this._loader = false;
-  }
+    _onDialogClosed() {
+        this._errorMessage = '';
+        this._loader = false;
+    }
 
-  setGroup(group) {
-      this.group = group;
-  }
+    setGroup(group) {
+        this.group = group;
+    }
 
-  setContact(contact) {
-      this.contact = contact;
-  }
+    setContact(contact) {
+        this.contact = contact;
+    }
 
-  _remove() {
-      const appRequest = document.createElement('iron-request'),
-          options = {
-              url: this.group.meta.self + '/contacts/' + this.contact.alias,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _remove() {
+        const appRequest = document.createElement('iron-request'),
+            options = {
+                url: this.group.meta.self + '/contacts/' + this.contact.alias,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._loader = true;
+        this._loader = true;
 
-      appRequest.send(options).then(function(request) {
-          this.$.dialog.close();
+        appRequest.send(options).then(function(request) {
+            this.$.dialog.close();
 
-          this.dispatchEvent(new CustomEvent('contact-removed-from-group', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  contact: request.response,
-                  group: this.group
-              }
-          }));
-      }.bind(this), function() {
-          if (appRequest.status !== 200) {
-              this._errorMessage = this.apiErrors.getError(request.response.code);
-          }
+            this.dispatchEvent(new CustomEvent('contact-removed-from-group', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    contact: request.response,
+                    group: this.group
+                }
+            }));
+        }.bind(this), function() {
+            if (appRequest.status !== 200) {
+                this._errorMessage = this.apiErrors.getError(request.response.code);
+            }
 
-          this._loader = false;
-      }.bind(this));
-  }
+            this._loader = false;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoContactRemoveGroup.is, AppscoContactRemoveGroup);

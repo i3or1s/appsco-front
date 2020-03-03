@@ -11,12 +11,13 @@ import './appsco-report-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoReportsList extends mixinBehaviors([
     AppscoListBehavior,
     AppscoListObserverBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles"></style>
 
         <div class="list-container">
@@ -35,19 +36,19 @@ class AppscoReportsList extends mixinBehaviors([
             </template>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-reports-list'; }
+    static get is() { return 'appsco-reports-list'; }
 
-  static get observers() {
-      return [
-          '_observeItems(_listItems)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_observeItems(_listItems)'
+        ];
+    }
 
-  _observeItems(items) {
-      this.setObservableType('reports');
-      this.populateItems(items);
-  }
+    _observeItems(items) {
+        this.setObservableType('reports');
+        this.populateItems(items);
+    }
 }
 window.customElements.define(AppscoReportsList.is, AppscoReportsList);

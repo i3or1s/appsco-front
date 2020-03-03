@@ -1,25 +1,13 @@
-/*
-`appsco-group-image`
-Account image is used to present group in form of an image or initials if image is not present.
-
-    <appsco-group-image group="{}">
-    </appsco-group-image>
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyGroupImage extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -72,25 +60,25 @@ class AppscoCompanyGroupImage extends PolymerElement {
                 </div>
             </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-group-image'; }
+    static get is() { return 'appsco-company-group-image'; }
 
-  static get properties() {
-      return {
-          group: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            group: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 }
 window.customElements.define(AppscoCompanyGroupImage.is, AppscoCompanyGroupImage);

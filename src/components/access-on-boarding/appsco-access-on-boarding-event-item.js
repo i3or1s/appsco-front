@@ -13,12 +13,13 @@ import '../components/appsco-date-format.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccessOnBoardingEventItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles"></style>
 
         <style>
@@ -98,35 +99,35 @@ class AppscoAccessOnBoardingEventItem extends mixinBehaviors([
             </tr>
         </tbody></table>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-access-on-boarding-event-item'; }
+    static get is() { return 'appsco-access-on-boarding-event-item'; }
 
-  static get properties() {
-      return {
-          eventTypesList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          }
-      };
-  }
+    static get properties() {
+        return {
+            eventTypesList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            }
+        };
+    }
 
-  _getParameter(item, parameter) {
-      if (this.eventTypesList) {
-          const eventTypes = this.eventTypesList;
+    _getParameter(item, parameter) {
+        if (this.eventTypesList) {
+            const eventTypes = this.eventTypesList;
 
-          for (let i = 0; i < eventTypes.length; i++) {
-              const eventType = eventTypes[i];
+            for (let i = 0; i < eventTypes.length; i++) {
+                const eventType = eventTypes[i];
 
-              if (eventType.name === item.event_type) {
-                  return eventType[parameter];
-              }
-          }
-      }
+                if (eventType.name === item.event_type) {
+                    return eventType[parameter];
+                }
+            }
+        }
 
-      return '';
-  }
+        return '';
+    }
 }
 window.customElements.define(AppscoAccessOnBoardingEventItem.is, AppscoAccessOnBoardingEventItem);

@@ -11,9 +11,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoRunIntegrationRule extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -61,123 +62,123 @@ class AppscoRunIntegrationRule extends mixinBehaviors([Appsco.HeadersMixin], Pol
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-run-integration-rule'; }
+    static get is() { return 'appsco-run-integration-rule'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          rule: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            rule: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _runIntegrationRuleApi: {
-              type: String,
-              computed: '_computeRunIntegrationRuleApi(rule)'
-          },
+            _runIntegrationRuleApi: {
+                type: String,
+                computed: '_computeRunIntegrationRuleApi(rule)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  setIntegration(integration) {
-      this.set('integration', integration);
-  }
+    setIntegration(integration) {
+        this.set('integration', integration);
+    }
 
-  setIntegrationRule(rule) {
-      this.set('rule', rule);
-  }
+    setIntegrationRule(rule) {
+        this.set('rule', rule);
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _computeRunIntegrationRuleApi(rule) {
-      return rule ? (rule.self + '/run') : null;
-  }
+    _computeRunIntegrationRuleApi(rule) {
+        return rule ? (rule.self + '/run') : null;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogClosed() {
-      this._hideError();
-      this._hideLoader();
-  }
+    _onDialogClosed() {
+        this._hideError();
+        this._hideLoader();
+    }
 
-  _onConfirmAction() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._runIntegrationRuleApi,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onConfirmAction() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._runIntegrationRuleApi,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._showLoader();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('integration-rule-run', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      integration: this.integration,
-                      rule: request.response
-                  }
-              }));
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('integration-rule-run', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        integration: this.integration,
+                        rule: request.response
+                    }
+                }));
 
-              this.close();
-          }
+                this.close();
+            }
 
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoRunIntegrationRule.is, AppscoRunIntegrationRule);

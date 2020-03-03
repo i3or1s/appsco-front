@@ -12,9 +12,10 @@ import '../components/components/appsco-loader.js';
 import '../components/components/appsco-form-error.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyAddCertificate extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -70,58 +71,58 @@ class AppscoCompanyAddCertificate extends PolymerElement {
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-add-certificate'; }
+    static get is() { return 'appsco-company-add-certificate'; }
 
-  static get properties() {
-      return {
-          source: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            source: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _onDialogOpened() {
-      this.$.certificateName.focus();
-  }
+    _onDialogOpened() {
+        this.$.certificateName.focus();
+    }
 
-  _onEnter() {
-      _submitForm();
-  }
+    _onEnter() {
+        _submitForm();
+    }
 
-  _submitForm() {
-      if (!this.$.certificateName.value) {
-          this._errorMessage = 'Please enter certificate';
-          return;
-      }
-      this.source.addCertificate(this.$.certificateName.value);
-      this.$.certificateName.value = '';
-      this.error = '';
-      this.$.dialog.close();
-  }
+    _submitForm() {
+        if (!this.$.certificateName.value) {
+            this._errorMessage = 'Please enter certificate';
+            return;
+        }
+        this.source.addCertificate(this.$.certificateName.value);
+        this.$.certificateName.value = '';
+        this.error = '';
+        this.$.dialog.close();
+    }
 
-  setSource(event) {
-      this.source = event.detail.source;
-  }
+    setSource(event) {
+        this.source = event.detail.source;
+    }
 }
 window.customElements.define(AppscoCompanyAddCertificate.is, AppscoCompanyAddCertificate);

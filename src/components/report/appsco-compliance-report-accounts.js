@@ -10,9 +10,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoComplianceReportAccounts extends mixinBehaviors([AppscoListBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host {
                 --appsco-list-item: {
@@ -68,49 +69,49 @@ class AppscoComplianceReportAccounts extends mixinBehaviors([AppscoListBehavior]
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-compliance-report-accounts'; }
+    static get is() { return 'appsco-compliance-report-accounts'; }
 
-  static get properties() {
-      return {
-          numberOfResourcesToDisplay: {
-              type: Number,
-              value: 15
-          },
+    static get properties() {
+        return {
+            numberOfResourcesToDisplay: {
+                type: Number,
+                value: 15
+            },
 
-          _accountsCount: {
-              type: Number,
-              value: 0
-          },
+            _accountsCount: {
+                type: Number,
+                value: 0
+            },
 
-          _typeLabel: {
-              type: String,
-              computed: '_computeTypeLabel(type)'
-          }
-      };
-  }
+            _typeLabel: {
+                type: String,
+                computed: '_computeTypeLabel(type)'
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('filter-done', this._getResultTotal);
-      this.addEventListener('list-loaded', this._getResultTotal);
-      this.addEventListener('list-empty', this._getResultTotal);
-  }
+    _addListeners() {
+        this.addEventListener('filter-done', this._getResultTotal);
+        this.addEventListener('list-loaded', this._getResultTotal);
+        this.addEventListener('list-empty', this._getResultTotal);
+    }
 
-  _computeTypeLabel(type) {
-      return ('account' === type) ? 'users' : type + 's';
-  }
+    _computeTypeLabel(type) {
+        return ('account' === type) ? 'users' : type + 's';
+    }
 
-  _getResultTotal() {
-      this._accountsCount = this.getCurrentCount();
-  }
+    _getResultTotal() {
+        this._accountsCount = this.getCurrentCount();
+    }
 }
 window.customElements.define(AppscoComplianceReportAccounts.is, AppscoComplianceReportAccounts);

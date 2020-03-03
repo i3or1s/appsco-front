@@ -6,9 +6,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactGroups extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -68,98 +69,98 @@ class AppscoContactGroups extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contact-groups'; }
+    static get is() { return 'appsco-contact-groups'; }
 
-  static get properties() {
-      return {
-          contact: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            contact: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          groupsApi: {
-              type: String
-          },
+            groupsApi: {
+                type: String
+            },
 
-          _groups: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _groups: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          /**
-           * Number of groups to load.
-           */
-          size: {
-              type: Number
-          },
+            /**
+             * Number of groups to load.
+             */
+            size: {
+                type: Number
+            },
 
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _message: {
-              type: String
-          },
+            _message: {
+                type: String
+            },
 
-          _totalGroups: {
-              type: Number
-          }
-      };
-  }
+            _totalGroups: {
+                type: Number
+            }
+        };
+    }
 
-  loadGroups() {
-      this.$.progress.hidden = false;
-      this.set('_groups', []);
-      this._message = '';
-      this._totalGroups = 0;
+    loadGroups() {
+        this.$.progress.hidden = false;
+        this.set('_groups', []);
+        this._message = '';
+        this._totalGroups = 0;
 
-      this.$.ironAjaxGetGroups.url = this._computeUrl(this.groupsApi);
-      this.$.ironAjaxGetGroups.generateRequest();
-  }
+        this.$.ironAjaxGetGroups.url = this._computeUrl(this.groupsApi);
+        this.$.ironAjaxGetGroups.generateRequest();
+    }
 
-  removeGroup(group) {
-      const _groups = JSON.parse(JSON.stringify(this._groups)),
-          _length = _groups.length;
+    removeGroup(group) {
+        const _groups = JSON.parse(JSON.stringify(this._groups)),
+            _length = _groups.length;
 
-      for (let j = 0; j < _length; j++) {
-          if (group.alias === _groups[j].alias) {
-              this.splice('_groups', j, 1);
-              break;
-          }
-      }
+        for (let j = 0; j < _length; j++) {
+            if (group.alias === _groups[j].alias) {
+                this.splice('_groups', j, 1);
+                break;
+            }
+        }
 
-      this._totalGroups--;
-  }
+        this._totalGroups--;
+    }
 
-  _computeUrl(groupsApi) {
-      return this.size ? groupsApi + '&limit=' + this.size : groupsApi;
-  }
+    _computeUrl(groupsApi) {
+        return this.size ? groupsApi + '&limit=' + this.size : groupsApi;
+    }
 
-  _onGroupResponse(event) {
-      const response = event.detail.response;
-      if (!response) {
-          return false;
-      }
-      this._groups = response ? response.company_groups : [];
-      this._totalGroups = response.meta.total;
+    _onGroupResponse(event) {
+        const response = event.detail.response;
+        if (!response) {
+            return false;
+        }
+        this._groups = response ? response.company_groups : [];
+        this._totalGroups = response.meta.total;
 
-      if (!this._groups.length) {
-          this._message = "Contact doesn't belong to any group.";
-      }
-      this.$.progress.hidden = true;
-  }
+        if (!this._groups.length) {
+            this._message = "Contact doesn't belong to any group.";
+        }
+        this.$.progress.hidden = true;
+    }
 
-  _handleError(event) {
-      this._message = 'We couldn\'t load groups at the moment. Please try again in a minute. If error continues contact us.';
-      this.$.progress.hidden = true;
-  }
+    _handleError(event) {
+        this._message = 'We couldn\'t load groups at the moment. Please try again in a minute. If error continues contact us.';
+        this.$.progress.hidden = true;
+    }
 }
 window.customElements.define(AppscoContactGroups.is, AppscoContactGroups);

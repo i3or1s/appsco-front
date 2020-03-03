@@ -13,9 +13,10 @@ import * as gestures from '@polymer/polymer/lib/utils/gestures.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccessOnBoardingPageFilters extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --layout-vertical;
@@ -90,270 +91,270 @@ class AppscoAccessOnBoardingPageFilters extends mixinBehaviors([Appsco.HeadersMi
             </paper-listbox>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-access-on-boarding-page-filters'; }
+    static get is() { return 'appsco-access-on-boarding-page-filters'; }
 
-  static get properties() {
-      return {
-          groupsApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            groupsApi: {
+                type: String
+            },
 
-          _groupsApi: {
-              type: String,
-              computed: '_computeGroupsApi(groupsApi)'
-          },
+            _groupsApi: {
+                type: String,
+                computed: '_computeGroupsApi(groupsApi)'
+            },
 
-          _searchGroupsApi: {
-              type: String,
-              computed: '_computeSearchGroupsApi(groupsApi, _groupTerm)'
-          },
+            _searchGroupsApi: {
+                type: String,
+                computed: '_computeSearchGroupsApi(groupsApi, _groupTerm)'
+            },
 
-          _groupList: {
-              type: Array,
-              value: function () {
-                  return [{
-                      alias: 'all',
-                      name: 'All groups'
-                  }];
-              }
-          },
+            _groupList: {
+                type: Array,
+                value: function () {
+                    return [{
+                        alias: 'all',
+                        name: 'All groups'
+                    }];
+                }
+            },
 
-          _groupListDisplay: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _groupListDisplay: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _groupTerm: {
-              type: String,
-              value: ''
-          },
+            _groupTerm: {
+                type: String,
+                value: ''
+            },
 
-          _filterTerm: {
-              type: String,
-              value: ''
-          },
+            _filterTerm: {
+                type: String,
+                value: ''
+            },
 
-          _filterGroup: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          }
-      };
-  }
+            _filterGroup: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-      });
-  }
+        afterNextRender(this, function() {
+            gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
+        });
+    }
 
-  reset() {
-      this.$.appscoSearch.reset();
-      this.$.filterListGroups.selected = 0;
-      this._hideGroupList();
-  }
+    reset() {
+        this.$.appscoSearch.reset();
+        this.$.filterListGroups.selected = 0;
+        this._hideGroupList();
+    }
 
-  getFilters() {
-      return {
-          term: this._filterTerm,
-          group: this._filterGroup
-      };
-  }
+    getFilters() {
+        return {
+            term: this._filterTerm,
+            group: this._filterGroup
+        };
+    }
 
-  _computeGroupsApi(groupsApi) {
-      return groupsApi ? groupsApi + '?extended=1' : null;
-  }
+    _computeGroupsApi(groupsApi) {
+        return groupsApi ? groupsApi + '?extended=1' : null;
+    }
 
-  _computeSearchGroupsApi(groupsApi, term) {
-      return (groupsApi && term) ? (groupsApi + '?extended=1&limit=10&term=' + term) : null;
-  }
+    _computeSearchGroupsApi(groupsApi, term) {
+        return (groupsApi && term) ? (groupsApi + '?extended=1&limit=10&term=' + term) : null;
+    }
 
-  _isInPath(path, element) {
-      path = path || [];
+    _isInPath(path, element) {
+        path = path || [];
 
-      for (var i = 0; i < path.length; i++) {
+        for (var i = 0; i < path.length; i++) {
 
-          if (path[i] == element) {
-              return true;
-          }
-      }
+            if (path[i] == element) {
+                return true;
+            }
+        }
 
-      return false;
-  }
+        return false;
+    }
 
-  _handleDocumentClick(event) {
-      const path = dom(event).path;
+    _handleDocumentClick(event) {
+        const path = dom(event).path;
 
-      if (!this._isInPath(path, this.$.filterGroup)) {
-          this._hideGroupList();
-      }
-  }
+        if (!this._isInPath(path, this.$.filterGroup)) {
+            this._hideGroupList();
+        }
+    }
 
-  _filter() {
-      this.dispatchEvent(new CustomEvent('filter-access-on-boarding', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              filters: this.getFilters()
-          }
-      }));
-  }
+    _filter() {
+        this.dispatchEvent(new CustomEvent('filter-access-on-boarding', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                filters: this.getFilters()
+            }
+        }));
+    }
 
-  _filterRolesByTermAction(term) {
-      this._filterTerm = term;
-      this._filter();
-  }
+    _filterRolesByTermAction(term) {
+        this._filterTerm = term;
+        this._filter();
+    }
 
-  _onSearchRoles(event) {
-      this._filterRolesByTermAction(event.detail.term);
-  }
+    _onSearchRoles(event) {
+        this._filterRolesByTermAction(event.detail.term);
+    }
 
-  _onSearchRolesClear() {
-      this._filterRolesByTermAction('');
-  }
+    _onSearchRolesClear() {
+        this._filterRolesByTermAction('');
+    }
 
-  _onGroupsResponse(event) {
-      const response = event.detail.response;
+    _onGroupsResponse(event) {
+        const response = event.detail.response;
 
-      if (response && response.company_groups) {
-          response.company_groups.forEach(function(item, index) {
-              this.push('_groupList', item);
-          }.bind(this));
+        if (response && response.company_groups) {
+            response.company_groups.forEach(function(item, index) {
+                this.push('_groupList', item);
+            }.bind(this));
 
-          this.set('_groupListDisplay', this._groupList);
-          this._setDefaultGroup();
-      }
-  }
+            this.set('_groupListDisplay', this._groupList);
+            this._setDefaultGroup();
+        }
+    }
 
-  _filterGroupListByTerm(term) {
-      const termLength = term.length,
-          groups = this._groupList,
-          length = groups.length;
+    _filterGroupListByTerm(term) {
+        const termLength = term.length,
+            groups = this._groupList,
+            length = groups.length;
 
-      this.set('_groupListDisplay', []);
+        this.set('_groupListDisplay', []);
 
-      if (3 > termLength) {
-          term = '';
-      }
+        if (3 > termLength) {
+            term = '';
+        }
 
-      for (let i = 0; i < length; i++) {
-          const group = groups[i];
+        for (let i = 0; i < length; i++) {
+            const group = groups[i];
 
-          if (group && group.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
-              this.push('_groupListDisplay', group);
-          }
+            if (group && group.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
+                this.push('_groupListDisplay', group);
+            }
 
-      }
+        }
 
-      if (0 === this._groupListDisplay.length && 3 < termLength) {
-          this.push('_groupListDisplay', {
-              value: 'no-result',
-              name: 'There is no accounts in asked group.'
-          });
-      }
-  }
+        if (0 === this._groupListDisplay.length && 3 < termLength) {
+            this.push('_groupListDisplay', {
+                value: 'no-result',
+                name: 'There is no accounts in asked group.'
+            });
+        }
+    }
 
-  _setDefaultGroup() {
-      this.$.appscoSearchGroup.setValue(this._groupList[0].name);
-      this.$.filterListGroups.selected = 0;
-  }
+    _setDefaultGroup() {
+        this.$.appscoSearchGroup.setValue(this._groupList[0].name);
+        this.$.filterListGroups.selected = 0;
+    }
 
-  _showGroupList() {
-      this.$.filterListGroups.hidden = false;
-  }
+    _showGroupList() {
+        this.$.filterListGroups.hidden = false;
+    }
 
-  _hideGroupList() {
-      const groupFilter = this.$.filterListGroups,
-          appscoGroupSearch = this.$.appscoSearchGroup,
-          value = appscoGroupSearch.getValue() || '';
+    _hideGroupList() {
+        const groupFilter = this.$.filterListGroups,
+            appscoGroupSearch = this.$.appscoSearchGroup,
+            value = appscoGroupSearch.getValue() || '';
 
-      if (0 === value.length && groupFilter.selectedItem) {
-          appscoGroupSearch.setValue(groupFilter.selectedItem.name);
-      }
+        if (0 === value.length && groupFilter.selectedItem) {
+            appscoGroupSearch.setValue(groupFilter.selectedItem.name);
+        }
 
-      this.$.filterListGroups.hidden = true;
-  }
+        this.$.filterListGroups.hidden = true;
+    }
 
-  _onFilterGroupFocus() {
-      this._showGroupList();
-  }
+    _onFilterGroupFocus() {
+        this._showGroupList();
+    }
 
-  _onFilterGroupKeyup(event) {
-      var keyCode = event.keyCode;
+    _onFilterGroupKeyup(event) {
+        var keyCode = event.keyCode;
 
-      if (40 === keyCode) {
-          event.target.blur();
-          this._selectFirstGroup();
-      }
-  }
+        if (40 === keyCode) {
+            event.target.blur();
+            this._selectFirstGroup();
+        }
+    }
 
-  _onFilterGroupSearch(event) {
-      this._filterGroupListByTerm(event.detail.term);
-  }
+    _onFilterGroupSearch(event) {
+        this._filterGroupListByTerm(event.detail.term);
+    }
 
-  _onClearGroupSearch(event) {
-      this._filterGroupListByTerm('');
-  }
+    _onClearGroupSearch(event) {
+        this._filterGroupListByTerm('');
+    }
 
-  _selectFirstGroup() {
-      const groupFilter = this.$.filterListGroups;
+    _selectFirstGroup() {
+        const groupFilter = this.$.filterListGroups;
 
-      if (!groupFilter.selectedItem) {
-          groupFilter.selected = this._groupListDisplay[0].value;
-      }
+        if (!groupFilter.selectedItem) {
+            groupFilter.selected = this._groupListDisplay[0].value;
+        }
 
-      groupFilter.selectedItem.focus();
-  }
+        groupFilter.selectedItem.focus();
+    }
 
-  _onFilterByGroupAction(event) {
-      var alias = event.detail.item.getAttribute('value'),
-          groups = this._groupListDisplay,
-          length = groups.length,
-          selectedGroup;
+    _onFilterByGroupAction(event) {
+        var alias = event.detail.item.getAttribute('value'),
+            groups = this._groupListDisplay,
+            length = groups.length,
+            selectedGroup;
 
-      if ('all' === alias) {
-          selectedGroup = {
-              alias: 'all',
-              name: event.detail.item.getAttribute('name')
-          };
-      }
-      else {
-          for (let i = 0; i < length; i++) {
-              if (alias === groups[i].alias) {
-                  selectedGroup = groups[i];
-                  break;
-              }
-          }
+        if ('all' === alias) {
+            selectedGroup = {
+                alias: 'all',
+                name: event.detail.item.getAttribute('name')
+            };
+        }
+        else {
+            for (let i = 0; i < length; i++) {
+                if (alias === groups[i].alias) {
+                    selectedGroup = groups[i];
+                    break;
+                }
+            }
 
-          selectedGroup.activated = true;
-      }
+            selectedGroup.activated = true;
+        }
 
-      this.set('_filterGroup', selectedGroup);
-      this.$.appscoSearchGroup.setValue(this._format(selectedGroup.name));
-      this._hideGroupList();
+        this.set('_filterGroup', selectedGroup);
+        this.$.appscoSearchGroup.setValue(this._format(selectedGroup.name));
+        this._hideGroupList();
 
-      this._filter();
-  }
+        this._filter();
+    }
 
-  _format(value) {
-      let result = '';
+    _format(value) {
+        let result = '';
 
-      if (value) {
-          result = value;
+        if (value) {
+            result = value;
 
-          if (value.length > 40) {
-              result = value.substring(0, 40) + '...';
-          }
-      }
+            if (value.length > 40) {
+                result = value.substring(0, 40) + '...';
+            }
+        }
 
-      return result;
-  }
+        return result;
+    }
 }
 window.customElements.define(AppscoAccessOnBoardingPageFilters.is, AppscoAccessOnBoardingPageFilters);

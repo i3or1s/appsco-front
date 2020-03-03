@@ -9,9 +9,10 @@ import '../components/account/company/appsco-account-orgunits.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountOrgunitsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -50,71 +51,71 @@ class AppscoAccountOrgunitsPage extends mixinBehaviors([NeonSharedElementAnimata
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-orgunits-page'; }
+    static get is() { return 'appsco-account-orgunits-page'; }
 
-  static get properties() {
-      return {
-          role: {
-              type: Object,
-              notify: true
-          },
+    static get properties() {
+        return {
+            role: {
+                type: Object,
+                notify: true
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _back() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _back() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  _onAddToOrgunit() {
-      this.dispatchEvent(new CustomEvent('add-to-orgunit', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              role: this.role
-          }
-      }));
-  }
+    _onAddToOrgunit() {
+        this.dispatchEvent(new CustomEvent('add-to-orgunit', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                role: this.role
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoAccountOrgunitsPage.is, AppscoAccountOrgunitsPage);

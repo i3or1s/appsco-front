@@ -7,9 +7,10 @@ import '@polymer/neon-animation/animations/scale-up-animation.js';
 import '../components/appsco-loader.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyNotice extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -50,65 +51,65 @@ class AppscoCompanyNotice extends PolymerElement {
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-notice'; }
+    static get is() { return 'appsco-company-notice'; }
 
-  static get properties() {
-      return {
-          notice: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            notice: {
+                type: String,
+                value: ''
+            },
 
-          noticeEvent: {
-              type: String,
-              value: ''
-          },
+            noticeEvent: {
+                type: String,
+                value: ''
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  setNotice(notice) {
-      this.notice = notice;
-  }
+    setNotice(notice) {
+        this.notice = notice;
+    }
 
-  setNoticeEvent(noticeEvent) {
-      this.noticeEvent = noticeEvent;
-  }
+    setNoticeEvent(noticeEvent) {
+        this.noticeEvent = noticeEvent;
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onDialogClosed() {
-      this.dispatchEvent(new CustomEvent(this.noticeEvent, { bubbles: true, composed: true }));
-      this._hideLoader();
-  }
+    _onDialogClosed() {
+        this.dispatchEvent(new CustomEvent(this.noticeEvent, { bubbles: true, composed: true }));
+        this._hideLoader();
+    }
 
-  _onConfirmAction() {
-      this._showLoader();
-      this.close();
-  }
+    _onConfirmAction() {
+        this._showLoader();
+        this.close();
+    }
 }
 window.customElements.define(AppscoCompanyNotice.is, AppscoCompanyNotice);

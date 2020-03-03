@@ -1,6 +1,7 @@
 import '@polymer/polymer/polymer-legacy.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCountryList extends PolymerElement {
     static get is() { return 'appsco-country-list'; }
 

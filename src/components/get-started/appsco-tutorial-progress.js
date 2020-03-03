@@ -3,9 +3,10 @@ import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-icons/iron-icons.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoTutorialProgress extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host .progress-container{
                 background-color: var(--header-background-color);
@@ -63,89 +64,89 @@ class AppscoTutorialProgress extends PolymerElement {
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-tutorial-progress'; }
+    static get is() { return 'appsco-tutorial-progress'; }
 
-  static get properties() {
-      return {
-          _show: {
-              type: Boolean,
-              value: false,
-              notify: true
-          },
+    static get properties() {
+        return {
+            _show: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
 
-          progress: {
-              type: Number,
-              value: 0,
-              reflectToAttribute: true,
-              notify: true
-          },
+            progress: {
+                type: Number,
+                value: 0,
+                reflectToAttribute: true,
+                notify: true
+            },
 
-          tutorials: {
-              type: Object,
-              value: function () {
-                  return {}
-              },
-              notify: true,
-              observer: "_tutorialsChanged"
-          },
+            tutorials: {
+                type: Object,
+                value: function () {
+                    return {}
+                },
+                notify: true,
+                observer: "_tutorialsChanged"
+            },
 
-          _hiddenContent: {
-              type: Boolean,
-              value: true
-          },
+            _hiddenContent: {
+                type: Boolean,
+                value: true
+            },
 
-          _tutorialsList: {
-              type: Array,
-              computed: "_computeTutorialsList(tutorials)"
-          },
+            _tutorialsList: {
+                type: Array,
+                computed: "_computeTutorialsList(tutorials)"
+            },
 
-          isTutorialActive: {
-              type: Boolean,
-              value: false,
-              notify: true,
-              observer: '_isActiveChanged'
-          }
-      };
-  }
+            isTutorialActive: {
+                type: Boolean,
+                value: false,
+                notify: true,
+                observer: '_isActiveChanged'
+            }
+        };
+    }
 
-  _tutorialsChanged(newValue, oldValue) {
-      this.progress = 0;
-      let finishedTuts = 0;
-      let numOfTuts = 0;
-      for(const property in newValue) {
-          numOfTuts++;
-          if(newValue.hasOwnProperty(property) && newValue[property].isDone()) {
-              finishedTuts++;
-          }
-      }
-      this.progress = numOfTuts <= 0 ? 0 : Math.round(100*finishedTuts/numOfTuts);
-  }
+    _tutorialsChanged(newValue, oldValue) {
+        this.progress = 0;
+        let finishedTuts = 0;
+        let numOfTuts = 0;
+        for(const property in newValue) {
+            numOfTuts++;
+            if(newValue.hasOwnProperty(property) && newValue[property].isDone()) {
+                finishedTuts++;
+            }
+        }
+        this.progress = numOfTuts <= 0 ? 0 : Math.round(100*finishedTuts/numOfTuts);
+    }
 
-  _computeTutorialsList (tutorials) {
-      const list = [];
-      for(const id in tutorials) {
-          if(tutorials.hasOwnProperty(id)) {
-              list.push({
-                  name: tutorials[id].getId(),
-                  done: tutorials[id].isDone()
-              });
-          }
-      }
-      return list;
-  }
+    _computeTutorialsList (tutorials) {
+        const list = [];
+        for(const id in tutorials) {
+            if(tutorials.hasOwnProperty(id)) {
+                list.push({
+                    name: tutorials[id].getId(),
+                    done: tutorials[id].isDone()
+                });
+            }
+        }
+        return list;
+    }
 
-  _showProgressContent() {
-      this._hiddenContent = false;
-  }
+    _showProgressContent() {
+        this._hiddenContent = false;
+    }
 
-  _hideProgressContent() {
-      this._hiddenContent = true;
-  }
+    _hideProgressContent() {
+        this._hiddenContent = true;
+    }
 
-  _isActiveChanged(newValue, oldValue) {
-      this._show = newValue;
-  }
+    _isActiveChanged(newValue, oldValue) {
+        this._show = newValue;
+    }
 }
 window.customElements.define(AppscoTutorialProgress.is, AppscoTutorialProgress);

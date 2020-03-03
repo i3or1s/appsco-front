@@ -4,9 +4,8 @@ import '@polymer/polymer/polymer-legacy.js';
  * @polymerBehavior
  */
 export const AppscoGroupItemsPageBehavior = {
-
     properties: {
-        
+
         group: {
             type: Object,
             value: function() {

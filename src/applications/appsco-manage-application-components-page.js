@@ -21,12 +21,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoManageApplicationComponentsPage extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-layout-with-cards-styles">
             :host {
                 --application-details-value: {
@@ -210,249 +211,249 @@ class AppscoManageApplicationComponentsPage extends mixinBehaviors([
             </template>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-application-components-page'; }
+    static get is() { return 'appsco-manage-application-components-page'; }
 
-  static get properties() {
-      return {
-          col2: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            col2: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          /**
-           * Indicates if it is medium screen size.
-           * It uses iron-media-query.
-           */
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            /**
+             * Indicates if it is medium screen size.
+             * It uses iron-media-query.
+             */
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          resourceAdmin: {
-              type: Boolean,
-              value: false
-          },
+            resourceAdmin: {
+                type: Boolean,
+                value: false
+            },
 
-          groupsApi: {
-              type: String
-          },
+            groupsApi: {
+                type: String
+            },
 
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true,
-              observer: '_onApplicationChanged'
-          },
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true,
+                observer: '_onApplicationChanged'
+            },
 
-          companyIdpSamlMetadataApi: {
-              type: String
-          },
+            companyIdpSamlMetadataApi: {
+                type: String
+            },
 
-          _isSAMLApp: {
-              type: Boolean,
-              computed: '_computeIsSAMLApp(application)'
-          },
+            _isSAMLApp: {
+                type: Boolean,
+                computed: '_computeIsSAMLApp(application)'
+            },
 
-          _isOpenIDApp: {
-              type: Boolean,
-              computed: '_computeIsOpenIDApp(application)'
-          },
+            _isOpenIDApp: {
+                type: Boolean,
+                computed: '_computeIsOpenIDApp(application)'
+            },
 
-          _isUnPwAuthType: {
-              type: Boolean,
-              computed: '_computeIsUnPwAuthType(application)'
-          },
+            _isUnPwAuthType: {
+                type: Boolean,
+                computed: '_computeIsUnPwAuthType(application)'
+            },
 
-          _viewSecurityPermission: {
-              type: Boolean,
-              computed: '_computeViewSecurityPermission(application)'
-          },
+            _viewSecurityPermission: {
+                type: Boolean,
+                computed: '_computeViewSecurityPermission(application)'
+            },
 
-          _autologinItem: {
-              type: Boolean,
-              value: false
-          },
+            _autologinItem: {
+                type: Boolean,
+                value: false
+            },
 
-          _autologinUnavailable: {
-              type: Boolean,
-              value: false
-          },
+            _autologinUnavailable: {
+                type: Boolean,
+                value: false
+            },
 
-          _shouldShowAdvanced: {
-              type: Boolean,
-              value: false
-          },
+            _shouldShowAdvanced: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: dom(this.root).querySelectorAll('paper-card'),
-              nodeDelay: 50,
-              timing: {
-                  delay: 200,
-                  duration: 100
-              }
-          },
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }]
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: dom(this.root).querySelectorAll('paper-card'),
+                nodeDelay: 50,
+                timing: {
+                    delay: 200,
+                    duration: 100
+                }
+            },
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }]
+        };
+    }
 
-  load() {
-      this._loadGroups();
-  }
+    load() {
+        this._loadGroups();
+    }
 
-  reloadAssignees() {
-      this.shadowRoot.getElementById('appscoApplicationAssignees').reload();
-  }
+    reloadAssignees() {
+        this.shadowRoot.getElementById('appscoApplicationAssignees').reload();
+    }
 
-  removeAssignee(assignee) {
-      this.shadowRoot.getElementById('appscoApplicationAssignees').removeAssignee(assignee);
-  }
+    removeAssignee(assignee) {
+        this.shadowRoot.getElementById('appscoApplicationAssignees').removeAssignee(assignee);
+    }
 
-  _onApplicationChanged() {
-      this._autologinUnavailable = false;
-      this._autologinItem = this.application.auth_type == 'item';
-  }
+    _onApplicationChanged() {
+        this._autologinUnavailable = false;
+        this._autologinItem = this.application.auth_type == 'item';
+    }
 
-  _loadGroups() {
+    _loadGroups() {
 
-      if (this.shadowRoot.getElementById('appscoApplicationGroups') && this.shadowRoot.getElementById('appscoApplicationGroups').$) {
-          this.shadowRoot.getElementById('appscoApplicationGroups').loadGroups();
-      }
-  }
+        if (this.shadowRoot.getElementById('appscoApplicationGroups') && this.shadowRoot.getElementById('appscoApplicationGroups').$) {
+            this.shadowRoot.getElementById('appscoApplicationGroups').loadGroups();
+        }
+    }
 
-  /**
-   * Computes isSAMLApp value
-   *
-   * @param {Object} application
-   * @returns {boolean}
-   * @private
-   */
-  _computeIsSAMLApp(application) {
-      return ['saml', 'saml_dropbox', 'saml_office_365'].indexOf(application.auth_type) !== -1;
-  }
+    /**
+     * Computes isSAMLApp value
+     *
+     * @param {Object} application
+     * @returns {boolean}
+     * @private
+     */
+    _computeIsSAMLApp(application) {
+        return ['saml', 'saml_dropbox', 'saml_office_365'].indexOf(application.auth_type) !== -1;
+    }
 
-  _computeIsOpenIDApp(application) {
-      return application.auth_type === 'open_id';
-  }
+    _computeIsOpenIDApp(application) {
+        return application.auth_type === 'open_id';
+    }
 
-  _computeIsUnPwAuthType (application) {
-      var isUnpw =
-                      application.auth_type &&
-                      (application.auth_type === 'unpw' || application.auth_type === 'item')
-              ;
-      this.col2 = !isUnpw;
-      return isUnpw;
-  }
+    _computeIsUnPwAuthType (application) {
+        var isUnpw =
+            application.auth_type &&
+            (application.auth_type === 'unpw' || application.auth_type === 'item')
+        ;
+        this.col2 = !isUnpw;
+        return isUnpw;
+    }
 
-  _computeViewSecurityPermission(application) {
-      return ['unpw', 'item'].indexOf(application.auth_type) !== -1;
-  }
+    _computeViewSecurityPermission(application) {
+        return ['unpw', 'item'].indexOf(application.auth_type) !== -1;
+    }
 
-  _setSharedElement(target) {
+    _setSharedElement(target) {
 
-      while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
-          target = target.parentNode;
-      }
+        while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+            target = target.parentNode;
+        }
 
-      /**
-       * Set hero animation element that is to be shared between pages.
-       *
-       * @type {{hero: *}}
-       */
-      this.sharedElements = {
-          'hero': target
-      };
-  }
+        /**
+         * Set hero animation element that is to be shared between pages.
+         *
+         * @type {{hero: *}}
+         */
+        this.sharedElements = {
+            'hero': target
+        };
+    }
 
-  _onManageApplicationSettings(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('application-settings', { bubbles: true, composed: true }));
-  }
+    _onManageApplicationSettings(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('application-settings', { bubbles: true, composed: true }));
+    }
 
-  _onAllAssignees(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('all-assignees', { bubbles: true, composed: true }));
-  }
+    _onAllAssignees(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('all-assignees', { bubbles: true, composed: true }));
+    }
 
-  _onAllLog(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('all-log', { bubbles: true, composed: true }));
-  }
+    _onAllLog(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('all-log', { bubbles: true, composed: true }));
+    }
 
-  _onCompanyIdpSamlMetadataReponse(event) {
-      this._idpMetadata = event.detail.response;
-  }
+    _onCompanyIdpSamlMetadataReponse(event) {
+        this._idpMetadata = event.detail.response;
+    }
 
-  _onManageGroups(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-groups', { bubbles: true, composed: true }));
-  }
+    _onManageGroups(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-groups', { bubbles: true, composed: true }));
+    }
 
-  _onManageCompliance(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-compliance', { bubbles: true, composed: true }));
-  }
+    _onManageCompliance(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-compliance', { bubbles: true, composed: true }));
+    }
 
-  _onResourceAdmins(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-resource-admins', { bubbles: true, composed: true }));
-  }
+    _onResourceAdmins(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-resource-admins', { bubbles: true, composed: true }));
+    }
 
-  _onAutologinUnavailable() {
-      this._autologinUnavailable = true;
-  }
+    _onAutologinUnavailable() {
+        this._autologinUnavailable = true;
+    }
 
-  _onAutologinChanged() {
-      this._autologinItem = !this._autologinItem;
-      this.shadowRoot.getElementById('appscoApplicationLog').load();
-  }
+    _onAutologinChanged() {
+        this._autologinItem = !this._autologinItem;
+        this.shadowRoot.getElementById('appscoApplicationLog').load();
+    }
 
-  showAdvanced() {
-      this._shouldShowAdvanced = true;
-  }
+    showAdvanced() {
+        this._shouldShowAdvanced = true;
+    }
 
-  hideAdvanced() {
-      this._shouldShowAdvanced = false;
-  }
+    hideAdvanced() {
+        this._shouldShowAdvanced = false;
+    }
 }
 window.customElements.define(AppscoManageApplicationComponentsPage.is, AppscoManageApplicationComponentsPage);

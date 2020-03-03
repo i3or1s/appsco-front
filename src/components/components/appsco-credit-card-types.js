@@ -1,5 +1,6 @@
 import '@polymer/polymer/polymer-legacy.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCreditCardTypes extends PolymerElement {
     static get is() { return 'appsco-credit-card-types'; }
 

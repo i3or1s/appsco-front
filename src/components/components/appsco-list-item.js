@@ -1,30 +1,4 @@
-/**
-`appsco-list-item`
-Is used to represent list item such as application log, account-log and account notification.
-
-Example:
-
-    <body>
-      <appsco-list-item item="{}">
-     </appsco-list-item>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-list-item` | Mixin applied to root element | `{}`
-`--appsco-list-item-icon` | Mixin applied to item image | `{}`
-`--ppsco-list-item-icon-contain` | Mixin applied to iron-image #sizedImgDiv | `{}`
-`--appsco-list-item-message` | Mixin applied to message | `{}`
-`--appsco-list-item-date` | Mixin applied to date | `{}`
-
-@demo demo/appsco-account-notification.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/neon-animation/animations/fade-in-animation.js';
@@ -35,9 +9,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoListItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: none;
@@ -93,62 +68,62 @@ class AppscoListItem extends mixinBehaviors([NeonAnimationRunnerBehavior], Polym
             <div class="item-message flex">[[ item.message ]]</div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-list-item'; }
+    static get is() { return 'appsco-list-item'; }
 
-  static get properties() {
-      return {
-          item: {
-              type: Object
-          },
+    static get properties() {
+        return {
+            item: {
+                type: Object
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _dateFormat(value) {
-      if (!value) {
-          return '';
-      }
+    _dateFormat(value) {
+        if (!value) {
+            return '';
+        }
 
-      const options = {
-          weekday: "long", year: "numeric", month: "short",
-          day: "numeric", hour: "2-digit", minute: "2-digit"
-      };
+        const options = {
+            weekday: "long", year: "numeric", month: "short",
+            day: "numeric", hour: "2-digit", minute: "2-digit"
+        };
 
-      return (new Date(value)).toLocaleDateString('en', options);
-  }
+        return (new Date(value)).toLocaleDateString('en', options);
+    }
 }
 window.customElements.define(AppscoListItem.is, AppscoListItem);

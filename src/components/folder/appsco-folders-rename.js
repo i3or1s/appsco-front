@@ -14,9 +14,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoFoldersRename extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -54,103 +55,103 @@ class AppscoFoldersRename extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-folders-rename'; }
+    static get is() { return 'appsco-folders-rename'; }
 
-  static get properties() {
-      return {
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          foldersApi: {
-              type: String
-          },
+            foldersApi: {
+                type: String
+            },
 
-          folderItem: {
-              type: String,
-              value: ''
-          },
+            folderItem: {
+                type: String,
+                value: ''
+            },
 
-          _company: {
-              type: String,
-              value: ''
-          },
+            _company: {
+                type: String,
+                value: ''
+            },
 
-          _errorMessage: {
-              type: String,
-              value: ''
-          },
+            _errorMessage: {
+                type: String,
+                value: ''
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  _renameFolder() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this.folderItem.self,
-              body: 'dashboardGroup[title]=' + this.$.title.value,
-              method: 'PATCH',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _renameFolder() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this.folderItem.self,
+                body: 'dashboardGroup[title]=' + this.$.title.value,
+                method: 'PATCH',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._showLoader();
-      this._hideError();
+        this._showLoader();
+        this._hideError();
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('folder-renamed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      folder: this.folderItem
-                  }
-              }));
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('folder-renamed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        folder: this.folderItem
+                    }
+                }));
 
-              this._hideLoader();
-              this.$.dialog.close();
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+                this._hideLoader();
+                this.$.dialog.close();
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  setCompany(company) {
-      this._company = company;
-  }
+    setCompany(company) {
+        this._company = company;
+    }
 
-  setFolderItem(folderItem) {
-      this.folderItem = folderItem;
-  }
+    setFolderItem(folderItem) {
+        this.folderItem = folderItem;
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 }
 window.customElements.define(AppscoFoldersRename.is, AppscoFoldersRename);

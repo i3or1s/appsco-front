@@ -1,31 +1,4 @@
-/**
-`appsco-application-add-search`
-Is used to present application search.
-
-Example:
-    <body>
-        <appsco-application-add-search>
-        </appsco-application-add-search>
-
-
-### Styling
-
-`<appsco-application-add-search>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-application-add-search` | Mixin for the root element | `{}`
-`--link-button` | Mixin for Add Link button | `{}`
-
-@demo demo/appsco-application-add.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/paper-button/paper-button.js';
@@ -44,12 +17,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationAddSearch extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -122,203 +96,203 @@ class AppscoApplicationAddSearch extends mixinBehaviors([
             <!--</div>-->
         <!--</template>-->
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-add-search'; }
+    static get is() { return 'appsco-application-add-search'; }
 
-  static get properties() {
-      return {
-          selectedApplication: {
-              type: Object,
-              notify: true
-          },
+    static get properties() {
+        return {
+            selectedApplication: {
+                type: Object,
+                notify: true
+            },
 
-          /**
-           * Application list from search.
-           */
-          _searchList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Application list from search.
+             */
+            _searchList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          /**
-           * Message to display if there is no search result.
-           */
-          _message: {
-              type: String
-          },
+            /**
+             * Message to display if there is no search result.
+             */
+            _message: {
+                type: String
+            },
 
-          applicationsTemplateApi: {
-              type: String
-          },
+            applicationsTemplateApi: {
+                type: String
+            },
 
-          /**
-           * Number of applications to load and present.
-           */
-          size: {
-              type: Number,
-              value: 12
-          },
+            /**
+             * Number of applications to load and present.
+             */
+            size: {
+                type: Number,
+                value: 12
+            },
 
-          _searchActive: {
-              type: Boolean,
-              value: false
-          },
+            _searchActive: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * Indicates if appsco loader should be displayed.
-           */
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if appsco loader should be displayed.
+             */
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'scale-up-animation',
-              node: this
-          },
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }]
-      };
-      this.sharedElements = {
-          'hero': {}
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'scale-up-animation',
+                node: this
+            },
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }]
+        };
+        this.sharedElements = {
+            'hero': {}
+        };
+    }
 
-  /**
-   * Gets applications by term.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onSearch(event) {
-      const searchValue = event.detail.term,
-          searchLength = searchValue.length;
+    /**
+     * Gets applications by term.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onSearch(event) {
+        const searchValue = event.detail.term,
+            searchLength = searchValue.length;
 
-      this._loader = true;
-      this._searchActive = true;
-      this.set('_message', '');
+        this._loader = true;
+        this._searchActive = true;
+        this.set('_message', '');
 
-      if (searchLength === 0) {
-          this._searchActive = false;
-          this._message = '';
-          this._loader = false;
-          this.set('_searchList', []);
-          return;
-      }
+        if (searchLength === 0) {
+            this._searchActive = false;
+            this._message = '';
+            this._loader = false;
+            this.set('_searchList', []);
+            return;
+        }
 
-      if (searchLength < 2) {
-          this._message = 'Please type two or more letters.';
-          this._loader = false;
-          this.set('_searchList', []);
-          return;
-      }
+        if (searchLength < 2) {
+            this._message = 'Please type two or more letters.';
+            this._loader = false;
+            this.set('_searchList', []);
+            return;
+        }
 
-      const request = document.createElement('iron-request'),
-          url = this.applicationsTemplateApi + '?extended=1&limit=' + this.size + '&term=' + searchValue;
+        const request = document.createElement('iron-request'),
+            url = this.applicationsTemplateApi + '?extended=1&limit=' + this.size + '&term=' + searchValue;
 
-      this._message = '';
+        this._message = '';
 
-      const options = {
-          url: url,
-          method: 'GET',
-          handleAs: 'json',
-          headers: this._headers
-      };
+        const options = {
+            url: url,
+            method: 'GET',
+            handleAs: 'json',
+            headers: this._headers
+        };
 
-      request.send(options).then(function() {
-          const applications = request.response.applications;
+        request.send(options).then(function() {
+            const applications = request.response.applications;
 
-          if (applications && applications.length > 0) {
-              this.set('_searchList', applications);
-          }
-          else {
-              this.set('_searchList', []);
-              this._message = 'There are no applications with asked title. Please check your input.';
-          }
+            if (applications && applications.length > 0) {
+                this.set('_searchList', applications);
+            }
+            else {
+                this.set('_searchList', []);
+                this._message = 'There are no applications with asked title. Please check your input.';
+            }
 
-          this._loader = false;
-      }.bind(this));
-  }
+            this._loader = false;
+        }.bind(this));
+    }
 
-  _onSearchClear() {
-      this._onSearch({
-          detail: {
-              term: ''
-          }
-      });
-  }
+    _onSearchClear() {
+        this._onSearch({
+            detail: {
+                term: ''
+            }
+        });
+    }
 
-  /**
-   * Called after application has been selected from search list.
-   * Sets selected application.
-   * Fires an event.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onApplicationSelect(event) {
-      this.sharedElements.hero = this.shadowRoot.getElementById('application_' + event.model.index);
-      this.selectedApplication = event.detail.application;
+    /**
+     * Called after application has been selected from search list.
+     * Sets selected application.
+     * Fires an event.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onApplicationSelect(event) {
+        this.sharedElements.hero = this.shadowRoot.getElementById('application_' + event.model.index);
+        this.selectedApplication = event.detail.application;
 
-      this.dispatchEvent(new CustomEvent('application-select', { bubbles: true, composed: true }));
-  }
+        this.dispatchEvent(new CustomEvent('application-select', { bubbles: true, composed: true }));
+    }
 
-  _onAddItem(event) {
-      this.sharedElements.hero = dom(event).rootTarget;
+    _onAddItem(event) {
+        this.sharedElements.hero = dom(event).rootTarget;
 
-      this.dispatchEvent(new CustomEvent('add-item', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              searchTerm: this.$.appscoSearch.getValue()
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('add-item', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                searchTerm: this.$.appscoSearch.getValue()
+            }
+        }));
+    }
 
-  _onAddLink(event) {
-      this.sharedElements.hero = dom(event).rootTarget;
+    _onAddLink(event) {
+        this.sharedElements.hero = dom(event).rootTarget;
 
-      this.dispatchEvent(new CustomEvent('add-link', { bubbles: true, composed: true }));
-  }
+        this.dispatchEvent(new CustomEvent('add-link', { bubbles: true, composed: true }));
+    }
 
-  setup() {
-      this.$.appscoSearch.setup();
-  }
+    setup() {
+        this.$.appscoSearch.setup();
+    }
 
-  reset() {
-      this.$.appscoSearch.reset();
-      this._searchList = [];
-      this._searchActive = false;
-      this._message = '';
-  }
+    reset() {
+        this.$.appscoSearch.reset();
+        this._searchList = [];
+        this._searchActive = false;
+        this._message = '';
+    }
 }
 window.customElements.define(AppscoApplicationAddSearch.is, AppscoApplicationAddSearch);

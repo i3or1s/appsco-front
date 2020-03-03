@@ -21,9 +21,10 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoUpdateSubscriptionAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -164,251 +165,251 @@ class AppscoUpdateSubscriptionAction extends mixinBehaviors([Appsco.HeadersMixin
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-update-subscription-action'; }
+    static get is() { return 'appsco-update-subscription-action'; }
 
-  static get properties() {
-      return {
-          companyApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            companyApi: {
+                type: String
+            },
 
-          subscription: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            subscription: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Indicates if add application loader should be displayed or not.
-           */
-          _purchaseLoader: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if add application loader should be displayed or not.
+             */
+            _purchaseLoader: {
+                type: Boolean,
+                value: false
+            },
 
-          _subscriptionYear: {
-              type: Number,
-              value: 0
-          },
+            _subscriptionYear: {
+                type: Number,
+                value: 0
+            },
 
-          _subscriptionMonth: {
-              type: Number,
-              value: 0
-          },
+            _subscriptionMonth: {
+                type: Number,
+                value: 0
+            },
 
-          _plansApi: {
-              type: String,
-              computed: "_computePlansApi(companyApi)"
-          },
+            _plansApi: {
+                type: String,
+                computed: "_computePlansApi(companyApi)"
+            },
 
-          _loadingPlans: {
-              type: Boolean,
-              value: true
-          },
+            _loadingPlans: {
+                type: Boolean,
+                value: true
+            },
 
-          _plans: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _plans: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _purchaseApi: {
-              type: String,
-              computed: "_computePurchaseApi(companyApi, subscription)"
-          },
+            _purchaseApi: {
+                type: String,
+                computed: "_computePurchaseApi(companyApi, subscription)"
+            },
 
-          _selectedPlan: {
-              type: String,
-              computed: "_computeSelectedPlan(subscription, _plans)"
-          },
+            _selectedPlan: {
+                type: String,
+                computed: "_computeSelectedPlan(subscription, _plans)"
+            },
 
-          _stripePublicKey: {
-              type: String,
-              value: ''
-          },
+            _stripePublicKey: {
+                type: String,
+                value: ''
+            },
 
-          _publicKeyApi: {
-              type: String,
-              computed: '_computePublicKeyApi(companyApi)'
-          }
-      };
-  }
+            _publicKeyApi: {
+                type: String,
+                computed: '_computePublicKeyApi(companyApi)'
+            }
+        };
+    }
 
-  _computePublicKeyApi(companyApi) {
-      return companyApi + '/billing/pk';
-  }
+    _computePublicKeyApi(companyApi) {
+        return companyApi + '/billing/pk';
+    }
 
-  _handlePublicKeyResponse(event) {
-      if (!event.detail.response) {
-          return;
-      }
-      this._stripePublicKey = event.detail.response.stripePublicKey;
-  }
+    _handlePublicKeyResponse(event) {
+        if (!event.detail.response) {
+            return;
+        }
+        this._stripePublicKey = event.detail.response.stripePublicKey;
+    }
 
-  _computePlansApi(companyApi) {
-      return companyApi ? companyApi + '/billing/plans' : null;
-  }
+    _computePlansApi(companyApi) {
+        return companyApi ? companyApi + '/billing/plans' : null;
+    }
 
-  _isYearlyPlan(plan) {
-      return plan && plan.interval == 'year';
-  }
+    _isYearlyPlan(plan) {
+        return plan && plan.interval == 'year';
+    }
 
-  _updateTotalPrice() {
-      var clonedPlansList = JSON.parse(JSON.stringify(this._plans));
-      this.set('_plans', []);
-      this.set('_plans', clonedPlansList);
-  }
+    _updateTotalPrice() {
+        var clonedPlansList = JSON.parse(JSON.stringify(this._plans));
+        this.set('_plans', []);
+        this.set('_plans', clonedPlansList);
+    }
 
-  _calculateTotalPrice(plan) {
-      if (!plan) {
-          return;
-      }
+    _calculateTotalPrice(plan) {
+        if (!plan) {
+            return;
+        }
 
-      return this.$.quantity && this.$.quantity.value ? plan.amount * this.$.quantity.value : plan.amount;
-  }
+        return this.$.quantity && this.$.quantity.value ? plan.amount * this.$.quantity.value : plan.amount;
+    }
 
-  _computeSelectedPlan(subscription, plans) {
-      if (subscription && subscription.plan) {
-          return subscription.plan.id;
-      }
-      if (plans && plans.length > 0) {
-          return plans[0].id;
-      }
-      return null;
-  }
+    _computeSelectedPlan(subscription, plans) {
+        if (subscription && subscription.plan) {
+            return subscription.plan.id;
+        }
+        if (plans && plans.length > 0) {
+            return plans[0].id;
+        }
+        return null;
+    }
 
-  _computePurchaseApi(companyApi, subscription) {
-      if (subscription && subscription.id) {
-          return companyApi ? companyApi + '/billing/subscriptions/' + this.subscription.id : null;
-      }
-      return companyApi ? companyApi + '/billing/subscriptions' : null;
-  }
+    _computePurchaseApi(companyApi, subscription) {
+        if (subscription && subscription.id) {
+            return companyApi ? companyApi + '/billing/subscriptions/' + this.subscription.id : null;
+        }
+        return companyApi ? companyApi + '/billing/subscriptions' : null;
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  setSubscription(subscription) {
-      this.subscription = subscription;
-  }
+    setSubscription(subscription) {
+        this.subscription = subscription;
+    }
 
-  _onDialogOpened() {
-      this.$.quantity.focus();
-  }
+    _onDialogOpened() {
+        this.$.quantity.focus();
+    }
 
-  _onDialogClosed() {
-      this._purchaseLoader = false;
-      this._errorMessage = '';
-      this.$.quantity.value = '';
-      this.$.quantity.invalid = false;
-  }
+    _onDialogClosed() {
+        this._purchaseLoader = false;
+        this._errorMessage = '';
+        this.$.quantity.value = '';
+        this.$.quantity.invalid = false;
+    }
 
-  _handlePlansResponse(event) {
-      var response = event.detail.response;
-      this.set('_plans', []);
+    _handlePlansResponse(event) {
+        var response = event.detail.response;
+        this.set('_plans', []);
 
-      if (null == response || 0 === response.length) {
-          this._loadingPlans = false;
-          return false;
-      }
+        if (null == response || 0 === response.length) {
+            this._loadingPlans = false;
+            return false;
+        }
 
-      response.forEach(function(plan) {
-          if (plan.type == 'distribution') {
-              this.push('_plans', plan);
-          }
-      }, this);
+        response.forEach(function(plan) {
+            if (plan.type == 'distribution') {
+                this.push('_plans', plan);
+            }
+        }, this);
 
-      this._loadingPlans = false;
-  }
+        this._loadingPlans = false;
+    }
 
-  _onPurchaseAction() {
-      var subscriptionsInput = this.$.quantity;
+    _onPurchaseAction() {
+        var subscriptionsInput = this.$.quantity;
 
-      if (subscriptionsInput.value.length === 0) {
-          subscriptionsInput.invalid = true;
-          subscriptionsInput.focus();
-          return false;
-      }
+        if (subscriptionsInput.value.length === 0) {
+            subscriptionsInput.invalid = true;
+            subscriptionsInput.focus();
+            return false;
+        }
 
-      var request = document.createElement('iron-request'),
-          method = this.subscription && this.subscription.id ? 'PUT' : 'POST',
-          options = {
-              url: this._purchaseApi,
-              method: method,
-              handleAs: 'json',
-              headers: this._headers
-          },
-          body = encodeURIComponent(this.$.quantity.name) +
-                  '=' +
-                  encodeURIComponent(this.$.quantity.value) +
-                  '&' +
-                  encodeURIComponent('subscription[period]') +
-                  "=" +
-                  encodeURIComponent(this.$.subscriptionPlan.selectedItem.value);
-          if (this.$.couponCode.value) {
-              body +=
-                  '&' +
-                  encodeURIComponent(this.$.couponCode.name) +
-                  "=" +
-                  encodeURIComponent(this.$.couponCode.value)
-              ;
-          }
+        var request = document.createElement('iron-request'),
+            method = this.subscription && this.subscription.id ? 'PUT' : 'POST',
+            options = {
+                url: this._purchaseApi,
+                method: method,
+                handleAs: 'json',
+                headers: this._headers
+            },
+            body = encodeURIComponent(this.$.quantity.name) +
+                '=' +
+                encodeURIComponent(this.$.quantity.value) +
+                '&' +
+                encodeURIComponent('subscription[period]') +
+                "=" +
+                encodeURIComponent(this.$.subscriptionPlan.selectedItem.value);
+        if (this.$.couponCode.value) {
+            body +=
+                '&' +
+                encodeURIComponent(this.$.couponCode.name) +
+                "=" +
+                encodeURIComponent(this.$.couponCode.value)
+            ;
+        }
 
-      this._purchaseLoader = true;
+        this._purchaseLoader = true;
 
-      options.body = body;
+        options.body = body;
 
-      request.send(options).then(
-          function(request) {
-              if (request.response.requires_action) {
-                  var stripe = Stripe(this._stripePublicKey);
-                  var elements = stripe.elements();
+        request.send(options).then(
+            function(request) {
+                if (request.response.requires_action) {
+                    var stripe = Stripe(this._stripePublicKey);
+                    var elements = stripe.elements();
 
-                  stripe.handleCardPayment(request.response.client_secret).then(function(result) {
-                      if (result.error) {
-                          this._errorMessage = 'An error occured';
-                          this._purchaseLoader = false;
-                      } else {
-                          this._paymentCompleted(request.response);
-                      }
-                  }.bind(this));
-                  return;
-              }
+                    stripe.handleCardPayment(request.response.client_secret).then(function(result) {
+                        if (result.error) {
+                            this._errorMessage = 'An error occured';
+                            this._purchaseLoader = false;
+                        } else {
+                            this._paymentCompleted(request.response);
+                        }
+                    }.bind(this));
+                    return;
+                }
 
-              this._paymentCompleted(request.response);
-          }.bind(this),
-          function() {
-              this._errorMessage = request.response.message;
-              this._purchaseLoader = false;
-          }.bind(this)
-      );
-  }
+                this._paymentCompleted(request.response);
+            }.bind(this),
+            function() {
+                this._errorMessage = request.response.message;
+                this._purchaseLoader = false;
+            }.bind(this)
+        );
+    }
 
-  _paymentCompleted(response) {
-      var request = document.createElement('iron-request'),
-          options = {
-              url: response.on_confirm,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
-      request.send(options).then(function() {
-          this.$.dialog.close();
+    _paymentCompleted(response) {
+        var request = document.createElement('iron-request'),
+            options = {
+                url: response.on_confirm,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
+        request.send(options).then(function() {
+            this.$.dialog.close();
 
-          this.dispatchEvent(new CustomEvent('subscription-updated', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  subscription: response
-              }
-          }));
+            this.dispatchEvent(new CustomEvent('subscription-updated', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    subscription: response
+                }
+            }));
 
-          this._purchaseLoader = false;
-      }.bind(this));
-  }
+            this._purchaseLoader = false;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoUpdateSubscriptionAction.is, AppscoUpdateSubscriptionAction);

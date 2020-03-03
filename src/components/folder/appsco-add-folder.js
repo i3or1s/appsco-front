@@ -14,9 +14,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddFolder extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -76,137 +77,137 @@ class AppscoAddFolder extends mixinBehaviors([Appsco.HeadersMixin], PolymerEleme
 
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnter"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-add-folder'; }
+    static get is() { return 'appsco-add-folder'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          isOnPersonal: {
-              type: Boolean,
-              value: false
-          },
+            isOnPersonal: {
+                type: Boolean,
+                value: false
+            },
 
-          foldersApi: {
-              type: String
-          },
+            foldersApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String,
-              value: ''
-          },
+            _errorMessage: {
+                type: String,
+                value: ''
+            },
 
-          _target: {
-              type: Object
-          }
-      };
-  }
+            _target: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this.$.form;
-  }
+        this._target = this.$.form;
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  setOnPersonal() {
-      this.isOnPersonal = true;
-  }
+    setOnPersonal() {
+        this.isOnPersonal = true;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogOpened() {
-      this.$.title.focus();
-  }
+    _onDialogOpened() {
+        this.$.title.focus();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this._target.reset();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this._target.reset();
+    }
 
-  _onEnter() {
-      this._onAddAction();
-  }
+    _onEnter() {
+        this._onAddAction();
+    }
 
-  _submitForm() {
-      this._hideError();
+    _submitForm() {
+        this._hideError();
 
-      if (this._target.validate()) {
-          this._showLoader();
-          this._target.submit();
-      }
-  }
+        if (this._target.validate()) {
+            this._showLoader();
+            this._target.submit();
+        }
+    }
 
-  _onAddAction() {
-      this._submitForm();
-  }
+    _onAddAction() {
+        this._submitForm();
+    }
 
-  _onFormPresubmit(event) {
-      if (this.company.self && !this.isOnPersonal) {
-          event.target.request.body['dashboardGroup[company]'] = this.company.self;
-      }
-  }
+    _onFormPresubmit(event) {
+        if (this.company.self && !this.isOnPersonal) {
+            event.target.request.body['dashboardGroup[company]'] = this.company.self;
+        }
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {
-      this.close();
+    _onFormResponse(event) {
+        this.close();
 
-      this.dispatchEvent(new CustomEvent('folder-added', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              folder: event.detail.response.dashboardGroup ? event.detail.response.dashboardGroup : {}
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('folder-added', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                folder: event.detail.response.dashboardGroup ? event.detail.response.dashboardGroup : {}
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoAddFolder.is, AppscoAddFolder);

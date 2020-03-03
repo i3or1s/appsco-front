@@ -10,9 +10,10 @@ import './appsco-company-transfer-token.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyTransferTokenPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -51,83 +52,83 @@ class AppscoCompanyTransferTokenPage extends mixinBehaviors([NeonSharedElementAn
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-transfer-token-page'; }
+    static get is() { return 'appsco-company-transfer-token-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          transferTokenApi: {
-              type: String
-          },
+            transferTokenApi: {
+                type: String
+            },
 
-          sendTransferTokenApi: {
-              type: String
-          },
+            sendTransferTokenApi: {
+                type: String
+            },
 
-          partnersApiUrl: {
-              type: String
-          },
+            partnersApiUrl: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _onBack() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onBack() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  resetPage() {
-      this.$.appscoCompanyTransferToken.reset();
-  }
+    resetPage() {
+        this.$.appscoCompanyTransferToken.reset();
+    }
 }
 window.customElements.define(AppscoCompanyTransferTokenPage.is, AppscoCompanyTransferTokenPage);

@@ -1,34 +1,12 @@
-/**
-`appsco-account-orgunits`
-Contains info about organization units account belongs to.
-
-    <appsco-account-orgunits account="{}">
-    </appsco-account-orgunits>
-
-### Styling
-
-`<appsco-account-orgunits>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-account-orgunits` | Mixin for the root element | `{}`
-
-@demo demo/company/appsco-account-orgunits.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-styles/typography.js';
 import './appsco-account-orgunit-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountOrgunits extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -62,19 +40,19 @@ class AppscoAccountOrgunits extends PolymerElement {
             </p>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-orgunits'; }
+    static get is() { return 'appsco-account-orgunits'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          }
-      };
-  }
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            }
+        };
+    }
 }
 window.customElements.define(AppscoAccountOrgunits.is, AppscoAccountOrgunits);

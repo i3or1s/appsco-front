@@ -1,18 +1,4 @@
-/*
-`appsco-invitation-remove`
-Shows dialog screen with confirmation for invitation removal.
-
-    <appsco-invitation-remove invitation="{}">
-    </appsco-invitation-remove>
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -24,9 +10,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoInvitationRemove extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -74,102 +61,102 @@ class AppscoInvitationRemove extends mixinBehaviors([Appsco.HeadersMixin], Polym
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-invitation-remove'; }
+    static get is() { return 'appsco-invitation-remove'; }
 
-  static get properties() {
-      return {
-          invitation: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+    static get properties() {
+        return {
+            invitation: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _removeApi: {
-              type: String,
-              computed: '_computeRemoveApi(invitation)'
-          },
+            _removeApi: {
+                type: String,
+                computed: '_computeRemoveApi(invitation)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  _computeRemoveApi(invitation) {
-      return invitation && invitation.self ? invitation.self : null;
-  }
+    _computeRemoveApi(invitation) {
+        return invitation && invitation.self ? invitation.self : null;
+    }
 
-  setInvitation(invitation) {
-      this.set('invitation', invitation);
-  }
+    setInvitation(invitation) {
+        this.set('invitation', invitation);
+    }
 
-  open () {
-      this.$.dialog.open();
-  }
+    open () {
+        this.$.dialog.open();
+    }
 
-  _hide() {
-      this.$.dialog.close();
-  }
+    _hide() {
+        this.$.dialog.close();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onRemove() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._removeApi,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onRemove() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._removeApi,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._showLoader();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          const status = request.status;
+        request.send(options).then(function() {
+            const status = request.status;
 
-          if (200 === status) {
-              this.dispatchEvent(new CustomEvent('invitation-removed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      invitation: this.invitation
-                  }
-              }));
-          }
+            if (200 === status) {
+                this.dispatchEvent(new CustomEvent('invitation-removed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        invitation: this.invitation
+                    }
+                }));
+            }
 
-          this.set('invitation', {});
-          this._hideLoader();
-          this._hide();
-      }.bind(this), function() {
-          const status = request.status;
+            this.set('invitation', {});
+            this._hideLoader();
+            this._hide();
+        }.bind(this), function() {
+            const status = request.status;
 
-          if (404 === status) {
-              this.dispatchEvent(new CustomEvent('invitation-already-removed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      invitation: this.invitation
-                  }
-              }));
-          }
-          else {
-              this.dispatchEvent(new CustomEvent('invitation-remove-failed', { bubbles: true, composed: true }));
-          }
+            if (404 === status) {
+                this.dispatchEvent(new CustomEvent('invitation-already-removed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        invitation: this.invitation
+                    }
+                }));
+            }
+            else {
+                this.dispatchEvent(new CustomEvent('invitation-remove-failed', { bubbles: true, composed: true }));
+            }
 
-          this.set('invitation', {});
-          this._hideLoader();
-          this._hide();
-      }.bind(this));
-  }
+            this.set('invitation', {});
+            this._hideLoader();
+            this._hide();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoInvitationRemove.is, AppscoInvitationRemove);

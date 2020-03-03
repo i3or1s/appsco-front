@@ -21,11 +21,11 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddPartnerAdmin extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
-        <style include="appsco-list-item-styles"></style>
-        <style>
+    static get template() {
+        return html`
+        <style include="appsco-list-item-styles">
             :host {
                 display: block;
                 position: relative;
@@ -215,502 +215,502 @@ class AppscoAddPartnerAdmin extends mixinBehaviors([Appsco.HeadersMixin], Polyme
             </div>
         </paper-dialog>
 `;
-  }
-
-  static get is() { return 'appsco-add-partner-admin'; }
-
-  static get properties() {
-      return {
-          getRolesApi: {
-              type: String
-          },
-
-          addPartnerAdminApi: {
-              type: String
-          },
-
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          customers: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _accountList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _accountListAll: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _message: {
-              type: String
-          },
-
-          _selectedAccounts: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _createLoader: {
-              type: Boolean,
-              value: false
-          },
-
-          _componentReady: {
-              type: Boolean,
-              value: false
-          },
-
-          _bulkSelect: {
-              type: Boolean,
-              value: false
-          },
-
-          _accountsCount: {
-              type: Number,
-              value: 0
-          },
-
-          _numberOfSelectedAccounts: {
-              type: Number,
-              value: 0
-          },
-
-          _filterTerm: {
-              type: String,
-              value: ''
-          },
-
-          _filterType: {
-              type: String,
-              value: 'all'
-          }
-      };
-  }
-
-  open() {
-      this.$.dialog.open();
-  }
-
-  close() {
-      this.$.dialog.close();
-  }
-
-  setCustomers(customers) {
-      this.customers = customers;
-  }
-
-  _showLoader() {
-      this._createLoader = true;
-  }
-
-  _hideLoader() {
-      this._createLoader = false;
-  }
-
-  _showError(message) {
-      this._errorMessage = message;
-  }
-
-  _hideError() {
-      this._errorMessage = '';
-  }
-
-  _showMessage(message) {
-      this._message = message;
-  }
-
-  _hideMessage() {
-      this._message = '';
-  }
-
-  _showAccountListProgress() {
-      this.$.accountListProgress.hidden = false;
-  }
-
-  _hideAccountListProgress() {
-      setTimeout(function() {
-          this.$.accountListProgress.hidden = true;
-      }.bind(this), 500);
-  }
-
-  _onDialogOpened() {
-      this.$.appscoSearch.setup();
-      this.shadowRoot.getElementById('appscoRoles').reloadItems();
-      this._componentReady = true;
-  }
-
-  _onDialogClosed() {
-      this._reset();
-  }
-
-  _onAccountsLoadFinished() {
-      const listItems = [];
-
-      this._showAccountListProgress();
-
-      this.set('_accountList', []);
-      this.set('_accountListAll', []);
-
-      const rolesComponent = this.shadowRoot.getElementById('appscoRoles'),
-          roles = rolesComponent.getAllItems();
-
-      roles.forEach(function(role, index) {
-          role.account.type = 'user';
-          role.account.selected = false;
-          listItems.push(role);
-      }.bind(this));
-
-      this.set('_accountList', listItems);
-      this.set('_accountListAll', listItems);
-      this._accountsCount = this._accountList.length;
-      this._hideAccountListProgress();
-  }
-
-  _setAccountList() {
-      const listItems = [];
-
-      this._showAccountListProgress();
-
-      this.set('_accountList', []);
-      this.set('_accountListAll', []);
-
-      const rolesComponent = this.shadowRoot.getElementById('appscoRoles'),
-          roles = rolesComponent.getAllItems();
-
-      roles.forEach(function(role, index) {
-          role.account.type = 'user';
-          role.account.selected = false;
-          listItems.push(role.account);
-      }.bind(this));
-
-      this.set('_accountList', listItems);
-      this.set('_accountListAll', listItems);
-      this._accountsCount = this._accountList.length;
-      this._hideAccountListProgress();
-  }
-
-  _hideContacts() {
-      const list = JSON.parse(JSON.stringify(this._accountList)),
-          length = list.length;
-
-      this.set('_accountList', []);
-
-      for (let i = 0; i < length; i++) {
-          if ('user' === list[i].type) {
-              this.push('_accountList', list[i]);
-          }
-      }
-  }
-
-  _onBulkSelect() {
-      this._hideError();
-
-      if (this._componentReady) {
-          this._bulkSelect = !this._bulkSelect;
-          this._bulkSelect ? this._selectAllAccounts() : this._deselectAllAccounts();
-      }
-  }
-
-  _selectAllAccounts() {
-      const list = JSON.parse(JSON.stringify(this._accountList)),
-          length = list.length,
-          listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length;
-
-      for (let i = 0; i < length; i++) {
-          list[i].selected = true;
-
-          for (let j = 0; j < lengthAll; j++) {
-              if (listAll[j].self === list[i].self) {
-                  listAll[j].selected = true;
-              }
-          }
-      }
-
-      this.set('_accountList', []);
-      this.set('_accountList', list);
-
-      this.set('_accountListAll', []);
-      this.set('_accountListAll', listAll);
-
-      this._recalculateInfo();
-  }
-
-  _deselectAllAccounts() {
-      const list = JSON.parse(JSON.stringify(this._accountList)),
-          length = list.length,
-          listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length;
-
-      for (let i = 0; i < length; i++) {
-          list[i].selected = false;
-
-          for (let j = 0; j < lengthAll; j++) {
-              if (listAll[j].self === list[i].self) {
-                  listAll[j].selected = false;
-              }
-          }
-      }
-
-      this.set('_accountList', []);
-      this.set('_accountList', list);
-
-      this.set('_accountListAll', []);
-      this.set('_accountListAll', listAll);
-
-      this._recalculateInfo();
-  }
-
-  _onAccountListItemSelectChanged(event) {
-      const item = event.detail.item,
-          listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length;
-
-      if (!item.selected) {
-          this._bulkSelect = false;
-      }
-
-      for (let j = 0; j < lengthAll; j++) {
-          if (listAll[j].self === item.self) {
-              listAll[j].selected = item.selected;
-          }
-      }
-
-      this.set('_accountListAll', []);
-      this.set('_accountListAll', listAll);
-
-      this._recalculateInfo();
-      this._setBulkSelectStatus();
-      this._hideError();
-  }
-
-  _recalculateInfo() {
-      const list = this._accountListAll,
-          length = list.length;
-
-      this._numberOfSelectedAccounts = 0;
-
-      for (let i = 0; i < length; i++) {
-          if (list[i].selected) {
-              this._numberOfSelectedAccounts++;
-          }
-      }
-  }
-
-  _setBulkSelectStatus() {
-      this._bulkSelect = (this._numberOfSelectedAccounts === this._accountListAll.length);
-  }
-
-  _onSearchAccounts(event) {
-      const searchValue = event.detail.term,
-          searchLength = searchValue.length;
-
-      this._filterTerm = searchValue;
-
-      if (searchLength < 3) {
-          this._filterTerm = '';
-      }
-
-      this._filterAccountList();
-  }
-
-  _onSearchAccountsClear() {
-      this._filterTerm = '';
-      this._filterAccountList();
-  }
-
-  _onAccountTypeSelected(event) {
-      this._filterType = event.detail.item.getAttribute('value');
-      this._filterAccountList();
-      this._setBulkSelectStatus();
-  }
-
-  _filterAccountList() {
-      const listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length,
-          term = this._filterTerm.toLowerCase(),
-          type = this._filterType;
-
-      this._hideMessage();
-      this.set('_accountList', []);
-
-      if ('all' === type) {
-          if (term) {
-              for (let i = 0; i < lengthAll; i++) {
-                  if ((-1 !== listAll[i].account.name.toLowerCase().indexOf(term.toLowerCase())) ||
-                      (-1 !== listAll[i].account.email.toLowerCase().indexOf(term))) {
-                      this.push('_accountList', listAll[i]);
-                  }
-              }
-          }
-          else {
-              this.set('_accountList', listAll);
-          }
-      }
-      else {
-          if (term) {
-              for (let i = 0; i < lengthAll; i++) {
-                  if ((type === listAll[i].type) &&
-                      ((-1 !== listAll[i].account.name.toLowerCase().indexOf(term)) ||
-                      (-1 !== listAll[i].account.email.toLowerCase().indexOf(term)))) {
-                      this.push('_accountList', listAll[i]);
-                  }
-              }
-          }
-          else {
-              for (let i = 0; i < lengthAll; i++) {
-                  if (type === listAll[i].type) {
-                      this.push('_accountList', listAll[i]);
-                  }
-              }
-          }
-      }
-
-      if (0 === this._accountList.length) {
-          this._showMessage('There are no accounts available according to selected filters.');
-      }
-  }
-
-  _reset() {
-      this.$.appscoSearch.reset() ;
-      this.set('_accountList', []);
-      this.set('_accountListAll', []);
-      this.set('resources', []);
-      this.set('_selectedAccounts', []);
-      this._componentReady = false;
-      this._filterTerm = '';
-      this._filterType = 'all';
-      this._numberOfSelectedAccounts = 0;
-      this._accountsCount = 0;
-      this._bulkSelect = false;
-      this._hideLoader();
-      this._hideError();
-      this._hideMessage();
-  }
-
-  _partnerAdminCreateFinished() {
-      this.close();
-
-      this.dispatchEvent(new CustomEvent('partner-admins-created', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              resources: this._responseApplications
-          }
-      }));
-
-      this.set('_selectedAccounts', []);
-      this.set('_responseApplications', []);
-      this._hideLoader();
-  }
-
-  _createPartnerAdmins(companyRoles, customers) {
-      let me = this,
-          length = customers.length - 1,
-          customersParams = '',
-          addedAdmins = [],
-          requestCounter = 0;
-
-      this._showLoader();
-
-      for (let i = 0; i <= length; i++) {
-          let next = ((i === length) ? '' : '&');
-          customersParams += ('customers[]=' + encodeURIComponent(customers[i].self) + next);
-      }
-
-      for (let idx in companyRoles) {
-          const request = document.createElement('iron-request'),
-              options = {
-                  method: 'POST',
-                  handleAs: 'json',
-                  body: (('company_role=' + companyRoles[idx].self) + '&' + customersParams),
-                  url: this.addPartnerAdminApi,
-                  headers: this._headers
-              };
-
-          request.send(options).then(
-              function(companyRole, adminList, rq) {
-                  return function() {
-                      if (rq.succeeded) {
-                          Array.prototype.push.apply(adminList, rq.response.partner_admins);
-                      }
-                      requestCounter++;
-                      if (requestCounter === companyRoles.length) {
-                          me._hideLoader();
-                          me.dispatchEvent(new CustomEvent('partner-admins-added', {
-                              bubbles: true,
-                              composed: true,
-                              detail: {
-                                  customers: me.customers,
-                                  partnerAdmins: adminList
-                              }
-                          }));
-                          me.close();
-                      }
-                  }
-              }(companyRoles[idx], addedAdmins, request), function() {
-                  requestCounter++;
-                  if (requestCounter === companyRoles.length) {
-                      me.dispatchEvent(new CustomEvent('partner-admins-added', {
-                          bubbles: true,
-                          composed: true,
-                          detail: {
-                              customers: me.customers,
-                              partnerAdmins: addedAdmins
-                          }
-                      }));
-                      me._hideLoader();
-                      me.close();
-                  }
-              }
-          );
-      }
-  }
-
-  _onCreatePartnerAdminsAction() {
-      const list = JSON.parse(JSON.stringify(this._accountListAll)),
-          length = list.length,
-          selectedAccounts = this._selectedAccounts,
-          customers = this.customers;
-
-      for (let i = 0; i < length; i++) {
-          if (list[i].selected) {
-              selectedAccounts.push(list[i]);
-          }
-      }
-
-      if (0 === selectedAccounts.length) {
-          this._showError('Please add at least one user to make partner admin.');
-          return false;
-      }
-      else if (0 === customers.length) {
-          this._showError('There are no customers selected to make partner admin for.');
-          return false;
-      }
-
-      this._createPartnerAdmins(selectedAccounts, customers);
-  }
-
-  _onInnerIronOverlay(event) {
-      event.stopPropagation();
-  }
+    }
+
+    static get is() { return 'appsco-add-partner-admin'; }
+
+    static get properties() {
+        return {
+            getRolesApi: {
+                type: String
+            },
+
+            addPartnerAdminApi: {
+                type: String
+            },
+
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            customers: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _accountList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _accountListAll: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _message: {
+                type: String
+            },
+
+            _selectedAccounts: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _createLoader: {
+                type: Boolean,
+                value: false
+            },
+
+            _componentReady: {
+                type: Boolean,
+                value: false
+            },
+
+            _bulkSelect: {
+                type: Boolean,
+                value: false
+            },
+
+            _accountsCount: {
+                type: Number,
+                value: 0
+            },
+
+            _numberOfSelectedAccounts: {
+                type: Number,
+                value: 0
+            },
+
+            _filterTerm: {
+                type: String,
+                value: ''
+            },
+
+            _filterType: {
+                type: String,
+                value: 'all'
+            }
+        };
+    }
+
+    open() {
+        this.$.dialog.open();
+    }
+
+    close() {
+        this.$.dialog.close();
+    }
+
+    setCustomers(customers) {
+        this.customers = customers;
+    }
+
+    _showLoader() {
+        this._createLoader = true;
+    }
+
+    _hideLoader() {
+        this._createLoader = false;
+    }
+
+    _showError(message) {
+        this._errorMessage = message;
+    }
+
+    _hideError() {
+        this._errorMessage = '';
+    }
+
+    _showMessage(message) {
+        this._message = message;
+    }
+
+    _hideMessage() {
+        this._message = '';
+    }
+
+    _showAccountListProgress() {
+        this.$.accountListProgress.hidden = false;
+    }
+
+    _hideAccountListProgress() {
+        setTimeout(function() {
+            this.$.accountListProgress.hidden = true;
+        }.bind(this), 500);
+    }
+
+    _onDialogOpened() {
+        this.$.appscoSearch.setup();
+        this.shadowRoot.getElementById('appscoRoles').reloadItems();
+        this._componentReady = true;
+    }
+
+    _onDialogClosed() {
+        this._reset();
+    }
+
+    _onAccountsLoadFinished() {
+        const listItems = [];
+
+        this._showAccountListProgress();
+
+        this.set('_accountList', []);
+        this.set('_accountListAll', []);
+
+        const rolesComponent = this.shadowRoot.getElementById('appscoRoles'),
+            roles = rolesComponent.getAllItems();
+
+        roles.forEach(function(role, index) {
+            role.account.type = 'user';
+            role.account.selected = false;
+            listItems.push(role);
+        }.bind(this));
+
+        this.set('_accountList', listItems);
+        this.set('_accountListAll', listItems);
+        this._accountsCount = this._accountList.length;
+        this._hideAccountListProgress();
+    }
+
+    _setAccountList() {
+        const listItems = [];
+
+        this._showAccountListProgress();
+
+        this.set('_accountList', []);
+        this.set('_accountListAll', []);
+
+        const rolesComponent = this.shadowRoot.getElementById('appscoRoles'),
+            roles = rolesComponent.getAllItems();
+
+        roles.forEach(function(role, index) {
+            role.account.type = 'user';
+            role.account.selected = false;
+            listItems.push(role.account);
+        }.bind(this));
+
+        this.set('_accountList', listItems);
+        this.set('_accountListAll', listItems);
+        this._accountsCount = this._accountList.length;
+        this._hideAccountListProgress();
+    }
+
+    _hideContacts() {
+        const list = JSON.parse(JSON.stringify(this._accountList)),
+            length = list.length;
+
+        this.set('_accountList', []);
+
+        for (let i = 0; i < length; i++) {
+            if ('user' === list[i].type) {
+                this.push('_accountList', list[i]);
+            }
+        }
+    }
+
+    _onBulkSelect() {
+        this._hideError();
+
+        if (this._componentReady) {
+            this._bulkSelect = !this._bulkSelect;
+            this._bulkSelect ? this._selectAllAccounts() : this._deselectAllAccounts();
+        }
+    }
+
+    _selectAllAccounts() {
+        const list = JSON.parse(JSON.stringify(this._accountList)),
+            length = list.length,
+            listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length;
+
+        for (let i = 0; i < length; i++) {
+            list[i].selected = true;
+
+            for (let j = 0; j < lengthAll; j++) {
+                if (listAll[j].self === list[i].self) {
+                    listAll[j].selected = true;
+                }
+            }
+        }
+
+        this.set('_accountList', []);
+        this.set('_accountList', list);
+
+        this.set('_accountListAll', []);
+        this.set('_accountListAll', listAll);
+
+        this._recalculateInfo();
+    }
+
+    _deselectAllAccounts() {
+        const list = JSON.parse(JSON.stringify(this._accountList)),
+            length = list.length,
+            listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length;
+
+        for (let i = 0; i < length; i++) {
+            list[i].selected = false;
+
+            for (let j = 0; j < lengthAll; j++) {
+                if (listAll[j].self === list[i].self) {
+                    listAll[j].selected = false;
+                }
+            }
+        }
+
+        this.set('_accountList', []);
+        this.set('_accountList', list);
+
+        this.set('_accountListAll', []);
+        this.set('_accountListAll', listAll);
+
+        this._recalculateInfo();
+    }
+
+    _onAccountListItemSelectChanged(event) {
+        const item = event.detail.item,
+            listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length;
+
+        if (!item.selected) {
+            this._bulkSelect = false;
+        }
+
+        for (let j = 0; j < lengthAll; j++) {
+            if (listAll[j].self === item.self) {
+                listAll[j].selected = item.selected;
+            }
+        }
+
+        this.set('_accountListAll', []);
+        this.set('_accountListAll', listAll);
+
+        this._recalculateInfo();
+        this._setBulkSelectStatus();
+        this._hideError();
+    }
+
+    _recalculateInfo() {
+        const list = this._accountListAll,
+            length = list.length;
+
+        this._numberOfSelectedAccounts = 0;
+
+        for (let i = 0; i < length; i++) {
+            if (list[i].selected) {
+                this._numberOfSelectedAccounts++;
+            }
+        }
+    }
+
+    _setBulkSelectStatus() {
+        this._bulkSelect = (this._numberOfSelectedAccounts === this._accountListAll.length);
+    }
+
+    _onSearchAccounts(event) {
+        const searchValue = event.detail.term,
+            searchLength = searchValue.length;
+
+        this._filterTerm = searchValue;
+
+        if (searchLength < 3) {
+            this._filterTerm = '';
+        }
+
+        this._filterAccountList();
+    }
+
+    _onSearchAccountsClear() {
+        this._filterTerm = '';
+        this._filterAccountList();
+    }
+
+    _onAccountTypeSelected(event) {
+        this._filterType = event.detail.item.getAttribute('value');
+        this._filterAccountList();
+        this._setBulkSelectStatus();
+    }
+
+    _filterAccountList() {
+        const listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length,
+            term = this._filterTerm.toLowerCase(),
+            type = this._filterType;
+
+        this._hideMessage();
+        this.set('_accountList', []);
+
+        if ('all' === type) {
+            if (term) {
+                for (let i = 0; i < lengthAll; i++) {
+                    if ((-1 !== listAll[i].account.name.toLowerCase().indexOf(term.toLowerCase())) ||
+                        (-1 !== listAll[i].account.email.toLowerCase().indexOf(term))) {
+                        this.push('_accountList', listAll[i]);
+                    }
+                }
+            }
+            else {
+                this.set('_accountList', listAll);
+            }
+        }
+        else {
+            if (term) {
+                for (let i = 0; i < lengthAll; i++) {
+                    if ((type === listAll[i].type) &&
+                        ((-1 !== listAll[i].account.name.toLowerCase().indexOf(term)) ||
+                            (-1 !== listAll[i].account.email.toLowerCase().indexOf(term)))) {
+                        this.push('_accountList', listAll[i]);
+                    }
+                }
+            }
+            else {
+                for (let i = 0; i < lengthAll; i++) {
+                    if (type === listAll[i].type) {
+                        this.push('_accountList', listAll[i]);
+                    }
+                }
+            }
+        }
+
+        if (0 === this._accountList.length) {
+            this._showMessage('There are no accounts available according to selected filters.');
+        }
+    }
+
+    _reset() {
+        this.$.appscoSearch.reset() ;
+        this.set('_accountList', []);
+        this.set('_accountListAll', []);
+        this.set('resources', []);
+        this.set('_selectedAccounts', []);
+        this._componentReady = false;
+        this._filterTerm = '';
+        this._filterType = 'all';
+        this._numberOfSelectedAccounts = 0;
+        this._accountsCount = 0;
+        this._bulkSelect = false;
+        this._hideLoader();
+        this._hideError();
+        this._hideMessage();
+    }
+
+    _partnerAdminCreateFinished() {
+        this.close();
+
+        this.dispatchEvent(new CustomEvent('partner-admins-created', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                resources: this._responseApplications
+            }
+        }));
+
+        this.set('_selectedAccounts', []);
+        this.set('_responseApplications', []);
+        this._hideLoader();
+    }
+
+    _createPartnerAdmins(companyRoles, customers) {
+        let me = this,
+            length = customers.length - 1,
+            customersParams = '',
+            addedAdmins = [],
+            requestCounter = 0;
+
+        this._showLoader();
+
+        for (let i = 0; i <= length; i++) {
+            let next = ((i === length) ? '' : '&');
+            customersParams += ('customers[]=' + encodeURIComponent(customers[i].self) + next);
+        }
+
+        for (let idx in companyRoles) {
+            const request = document.createElement('iron-request'),
+                options = {
+                    method: 'POST',
+                    handleAs: 'json',
+                    body: (('company_role=' + companyRoles[idx].self) + '&' + customersParams),
+                    url: this.addPartnerAdminApi,
+                    headers: this._headers
+                };
+
+            request.send(options).then(
+                function(companyRole, adminList, rq) {
+                    return function() {
+                        if (rq.succeeded) {
+                            Array.prototype.push.apply(adminList, rq.response.partner_admins);
+                        }
+                        requestCounter++;
+                        if (requestCounter === companyRoles.length) {
+                            me._hideLoader();
+                            me.dispatchEvent(new CustomEvent('partner-admins-added', {
+                                bubbles: true,
+                                composed: true,
+                                detail: {
+                                    customers: me.customers,
+                                    partnerAdmins: adminList
+                                }
+                            }));
+                            me.close();
+                        }
+                    }
+                }(companyRoles[idx], addedAdmins, request), function() {
+                    requestCounter++;
+                    if (requestCounter === companyRoles.length) {
+                        me.dispatchEvent(new CustomEvent('partner-admins-added', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                customers: me.customers,
+                                partnerAdmins: addedAdmins
+                            }
+                        }));
+                        me._hideLoader();
+                        me.close();
+                    }
+                }
+            );
+        }
+    }
+
+    _onCreatePartnerAdminsAction() {
+        const list = JSON.parse(JSON.stringify(this._accountListAll)),
+            length = list.length,
+            selectedAccounts = this._selectedAccounts,
+            customers = this.customers;
+
+        for (let i = 0; i < length; i++) {
+            if (list[i].selected) {
+                selectedAccounts.push(list[i]);
+            }
+        }
+
+        if (0 === selectedAccounts.length) {
+            this._showError('Please add at least one user to make partner admin.');
+            return false;
+        }
+        else if (0 === customers.length) {
+            this._showError('There are no customers selected to make partner admin for.');
+            return false;
+        }
+
+        this._createPartnerAdmins(selectedAccounts, customers);
+    }
+
+    _onInnerIronOverlay(event) {
+        event.stopPropagation();
+    }
 }
 window.customElements.define(AppscoAddPartnerAdmin.is, AppscoAddPartnerAdmin);

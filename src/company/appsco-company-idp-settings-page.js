@@ -10,9 +10,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyIdpSettingsPage extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -42,79 +43,79 @@ class AppscoCompanyIdpSettingsPage extends mixinBehaviors([NeonAnimatableBehavio
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-idp-settings-page'; }
+    static get is() { return 'appsco-company-idp-settings-page'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String
-          },
+            authorizationToken: {
+                type: String
+            },
 
-          idPIntegrationsApi: {
-              type: String
-          },
+            idPIntegrationsApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'slide-from-bottom-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'slide-down-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'slide-from-bottom-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'slide-down-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+    }
 
-  setDomain(domain) {
-      this.$.appscoCompanyIdPSettings.setDomain(domain);
-  }
+    setDomain(domain) {
+        this.$.appscoCompanyIdPSettings.setDomain(domain);
+    }
 
-  setupPage() {
-      this.$.appscoCompanyIdPSettings.setup();
-  }
+    setupPage() {
+        this.$.appscoCompanyIdPSettings.setup();
+    }
 
-  resetPage() {
-      this.$.appscoCompanyIdPSettings.reset();
-  }
+    resetPage() {
+        this.$.appscoCompanyIdPSettings.reset();
+    }
 
-  _onClosePageAction() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onClosePageAction() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  _onIdPSettingsSaved() {
-      this._onClosePageAction();
-  }
+    _onIdPSettingsSaved() {
+        this._onClosePageAction();
+    }
 }
 window.customElements.define(AppscoCompanyIdpSettingsPage.is, AppscoCompanyIdpSettingsPage);

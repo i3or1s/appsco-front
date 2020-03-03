@@ -13,7 +13,7 @@ export const AppscoBehaviourExportReport = {
             this._showProgressBar();
         }
 
-        var request = document.createElement('iron-request'),
+        const request = document.createElement('iron-request'),
             options = {
                 url: url,
                 method: method.toUpperCase(),
@@ -33,10 +33,10 @@ export const AppscoBehaviourExportReport = {
         }
 
         request.send(options).then(function() {
-            var fileReader = new FileReader();
+            const fileReader = new FileReader();
 
             fileReader.onload = function(event) {
-                var link = document.createElement('a');
+                const link = document.createElement('a');
 
                 link.href = event.target.result;
                 link.setAttribute('download', reportPage.getFileName());
@@ -46,7 +46,7 @@ export const AppscoBehaviourExportReport = {
                     link.click();
                 }
                 else if (document.createEvent) {
-                    var clickEvent = document.createEvent('MouseEvents');
+                    const clickEvent = document.createEvent('MouseEvents');
 
                     clickEvent.initEvent('click', true, true);
                     link.dispatchEvent(clickEvent);
@@ -91,14 +91,14 @@ export const AppscoBehaviourExportReport = {
     },
 
     glueStuff: function (data) {
-        var glued = '',
+        let glued = '',
             glue = '';
-        for (var property in data) {
+        for (const property in data) {
             if (data.hasOwnProperty(property) === false) {
                 continue;
             }
             if (Array.isArray(data[property])) {
-                for (var i in data[property]) {
+                for (const i in data[property]) {
                     glued += glue + property + "[]=" + encodeURIComponent(data[property][i]);
                     glue = '&';
                 }
@@ -109,5 +109,4 @@ export const AppscoBehaviourExportReport = {
         }
         return glued;
     }
-
 };

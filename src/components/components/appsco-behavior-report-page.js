@@ -4,7 +4,6 @@ import '@polymer/polymer/polymer-legacy.js';
  * @polymerBehavior
  */
 export const AppscoBehaviourReportPage = {
-
     properties: {
     },
 
@@ -31,5 +30,4 @@ export const AppscoBehaviourReportPage = {
     getFailMessage: function() {
         return 'Report export failed';
     }
-
 };

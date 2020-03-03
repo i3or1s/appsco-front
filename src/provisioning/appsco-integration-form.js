@@ -6,9 +6,10 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationForm extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -106,231 +107,231 @@ class AppscoIntegrationForm extends PolymerElement {
 
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-form'; }
+    static get is() { return 'appsco-integration-form'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          formType: {
-              type: String,
-              value: ''
-          },
+            formType: {
+                type: String,
+                value: ''
+            },
 
-          hasOwnUrl: {
-              type: Boolean,
-              value: false,
-              computed: '_computeHasOwnUrl(integration)',
-              reflectToAttribute: true
-          },
+            hasOwnUrl: {
+                type: Boolean,
+                value: false,
+                computed: '_computeHasOwnUrl(integration)',
+                reflectToAttribute: true
+            },
 
-          requireToken: {
-              type: Boolean,
-              value: false,
-              computed: '_computeRequireToken(integration)',
-              reflectToAttribute: true
-          },
+            requireToken: {
+                type: Boolean,
+                value: false,
+                computed: '_computeRequireToken(integration)',
+                reflectToAttribute: true
+            },
 
-          requiresClaims: {
-              type: Boolean,
-              value: false,
-              computed: '_computeRequiresClaims(integration)',
-              reflectToAttribute: true
-          },
+            requiresClaims: {
+                type: Boolean,
+                value: false,
+                computed: '_computeRequiresClaims(integration)',
+                reflectToAttribute: true
+            },
 
-          requiresInstanceId: {
-              type: Boolean,
-              value: false,
-              computed: '_computeRequiresInstanceId(integration)',
-              reflectToAttribute: true
-          },
+            requiresInstanceId: {
+                type: Boolean,
+                value: false,
+                computed: '_computeRequiresInstanceId(integration)',
+                reflectToAttribute: true
+            },
 
-          _disableIntegrationTypeChange: {
-              type: Boolean,
-              computed: '_computeDisableIntegrationTypeChange(formType)'
-          },
+            _disableIntegrationTypeChange: {
+                type: Boolean,
+                computed: '_computeDisableIntegrationTypeChange(formType)'
+            },
 
-          _integrationKindList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'ra',
-                          name: 'From integration system to AppsCo'
-                      },
-                      {
-                          value: 'pst',
-                          name: 'From AppsCo to integration system'
-                      }
-                  ];
-              }
-          },
+            _integrationKindList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'ra',
+                            name: 'From integration system to AppsCo'
+                        },
+                        {
+                            value: 'pst',
+                            name: 'From AppsCo to integration system'
+                        }
+                    ];
+                }
+            },
 
-          _urlValidationPattern: {
-              type: String,
-              value: 'https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)'
-          },
+            _urlValidationPattern: {
+                type: String,
+                value: 'https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)'
+            },
 
-          _preselectedIntegrationKind: {
-              type: String,
-              computed: '_computePreselectedIntegrationType(integration, _integrationKindList)'
-          },
+            _preselectedIntegrationKind: {
+                type: String,
+                computed: '_computePreselectedIntegrationType(integration, _integrationKindList)'
+            },
 
-          _canForceSync: {
-              type: Boolean,
-              computed: '_computeCanForceSync(_preselectedIntegrationKind)'
-          },
+            _canForceSync: {
+                type: Boolean,
+                computed: '_computeCanForceSync(_preselectedIntegrationKind)'
+            },
 
-          _integrationScheduleSyncList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'daily',
-                          name: 'Every day'
-                      },
-                      {
-                          value: 'weekly',
-                          name: 'Every Monday'
-                      },
-                      {
-                          value: 'monthly',
-                          name: 'Every 1st in the month'
-                      }
-                  ];
-              }
-          },
+            _integrationScheduleSyncList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'daily',
+                            name: 'Every day'
+                        },
+                        {
+                            value: 'weekly',
+                            name: 'Every Monday'
+                        },
+                        {
+                            value: 'monthly',
+                            name: 'Every 1st in the month'
+                        }
+                    ];
+                }
+            },
 
-          _integrationForceSyncList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: null,
-                          name: 'Never'
-                      },
-                      {
-                          value: 'daily',
-                          name: 'Every day'
-                      },
-                      {
-                          value: 'weekly',
-                          name: 'Every Monday'
-                      },
-                      {
-                          value: 'monthly',
-                          name: 'Every 1st in the month'
-                      }
-                  ];
-              }
-          },
+            _integrationForceSyncList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: null,
+                            name: 'Never'
+                        },
+                        {
+                            value: 'daily',
+                            name: 'Every day'
+                        },
+                        {
+                            value: 'weekly',
+                            name: 'Every Monday'
+                        },
+                        {
+                            value: 'monthly',
+                            name: 'Every 1st in the month'
+                        }
+                    ];
+                }
+            },
 
-          _isIntegrationActive: {
-              type: String,
-              computed: '_computeIsIntegrationActive(integration)'
-          }
-      };
-  }
+            _isIntegrationActive: {
+                type: String,
+                computed: '_computeIsIntegrationActive(integration)'
+            }
+        };
+    }
 
-  _onSelectClosed(event) {
-      event.stopPropagation();
-  }
+    _onSelectClosed(event) {
+        event.stopPropagation();
+    }
 
-  getIntegrationKind() {
-      return this.$.integrationKindSelect.selectedItem ?
-          this.$.integrationKindSelect.selectedItem.value : null;
-  }
+    getIntegrationKind() {
+        return this.$.integrationKindSelect.selectedItem ?
+            this.$.integrationKindSelect.selectedItem.value : null;
+    }
 
-  getIntegrationScheduleSync() {
-      return this.$.integrationScheduleSyncSelect.selectedItem ?
-          this.$.integrationScheduleSyncSelect.selectedItem.value : null;
-  }
+    getIntegrationScheduleSync() {
+        return this.$.integrationScheduleSyncSelect.selectedItem ?
+            this.$.integrationScheduleSyncSelect.selectedItem.value : null;
+    }
 
-  getIntegrationForceSync() {
-      if (!this.shadowRoot.getElementById('integrationForceSyncSelect')) {
-          return null;
-      }
-      return this.shadowRoot.getElementById('integrationForceSyncSelect').selectedItem ?
-          this.shadowRoot.getElementById('integrationForceSyncSelect').selectedItem.value : null;
-  }
+    getIntegrationForceSync() {
+        if (!this.shadowRoot.getElementById('integrationForceSyncSelect')) {
+            return null;
+        }
+        return this.shadowRoot.getElementById('integrationForceSyncSelect').selectedItem ?
+            this.shadowRoot.getElementById('integrationForceSyncSelect').selectedItem.value : null;
+    }
 
-  setToggleChecked(checked) {
-      this.$.toggleIntegrationActive.checked = checked;
-  }
+    setToggleChecked(checked) {
+        this.$.toggleIntegrationActive.checked = checked;
+    }
 
-  _computeHasOwnUrl(integration) {
-      if (integration.integration) {
-          return integration.integration.alias === 4 || integration.integration.alias === 7 || integration.integration.alias === 8;
-      }
+    _computeHasOwnUrl(integration) {
+        if (integration.integration) {
+            return integration.integration.alias === 4 || integration.integration.alias === 7 || integration.integration.alias === 8;
+        }
 
-      if (integration) {
-          return integration.alias === 4 || integration.alias === 7 || integration.alias === 8;
-      }
+        if (integration) {
+            return integration.alias === 4 || integration.alias === 7 || integration.alias === 8;
+        }
 
-      return false;
-  }
+        return false;
+    }
 
-  _computeRequireToken(integration) {
-      if (integration.integration) {
-          return integration.integration.alias === 8;
-      }
+    _computeRequireToken(integration) {
+        if (integration.integration) {
+            return integration.integration.alias === 8;
+        }
 
-      if (integration) {
-          return integration.alias === 8;
-      }
+        if (integration) {
+            return integration.alias === 8;
+        }
 
-      return false;
-  }
+        return false;
+    }
 
-  _computeRequiresClaims(integration) {
-      if (integration && integration.integration) {
-          return integration.integration.alias == 6;
-      }
+    _computeRequiresClaims(integration) {
+        if (integration && integration.integration) {
+            return integration.integration.alias == 6;
+        }
 
-      if (integration) {
-          return integration.alias == 6;
-      }
+        if (integration) {
+            return integration.alias == 6;
+        }
 
-      return false;
-  }
+        return false;
+    }
 
-  _computeRequiresInstanceId(integration) {
-      if (integration && integration.integration) {
-          return [6, 10].indexOf(integration.integration.alias) > -1;
-      }
+    _computeRequiresInstanceId(integration) {
+        if (integration && integration.integration) {
+            return [6, 10].indexOf(integration.integration.alias) > -1;
+        }
 
-      if (integration) {
-          return [6, 10].indexOf(integration.alias) > -1;
-      }
+        if (integration) {
+            return [6, 10].indexOf(integration.alias) > -1;
+        }
 
-      return false;
-  }
+        return false;
+    }
 
-  _computeIsIntegrationActive(integration) {
-      return integration && integration.active;
-  }
+    _computeIsIntegrationActive(integration) {
+        return integration && integration.active;
+    }
 
-  _computeDisableIntegrationTypeChange(formType) {
-      return 'update' === formType;
-  }
+    _computeDisableIntegrationTypeChange(formType) {
+        return 'update' === formType;
+    }
 
-  _computePreselectedIntegrationType(integration, integrationKindList) {
-      return (integration && integration.kind) ? integration.kind : integrationKindList[0].value;
-  }
+    _computePreselectedIntegrationType(integration, integrationKindList) {
+        return (integration && integration.kind) ? integration.kind : integrationKindList[0].value;
+    }
 
-  _computeCanForceSync(computedKind) {
-      return computedKind === 'ra';
-  }
+    _computeCanForceSync(computedKind) {
+        return computedKind === 'ra';
+    }
 
-  getIntegrationActive() {
-      return this.$.toggleIntegrationActive.checked ? '1' : '0';
-  }
+    getIntegrationActive() {
+        return this.$.toggleIntegrationActive.checked ? '1' : '0';
+    }
 }
 window.customElements.define(AppscoIntegrationForm.is, AppscoIntegrationForm);

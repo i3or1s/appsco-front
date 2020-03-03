@@ -19,9 +19,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyTransferToken extends mixinBehaviors([NeonAnimationRunnerBehavior, Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -113,263 +114,263 @@ class AppscoCompanyTransferToken extends mixinBehaviors([NeonAnimationRunnerBeha
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-transfer-token'; }
+    static get is() { return 'appsco-company-transfer-token'; }
 
-  static get properties() {
-      return {
-          transferTokenApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            transferTokenApi: {
+                type: String
+            },
 
-          sendTransferTokenApi: {
-              type: String
-          },
+            sendTransferTokenApi: {
+                type: String
+            },
 
-          partnersApiUrl: {
-              type: String
-          },
+            partnersApiUrl: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _partnersApiUrl: {
-              type: String,
-              computed: '_computePartnersApiUrl(partnersApiUrl)'
-          },
+            _partnersApiUrl: {
+                type: String,
+                computed: '_computePartnersApiUrl(partnersApiUrl)'
+            },
 
-          _token: {
-              type: String,
-              value: ''
-          },
+            _token: {
+                type: String,
+                value: ''
+            },
 
-          _tokenGenerated: {
-              type: Boolean,
-              value: false
-          },
+            _tokenGenerated: {
+                type: Boolean,
+                value: false
+            },
 
-          _partnerList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _partnerList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _generateTokenLoader: {
-              type: Boolean,
-              value: false
-          },
+            _generateTokenLoader: {
+                type: Boolean,
+                value: false
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this.$.token,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this.$.token,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this.$.token,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this.$.token,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      afterNextRender(this, function () {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function () {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinished);
-  }
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinished);
+    }
 
-  reset() {
-      this._hideToken();
-      this._token = '';
-      this._tokenGenerated = false;
-      this.$.paperListboxPartners.selected = -1;
-      this._hideError();
-      this._hideGenerateTokenLoader();
-      this._hideLoader();
-  }
+    reset() {
+        this._hideToken();
+        this._token = '';
+        this._tokenGenerated = false;
+        this.$.paperListboxPartners.selected = -1;
+        this._hideError();
+        this._hideGenerateTokenLoader();
+        this._hideLoader();
+    }
 
-  _computePartnersApiUrl(partnersApiUrl) {
-      return partnersApiUrl ? (partnersApiUrl + '?extended=1') : null;
-  }
+    _computePartnersApiUrl(partnersApiUrl) {
+        return partnersApiUrl ? (partnersApiUrl + '?extended=1') : null;
+    }
 
-  _showGenerateTokenLoader() {
-      this._generateTokenLoader = true;
-  }
+    _showGenerateTokenLoader() {
+        this._generateTokenLoader = true;
+    }
 
-  _hideGenerateTokenLoader() {
-      this._generateTokenLoader = false;
-  }
+    _hideGenerateTokenLoader() {
+        this._generateTokenLoader = false;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _hideToken() {
-      this.$.token.style.display = 'none';
-  }
+    _hideToken() {
+        this.$.token.style.display = 'none';
+    }
 
-  _transferTokenGenerateSuccess(token) {
-      if (token) {
-          this._token = token;
+    _transferTokenGenerateSuccess(token) {
+        if (token) {
+            this._token = token;
 
-          if (!this._tokenGenerated) {
-              this._tokenGenerated = true;
+            if (!this._tokenGenerated) {
+                this._tokenGenerated = true;
 
-              setTimeout(function() {
-                  this.$.token.style.display = 'block';
-                  this.playAnimation('entry');
-              }.bind(this), 200);
-          }
+                setTimeout(function() {
+                    this.$.token.style.display = 'block';
+                    this.playAnimation('entry');
+                }.bind(this), 200);
+            }
 
-          this.dispatchEvent(new CustomEvent('token-generated', { bubbles: true, composed: true }));
-      }
-      else {
-          this._showError(this.apiErrors.getError(404));
-      }
-  }
+            this.dispatchEvent(new CustomEvent('token-generated', { bubbles: true, composed: true }));
+        }
+        else {
+            this._showError(this.apiErrors.getError(404));
+        }
+    }
 
-  _transferTokenGenerateFailure() {
-      this._token = '';
-      this._tokenGenerated = false;
-      this.playAnimation('exit');
-  }
+    _transferTokenGenerateFailure() {
+        this._token = '';
+        this._tokenGenerated = false;
+        this.playAnimation('exit');
+    }
 
-  _getTransferToken() {
-      return new Promise(function(resolve, reject) {
-          const request = document.createElement('iron-request'),
-              options = {
-                  url: this.transferTokenApi,
-                  method: 'GET',
-                  handleAs: 'json',
-                  headers: this._headers
-              };
+    _getTransferToken() {
+        return new Promise(function(resolve, reject) {
+            const request = document.createElement('iron-request'),
+                options = {
+                    url: this.transferTokenApi,
+                    method: 'GET',
+                    handleAs: 'json',
+                    headers: this._headers
+                };
 
-          request.send(options).then(function() {
-              if (request.response && request.response.transfer_token) {
-                  resolve(request.response.transfer_token);
-              }
-          }, function() {
-              reject(request.response.code);
-          });
-      }.bind(this));
-  }
+            request.send(options).then(function() {
+                if (request.response && request.response.transfer_token) {
+                    resolve(request.response.transfer_token);
+                }
+            }, function() {
+                reject(request.response.code);
+            });
+        }.bind(this));
+    }
 
-  _onGenerateTokenAction() {
-      if (!this.transferTokenApi || !this._headers) {
-          this._showError(this.apiErrors.getError(404));
-          return false;
-      }
+    _onGenerateTokenAction() {
+        if (!this.transferTokenApi || !this._headers) {
+            this._showError(this.apiErrors.getError(404));
+            return false;
+        }
 
-      this._showGenerateTokenLoader();
+        this._showGenerateTokenLoader();
 
-      this._getTransferToken().then(function(token) {
-          this._transferTokenGenerateSuccess(token);
-          this._hideGenerateTokenLoader();
-      }.bind(this), function(code) {
-          this._showError(this.apiErrors.getError(code));
-          this._transferTokenGenerateFailure();
-          this._hideGenerateTokenLoader();
-      }.bind(this));
-  }
+        this._getTransferToken().then(function(token) {
+            this._transferTokenGenerateSuccess(token);
+            this._hideGenerateTokenLoader();
+        }.bind(this), function(code) {
+            this._showError(this.apiErrors.getError(code));
+            this._transferTokenGenerateFailure();
+            this._hideGenerateTokenLoader();
+        }.bind(this));
+    }
 
-  _onGetPartnersResponse(event) {
-      const response = event.detail.response;
+    _onGetPartnersResponse(event) {
+        const response = event.detail.response;
 
-      if (response && response.partners) {
-          this.set('_partnerList', response.partners);
-      }
-  }
+        if (response && response.partners) {
+            this.set('_partnerList', response.partners);
+        }
+    }
 
-  _sendTokenToPartner() {
-      const selectedPartner = this.$.dropdownPartners.selectedItem;
+    _sendTokenToPartner() {
+        const selectedPartner = this.$.dropdownPartners.selectedItem;
 
-      if (!selectedPartner) {
-          this._showError('Please select partner from the list of available partners.');
-          this._hideLoader();
-          return false;
-      }
+        if (!selectedPartner) {
+            this._showError('Please select partner from the list of available partners.');
+            this._hideLoader();
+            return false;
+        }
 
-      const token = this._token,
-          partner = selectedPartner.value,
-          request = document.createElement('iron-request'),
-          headers = this._headers,
-          options = {
-              url: this.sendTransferTokenApi,
-              method: 'POST',
-              handleAs: 'json',
-              body: 'transfer_token[token]=' + encodeURIComponent(token) + '&transfer_token[partner]=' + encodeURIComponent(partner)
-          };
+        const token = this._token,
+            partner = selectedPartner.value,
+            request = document.createElement('iron-request'),
+            headers = this._headers,
+            options = {
+                url: this.sendTransferTokenApi,
+                method: 'POST',
+                handleAs: 'json',
+                body: 'transfer_token[token]=' + encodeURIComponent(token) + '&transfer_token[partner]=' + encodeURIComponent(partner)
+            };
 
-      headers['Content-Type'] = 'application/x-www-form-urlencoded';
-      options.headers = headers;
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        options.headers = headers;
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('transfer-token-sent', { bubbles: true, composed: true }));
-              this._hideLoader();
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('transfer-token-sent', { bubbles: true, composed: true }));
+                this._hideLoader();
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 
-  _onSendTokenAction() {
-      this._hideError();
-      this._showLoader();
+    _onSendTokenAction() {
+        this._hideError();
+        this._showLoader();
 
-      if (this._token) {
-          this._sendTokenToPartner();
-      }
-  }
+        if (this._token) {
+            this._sendTokenToPartner();
+        }
+    }
 
-  _onNeonAnimationFinished() {
-      if (!this._tokenGenerated) {
-          this._hideToken();
-      }
-  }
+    _onNeonAnimationFinished() {
+        if (!this._tokenGenerated) {
+            this._hideToken();
+        }
+    }
 }
 window.customElements.define(AppscoCompanyTransferToken.is, AppscoCompanyTransferToken);

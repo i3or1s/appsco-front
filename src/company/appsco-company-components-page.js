@@ -15,9 +15,10 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyComponentsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-layout-with-cards-styles">
             :host {
                 font-size: 14px;
@@ -131,164 +132,164 @@ class AppscoCompanyComponentsPage extends mixinBehaviors([NeonSharedElementAnima
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-components-page'; }
+    static get is() { return 'appsco-company-components-page'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String
-          },
+            authorizationToken: {
+                type: String
+            },
 
-          domainsApi: {
-              type: String
-          },
+            domainsApi: {
+                type: String
+            },
 
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          brandLogo: {
-              type: String,
-              value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAgCAYAAAB+ZAqzAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAVZJREFUeNrsmOENgjAQhcE4AG5QN2AERnCEjsAIdQJG6AiO0BEcATdwhLONxJR6V1u8Ij98ycXkrL3HR+8gVlWCAEDa0EjuaqP1csLGkPJ7FtlNR3hKIzknNeV0uC5YqzhNSc/AiORgKiyCnCbWSm5ar02DHEzFhyB3J9aCf/tL02qckSCvbHSAy60Va9BSSGFn1gAt1zjNlmj5Mr+gdYE0aXZahFmFdOgnSW5aEikivHmWo1NJWnoBLf8ItFujNWumErSwDs3V+xjJoNURtBTwSC6lZQrRmtXhoNXa6IFPIwctE3lYf3crv6TVER26Ki29RVpiNVoJkz+FlmGnlTD5Y7ROia82q9Iat0ALG5xyml3laUXMqkSKZWgRpiha4k+LMPYzWvuYsbquDxhFxn8fzmTt3DNnP9xVNgymbvbCj9SXu8zNeiZTUVocZ27pe/3HA/8QYABzJAP50CmRFwAAAABJRU5ErkJggg=='
-          },
+            brandLogo: {
+                type: String,
+                value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAgCAYAAAB+ZAqzAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAVZJREFUeNrsmOENgjAQhcE4AG5QN2AERnCEjsAIdQJG6AiO0BEcATdwhLONxJR6V1u8Ij98ycXkrL3HR+8gVlWCAEDa0EjuaqP1csLGkPJ7FtlNR3hKIzknNeV0uC5YqzhNSc/AiORgKiyCnCbWSm5ar02DHEzFhyB3J9aCf/tL02qckSCvbHSAy60Va9BSSGFn1gAt1zjNlmj5Mr+gdYE0aXZahFmFdOgnSW5aEikivHmWo1NJWnoBLf8ItFujNWumErSwDs3V+xjJoNURtBTwSC6lZQrRmtXhoNXa6IFPIwctE3lYf3crv6TVER26Ki29RVpiNVoJkz+FlmGnlTD5Y7ROia82q9Iat0ALG5xyml3laUXMqkSKZWgRpiha4k+LMPYzWvuYsbquDxhFxn8fzmTt3DNnP9xVNgymbvbCj9SXu8zNeiZTUVocZ27pe/3HA/8QYABzJAP50CmRFwAAAABJRU5ErkJggg=='
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(tabletScreen, mediumScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(tabletScreen, mediumScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: dom(this.root).querySelectorAll('paper-card'),
-              nodeDelay: 50,
-              timing: {
-                  delay: 200,
-                  duration: 100
-              }
-          }],
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }]
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: dom(this.root).querySelectorAll('paper-card'),
+                nodeDelay: 50,
+                timing: {
+                    delay: 200,
+                    duration: 100
+                }
+            }],
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }]
+        };
 
-      beforeNextRender(this, function() {
-          if (this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  _updateScreen(tablet, medium) {
-      this.updateStyles();
-  }
+    _updateScreen(tablet, medium) {
+        this.updateStyles();
+    }
 
-  setSharedElement(target, callback) {
-      if ('domains' === target) {
-          this.sharedElements = {
-              'hero': this.$.appscoCompanyDomains
-          };
-      }
-  }
+    setSharedElement(target, callback) {
+        if ('domains' === target) {
+            this.sharedElements = {
+                'hero': this.$.appscoCompanyDomains
+            };
+        }
+    }
 
-  _setSharedElement(target) {
-      while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
-          target = target.parentNode;
-      }
+    _setSharedElement(target) {
+        while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+            target = target.parentNode;
+        }
 
-      this.sharedElements = {
-          'hero': target
-      };
-  }
+        this.sharedElements = {
+            'hero': target
+        };
+    }
 
-  addDomain(domain) {
-      this.$.appscoCompanyDomains.addDomain(domain, true);
-  }
+    addDomain(domain) {
+        this.$.appscoCompanyDomains.addDomain(domain, true);
+    }
 
-  modifyDomain(domain) {
-      this.$.appscoCompanyDomains.modifyDomain(domain);
-  }
+    modifyDomain(domain) {
+        this.$.appscoCompanyDomains.modifyDomain(domain);
+    }
 
-  removeDomain(domain) {
-      this.$.appscoCompanyDomains.removeDomain(domain);
-  }
+    removeDomain(domain) {
+        this.$.appscoCompanyDomains.removeDomain(domain);
+    }
 
-  addGroup(group) {
-      this.$.appscoCompanyGroups.addGroup(group, true);
-  }
+    addGroup(group) {
+        this.$.appscoCompanyGroups.addGroup(group, true);
+    }
 
-  removeGroup(group) {
-      this.$.appscoCompanyGroups.removeGroup(group);
-  }
+    removeGroup(group) {
+        this.$.appscoCompanyGroups.removeGroup(group);
+    }
 
-  _onManageCompanySettings(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-company-settings', { bubbles: true, composed: true }));
-  }
+    _onManageCompanySettings(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-company-settings', { bubbles: true, composed: true }));
+    }
 
-  _onManageCompanyBrandSettings(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-company-brand-settings', { bubbles: true, composed: true }));
-  }
+    _onManageCompanyBrandSettings(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-company-brand-settings', { bubbles: true, composed: true }));
+    }
 
-  _onManageCompanyBrandedLogin(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-company-branded-login', { bubbles: true, composed: true }));
-  }
+    _onManageCompanyBrandedLogin(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-company-branded-login', { bubbles: true, composed: true }));
+    }
 
-  _onManageCompanyDomains(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-company-domains', { bubbles: true, composed: true }));
-  }
+    _onManageCompanyDomains(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-company-domains', { bubbles: true, composed: true }));
+    }
 
-  _onManageTransferToken(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-company-transfer-token', { bubbles: true, composed: true }));
-  }
+    _onManageTransferToken(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-company-transfer-token', { bubbles: true, composed: true }));
+    }
 
-  _onManageCompanyIdPSettings(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-company-idp-settings', { bubbles: true, composed: true }));
-  }
+    _onManageCompanyIdPSettings(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-company-idp-settings', { bubbles: true, composed: true }));
+    }
 
-  _onDomainsEmptyLoad() {
-      this.dispatchEvent(new CustomEvent('loaded', { bubbles: true, composed: true }));
-  }
+    _onDomainsEmptyLoad() {
+        this.dispatchEvent(new CustomEvent('loaded', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoCompanyComponentsPage.is, AppscoCompanyComponentsPage);

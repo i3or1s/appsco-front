@@ -13,12 +13,13 @@ import '../components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles"></style>
         <style>
             :host([tablet-screen]) .item-additional-info {
@@ -64,18 +65,18 @@ class AppscoContactItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contact-item'; }
+    static get is() { return 'appsco-contact-item'; }
 
-  static get properties() {
-      return {
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+    static get properties() {
+        return {
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 }
 window.customElements.define(AppscoContactItem.is, AppscoContactItem);

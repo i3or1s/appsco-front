@@ -1,44 +1,4 @@
-/**
-`appsco-content`
-
-It defines layouts for content. The layout is horizontal and contains three sections:
-- resource section,
-- content section
-- info section.
-
-Content section is always present while resource and info sections are configurable.
-
-    <appsco-content>
-        <div resource></div>
-        <div content></div>
-        <div info></div>
-    </appsco-content>
-
-### Styling
-
-`<appsco-content>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--resource-width` | Width applied to the resource section | `25%`
-`--resource-background-color` | Background color applied to the resource section | `transparent`
-`--resource-color` | Color applied to the resource section | `#000`
-`--content-background-color` | Background color applied to the content section | `transparent`
-`--content-color` | Color applied to the content section | `#000`
-`--info-width` | Width applied to the info section | `25%`
-`--info-background-color` | Background color applied to the info section | `transparent`
-`--info-color` | Color applied to the info section | `#000`
-`--appsco-content-sections` | Mixin applied to resource, content and info sections | `{ padding: 5px; }`
-
-@demo demo/appsco-content.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/neon-animation/neon-animations.js';
@@ -47,9 +7,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender, beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <custom-style>
             <style include="webkit-scrollbar-style">
                 :host {
@@ -113,164 +74,164 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
             <div id="info" class="info"><slot name="info" old-content-selector="[info]"></slot></div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-content'; }
+    static get is() { return 'appsco-content'; }
 
-  static get properties() {
-      return {
-          /**
-           * Indicates if resource section is shown or not.
-           */
-          resourceActive: {
-              type: Boolean,
-              value: false,
-              observer: '_onResourceActiveChanged'
-          },
+    static get properties() {
+        return {
+            /**
+             * Indicates if resource section is shown or not.
+             */
+            resourceActive: {
+                type: Boolean,
+                value: false,
+                observer: '_onResourceActiveChanged'
+            },
 
-          /**
-           * Indicates if info section is shown or not.
-           */
-          infoActive: {
-              type: Boolean,
-              value: false,
-              observer: '_onInfoActiveChanged'
-          },
+            /**
+             * Indicates if info section is shown or not.
+             */
+            infoActive: {
+                type: Boolean,
+                value: false,
+                observer: '_onInfoActiveChanged'
+            },
 
-          /**
-           * Indicates if content-top section is shown or not.
-           */
-          contentTopActive: {
-              type: Boolean,
-              value: false,
-              observer: '_onContentTopActiveChanged'
-          },
+            /**
+             * Indicates if content-top section is shown or not.
+             */
+            contentTopActive: {
+                type: Boolean,
+                value: false,
+                observer: '_onContentTopActiveChanged'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          entry: {
-              timing: {
-                  "duration": 200
-              }
-          },
-          exit: {
-              timing: {
-                  "duration": 100
-              }
-          }
-      };
+        this.animationConfig = {
+            entry: {
+                timing: {
+                    "duration": 200
+                }
+            },
+            exit: {
+                timing: {
+                    "duration": 100
+                }
+            }
+        };
 
-      afterNextRender(this, function () {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function () {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onAnimationFinish);
-  }
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+    }
 
-  _onResourceActiveChanged(active) {
-      beforeNextRender(this, function () {
-          this.animationConfig.entry.node = this.$.resource;
-          this.animationConfig.exit.node = this.$.resource;
-          this.animationConfig.entry.name = 'slide-from-left-animation';
-          this.animationConfig.exit.name = 'slide-left-animation';
-      });
+    _onResourceActiveChanged(active) {
+        beforeNextRender(this, function () {
+            this.animationConfig.entry.node = this.$.resource;
+            this.animationConfig.exit.node = this.$.resource;
+            this.animationConfig.entry.name = 'slide-from-left-animation';
+            this.animationConfig.exit.name = 'slide-left-animation';
+        });
 
-      active ? this.showSection('resource') : this.hideSection('resource');
-  }
+        active ? this.showSection('resource') : this.hideSection('resource');
+    }
 
-  _onInfoActiveChanged(active) {
-      beforeNextRender(this, function () {
-          this.animationConfig.entry.node = this.$.info;
-          this.animationConfig.exit.node = this.$.info;
-          this.animationConfig.entry.name = 'slide-from-right-animation';
-          this.animationConfig.exit.name = 'slide-right-animation';
-      });
+    _onInfoActiveChanged(active) {
+        beforeNextRender(this, function () {
+            this.animationConfig.entry.node = this.$.info;
+            this.animationConfig.exit.node = this.$.info;
+            this.animationConfig.entry.name = 'slide-from-right-animation';
+            this.animationConfig.exit.name = 'slide-right-animation';
+        });
 
-      active ? this.showSection('info') : this.hideSection('info');
-  }
+        active ? this.showSection('info') : this.hideSection('info');
+    }
 
-  _onContentTopActiveChanged(active) {
-      active ? this.showSection('content-top') : this.hideSection('content-top');
-  }
+    _onContentTopActiveChanged(active) {
+        active ? this.showSection('content-top') : this.hideSection('content-top');
+    }
 
-  /**
-   * Shows section - info or resource.
-   *
-   * @param section
-   */
-  showSection(section) {
-      if (section === 'content-top' && this.contentTopActive) {
-          this.shadowRoot.getElementById('contentTop').show();
-          return false;
-      }
+    /**
+     * Shows section - info or resource.
+     *
+     * @param section
+     */
+    showSection(section) {
+        if (section === 'content-top' && this.contentTopActive) {
+            this.shadowRoot.getElementById('contentTop').show();
+            return false;
+        }
 
-      if (section === 'info' && !this.infoActive) {
-          this.infoActive = true;
-      }
-      else if (section === 'resource' && !this.resourceActive) {
-          this.resourceActive = true;
-      }
+        if (section === 'info' && !this.infoActive) {
+            this.infoActive = true;
+        }
+        else if (section === 'resource' && !this.resourceActive) {
+            this.resourceActive = true;
+        }
 
-      this.shadowRoot.getElementById(section).style.display = 'inline-block';
-      this.playAnimation('entry');
-  }
+        this.shadowRoot.getElementById(section).style.display = 'inline-block';
+        this.playAnimation('entry');
+    }
 
-  /**
-   * Hides section - info or resource.
-   *
-   * @param section
-   */
-  hideSection(section) {
-      if (section === 'content-top' && !this.contentTopActive) {
-          this.shadowRoot.getElementById('contentTop').hide();
-          return false;
-      }
+    /**
+     * Hides section - info or resource.
+     *
+     * @param section
+     */
+    hideSection(section) {
+        if (section === 'content-top' && !this.contentTopActive) {
+            this.shadowRoot.getElementById('contentTop').hide();
+            return false;
+        }
 
-      if (section === 'info' && this.infoActive) {
-          this.infoActive = false;
-      }
-      else if (section === 'resource' && this.resourceActive) {
-          this.resourceActive = false;
-      }
+        if (section === 'info' && this.infoActive) {
+            this.infoActive = false;
+        }
+        else if (section === 'resource' && this.resourceActive) {
+            this.resourceActive = false;
+        }
 
-      this.playAnimation('exit');
-  }
+        this.playAnimation('exit');
+    }
 
-  /**
-   * Toggles section - info or resource.
-   *
-   * @param section
-   */
-  toggleSection(section) {
-      if (section === 'info') {
-          this.infoActive = !this.infoActive;
-      }
-      else if (section === 'resource') {
-          this.resourceActive = !this.resourceActive;
-      }
-      else if (section === 'content-top') {
-          this.contentTopActive = !this.contentTopActive;
-      }
-  }
+    /**
+     * Toggles section - info or resource.
+     *
+     * @param section
+     */
+    toggleSection(section) {
+        if (section === 'info') {
+            this.infoActive = !this.infoActive;
+        }
+        else if (section === 'resource') {
+            this.resourceActive = !this.resourceActive;
+        }
+        else if (section === 'content-top') {
+            this.contentTopActive = !this.contentTopActive;
+        }
+    }
 
-  _onAnimationFinish() {
-      if (!this.infoActive) {
-          this.$.info.style.display = 'none';
-      }
+    _onAnimationFinish() {
+        if (!this.infoActive) {
+            this.$.info.style.display = 'none';
+        }
 
-      if (!this.resourceActive) {
-          this.$.resource.style.display = 'none';
-      }
-  }
+        if (!this.resourceActive) {
+            this.$.resource.style.display = 'none';
+        }
+    }
 }
 window.customElements.define(AppscoContent.is, AppscoContent);

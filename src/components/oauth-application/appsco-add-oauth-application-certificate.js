@@ -14,9 +14,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddOAuthApplicationCertificate extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -80,135 +81,135 @@ class AppscoAddOAuthApplicationCertificate extends mixinBehaviors([Appsco.Header
 
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnterAction"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-add-oauth-application-certificate'; }
+    static get is() { return 'appsco-add-oauth-application-certificate'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _oauthApplicationCertificateApi: {
-              type: String,
-              computed: '_computeCertificateApi(application)'
-          },
+            _oauthApplicationCertificateApi: {
+                type: String,
+                computed: '_computeCertificateApi(application)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          }
-      };
-  }
+            _target: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this.$.form;
-  }
+        this._target = this.$.form;
+    }
 
-  setApplication(application) {
-      this.set('application', application);
-  }
+    setApplication(application) {
+        this.set('application', application);
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _initialize() {
-      this.$.csr.focus();
-  }
+    _initialize() {
+        this.$.csr.focus();
+    }
 
-  _reset() {
-      this._target.reset();
-  }
+    _reset() {
+        this._target.reset();
+    }
 
-  _computeCertificateApi(application) {
-      return application.self ? (application.self + '/certificates') : null;
-  }
+    _computeCertificateApi(application) {
+        return application.self ? (application.self + '/certificates') : null;
+    }
 
-  _onDialogOpened() {
-      this._initialize();
-  }
+    _onDialogOpened() {
+        this._initialize();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this._reset();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this._reset();
+    }
 
-  _onEnterAction() {
-      this._onAddAction();
-  }
+    _onEnterAction() {
+        this._onAddAction();
+    }
 
-  _onAddAction() {
-      this._hideError();
+    _onAddAction() {
+        this._hideError();
 
-      if (this._target.validate()) {
-          this._showLoader();
-          this._target.submit();
-      }
-  }
+        if (this._target.validate()) {
+            this._showLoader();
+            this._target.submit();
+        }
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {
-      this.close();
+    _onFormResponse(event) {
+        this.close();
 
-      this.dispatchEvent(new CustomEvent('oauth-application-certificate-added', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              certificate: event.detail.response,
-              application: this.application
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('oauth-application-certificate-added', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                certificate: event.detail.response,
+                application: this.application
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoAddOAuthApplicationCertificate.is, AppscoAddOAuthApplicationCertificate);

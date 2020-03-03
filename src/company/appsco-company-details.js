@@ -1,31 +1,4 @@
-/*
-`appsco-company-details`
-Component holds details about appsco company.
-
-Example:
-    <body>
-        <appsco-company-details company={}>
-        </appsco-company-details>
-
-### Styling
-
-`<appsco-company-details>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-company-details` | Mixin for the root element. | `{}`
-`--company-detail-container` | Mixin for the inner element that holds label and value. | `{}`
-`--company-details-label` | Mixin applied to detail label. | `{}`
-`--company-details-value` | Mixin applied to detail value. | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
@@ -34,9 +7,10 @@ import '@polymer/neon-animation/animations/fade-out-animation.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyDetails extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -90,54 +64,54 @@ class AppscoCompanyDetails extends mixinBehaviors([NeonAnimationRunnerBehavior],
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-details'; }
+    static get is() { return 'appsco-company-details'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onCompanyChanged'
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onCompanyChanged'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+    }
 
-  _onCompanyChanged() {
-      this._showDetails();
-  }
+    _onCompanyChanged() {
+        this._showDetails();
+    }
 
-  _showDetails() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showDetails() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 }
 window.customElements.define(AppscoCompanyDetails.is, AppscoCompanyDetails);

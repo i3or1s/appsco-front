@@ -1,28 +1,4 @@
-/*
-`appsco-company-settings`
-Update company settings component.
-
-    <appsco-company-settings company={}
-                             authorization-token=""
-                             settings-api="">
-    </appsco-company-settings>
-
-### Styling
-
-`<appsco-company-settings>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-company-settings` | Mixin for the root element | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-form/iron-form.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-input/paper-input.js';
@@ -36,9 +12,10 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanySettings extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -126,182 +103,182 @@ class AppscoCompanySettings extends mixinBehaviors([Appsco.HeadersMixin], Polyme
 
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnterAction"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-settings'; }
+    static get is() { return 'appsco-company-settings'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onCompanyChanged'
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onCompanyChanged'
+            },
 
-          settingsApi: {
-              type: String
-          },
+            settingsApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          },
+            _target: {
+                type: Object
+            },
 
-          _emailAdminOnNewDevice: {
-              type: Boolean,
-              value: false
-          },
+            _emailAdminOnNewDevice: {
+                type: Boolean,
+                value: false
+            },
 
-          _emailAdminOnNewUser: {
-              type: Boolean,
-              value: false
-          },
+            _emailAdminOnNewUser: {
+                type: Boolean,
+                value: false
+            },
 
-          _disableResourcePasswordCopy: {
-              type: Boolean,
-              value: false
-          },
+            _disableResourcePasswordCopy: {
+                type: Boolean,
+                value: false
+            },
 
-          _showAdminEmailField: {
-              type: Boolean,
-              computed: '_computeShowAdminEmailField(_emailAdminOnNewDevice, _emailAdminOnNewUser)'
-          }
-      };
-  }
+            _showAdminEmailField: {
+                type: Boolean,
+                computed: '_computeShowAdminEmailField(_emailAdminOnNewDevice, _emailAdminOnNewUser)'
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this;
-  }
+        this._target = this;
+    }
 
-  _format(name) {
-      return name ? name.substring(0, 35) : '';
-  }
+    _format(name) {
+        return name ? name.substring(0, 35) : '';
+    }
 
-  _onCompanyChanged() {
-      this.$.contactEmail.invalid = false;
-      this.$.billingEmail.invalid = false;
-      this._emailAdminOnNewDevice = this.company ? this.company.mail_admin_on_new_device : false;
-      this._emailAdminOnNewUser = this.company ? this.company.mail_admin_on_new_user : false;
-      this._disableResourcePasswordCopy = this.company ? this.company.disable_resource_copy_button : false;
-  }
+    _onCompanyChanged() {
+        this.$.contactEmail.invalid = false;
+        this.$.billingEmail.invalid = false;
+        this._emailAdminOnNewDevice = this.company ? this.company.mail_admin_on_new_device : false;
+        this._emailAdminOnNewUser = this.company ? this.company.mail_admin_on_new_user : false;
+        this._disableResourcePasswordCopy = this.company ? this.company.disable_resource_copy_button : false;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _submitSettingsForm() {
-      this.$.form.submit();
-  }
+    _submitSettingsForm() {
+        this.$.form.submit();
+    }
 
-  _onEnterAction(event) {
-      event.stopPropagation();
-      this._onSaveAction();
-  }
+    _onEnterAction(event) {
+        event.stopPropagation();
+        this._onSaveAction();
+    }
 
-  _onSaveAction() {
-      this._submitSettingsForm();
-  }
+    _onSaveAction() {
+        this._submitSettingsForm();
+    }
 
-  _onFormPresubmit() {
-      this._showLoader();
-      this.$.form.request.method = 'PUT';
-  }
+    _onFormPresubmit() {
+        this._showLoader();
+        this.$.form.request.method = 'PUT';
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {;
-      this.$.contactEmail.invalid = false;
-      this.$.billingEmail.invalid = false;
+    _onFormResponse(event) {;
+        this.$.contactEmail.invalid = false;
+        this.$.billingEmail.invalid = false;
 
-      this._hideLoader();
+        this._hideLoader();
 
-      this.dispatchEvent(new CustomEvent('company-settings-changed', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              company: event.detail.response
-          }
-      }));
+        this.dispatchEvent(new CustomEvent('company-settings-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                company: event.detail.response
+            }
+        }));
 
-      if (this._2faChangedToEnable) {
-          this._reloadPage();
-      }
-  }
+        if (this._2faChangedToEnable) {
+            this._reloadPage();
+        }
+    }
 
-  _onKeyUp(event) {
-      if (13 !== event.keyCode) {
-          this._hideError();
-          event.target.invalid = false;
-      }
-  }
+    _onKeyUp(event) {
+        if (13 !== event.keyCode) {
+            this._hideError();
+            event.target.invalid = false;
+        }
+    }
 
-  _reloadPage() {
-      window.location.reload(true);
-  }
+    _reloadPage() {
+        window.location.reload(true);
+    }
 
-  _mailAdminOnNewUserChanged() {
-      this._emailAdminOnNewUser = this.$.newUserInfoAdminEmail.checked;
-  }
+    _mailAdminOnNewUserChanged() {
+        this._emailAdminOnNewUser = this.$.newUserInfoAdminEmail.checked;
+    }
 
-  _mailAdminOnNewDeviceChanged() {
-      this._emailAdminOnNewDevice = this.$.newDeviceInfoAdminEmail.checked;
-  }
+    _mailAdminOnNewDeviceChanged() {
+        this._emailAdminOnNewDevice = this.$.newDeviceInfoAdminEmail.checked;
+    }
 
-  _disableResourceCopyButtonChanged() {
-      this._disableResourcePasswordCopy = this.$.disableCopyButtonOnResources.checked;
-  }
+    _disableResourceCopyButtonChanged() {
+        this._disableResourcePasswordCopy = this.$.disableCopyButtonOnResources.checked;
+    }
 
-  _computeShowAdminEmailField(_emailAdminOnNewDevice, _emailAdminOnNewUser) {
-      return _emailAdminOnNewDevice || _emailAdminOnNewUser;
-  }
+    _computeShowAdminEmailField(_emailAdminOnNewDevice, _emailAdminOnNewUser) {
+        return _emailAdminOnNewDevice || _emailAdminOnNewUser;
+    }
 
-  setup() {
-      this.$.companyName.focus();
-  }
+    setup() {
+        this.$.companyName.focus();
+    }
 
-  reset() {
-      const company = JSON.parse(JSON.stringify(this.company));
+    reset() {
+        const company = JSON.parse(JSON.stringify(this.company));
 
-      this.company = {};
-      this.company = company;
+        this.company = {};
+        this.company = company;
 
-      this._hideError();
-      this.$.contactEmail.invalid = false;
-      this.$.billingEmail.invalid = false;
-  }
+        this._hideError();
+        this.$.contactEmail.invalid = false;
+        this.$.billingEmail.invalid = false;
+    }
 }
 window.customElements.define(AppscoCompanySettings.is, AppscoCompanySettings);

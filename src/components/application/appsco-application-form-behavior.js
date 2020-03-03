@@ -7,7 +7,6 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
  * @polymerBehavior
  */
 export const AppscoApplicationFormBehavior = {
-
     properties: {
         claims: {
             type: Object,
@@ -69,7 +68,7 @@ export const AppscoApplicationFormBehavior = {
 
     reset: function() {
         dom(this.root).querySelectorAll('[data-field]').forEach(function(item, key) {
-            const inputContainer = item.$$('#container');
+            const inputContainer = item.shadowRoot.getElementById('container');
 
             item.value = this.claims[item.getAttribute('id')] ? this.claims[item.getAttribute('id')] : '';
             item.invalid = false;

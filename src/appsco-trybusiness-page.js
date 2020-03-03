@@ -15,9 +15,10 @@ import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/re
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoTrybusinessPage extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -393,181 +394,181 @@ class AppscoTrybusinessPage extends mixinBehaviors([NeonAnimatableBehavior], Pol
 
         </appsco-content>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-trybusiness-page'; }
+    static get is() { return 'appsco-trybusiness-page'; }
 
-  static get properties() {
-      return {
-          companyUpgradeApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            companyUpgradeApi: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          mobileScreenHeight: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreenHeight: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletS768Screen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletS768Screen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletS920Screen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletS920Screen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletS1024Screen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletS1024Screen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletS1280Screen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletS1280Screen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          laptopS1440Screen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            laptopS1440Screen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          s1600Screen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            s1600Screen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, mobileScreenHeight, tabletS768Screen, tabletS920Screen, tabletS1024Screen, tabletS1280Screen, laptopS1440Screen, s1600Screen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, mobileScreenHeight, tabletS768Screen, tabletS920Screen, tabletS1024Screen, tabletS1280Screen, laptopS1440Screen, s1600Screen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.$.appscoContent.showSection('info');
+        beforeNextRender(this, function() {
+            this.$.appscoContent.showSection('info');
 
-          if (this.mobileScreen || this.mobileScreenHeight || this.tabletS768Screen || this.tabletS920Screen
-              || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopS1440Screen || this.s1600Screen) {
-              this.updateStyles();
-          }
-      });
+            if (this.mobileScreen || this.mobileScreenHeight || this.tabletS768Screen || this.tabletS920Screen
+                || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopS1440Screen || this.s1600Screen) {
+                this.updateStyles();
+            }
+        });
 
-      afterNextRender(this, function() {
-          this._onPageLoaded();
-      });
-  }
+        afterNextRender(this, function() {
+            this._onPageLoaded();
+        });
+    }
 
-  _updateScreen(mobile, mobileScreenHeight, tabletS768Screen) {
-      this.updateStyles();
+    _updateScreen(mobile, mobileScreenHeight, tabletS768Screen) {
+        this.updateStyles();
 
-      if (!mobile && !tabletS768Screen && !this.$.appscoContent.infoActive) {
-          this.$.appscoContent.showSection('info');
-      }
-  }
+        if (!mobile && !tabletS768Screen && !this.$.appscoContent.infoActive) {
+            this.$.appscoContent.showSection('info');
+        }
+    }
 
-  togglePricing() {
-      this.$.appscoContent.toggleSection('info');
-  }
+    togglePricing() {
+        this.$.appscoContent.toggleSection('info');
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _upgradeToBusiness() {
-      var request = document.createElement('iron-request'),
-          options = {
-              url: this.companyUpgradeApi,
-              method: 'POST',
-              body: "",
-              handleAs: 'json',
-              headers: {
-                  'Authorization': 'token ' + this.authorizationToken,
-                  'Content-Type': 'application/x-www-form-urlencoded'
-              }
-          };
+    _upgradeToBusiness() {
+        var request = document.createElement('iron-request'),
+            options = {
+                url: this.companyUpgradeApi,
+                method: 'POST',
+                body: "",
+                handleAs: 'json',
+                headers: {
+                    'Authorization': 'token ' + this.authorizationToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            };
 
-      this._showLoader();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          if (request.succeeded) {
-              this.dispatchEvent(new CustomEvent('upgraded', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      account: request.response.account
-                  }
-              }));
-          }
-          this._hideLoader();
-      }.bind(this), function() {
-          this.dispatchEvent(new CustomEvent('upgrade-failed', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  error: request.response.code
-              }
-          }));
-          this._hideLoader();
-      }.bind(this));
-  }
+        request.send(options).then(function() {
+            if (request.succeeded) {
+                this.dispatchEvent(new CustomEvent('upgraded', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        account: request.response.account
+                    }
+                }));
+            }
+            this._hideLoader();
+        }.bind(this), function() {
+            this.dispatchEvent(new CustomEvent('upgrade-failed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    error: request.response.code
+                }
+            }));
+            this._hideLoader();
+        }.bind(this));
+    }
 
-  _onPageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _onPageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoTrybusinessPage.is, AppscoTrybusinessPage);

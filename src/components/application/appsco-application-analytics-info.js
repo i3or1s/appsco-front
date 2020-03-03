@@ -1,28 +1,4 @@
-/**
-`appsco-application-analytics-info`
-Contains various analytic information about application.
-
-    <appsco-application-analytics-info
-        application="{}"></appsco-application-analytics-info>
-
-### Styling
-
-`<appsco-application-analytics-info>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-application-analytics-info` | Mixin applied to the root element | `{}`
-`--analytics-info` | Mixin applied to info box. | `{}`
-
-@demo demo/appsco-application-analytics-info.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/iron-icon/iron-icon.js';
@@ -35,9 +11,10 @@ import '@polymer/neon-animation/animations/fade-out-animation.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationAnalyticsInfo extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -128,124 +105,124 @@ class AppscoApplicationAnalyticsInfo extends mixinBehaviors([NeonAnimationRunner
             </p>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-analytics-info'; }
+    static get is() { return 'appsco-application-analytics-info'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onApplicationChanged'
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onApplicationChanged'
+            },
 
-          _totalInstances: {
-              type: Number,
-              computed: '_computeTotalInstances(application)'
-          },
+            _totalInstances: {
+                type: Number,
+                computed: '_computeTotalInstances(application)'
+            },
 
-          _setByInfo: {
-              type: String,
-              value: 'Resource is set to be configured by admin for all users.'
-          },
+            _setByInfo: {
+                type: String,
+                value: 'Resource is set to be configured by admin for all users.'
+            },
 
-          _lastEditedDate: {
-              type: String,
-              computed: '_computeLastEditedDate(application)'
-          },
+            _lastEditedDate: {
+                type: String,
+                computed: '_computeLastEditedDate(application)'
+            },
 
-          _dailyUsage: {
-              type: String,
-              computed: '_computeDailyUsage(application)'
-          },
+            _dailyUsage: {
+                type: String,
+                computed: '_computeDailyUsage(application)'
+            },
 
-          _message: {
-              type: String
-          },
+            _message: {
+                type: String
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+    }
 
-  _onApplicationChanged(application) {
-      this._message = null;
+    _onApplicationChanged(application) {
+        this._message = null;
 
-      if (application) {
-          if (application.security && (0 == this._totalInstances)) {
-              this._message = 'Resource is not assigned to anyone yet.';
-          }
+        if (application) {
+            if (application.security && (0 == this._totalInstances)) {
+                this._message = 'Resource is not assigned to anyone yet.';
+            }
 
-          if ('individual' === application.claim_type) {
-              this._setByInfo = 'Resource is set to be configured by users.';
-          }
-          else {
-              this._setByInfo = 'Resource is set to be configured by admin for all users.';
-          }
+            if ('individual' === application.claim_type) {
+                this._setByInfo = 'Resource is set to be configured by users.';
+            }
+            else {
+                this._setByInfo = 'Resource is set to be configured by admin for all users.';
+            }
 
-          if (application.self) {
-              this._showAnalytics();
-          }
-      }
-  }
+            if (application.self) {
+                this._showAnalytics();
+            }
+        }
+    }
 
-  _computeTotalInstances(application) {
-      return (application && application.security) ? application.security.info.configured + application.security.info.not_configured : 0;
-  }
+    _computeTotalInstances(application) {
+        return (application && application.security) ? application.security.info.configured + application.security.info.not_configured : 0;
+    }
 
-  _computeLastEditedDate(application) {
-      return (application && application.last_modified) ? this._dateFormat(application.last_modified.date.date) : '';
-  }
+    _computeLastEditedDate(application) {
+        return (application && application.last_modified) ? this._dateFormat(application.last_modified.date.date) : '';
+    }
 
-  _computeDailyUsage(application) {
-      if (application && application.security) {
-          const usage = Math.round(application.daily_usage / this._totalInstances * 100);
+    _computeDailyUsage(application) {
+        if (application && application.security) {
+            const usage = Math.round(application.daily_usage / this._totalInstances * 100);
 
-          return (0 === usage) ? 'There is no activity today' : usage + '%';
-      }
+            return (0 === usage) ? 'There is no activity today' : usage + '%';
+        }
 
-      return '';
-  }
+        return '';
+    }
 
-  _showAnalytics() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showAnalytics() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 
-  _dateFormat(value) {
-      if (value) {
-          const options = {
-              year: 'numeric', month: 'short', day: 'numeric',
-              hour: 'numeric', minute: 'numeric', second: 'numeric'
-          };
+    _dateFormat(value) {
+        if (value) {
+            const options = {
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: 'numeric', minute: 'numeric', second: 'numeric'
+            };
 
-          return (new Date(value)).toLocaleDateString('en', options);
-      }
-  }
+            return (new Date(value)).toLocaleDateString('en', options);
+        }
+    }
 }
 window.customElements.define(AppscoApplicationAnalyticsInfo.is, AppscoApplicationAnalyticsInfo);

@@ -6,9 +6,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationRulesCard extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -42,45 +43,45 @@ class AppscoIntegrationRulesCard extends mixinBehaviors([NeonAnimationRunnerBeha
             </p>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-rules-card'; }
+    static get is() { return 'appsco-integration-rules-card'; }
 
-  static get properties() {
-      return {
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+    static get properties() {
+        return {
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-      afterNextRender(this, function() {
-          this._showRulesDetails();
-      });
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+        afterNextRender(this, function() {
+            this._showRulesDetails();
+        });
+    }
 
-  _showRulesDetails() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showRulesDetails() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 }
 window.customElements.define(AppscoIntegrationRulesCard.is, AppscoIntegrationRulesCard);

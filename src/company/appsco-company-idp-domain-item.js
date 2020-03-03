@@ -1,35 +1,4 @@
-/*
-`appsco-company-idp-domain-item`
-Presents IdP settings domain in form of an item.
-
-    <appsco-company-idp-domain-item domain="{}"
-                                    domains-api=""
-                                    authorization-token=""
-                                    preview>
-    </appsco-company-idp-domain-item>
-
-### Styling
-
-`<appsco-company-domain-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--item-background-color` | Background color applied to the root element | `#fff`
-`--color` | Color applied to all the text | `#33`
-`--appsco-company-idp-domain-item` | Mixin applied to domain item element | `{}`
-`--domain-basic-info` | Mixin applied to the basic info | `{}`
-`--domain-status-info` | Mixin applied to the status info | `{}`
-`--domain-basic-info-values` | Mixin applied to the basic info values | `{}`
-`--domain-status-info-values` | Mixin applied to the status info values | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
@@ -40,9 +9,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyIdpDomainItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -167,93 +137,93 @@ class AppscoCompanyIdpDomainItem extends mixinBehaviors([NeonAnimationRunnerBeha
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-idp-domain-item'; }
+    static get is() { return 'appsco-company-idp-domain-item'; }
 
-  static get properties() {
-      return {
-          domain: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onDomainChanged'
-          },
+    static get properties() {
+        return {
+            domain: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onDomainChanged'
+            },
 
-          /**
-           * Indicates if domain should be in preview mode rather then full detailed view.
-           */
-          preview: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if domain should be in preview mode rather then full detailed view.
+             */
+            preview: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          _domainHasIdpConfigured: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _domainHasIdpConfigured: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-      beforeNextRender(this, function () {
-          this.style.display = 'inline-block';
-      });
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+        beforeNextRender(this, function () {
+            this.style.display = 'inline-block';
+        });
 
-      afterNextRender(this, function () {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function () {
+            this.playAnimation('entry');
+        });
+    }
 
-  _onDomainChanged(domain) {
-      this._domainHasIdpConfigured = (domain && domain.hasIdp);
-  }
+    _onDomainChanged(domain) {
+        this._domainHasIdpConfigured = (domain && domain.hasIdp);
+    }
 
-  _onManageAction(event) {
-      event.stopPropagation();
+    _onManageAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('manage', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              domain: this.domain
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('manage', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                domain: this.domain
+            }
+        }));
+    }
 
-  _onDeactivateAction(event) {
-      event.stopPropagation();
+    _onDeactivateAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('deactivate-domain-idp-settings', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              domain: this.domain
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('deactivate-domain-idp-settings', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                domain: this.domain
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoCompanyIdpDomainItem.is, AppscoCompanyIdpDomainItem);

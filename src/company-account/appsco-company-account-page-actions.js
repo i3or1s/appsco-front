@@ -9,9 +9,10 @@ import '../components/account/appsco-account-actions.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyAccountPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="shared-styles">
             :host {
                 @apply --layout-horizontal;
@@ -64,60 +65,60 @@ class AppscoCompanyAccountPageActions extends mixinBehaviors([NeonAnimatableBeha
             <paper-icon-button class="info-action" icon="info-outline" title="Resource section" on-tap="_onResourceAction"></paper-icon-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-account-page-actions'; }
+    static get is() { return 'appsco-company-account-page-actions'; }
 
-  static get properties() {
-      return {
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 300,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 300,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+    }
 
-  disableAdvancedSettings() {
-      this.$.appscoAccountActions.disableAdvancedSettings();
-  }
+    disableAdvancedSettings() {
+        this.$.appscoAccountActions.disableAdvancedSettings();
+    }
 
-  enableAdvancedSettings() {
-      this.$.appscoAccountActions.enableAdvancedSettings();
-  }
+    enableAdvancedSettings() {
+        this.$.appscoAccountActions.enableAdvancedSettings();
+    }
 
-  _backToHome() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _backToHome() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  _onResourceAction() {
-      this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
-  }
+    _onResourceAction() {
+        this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoCompanyAccountPageActions.is, AppscoCompanyAccountPageActions);

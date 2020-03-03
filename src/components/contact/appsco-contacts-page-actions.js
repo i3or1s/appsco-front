@@ -8,9 +8,10 @@ import './appsco-contacts-actions.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactsPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 --paper-input-container-color: var(--secondary-text-color);
@@ -57,101 +58,101 @@ class AppscoContactsPageActions extends mixinBehaviors([NeonAnimatableBehavior],
             <appsco-page-global id="appscoPageGlobal" info="" filters=""></appsco-page-global>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contacts-page-actions'; }
+    static get is() { return 'appsco-contacts-page-actions'; }
 
-  static get properties() {
-      return {
-          _searchActive: {
-              type: Boolean,
-              value: false
-          },
+    static get properties() {
+        return {
+            _searchActive: {
+                type: Boolean,
+                value: false
+            },
 
-          _displayActions: {
-              type: Boolean,
-              value: false
-          },
+            _displayActions: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 200,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 200,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+    }
 
-  _showSearch() {
-      this.shadowRoot.getElementById('appscoContactsActions').focusSearch();
+    _showSearch() {
+        this.shadowRoot.getElementById('appscoContactsActions').focusSearch();
 
-      this.updateStyles({
-          '--input-search-max-width': '100%',
-          '--paper-input-search-container-tablet': 'width: 100%;'
-      });
-  }
+        this.updateStyles({
+            '--input-search-max-width': '100%',
+            '--paper-input-search-container-tablet': 'width: 100%;'
+        });
+    }
 
-  _closeSearch() {
-      this._searchActive = false;
+    _closeSearch() {
+        this._searchActive = false;
 
-      this.updateStyles({'--input-search-max-width': '22px'});
+        this.updateStyles({'--input-search-max-width': '22px'});
 
-      // Wait for animation to finish.
-      setTimeout(function() {
-          this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
-      }.bind(this), 200);
+        // Wait for animation to finish.
+        setTimeout(function() {
+            this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
+        }.bind(this), 200);
 
-      this.updateStyles();
-  }
+        this.updateStyles();
+    }
 
-  _onSearchIcon() {
-      this._searchActive = !this._searchActive;
-      this._searchActive ? this._showSearch() : this._closeSearch();
-  }
+    _onSearchIcon() {
+        this._searchActive = !this._searchActive;
+        this._searchActive ? this._showSearch() : this._closeSearch();
+    }
 
-  showBulkActions() {
-      this.shadowRoot.getElementById('appscoContactsActions').showBulkActions();
-  }
+    showBulkActions() {
+        this.shadowRoot.getElementById('appscoContactsActions').showBulkActions();
+    }
 
-  hideBulkActions() {
-      this.shadowRoot.getElementById('appscoContactsActions').hideBulkActions();
-  }
+    hideBulkActions() {
+        this.shadowRoot.getElementById('appscoContactsActions').hideBulkActions();
+    }
 
-  showBulkSelectAll() {
-      this.shadowRoot.getElementById('appscoContactsActions').showBulkSelectAll();
-  }
+    showBulkSelectAll() {
+        this.shadowRoot.getElementById('appscoContactsActions').showBulkSelectAll();
+    }
 
-  hideBulkSelectAll() {
-      this.shadowRoot.getElementById('appscoContactsActions').hideBulkSelectAll();
-  }
+    hideBulkSelectAll() {
+        this.shadowRoot.getElementById('appscoContactsActions').hideBulkSelectAll();
+    }
 
-  setupPage() {}
+    setupPage() {}
 
-  resetPage() {
-      this.shadowRoot.getElementById('appscoContactsActions').reset();
-  }
+    resetPage() {
+        this.shadowRoot.getElementById('appscoContactsActions').reset();
+    }
 
-  resetPageActions() {
-      this.shadowRoot.getElementById('appscoContactsActions').resetActions();
-  }
+    resetPageActions() {
+        this.shadowRoot.getElementById('appscoContactsActions').resetActions();
+    }
 }
 window.customElements.define(AppscoContactsPageActions.is, AppscoContactsPageActions);

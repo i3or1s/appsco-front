@@ -25,12 +25,13 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoManageAccountComponentsPage extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-layout-with-cards-styles">
             :host {
                 --account-details-value: {
@@ -270,279 +271,279 @@ class AppscoManageAccountComponentsPage extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-account-components-page'; }
+    static get is() { return 'appsco-manage-account-components-page'; }
 
-  static get properties() {
-      return {
-          role: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            role: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          administrator: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            administrator: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          notificationsApi: {
-              type: String
-          },
+            notificationsApi: {
+                type: String
+            },
 
-          logApi: {
-              type: String
-          },
+            logApi: {
+                type: String
+            },
 
-          devicesApi: {
-              type: String
-          },
+            devicesApi: {
+                type: String
+            },
 
-          twoFaApi: {
-              type: String
-          },
+            twoFaApi: {
+                type: String
+            },
 
-          groupsApi: {
-              type: String
-          },
+            groupsApi: {
+                type: String
+            },
 
-          twoFaEnforced: {
-              type: Boolean,
-              value: false
-          },
+            twoFaEnforced: {
+                type: Boolean,
+                value: false
+            },
 
-          _twoFAEnabled: {
-              type: Boolean,
-              value: false
-          },
+            _twoFAEnabled: {
+                type: Boolean,
+                value: false
+            },
 
-          _changeCompanyRolePermission: {
-              type: Boolean,
-              computed: '_computeChangeCompanyRolePermission(role, administrator)'
-          },
+            _changeCompanyRolePermission: {
+                type: Boolean,
+                computed: '_computeChangeCompanyRolePermission(role, administrator)'
+            },
 
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          canManage: {
-              type: Boolean,
-              value: false
-          },
+            canManage: {
+                type: Boolean,
+                value: false
+            },
 
-          _managedUser: {
-              type: Boolean,
-              value: true,
-              computed: '_computeUserManaged(role)'
-          },
+            _managedUser: {
+                type: Boolean,
+                value: true,
+                computed: '_computeUserManaged(role)'
+            },
 
-          _shouldShowAdvanced: {
-              type: Boolean,
-              value: false
-          },
+            _shouldShowAdvanced: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(tabletScreen, mediumScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(tabletScreen, mediumScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: dom(this.root).querySelectorAll('paper-card'),
-              nodeDelay: 50,
-              timing: {
-                  delay: 200,
-                  duration: 100
-              }
-          }],
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }]
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: dom(this.root).querySelectorAll('paper-card'),
+                nodeDelay: 50,
+                timing: {
+                    delay: 200,
+                    duration: 100
+                }
+            }],
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }]
+        };
 
-      beforeNextRender(this, function() {
-          if (this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  _updateScreen(tablet, medium) {
-      this.updateStyles();
-  }
+    _updateScreen(tablet, medium) {
+        this.updateStyles();
+    }
 
-  _computeUserManaged(role) {
-      return role && role.account && role.account.native_company
-              ? role.account.native_company.alias === role.company.alias
-              : false;
-  }
+    _computeUserManaged(role) {
+        return role && role.account && role.account.native_company
+            ? role.account.native_company.alias === role.company.alias
+            : false;
+    }
 
-  _formatOrgUnitName(name) {
-      return name ? name.substring(0, 30) : '';
-  }
+    _formatOrgUnitName(name) {
+        return name ? name.substring(0, 30) : '';
+    }
 
-  load() {
-      this._loadNotifications();
-      this.loadLog();
-      this._loadGroups();
-      this._loadDevices();
-  }
+    load() {
+        this._loadNotifications();
+        this.loadLog();
+        this._loadGroups();
+        this._loadDevices();
+    }
 
-  setSharedElement(target, callback) {
-      if('notifications' === target) {
-          this.sharedElements = {
-              'hero': this.$.appscoAccountNotifications
-          };
-      }
-  }
+    setSharedElement(target, callback) {
+        if('notifications' === target) {
+            this.sharedElements = {
+                'hero': this.$.appscoAccountNotifications
+            };
+        }
+    }
 
-  _setSharedElement(target) {
-      while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
-          target = target.parentNode;
-      }
+    _setSharedElement(target) {
+        while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+            target = target.parentNode;
+        }
 
-      this.sharedElements = {
-          'hero': target
-      };
-  }
+        this.sharedElements = {
+            'hero': target
+        };
+    }
 
-  _computeChangeCompanyRolePermission(role, administrator) {
-      return (role.roles && role.roles.indexOf('COMPANY_ROLE_PARTNER_ADMIN') === -1 &&
-              role.account && administrator.self &&
-              (role.account.self !== administrator.self));
-  }
+    _computeChangeCompanyRolePermission(role, administrator) {
+        return (role.roles && role.roles.indexOf('COMPANY_ROLE_PARTNER_ADMIN') === -1 &&
+            role.account && administrator.self &&
+            (role.account.self !== administrator.self));
+    }
 
-  _loadNotifications() {
-      if (this.shadowRoot.getElementById('appscoAccountNotifications') && this._managedUser) {
-          this.shadowRoot.getElementById('appscoAccountNotifications').loadNotifications();
-      }
-  }
+    _loadNotifications() {
+        if (this.shadowRoot.getElementById('appscoAccountNotifications') && this._managedUser) {
+            this.shadowRoot.getElementById('appscoAccountNotifications').loadNotifications();
+        }
+    }
 
-  _onNotificationsLoad() {
-      this.dispatchEvent(new CustomEvent('notifications-seen', { bubbles: true, composed: true }));
-  }
+    _onNotificationsLoad() {
+        this.dispatchEvent(new CustomEvent('notifications-seen', { bubbles: true, composed: true }));
+    }
 
-  loadLog() {
-      this.$.appscoAccountLog.loadLog();
-  }
+    loadLog() {
+        this.$.appscoAccountLog.loadLog();
+    }
 
-  _loadGroups() {
-      this.$.appscoAccountGroup.loadGroups();
-  }
+    _loadGroups() {
+        this.$.appscoAccountGroup.loadGroups();
+    }
 
-  _loadDevices() {
-      if (this.shadowRoot.getElementById('appscoAccountDevice')  && this._managedUser) {
-          this.shadowRoot.getElementById('appscoAccountDevice').loadDevices();
-      }
-  }
+    _loadDevices() {
+        if (this.shadowRoot.getElementById('appscoAccountDevice')  && this._managedUser) {
+            this.shadowRoot.getElementById('appscoAccountDevice').loadDevices();
+        }
+    }
 
-  load2FaApi() {
-      this.$.twofaapi.generateRequest();
-  }
+    load2FaApi() {
+        this.$.twofaapi.generateRequest();
+    }
 
-  _on2FAResponse(event) {
-      var response = event.detail.response;
+    _on2FAResponse(event) {
+        var response = event.detail.response;
 
-      this._twoFAEnabled = response ? response.enabled : false;
-  }
+        this._twoFAEnabled = response ? response.enabled : false;
+    }
 
-  _onAccountManageSettings(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('account-settings', { bubbles: true, composed: true }));
-  }
+    _onAccountManageSettings(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('account-settings', { bubbles: true, composed: true }));
+    }
 
-  _onManageTwoFA(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-two-fa', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              twoFAEnabled: this._twoFAEnabled
-          }
-      }));
-  }
+    _onManageTwoFA(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-two-fa', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                twoFAEnabled: this._twoFAEnabled
+            }
+        }));
+    }
 
-  _onManageOrgunits(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-orgunits', { bubbles: true, composed: true }));
-  }
+    _onManageOrgunits(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-orgunits', { bubbles: true, composed: true }));
+    }
 
-  _onManageGroups(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-groups', { bubbles: true, composed: true }));
-  }
+    _onManageGroups(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-groups', { bubbles: true, composed: true }));
+    }
 
-  _onAccountNotifications(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('all-notifications', { bubbles: true, composed: true }));
-  }
+    _onAccountNotifications(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('all-notifications', { bubbles: true, composed: true }));
+    }
 
-  _onAccountLog(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('whole-log', { bubbles: true, composed: true }));
-  }
+    _onAccountLog(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('whole-log', { bubbles: true, composed: true }));
+    }
 
-  _onAllApplications(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-applications', { bubbles: true, composed: true }));
-  }
+    _onAllApplications(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-applications', { bubbles: true, composed: true }));
+    }
 
-  _onResourceAdminApplications(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-resource-admin-applications', { bubbles: true, composed: true }));
-  }
+    _onResourceAdminApplications(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-resource-admin-applications', { bubbles: true, composed: true }));
+    }
 
-  _onManageDevices(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-devices', { bubbles: true, composed: true }));
-  }
+    _onManageDevices(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-devices', { bubbles: true, composed: true }));
+    }
 
-  reloadApplications() {
-      this.$.roleApplications.reload();
-  }
+    reloadApplications() {
+        this.$.roleApplications.reload();
+    }
 
-  reloadResourceAdmins() {
-      this.$.resourceAdminApplications.reload();
-  }
+    reloadResourceAdmins() {
+        this.$.resourceAdminApplications.reload();
+    }
 
-  showAdvanced() {
-      this._shouldShowAdvanced = true;
-  }
+    showAdvanced() {
+        this._shouldShowAdvanced = true;
+    }
 
-  hideAdvanced() {
-      this._shouldShowAdvanced = false;
-  }
+    hideAdvanced() {
+        this._shouldShowAdvanced = false;
+    }
 }
 window.customElements.define(AppscoManageAccountComponentsPage.is, AppscoManageAccountComponentsPage);

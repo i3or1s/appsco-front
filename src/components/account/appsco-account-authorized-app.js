@@ -1,33 +1,4 @@
-/**
-`appsco-account-authorized-app`
-Is used to represent authorized app.
-
-Example:
-
-    <body>
-      <appsco-account-authorized-app application="{}"
-                                    short-view>
-     </appsco-account-authorized-app>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--account-authorized-app` | Mixin applied to root element | `{}`
-`--authorized-app` | Mixin applied to inner application element | `{}`
-`--authorized-app-icon` | Mixin applied to application image | `{}`
-`--authorized-app-info` | Mixin applied to application info container | `{}`
-`--authorized-app-title` | Mixin applied to application title | `{}`
-`--authorized-app-date` | Mixin applied to date | `{}`
-`--authorized-app-additional-info` | Mixin applied additional info | `{}`
-
-@demo demo/appsco-account-authorized-apps.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/neon-animation/animations/fade-in-animation.js';
@@ -39,12 +10,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountAuthorizedApp extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -172,82 +144,82 @@ class AppscoAccountAuthorizedApp extends mixinBehaviors([
             <paper-button on-tap="_onRevokeAction" class="revoke-action">Revoke</paper-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-authorized-app'; }
+    static get is() { return 'appsco-account-authorized-app'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Indicates if short view should be displayed.
-           */
-          shortView: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            /**
+             * Indicates if short view should be displayed.
+             */
+            shortView: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _dateFormat(value) {
-      if (value) {
-          const options = {
-              weekday: "long", year: "numeric", month: "short",
-              day: "numeric", hour: "2-digit", minute: "2-digit"
-          };
+    _dateFormat(value) {
+        if (value) {
+            const options = {
+                weekday: "long", year: "numeric", month: "short",
+                day: "numeric", hour: "2-digit", minute: "2-digit"
+            };
 
-          return (new Date(value)).toLocaleDateString('en', options);
-      }
-  }
+            return (new Date(value)).toLocaleDateString('en', options);
+        }
+    }
 
-  _onRevokeAction() {
-      this.dispatchEvent(new CustomEvent('revoke-authorized-application', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: this.application
-          }
-      }));
-  }
+    _onRevokeAction() {
+        this.dispatchEvent(new CustomEvent('revoke-authorized-application', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: this.application
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoAccountAuthorizedApp.is, AppscoAccountAuthorizedApp);

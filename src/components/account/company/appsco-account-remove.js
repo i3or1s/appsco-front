@@ -1,19 +1,4 @@
-/**
-`appsco-account-remove`
-Shows dialog screen with confirmation for account removal.
-
-    <appsco-account-remove accounts="[]">
-    </appsco-account-remove>
-
-@demo demo/company/appsco-account-remove.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -26,9 +11,10 @@ import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountRemove extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -88,134 +74,134 @@ class AppscoAccountRemove extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-remove'; }
+    static get is() { return 'appsco-account-remove'; }
 
-  static get properties() {
-      return {
-          accounts: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+    static get properties() {
+        return {
+            accounts: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            _account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          companyApi: {
-              type: String
-          },
+            companyApi: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String,
-              value: ''
-          },
+            _errorMessage: {
+                type: String,
+                value: ''
+            },
 
-          _supportLink: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _supportLink: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.open();
-  }
+    toggle() {
+        this.$.dialog.open();
+    }
 
-  _close() {
-      this.$.dialog.close();
-  }
+    _close() {
+        this.$.dialog.close();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-      this._hideSupportLink();
-  }
+    _hideError() {
+        this._errorMessage = '';
+        this._hideSupportLink();
+    }
 
-  _showSupportLink() {
-      this._supportLink = true;
-  }
+    _showSupportLink() {
+        this._supportLink = true;
+    }
 
-  _hideSupportLink() {
-      this._supportLink = false;
-  }
+    _hideSupportLink() {
+        this._supportLink = false;
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this.set('accounts', []);
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this.set('accounts', []);
+    }
 
-  _onRemoveAction() {
-      let roles = this.accounts,
-          length = roles.length - 1,
-          request = document.createElement('iron-request'),
-          options = {
-              url: this.companyApi + '/directory/roles',
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          },
-          body = '';
+    _onRemoveAction() {
+        let roles = this.accounts,
+            length = roles.length - 1,
+            request = document.createElement('iron-request'),
+            options = {
+                url: this.companyApi + '/directory/roles',
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            },
+            body = '';
 
-      this._showLoader();
+        this._showLoader();
 
-      for (let i = 0; i <= length; i++) {
-          const next = (i === length) ? '' : '&';
-          body += 'roles[]=' + encodeURIComponent(roles[i].self) + next;
-      }
+        for (let i = 0; i <= length; i++) {
+            const next = (i === length) ? '' : '&';
+            body += 'roles[]=' + encodeURIComponent(roles[i].self) + next;
+        }
 
-      options.body = body;
+        options.body = body;
 
-      request.send(options).then(function(request) {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('accounts-removed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      accounts: request.response.company_roles
-                  }
-              }));
+        request.send(options).then(function(request) {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('accounts-removed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        accounts: request.response.company_roles
+                    }
+                }));
 
-              this._close();
-          }
+                this._close();
+            }
 
-      }.bind(this), function() {
-          const code = request.response.code;
+        }.bind(this), function() {
+            const code = request.response.code;
 
-          1494335470 === code ? this._showSupportLink() : this._hideSupportLink();
-          this._showError(this.apiErrors.getError(code));
-          this._hideLoader();
-      }.bind(this));
-  }
+            1494335470 === code ? this._showSupportLink() : this._hideSupportLink();
+            this._showError(this.apiErrors.getError(code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoAccountRemove.is, AppscoAccountRemove);

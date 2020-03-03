@@ -1,17 +1,4 @@
-/*
-`appsco-delete-contacts`
-Shows dialog screen with confirmation for contact removal.
-
-    <appsco-delete-contacts contacts="[]">
-    </appsco-delete-contacts>
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -23,9 +10,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDeleteContacts extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -71,85 +59,85 @@ class AppscoDeleteContacts extends mixinBehaviors([Appsco.HeadersMixin], Polymer
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-delete-contacts'; }
+    static get is() { return 'appsco-delete-contacts'; }
 
-  static get properties() {
-      return {
-          /**
-           * Accounts to delete.
-           */
-          contacts: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+    static get properties() {
+        return {
+            /**
+             * Accounts to delete.
+             */
+            contacts: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _contact: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            _contact: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          companyApi: {
-              type: String
-          },
+            companyApi: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _onDeleteAction() {
-      let contacts = this.contacts,
-          length = contacts.length - 1,
-          appRequest = document.createElement('iron-request'),
-          options = {
-              url: this.companyApi + '/contacts',
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          },
-          body = '';
+    _onDeleteAction() {
+        let contacts = this.contacts,
+            length = contacts.length - 1,
+            appRequest = document.createElement('iron-request'),
+            options = {
+                url: this.companyApi + '/contacts',
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            },
+            body = '';
 
-      this._loader = true;
+        this._loader = true;
 
-      for (let i = 0; i <= length; i++) {
-          let next = (i === length) ? '' : '&';
-          body += 'contacts[]=' + encodeURIComponent(contacts[i].self) + next;
-      }
+        for (let i = 0; i <= length; i++) {
+            let next = (i === length) ? '' : '&';
+            body += 'contacts[]=' + encodeURIComponent(contacts[i].self) + next;
+        }
 
-      options.body = body;
+        options.body = body;
 
-      appRequest.send(options).then(function(request) {
-          this.$.dialog.close();
+        appRequest.send(options).then(function(request) {
+            this.$.dialog.close();
 
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('contacts-removed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      contacts: request.response.contacts
-                  }
-              }));
-          }
-          else {
-              this.dispatchEvent(new CustomEvent('contacts-remove-failed', { bubbles: true, composed: true }));
-          }
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('contacts-removed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        contacts: request.response.contacts
+                    }
+                }));
+            }
+            else {
+                this.dispatchEvent(new CustomEvent('contacts-remove-failed', { bubbles: true, composed: true }));
+            }
 
-          this.set('contacts', []);
-          this._loader = false;
+            this.set('contacts', []);
+            this._loader = false;
 
-      }.bind(this));
-  }
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoDeleteContacts.is, AppscoDeleteContacts);

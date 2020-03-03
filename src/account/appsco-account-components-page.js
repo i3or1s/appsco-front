@@ -19,12 +19,13 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountComponentsPage extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-layout-with-cards-styles">
             :host {
                 --account-details-value: {
@@ -238,225 +239,225 @@ class AppscoAccountComponentsPage extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-components-page'; }
+    static get is() { return 'appsco-account-components-page'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          notificationsApi: {
-              type: String
-          },
+            notificationsApi: {
+                type: String
+            },
 
-          authorizedAppsApi: {
-              type: String
-          },
+            authorizedAppsApi: {
+                type: String
+            },
 
-          logApi: {
-              type: String
-          },
+            logApi: {
+                type: String
+            },
 
-          twoFaEnforced: {
-              type: Boolean,
-              value: false
-          },
+            twoFaEnforced: {
+                type: Boolean,
+                value: false
+            },
 
-          twoFaApi: {
-              type: String
-          },
+            twoFaApi: {
+                type: String
+            },
 
-          /**
-           * Indicates if advanced settings should be available or not.
-           */
-          _advancedSettings: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true,
-              observer: '_onAdvancedSettingsChange'
-          },
+            /**
+             * Indicates if advanced settings should be available or not.
+             */
+            _advancedSettings: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true,
+                observer: '_onAdvancedSettingsChange'
+            },
 
-          _twoFAEnabled: {
-              type: Boolean,
-              value: false
-          },
+            _twoFAEnabled: {
+                type: Boolean,
+                value: false
+            },
 
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(tabletScreen, mediumScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(tabletScreen, mediumScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: dom(this.root).querySelectorAll('paper-card'),
-              nodeDelay: 50,
-              timing: {
-                  delay: 200,
-                  duration: 100
-              }
-          }],
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }]
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: dom(this.root).querySelectorAll('paper-card'),
+                nodeDelay: 50,
+                timing: {
+                    delay: 200,
+                    duration: 100
+                }
+            }],
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }]
+        };
 
-      beforeNextRender(this, function() {
-          if (this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
+        beforeNextRender(this, function() {
+            if (this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
 
-      afterNextRender(this, function() {
-          this._loadNotifications();
-          this.loadLog();
+        afterNextRender(this, function() {
+            this._loadNotifications();
+            this.loadLog();
 
-          if (this._advancedSettings) {
-              this.loadAuthorizedApps();
-          }
-      });
-  }
+            if (this._advancedSettings) {
+                this.loadAuthorizedApps();
+            }
+        });
+    }
 
-  _updateScreen(tablet, medium) {
-      this.updateStyles();
-  }
+    _updateScreen(tablet, medium) {
+        this.updateStyles();
+    }
 
-  setSharedElement(target, callback) {
-      if ('notifications' === target) {
-          this.sharedElements = {
-              'hero': this.$.appscoAccountNotifications
-          };
-      }
-  }
+    setSharedElement(target, callback) {
+        if ('notifications' === target) {
+            this.sharedElements = {
+                'hero': this.$.appscoAccountNotifications
+            };
+        }
+    }
 
-  _setSharedElement(target) {
+    _setSharedElement(target) {
 
-      while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
-          target = target.parentNode;
-      }
+        while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+            target = target.parentNode;
+        }
 
-      this.sharedElements = {
-          'hero': target
-      };
-  }
+        this.sharedElements = {
+            'hero': target
+        };
+    }
 
-  _loadNotifications() {
-      this.$.appscoAccountNotifications.loadNotifications();
-  }
+    _loadNotifications() {
+        this.$.appscoAccountNotifications.loadNotifications();
+    }
 
-  loadLog() {
-      this.$.appscoAccountLog.loadLog();
-  }
+    loadLog() {
+        this.$.appscoAccountLog.loadLog();
+    }
 
-  load2FaApi() {
-      this.$.twofaapi.generateRequest();
-  }
+    load2FaApi() {
+        this.$.twofaapi.generateRequest();
+    }
 
-  loadAuthorizedApps() {
-      this.shadowRoot.getElementById('appscoAccountAuthorizedApps').loadAuthorizedApps();
-  }
+    loadAuthorizedApps() {
+        this.shadowRoot.getElementById('appscoAccountAuthorizedApps').loadAuthorizedApps();
+    }
 
-  toggleAdvancedSettings() {
-      this.set('_advancedSettings', !this._advancedSettings);
-  }
+    toggleAdvancedSettings() {
+        this.set('_advancedSettings', !this._advancedSettings);
+    }
 
-  showAdvancedSettings() {
-      this.set('_advancedSettings', true);
-  }
+    showAdvancedSettings() {
+        this.set('_advancedSettings', true);
+    }
 
-  hideAdvancedSettings() {
-      this.set('_advancedSettings', false);
-  }
+    hideAdvancedSettings() {
+        this.set('_advancedSettings', false);
+    }
 
-  _onAdvancedSettingsChange() {
-      if (this._advancedSettings) {
-          this.loadAuthorizedApps();
-      }
-  }
+    _onAdvancedSettingsChange() {
+        if (this._advancedSettings) {
+            this.loadAuthorizedApps();
+        }
+    }
 
-  _on2FAResponse(event) {
-      this._twoFAEnabled = event.detail.response.enabled;
-  }
+    _on2FAResponse(event) {
+        this._twoFAEnabled = event.detail.response.enabled;
+    }
 
-  _onAccountManageSettings(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('account-settings', { bubbles: true, composed: true }));
-  }
+    _onAccountManageSettings(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('account-settings', { bubbles: true, composed: true }));
+    }
 
-  _onAllLog(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('all-log', { bubbles: true, composed: true }));
-  }
+    _onAllLog(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('all-log', { bubbles: true, composed: true }));
+    }
 
-  _on2FAEnable(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('2fa-enable', { bubbles: true, composed: true }));
-  }
+    _on2FAEnable(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('2fa-enable', { bubbles: true, composed: true }));
+    }
 
-  _on2FAManage(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('2fa-manage', { bubbles: true, composed: true }));
-  }
+    _on2FAManage(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('2fa-manage', { bubbles: true, composed: true }));
+    }
 
-  _onAccountNotifications(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('all-notifications', { bubbles: true, composed: true }));
-  }
+    _onAccountNotifications(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('all-notifications', { bubbles: true, composed: true }));
+    }
 
-  _onManageAuthorizedApps(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-authorized-apps', { bubbles: true, composed: true }));
-  }
+    _onManageAuthorizedApps(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-authorized-apps', { bubbles: true, composed: true }));
+    }
 
-  _onAccountLog(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('whole-log', { bubbles: true, composed: true }));
-  }
+    _onAccountLog(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('whole-log', { bubbles: true, composed: true }));
+    }
 
-  _onImportFromLastPassAction() {
-      this.dispatchEvent(new CustomEvent('import-personal-resources', { bubbles: true, composed: true }));
-  }
+    _onImportFromLastPassAction() {
+        this.dispatchEvent(new CustomEvent('import-personal-resources', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoAccountComponentsPage.is, AppscoAccountComponentsPage);

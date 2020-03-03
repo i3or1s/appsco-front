@@ -1,30 +1,4 @@
-/**
-`appsco-account-item`
-Account item is used to present account in form of an item.
-
-    <appsco-account-item item="[]"
-                         type="company-role">
-    </appsco-account-item>
-
-### Styling
-
-`<appsco-account-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-list-item` | Mixin for the list item | `{}`
-`--item-background-color` | Background color applied to list item element | `#fff`
-`--color` | Color applied to all the text | `#333`
-
-@demo demo/appsco-account-item.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-button/paper-button.js';
@@ -38,12 +12,13 @@ import '../components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles"></style>
         <style>
             :host([tablet-screen]) .item-additional-info {
@@ -105,18 +80,18 @@ class AppscoAccountItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-item'; }
+    static get is() { return 'appsco-account-item'; }
 
-  static get properties() {
-      return {
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+    static get properties() {
+        return {
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 }
 window.customElements.define(AppscoAccountItem.is, AppscoAccountItem);

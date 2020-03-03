@@ -11,12 +11,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyManageIdpSettingsPage extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     NeonAnimatableBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 overflow: hidden;
@@ -34,129 +35,129 @@ class AppscoCompanyManageIdpSettingsPage extends mixinBehaviors([
 
         </neon-animated-pages>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-manage-idp-settings-page'; }
+    static get is() { return 'appsco-company-manage-idp-settings-page'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String
-          },
+            authorizationToken: {
+                type: String
+            },
 
-          idPIntegrationsApi: {
-              type: String
-          },
+            idPIntegrationsApi: {
+                type: String
+            },
 
-          domainsApi: {
-              type: String
-          },
+            domainsApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _selectedPage: {
-              type: String,
-              value: 'appsco-company-idp-domains-page'
-          },
+            _selectedPage: {
+                type: String,
+                value: 'appsco-company-idp-domains-page'
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-      this.sharedElements = {
-          'hero': this
-      };
-  }
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+        this.sharedElements = {
+            'hero': this
+        };
+    }
 
-  reloadDomains() {
-      this.$.appscoCompanyIdPDomainsPage.reloadDomains();
-  }
+    reloadDomains() {
+        this.$.appscoCompanyIdPDomainsPage.reloadDomains();
+    }
 
-  modifyDomain(domain) {
-      this.$.appscoCompanyIdPDomainsPage.modifyDomain(domain);
-  }
+    modifyDomain(domain) {
+        this.$.appscoCompanyIdPDomainsPage.modifyDomain(domain);
+    }
 
-  _showCompanyIdPDomainsPage() {
-      this._selectedPage = 'appsco-company-idp-domains-page';
-  }
+    _showCompanyIdPDomainsPage() {
+        this._selectedPage = 'appsco-company-idp-domains-page';
+    }
 
-  _showCompanyIdPSettingsPage() {
-      this._selectedPage = 'appsco-company-idp-settings-page';
-  }
+    _showCompanyIdPSettingsPage() {
+        this._selectedPage = 'appsco-company-idp-settings-page';
+    }
 
-  _onBackIdPSettingsPage(event) {
-      event.stopPropagation();
+    _onBackIdPSettingsPage(event) {
+        event.stopPropagation();
 
-      this._showCompanyIdPDomainsPage();
-  }
+        this._showCompanyIdPDomainsPage();
+    }
 
-  _onManageDomain(event) {
-      this._showCompanyIdPSettingsPage();
-      this.$.appscoCompanyIdPSettingsPage.setDomain(event.detail.domain);
-  }
+    _onManageDomain(event) {
+        this._showCompanyIdPSettingsPage();
+        this.$.appscoCompanyIdPSettingsPage.setDomain(event.detail.domain);
+    }
 
-  _onIdPSettingsSaved(event) {
-      this.$.appscoCompanyIdPDomainsPage.modifyDomain(event.detail.domain);
-  }
+    _onIdPSettingsSaved(event) {
+        this.$.appscoCompanyIdPDomainsPage.modifyDomain(event.detail.domain);
+    }
 
-  _onPageAnimationFinish(event) {
-      const fromPage = event.detail.fromPage,
-          toPage = event.detail.toPage;
+    _onPageAnimationFinish(event) {
+        const fromPage = event.detail.fromPage,
+            toPage = event.detail.toPage;
 
-      if('appsco-company-idp-settings-page' === fromPage.getAttribute('name')) {
-          fromPage.resetPage();
-      }
+        if('appsco-company-idp-settings-page' === fromPage.getAttribute('name')) {
+            fromPage.resetPage();
+        }
 
-      if('appsco-company-idp-settings-page' === toPage.getAttribute('name')) {
-          toPage.setupPage();
-          return;
-      }
+        if('appsco-company-idp-settings-page' === toPage.getAttribute('name')) {
+            toPage.setupPage();
+            return;
+        }
 
-      return false;
-  }
+        return false;
+    }
 }
 window.customElements.define(AppscoCompanyManageIdpSettingsPage.is, AppscoCompanyManageIdpSettingsPage);

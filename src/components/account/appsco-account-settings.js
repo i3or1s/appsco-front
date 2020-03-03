@@ -1,29 +1,4 @@
-/**
-`appsco-account-settings`
-Account settings is used update account.
-
-    <appsco-account-settings account={}
-                             authorization-token=""
-                             account-settings-api="">
-    </appsco-account-settings>
-
-### Styling
-
-`<appsco-account-settings>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-account-settings` | Mixin for the root element | `{}`
-
-@demo demo/appsco-account-settings.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-form/iron-form.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-styles/typography.js';
@@ -43,9 +18,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountSettings extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -220,300 +196,304 @@ class AppscoAccountSettings extends mixinBehaviors([Appsco.HeadersMixin], Polyme
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-settings'; }
+    static get is() { return 'appsco-account-settings'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {}
-              },
-              notify: true,
-              observer: '_onAccountChange'
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {}
+                },
+                notify: true,
+                observer: '_onAccountChange'
+            },
 
-          _companiesList: {
-              type: Array,
-              computed: '_computeCompaniesList(account)'
-          },
+            _companiesList: {
+                type: Array,
+                computed: '_computeCompaniesList(account)'
+            },
 
-          _pagesList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {title: 'Dashboard', value: 'dashboard'},
-                      {title: 'Resources', value: 'resources'}
-                  ]
-              }
-          },
+            _pagesList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {title: 'Dashboard', value: 'dashboard'},
+                        {title: 'Resources', value: 'resources'}
+                    ]
+                }
+            },
 
-          _localeList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'English',
-                          value: 'en'
-                      },
-                      {
-                          name: 'Norwegian',
-                          value: 'no'
-                      }
-                  ];
-              }
-          },
+            _localeList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'English',
+                            value: 'en'
+                        },
+                        {
+                            name: 'Norwegian',
+                            value: 'no'
+                        }
+                    ];
+                }
+            },
 
-          _timezoneList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _timezoneList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _genderList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'Male',
-                          value: 'm'
-                      },
-                      {
-                          name: 'Female',
-                          value: 'f'
-                      }
-                  ];
-              }
-          },
+            _genderList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'Male',
+                            value: 'm'
+                        },
+                        {
+                            name: 'Female',
+                            value: 'f'
+                        }
+                    ];
+                }
+            },
 
-          _public: {
-              type: Boolean,
-              computed: '_computedPublicState(account)'
-          },
+            _public: {
+                type: Boolean,
+                computed: '_computedPublicState(account)'
+            },
 
-          /**
-           * Country list to get name of country from.
-           * Country code = account.country.
-           *
-           * This is loaded from local data/country-list.json.
-           */
-          _countryList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Country list to get name of country from.
+             * Country code = account.country.
+             *
+             * This is loaded from local data/country-list.json.
+             */
+            _countryList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _sharedResourceNotifications: {
-              type: Boolean,
-              computed: '_computeSharedResourceNotifications(account)'
-          },
+            _sharedResourceNotifications: {
+                type: Boolean,
+                computed: '_computeSharedResourceNotifications(account)'
+            },
 
-          accountSettingsApi: {
-              type: String
-          },
+            accountSettingsApi: {
+                type: String
+            },
 
-          accountEmailNotificationsApi: {
-              computed: '_computeAccountEmailNotificationsApi(accountSettingsApi)'
-          },
+            accountEmailNotificationsApi: {
+                computed: '_computeAccountEmailNotificationsApi(accountSettingsApi)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          },
+            _target: {
+                type: Object
+            },
 
-          _timeZoneListUrl: {
-              type: String,
-              value: function () {
-                  return this.resolveUrl('./data/timezone-list.json');
-              }
-          },
+            _timeZoneListUrl: {
+                type: String,
+                value: function () {
+                    return this.resolveUrl('./data/timezone-list.json');
+                }
+            },
 
-          _countryListUrl: {
-              type: String,
-              value: function () {
-                  return this.resolveUrl('./data/country-list.json');
-              }
-          }
-      };
-  }
+            _countryListUrl: {
+                type: String,
+                value: function () {
+                    return this.resolveUrl('./data/country-list.json');
+                }
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    static get importMeta() {
+        return import.meta;
+    }
 
-      this._target = this.$.accountSettingsForm;
-  }
+    ready() {
+        super.ready();
 
-  _computedPublicState(account) {
-      return account.profile_options && account.profile_options.public;
-  }
+        this._target = this.$.accountSettingsForm;
+    }
 
-  _onAccountChange(account) {
-      if (account) {
-          this.$.paperListboxTimezone.select(account.timezone);
-          this.$.paperListboxCountry.select(account.country);
-          this.$.paperListboxGender.select(account.gender);
-          this.$.paperListboxCompanies.select(account.default_company ? account.default_company.alias : '');
-          this.$.paperListboxPages.select(
-              (account.profile_options && account.profile_options.default_company_page)
-                  ? account.profile_options.default_company_page
-                  : ''
-          );
-      }
-  }
+    _computedPublicState(account) {
+        return account.profile_options && account.profile_options.public;
+    }
 
-  _onCountryListResponse(event, ironRequest) {
-      const response = ironRequest.response;
+    _onAccountChange(account) {
+        if (account) {
+            this.$.paperListboxTimezone.select(account.timezone);
+            this.$.paperListboxCountry.select(account.country);
+            this.$.paperListboxGender.select(account.gender);
+            this.$.paperListboxCompanies.select(account.default_company ? account.default_company.alias : '');
+            this.$.paperListboxPages.select(
+                (account.profile_options && account.profile_options.default_company_page)
+                    ? account.profile_options.default_company_page
+                    : ''
+            );
+        }
+    }
 
-      this._countryList = response.sort(function(countryA, countryB) {
-          countryA = countryA.name.toLowerCase();
-          countryB = countryB.name.toLowerCase();
+    _onCountryListResponse(event, ironRequest) {
+        const response = ironRequest.response;
 
-          return countryA < countryB ? -1 : countryA > countryB ? 1 : 0;
-      });
-  }
+        this._countryList = response.sort(function(countryA, countryB) {
+            countryA = countryA.name.toLowerCase();
+            countryB = countryB.name.toLowerCase();
 
-  _onTimezoneListResponse(event, ironRequest) {
-      const response = [];
+            return countryA < countryB ? -1 : countryA > countryB ? 1 : 0;
+        });
+    }
 
-      ironRequest.response.forEach(function(zone, i) {
-          if (zone.utc) {
-              zone.utc.forEach(function(utc, index) {
-                  const item = {
-                      value: utc,
-                      text: utc.split('/')[1]
-                  };
+    _onTimezoneListResponse(event, ironRequest) {
+        const response = [];
 
-                  response.push(item);
-              }.bind(this));
-          }
-      }.bind(this));
+        ironRequest.response.forEach(function(zone, i) {
+            if (zone.utc) {
+                zone.utc.forEach(function(utc, index) {
+                    const item = {
+                        value: utc,
+                        text: utc.split('/')[1]
+                    };
 
-      this._timezoneList = response.sort(function(zoneA, zoneB) {
-          zoneA = zoneA.text.toLowerCase();
-          zoneB = zoneB.text.toLowerCase();
+                    response.push(item);
+                }.bind(this));
+            }
+        }.bind(this));
 
-          return zoneA < zoneB ? -1 : zoneA > zoneB ? 1 : 0;
-      });
-  }
+        this._timezoneList = response.sort(function(zoneA, zoneB) {
+            zoneA = zoneA.text.toLowerCase();
+            zoneB = zoneB.text.toLowerCase();
 
-  _onUploadImage(event) {
-      const input = event.target;
+            return zoneA < zoneB ? -1 : zoneA > zoneB ? 1 : 0;
+        });
+    }
 
-      if (input.files && input.files[0]) {
-          const reader = new FileReader();
+    _onUploadImage(event) {
+        const input = event.target;
 
-          reader.onload = function(e) {
-              this.$.accountImage.src = e.target.result;
-          }.bind(this);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
 
-          reader.readAsDataURL(input.files[0]);
-      }
-  }
+            reader.onload = function(e) {
+                this.$.accountImage.src = e.target.result;
+            }.bind(this);
 
-  _onEnter() {
-      this._submitAccountSettingsForm();
-  }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 
-  _submitAccountSettingsForm() {
-      this.$.accountSettingsForm.submit();
-  }
+    _onEnter() {
+        this._submitAccountSettingsForm();
+    }
 
-  _onFormPresubmit() {
-      this._loader = true;
+    _submitAccountSettingsForm() {
+        this.$.accountSettingsForm.submit();
+    }
 
-      this.$.accountSettingsForm.request.method = 'put';
-      this.$.accountSettingsForm.request.body['profile[timezone]'] = this.$.dropdownTimezone.selectedItem ? this.$.dropdownTimezone.selectedItem.value : '';
-      this.$.accountSettingsForm.request.body['profile[country]'] = this.$.dropdownCountry.selectedItem ? this.$.dropdownCountry.selectedItem.value : '';
-      this.$.accountSettingsForm.request.body['profile[gender]'] = this.$.dropdownGender.selectedItem ? this.$.dropdownGender.selectedItem.value : '';
-      this.$.accountSettingsForm.request.body['profile[default_company]'] = this.$.dropdownCompanies.selectedItem ? this.$.dropdownCompanies.selectedItem.value : '';
-      this.$.accountSettingsForm.request.body['profile[default_page]'] = this.$.dropdownDefaultPage.selectedItem ? this.$.dropdownDefaultPage.selectedItem.value : '';
+    _onFormPresubmit() {
+        this._loader = true;
 
-      if (this.$.publicAccountSwitch.checked) {
-          this.$.accountSettingsForm.request.body['profile[public]'] = true;
-      }
-  }
+        this.$.accountSettingsForm.request.method = 'put';
+        this.$.accountSettingsForm.request.body['profile[timezone]'] = this.$.dropdownTimezone.selectedItem ? this.$.dropdownTimezone.selectedItem.value : '';
+        this.$.accountSettingsForm.request.body['profile[country]'] = this.$.dropdownCountry.selectedItem ? this.$.dropdownCountry.selectedItem.value : '';
+        this.$.accountSettingsForm.request.body['profile[gender]'] = this.$.dropdownGender.selectedItem ? this.$.dropdownGender.selectedItem.value : '';
+        this.$.accountSettingsForm.request.body['profile[default_company]'] = this.$.dropdownCompanies.selectedItem ? this.$.dropdownCompanies.selectedItem.value : '';
+        this.$.accountSettingsForm.request.body['profile[default_page]'] = this.$.dropdownDefaultPage.selectedItem ? this.$.dropdownDefaultPage.selectedItem.value : '';
 
-  _onEmailNotificationsFormPresubmit () {
-      this._loader = true;
-      this.$.accountEmailNotificationsForm.request.body = [];
+        if (this.$.publicAccountSwitch.checked) {
+            this.$.accountSettingsForm.request.body['profile[public]'] = true;
+        }
+    }
 
-      if (this.$.sharedResourceNotifications.checked) {
-          this.$.accountEmailNotificationsForm.request.body['notification_settings[notifications][0]'] = true;
-      }
-  }
+    _onEmailNotificationsFormPresubmit () {
+        this._loader = true;
+        this.$.accountEmailNotificationsForm.request.body = [];
 
-  _onFormError(event) {
-      this._errorMessage = event.detail.error.message;
-      this._loader = false;
-  }
+        if (this.$.sharedResourceNotifications.checked) {
+            this.$.accountEmailNotificationsForm.request.body['notification_settings[notifications][0]'] = true;
+        }
+    }
 
-  _onFormResponse(event) {
-      const account = event.detail.response.account;
-      this.set('account', account);
+    _onFormError(event) {
+        this._errorMessage = event.detail.error.message;
+        this._loader = false;
+    }
 
-      this.$.accountEmailNotificationsForm.submit();
-  }
+    _onFormResponse(event) {
+        const account = event.detail.response.account;
+        this.set('account', account);
 
-  _onEmailNotificationsFormResponse(event) {
-      this.account.notificationSettings = event.detail.response.notification_settings;
+        this.$.accountEmailNotificationsForm.submit();
+    }
 
-      this.set('account', this.account);
+    _onEmailNotificationsFormResponse(event) {
+        this.account.notificationSettings = event.detail.response.notification_settings;
 
-      this.dispatchEvent(new CustomEvent('settings-saved', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              account: this.account
-          }
-      }));
+        this.set('account', this.account);
 
-      this._loader = false;
-  }
+        this.dispatchEvent(new CustomEvent('settings-saved', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                account: this.account
+            }
+        }));
 
-  setUp() {
-      this.$.firstName.focus();
-  }
+        this._loader = false;
+    }
 
-  reset() {
-      const account = JSON.parse(JSON.stringify(this.account));
+    setUp() {
+        this.$.firstName.focus();
+    }
 
-      this.account = {};
-      this.account = account;
+    reset() {
+        const account = JSON.parse(JSON.stringify(this.account));
 
-      this._errorMessage = '';
-  }
+        this.account = {};
+        this.account = account;
 
-  _computeCompaniesList(changedAccount) {
-      const account = JSON.parse(JSON.stringify(changedAccount));
-      const personal = {
-          company: {
-              alias: '',
-              name: 'Default'
-          }
-      };
-      const companies = account && account.companies && account.companies.length > 0 ? account.companies : [];
-      companies.unshift(personal);
-      return companies;
-  }
+        this._errorMessage = '';
+    }
 
-  _computeAccountEmailNotificationsApi(accountSettingsApi) {
-      return accountSettingsApi ? accountSettingsApi + '/notification-settings' : null;
-  }
+    _computeCompaniesList(changedAccount) {
+        const account = JSON.parse(JSON.stringify(changedAccount));
+        const personal = {
+            company: {
+                alias: '',
+                name: 'Default'
+            }
+        };
+        const companies = account && account.companies && account.companies.length > 0 ? account.companies : [];
+        companies.unshift(personal);
+        return companies;
+    }
 
-  _computeSharedResourceNotifications (account) {
-      return account.notificationSettings && account.notificationSettings['shared_resource'] ? account.notificationSettings['shared_resource'] : false;
-  }
+    _computeAccountEmailNotificationsApi(accountSettingsApi) {
+        return accountSettingsApi ? accountSettingsApi + '/notification-settings' : null;
+    }
+
+    _computeSharedResourceNotifications (account) {
+        return account.notificationSettings && account.notificationSettings['shared_resource'] ? account.notificationSettings['shared_resource'] : false;
+    }
 }
 window.customElements.define(AppscoAccountSettings.is, AppscoAccountSettings);

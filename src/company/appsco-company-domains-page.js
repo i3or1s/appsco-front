@@ -10,9 +10,10 @@ import './appsco-company-domains.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyDomainsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -44,101 +45,101 @@ class AppscoCompanyDomainsPage extends mixinBehaviors([NeonSharedElementAnimatab
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-domains-page'; }
+    static get is() { return 'appsco-company-domains-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String
+            },
 
-          domainsApi: {
-              type: String
-          },
+            domainsApi: {
+                type: String
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _onBack() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onBack() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  addDomain(domain) {
-      this.$.appscoCompanyDomains.addDomain(domain);
-  }
+    addDomain(domain) {
+        this.$.appscoCompanyDomains.addDomain(domain);
+    }
 
-  modifyDomain(domain) {
-      this.$.appscoCompanyDomains.modifyDomain(domain);
-  }
+    modifyDomain(domain) {
+        this.$.appscoCompanyDomains.modifyDomain(domain);
+    }
 
-  removeDomain(domain) {
-      this.$.appscoCompanyDomains.removeDomain(domain);
-  }
+    removeDomain(domain) {
+        this.$.appscoCompanyDomains.removeDomain(domain);
+    }
 
-  setupPage() {
-      this.dispatchEvent(new CustomEvent('show-domains-page-actions', { bubbles: true, composed: true }));
-  }
+    setupPage() {
+        this.dispatchEvent(new CustomEvent('show-domains-page-actions', { bubbles: true, composed: true }));
+    }
 
-  resetPage() {
-      this.dispatchEvent(new CustomEvent('hide-domains-page-actions', { bubbles: true, composed: true }));
-  }
+    resetPage() {
+        this.dispatchEvent(new CustomEvent('hide-domains-page-actions', { bubbles: true, composed: true }));
+    }
 
-  _onRemoveDomain(event) {
-      this.dispatchEvent(new CustomEvent('remove-domain', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              domain: event.detail.domain
-          }
-      }));
-  }
+    _onRemoveDomain(event) {
+        this.dispatchEvent(new CustomEvent('remove-domain', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                domain: event.detail.domain
+            }
+        }));
+    }
 
-  _onDomainsLoaded() {
-      this.dispatchEvent(new CustomEvent('company-domains-loaded', {bubbles: true, composed: true}));
-  }
+    _onDomainsLoaded() {
+        this.dispatchEvent(new CustomEvent('company-domains-loaded', {bubbles: true, composed: true}));
+    }
 
-  _onNoDomainsLoaded() {
-      this.dispatchEvent(new CustomEvent('empty-company-domains-loade', { bubbles: true, composed: true }));
-  }
+    _onNoDomainsLoaded() {
+        this.dispatchEvent(new CustomEvent('empty-company-domains-loade', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoCompanyDomainsPage.is, AppscoCompanyDomainsPage);

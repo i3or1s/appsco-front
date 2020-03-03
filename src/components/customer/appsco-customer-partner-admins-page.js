@@ -10,9 +10,10 @@ import './appsco-customer-partner-admins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCustomerPartnerAdminsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -57,79 +58,79 @@ class AppscoCustomerPartnerAdminsPage extends mixinBehaviors([NeonSharedElementA
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-customer-partner-admins-page'; }
+    static get is() { return 'appsco-customer-partner-admins-page'; }
 
-  static get properties() {
-      return {
-          customer: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            customer: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          partnerAdminsApi: {
-              type: String
-          },
+            partnerAdminsApi: {
+                type: String
+            },
 
-          authorizationToken: {
-              type: String
-          },
+            authorizationToken: {
+                type: String
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 600
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 600
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  loadPage() {
-      this.$.appscoCustomerPartnerAdmins.loadPartnerAdmins();
-  }
+    loadPage() {
+        this.$.appscoCustomerPartnerAdmins.loadPartnerAdmins();
+    }
 
-  reloadPartnerAdmins() {
-      this.$.appscoCustomerPartnerAdmins.reloadPartnerAdmins();
-  }
+    reloadPartnerAdmins() {
+        this.$.appscoCustomerPartnerAdmins.reloadPartnerAdmins();
+    }
 
-  removePartnerAdmins(partnerAdmins) {
-      this.$.appscoCustomerPartnerAdmins.removePartnerAdmins(partnerAdmins);
-  }
+    removePartnerAdmins(partnerAdmins) {
+        this.$.appscoCustomerPartnerAdmins.removePartnerAdmins(partnerAdmins);
+    }
 
-  _onClosePageAction() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onClosePageAction() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoCustomerPartnerAdminsPage.is, AppscoCustomerPartnerAdminsPage);

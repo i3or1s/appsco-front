@@ -1,28 +1,4 @@
-/**
-`appsco-directory-role-resource-admin-application`
-Is used to represent companyRole for application.
-
-Example:
-
-    <body>
-      <appsco-directory-role-resource-admin-application companyRole="{}" preview>
-     </appsco-directory-role-resource-admin-application>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-directory-role-resource-admin-application` | Mixin applied to root element | `{}`
-`--appsco-directory-role-resource-admin-application-image` | Mixin applied to inner image element | `{}`
-`--appsco-directory-role-resource-admin-application-image-contain` | Mixin applied to iron-image #sizedImgDiv | `{}`
-
-@demo demo/company/appsco-directory-role-resource-admin-application.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
@@ -36,9 +12,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDirectoryRoleResourceAdminApplication extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: none;
@@ -204,103 +181,103 @@ class AppscoDirectoryRoleResourceAdminApplication extends mixinBehaviors([NeonAn
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-directory-role-resource-admin-application'; }
+    static get is() { return 'appsco-directory-role-resource-admin-application'; }
 
-  static get properties() {
-      return {
-          companyRole: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            companyRole: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Application which is assigned to account.
-           */
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            /**
+             * Application which is assigned to account.
+             */
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          /**
-           * Indicates if companyRole should be in preview mode rather then full detailed view.
-           */
-          preview: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if companyRole should be in preview mode rather then full detailed view.
+             */
+            preview: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'inline-block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'inline-block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _computeOrganizationUnits(application) {
-      if (application.org_units) {
-          var result = '',
-              orgUnits = application.org_units,
-              length = orgUnits.length;
+    _computeOrganizationUnits(application) {
+        if (application.org_units) {
+            var result = '',
+                orgUnits = application.org_units,
+                length = orgUnits.length;
 
-          for (var i = 0; i < length; i++) {
-              result += orgUnits[i].name;
-              result += (i === length -1) ? '' : ', ';
-          }
+            for (var i = 0; i < length; i++) {
+                result += orgUnits[i].name;
+                result += (i === length -1) ? '' : ', ';
+            }
 
-          return result;
-      }
+            return result;
+        }
 
-      return '';
-  }
+        return '';
+    }
 
-  _onRevokeAction(event) {
-      this.dispatchEvent(new CustomEvent('revoke-resource-admin', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              assignee: this.companyRole.account,
-              application: this.application
-          }
-      }));
-  }
+    _onRevokeAction(event) {
+        this.dispatchEvent(new CustomEvent('revoke-resource-admin', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                assignee: this.companyRole.account,
+                application: this.application
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoDirectoryRoleResourceAdminApplication.is, AppscoDirectoryRoleResourceAdminApplication);

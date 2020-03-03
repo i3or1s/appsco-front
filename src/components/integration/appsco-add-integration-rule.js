@@ -25,12 +25,13 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddIntegrationRule extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -274,653 +275,653 @@ class AppscoAddIntegrationRule extends mixinBehaviors([
 
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnterAction"></iron-a11y-keys>
 `;
-  }
-
-  static get is() { return 'appsco-add-integration-rule'; }
-
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _getIntegrationPSOSApi: {
-              type: String,
-              computed: '_computeGetIntegrationPSOSApi(integration)'
-          },
-
-          _getAppscoPSOSApi: {
-              type: String,
-              computed: '_computeGetAppscoPSOSApi(integration)'
-          },
-
-          _addIntegrationRuleApi: {
-              type: String,
-              computed: '_computeAddIntegrationRuleApi(integration)'
-          },
-
-          _integrationKindRA: {
-              type: Boolean,
-              computed: '_computeIntegrationKindRA(integration)'
-          },
-
-          _selectedFromMethod: {
-              type: String,
-              value: ''
-          },
-
-          _selectedToMethod: {
-              type: String,
-              value: ''
-          },
-
-          _fromMethodList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'from_lookup',
-                          name: 'Lookup'
-                      },
-                      {
-                          value: 'from_added',
-                          name: 'Added'
-                      },
-                      {
-                          value: 'from_modified',
-                          name: 'Modified'
-                      },
-                      {
-                          value: 'from_deleted',
-                          name: 'Removed'
-                      }
-                  ];
-              }
-          },
-
-          _computedFromMethodList: {
-              type: Array,
-              computed: '_computeFromMethodList(_fromMethodList, integration)'
-          },
-
-          _fromPSOList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _computedFromPSOList: {
-              type: Array,
-              computed: '_computeFromPSOList(_fromPSOList, _selectedFromMethod, integration)'
-          },
-
-          _computedToPSOList: {
-              type: Array,
-              computed: '_computeToPSOList(_availableToPSOList, _selectedToMethod, integration)'
-          },
-
-          _fromConditionList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _fromConditionListExist: {
-              type: Boolean,
-              computed: '_computeEmptyArray(_fromConditionList)'
-          },
-
-          _toParamsList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _toParamsListExist: {
-              type: Boolean,
-              computed: '_computeEmptyArray(_toParamsList)'
-          },
-
-          _toMethodList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'add',
-                          name: 'Add'
-                      },
-                      {
-                          value: 'modify',
-                          name: 'Modify'
-                      },
-                      {
-                          value: 'delete',
-                          name: 'Remove'
-                      }
-                  ];
-              }
-          },
-
-          _computedToMethodList: {
-              type: Array,
-              computed: '_computeToMethodList(_toMethodList, integration)'
-          },
-
-          _toPSOList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _availableToPSOList: {
-              type: Array,
-              value: function () {
-                  return []
-              }
-          },
-
-          _appscoPSOList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _fromPSOSelected: {
-              type: Boolean,
-              value: false
-          },
-
-          _toPSOSelected: {
-              type: Boolean,
-              value: false
-          },
-
-          _conditionVisible: {
-              type: Boolean,
-              value: false
-          },
-
-          _paramsVisible: {
-              type: Boolean,
-              value: false
-          },
-
-          _loader: {
-              type: Boolean,
-              value: false
-          },
-
-          _errorMessage: {
-              type: String
-          },
-
-          _target: {
-              type: Object
-          },
-
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
-
-  ready() {
-      super.ready();
-
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this.$.fromConditionField,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this.$.fromConditionField,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-      this._target = this.$.form;
-
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
-
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinished);
-  }
-
-  setIntegration(integration) {
-      this.set('integration', integration);
-  }
-
-  open() {
-      this.$.dialog.open();
-  }
-
-  close() {
-      this.$.dialog.close();
-  }
-
-  toggle() {
-      this.$.dialog.toggle();
-  }
-
-  _showLoader() {
-      this._loader = true;
-  }
-
-  _hideLoader() {
-      this._loader = false;
-  }
-
-  _showError(message) {
-      this._errorMessage = message;
-  }
-
-  _hideError() {
-      this._errorMessage = '';
-  }
-
-  _reset() {
-      const me = this;
-
-      this._target.reset();
-      this._fromPSOSelected = false;
-      this._toPSOSelected = false;
-      this._conditionVisible = false;
-      this._paramsVisible = false;
-      this._hideConditionFields();
-      this.shadowRoot.getElementById('fromMethodList').selected = -1;
-      this.shadowRoot.getElementById('fromPSOList').selected = -1;
-      this.shadowRoot.getElementById('toMethodList').selected = -1;
-      this.shadowRoot.getElementById('toPSOList').selected = -1;
-
-      this._fromConditionList.forEach(function(element) {
-          if (me.$$('#fromCondition_' + element.key)) {
-              me.$$('#fromCondition_' + element.key).selected = null;
-          }
-          if (me.$$('#fromConditionOperator_' + element.key)) {
-              me.$$('#fromConditionOperator_' + element.key).selected = null;
-          }
-      });
-
-      dom(this.root).querySelectorAll('paper-button').forEach(function(element) {
-          element.active = false;
-      });
-  }
-
-  _computeFromMethodList(_fromMethodList, integration) {
-      const fromMethods = [];
-
-      if (integration
-          && integration.supported_actions
-          && integration.supported_actions.source
-          && integration.supported_actions.source.existing
-      ) {
-          for (const idx in integration.supported_actions.source.existing) {
-              for (const idx2 in _fromMethodList) {
-                  if (_fromMethodList[idx2].value == integration.supported_actions.source.existing[idx]) {
-                      fromMethods.push(
-                          _fromMethodList[idx2]
-                      );
-                  }
-              }
-          }
-      }
-
-      return fromMethods;
-  }
-
-  _computeToMethodList(_toMethodList, integration) {
-      const toMethods = [];
-
-      if (integration
-          && integration.supported_actions
-          && integration.supported_actions.target
-          && integration.supported_actions.target.existing
-      ) {
-          for (const idx in integration.supported_actions.target.existing) {
-              for (const idx2 in _toMethodList) {
-                  if (_toMethodList[idx2].value == integration.supported_actions.target.existing[idx]) {
-                      toMethods.push(
-                          _toMethodList[idx2]
-                      );
-                  }
-              }
-          }
-      }
-
-      return toMethods;
-  }
-
-  _computeFromPSOList(_fromPSOList, _selectedFromMethod, integration) {
-      const psos = [],
-          targets = {};
-      for (const idx in _fromPSOList) {
-          targets[_fromPSOList[idx].key] = _fromPSOList[idx];
-      }
-      if (integration
-          && integration.supported_actions
-          && integration.supported_actions.source
-          && integration.supported_actions.source.pso
-      ) {
-          for (const pso in integration.supported_actions.source.pso) {
-              if (integration.supported_actions.source.pso[pso].indexOf(_selectedFromMethod) > -1) {
-                  psos.push(targets[pso]);
-              }
-          }
-      }
-
-      return psos;
-  }
-
-  _computeToPSOList(_availableToPSOList, _selectedToMethod, integration) {
-      const psos = [],
-          available = {};
-      for (const idx in _availableToPSOList) {
-          available[_availableToPSOList[idx].key] = _availableToPSOList[idx];
-      }
-      if (integration
-          && integration.supported_actions
-          && integration.supported_actions.target
-          && integration.supported_actions.target.pso
-      ) {
-          for (const pso in integration.supported_actions.target.pso) {
-              if (integration.supported_actions.target.pso[pso].indexOf(_selectedToMethod) > -1
-                  && available[pso]
-              ) {
-                  psos.push(available[pso]);
-              }
-          }
-      }
-
-      return psos;
-  }
-
-  _onFromMethodSelected(event) {
-      this._selectedFromMethod = event.detail.selected;
-  }
-
-  _onToMethodSelected(event) {
-      this._selectedToMethod = event.detail.selected;
-  }
-
-  _computeGetIntegrationPSOSApi(integration) {
-      return integration.self ? (integration.self + '/pso') : null;
-  }
-
-  _computeGetAppscoPSOSApi(integration) {
-      return integration.self ? (integration.self + '/pso/appsco') : null;
-  }
-
-  _computeAddIntegrationRuleApi(integration) {
-      return integration.meta ? integration.meta.recipes : null;
-  }
-
-  _computeIntegrationKindRA(integration) {
-      return (integration.kind && 'ra' === integration.kind);
-  }
-
-  _computeEmptyArray(items) {
-      return items.length > 0;
-  }
-
-  _onDialogOpened() {
-      this.$.title.focus();
-  }
-
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this._reset();
-  }
-
-  _onIronOverlayEvents(event) {
-      event.stopPropagation();
-  }
-
-  _loadIntegrationPSOS() {
-      const getIntegrationPSOSRequest = this.$.getIntegrationPSOSApiRequest;
-
-      if (getIntegrationPSOSRequest.lastRequest) {
-          getIntegrationPSOSRequest.lastRequest.abort();
-      }
-
-      getIntegrationPSOSRequest.generateRequest();
-  }
-
-  _onIntegrationPSOSError() {
-      this.set('_fromPSOList', []);
-      this.set('_toPSOList', []);
-  }
-
-  _onIntegrationPSOSResponse(event) {
-      const response = event.detail.response,
-          appscoPSOList = JSON.parse(JSON.stringify(this._appscoPSOList));
-
-      if (this._integrationKindRA) {
-          this.set('_fromPSOList', (response && response.psos) ? response.psos : []);
-          this.set('_toPSOList', appscoPSOList);
-      }
-      else {
-          this.set('_fromPSOList', appscoPSOList);
-          this.set('_toPSOList', (response && response.psos) ? response.psos : []);
-      }
-  }
-
-  _onAppscoPSOSError() {
-      this.set('_appscoPSOList', []);
-  }
-
-  _onAppscoPSOSResponse(event) {
-      var response = event.detail.response;
-
-      this.set('_appscoPSOList', (response && response.psos) ? response.psos : []);
-      this._loadIntegrationPSOS();
-  }
-
-  _onFromPSOSelected(event) {
-      let selectedItem = event.detail.selected,
-          transformable = [],
-          filteredTargetPsos = [];
-
-      this._fromPSOSelected = true;
-      this._hideConditionFields();
-      this._conditionVisible = false;
-      this._fromPSOList.forEach(function(element) {
-          if (selectedItem === element.key) {
-              const _fromConditionList = [];
-              for (const idx in element.conditions) {
-                  _fromConditionList.push({
-                      key: idx,
-                      value: '',
-                      supportedOperators: element.conditions[idx],
-                      operator: element.conditions[idx][0],
-                      options: this._getOptions(element, idx)
-                  });
-              }
-              this.set('_fromConditionList', _fromConditionList);
-
-              return false;
-          }
-      }.bind(this));
-
-      this._fromPSOList.forEach(function(el) {
-          if (el.key === selectedItem) {
-              transformable = el.targets;
-          }
-      });
-
-      this._toPSOList.forEach(function(el) {
-          if (transformable.indexOf(el.key) !== -1) {
-              filteredTargetPsos.push(el);
-          }
-      });
-
-      this.set('_availableToPSOList', filteredTargetPsos);
-      if (transformable.indexOf(this.$.toPSOList.selected) === -1) {
-          this.$.toPSOList.selected = null;
-      }
-  }
-
-  _getOptions(element, idx) {
-      const result = [null];
-      if (!element.conditions || !element.condition_options || !element.conditions[idx] || !element.condition_options[idx]) {
-          return null;
-      }
-      for (const i in element.condition_options[idx]) {
-          result.push(element.condition_options[idx][i]);
-      }
-
-      return result;
-  }
-
-  _onToPSOSelected(event) {
-      const selectedItem = event.detail.selected;
-
-      this._toPSOSelected = true;
-      this._toPSOList.forEach(function(element) {
-
-          if (selectedItem === element.key) {
-              this.set('_toParamsList', element.params.map(function(el, index) {
-                  return {
-                      key: el,
-                      value: '',
-                      options: (element.target_options[el] && element.target_options[el].length ? element.target_options[el] : null)
-                  };
-              }));
-              return false;
-          }
-      }.bind(this));
-  }
-
-  _onToggleConditionAction(event) {
-      if (this.$.fromPSOList.selected) {
-          this._conditionVisible = !this._conditionVisible;
-          this._conditionVisible ? this._showConditionFields() : this._hideConditionFields();
-      }
-      else {
-          event.target.active = false;
-      }
-  }
-
-  _showConditionFields() {
-      this.animationConfig.entry.node.style.display = 'block';
-      this.playAnimation('entry');
-  }
-
-  _hideConditionFields() {
-      this.playAnimation('exit');
-      this.animationConfig.entry.node.style.display = 'none';
-  }
-
-  _onToggleParamsAction() {
-      if (this.$.toPSOList.selected) {
-          this._paramsVisible = !this._paramsVisible;
-      }
-      else {
-          event.target.active = false;
-      }
-  }
-
-  _onNeonAnimationFinished() {
-      if (this.animationConfig && !this._conditionVisible) {
-          this.animationConfig.exit.node.style.display = 'none';
-      }
-  }
-
-  _onEnterAction() {
-      this._onAddAction();
-  }
-
-  _onAddAction() {
-      this._hideError();
-
-      if (this._target.validate()) {
-          this._showLoader();
-          this._target.submit();
-      }
-  }
-
-  _onFormPresubmit(event) {
-      let index;
-      const form = event.target,
-          fromMethod = this.$.fromMethod,
-          fromPSO = this.$.fromPSO,
-          toMethod = this.$.toMethod,
-          toPSO = this.$.toPSO;
-
-      form.request.body['integration_recipe[fromMethod]'] = fromMethod.selectedItem ? fromMethod.selectedItem.value : '';
-      form.request.body['integration_recipe[fromPSO]'] = fromPSO.selectedItem ? fromPSO.selectedItem.value : '';
-      form.request.body['integration_recipe[toMethod]'] = toMethod.selectedItem ? toMethod.selectedItem.value : '';
-      form.request.body['integration_recipe[toPSO]'] = toPSO.selectedItem ? toPSO.selectedItem.value : '';
-
-      if (this._conditionVisible) {
-          index = 0;
-
-          this._fromConditionList.forEach(function(element) {
-              if ('' != element.value) {
-                  form.request.body['integration_recipe[fromCondition][' + index + '][field]'] = element.key;
-                  form.request.body['integration_recipe[fromCondition][' + index + '][value]'] = element.value;
-                  form.request.body['integration_recipe[fromCondition][' + index + '][operator]'] = element.operator;
-                  index ++;
-              }
-          });
-      }
-
-      if (this._paramsVisible) {
-          index = 0;
-
-          this._toParamsList.forEach(function(element) {
-              if ('' != element.value) {
-                  form.request.body['integration_recipe[toField][' + index + '][key]'] = element.key;
-                  form.request.body['integration_recipe[toField][' + index + '][value]'] = element.value;
-                  index ++;
-              }
-          });
-      }
-  }
-
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
-
-  _onFormResponse(event) {
-      this.close();
-
-      this.dispatchEvent(new CustomEvent('integration-rule-added', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: this.integration,
-              rule: event.detail.response
-          }
-      }));
-  }
-
-  _formatOperator(operatorKey) {
-      return this.$.operators.getOperator(operatorKey);
-  }
+    }
+
+    static get is() { return 'appsco-add-integration-rule'; }
+
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _getIntegrationPSOSApi: {
+                type: String,
+                computed: '_computeGetIntegrationPSOSApi(integration)'
+            },
+
+            _getAppscoPSOSApi: {
+                type: String,
+                computed: '_computeGetAppscoPSOSApi(integration)'
+            },
+
+            _addIntegrationRuleApi: {
+                type: String,
+                computed: '_computeAddIntegrationRuleApi(integration)'
+            },
+
+            _integrationKindRA: {
+                type: Boolean,
+                computed: '_computeIntegrationKindRA(integration)'
+            },
+
+            _selectedFromMethod: {
+                type: String,
+                value: ''
+            },
+
+            _selectedToMethod: {
+                type: String,
+                value: ''
+            },
+
+            _fromMethodList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'from_lookup',
+                            name: 'Lookup'
+                        },
+                        {
+                            value: 'from_added',
+                            name: 'Added'
+                        },
+                        {
+                            value: 'from_modified',
+                            name: 'Modified'
+                        },
+                        {
+                            value: 'from_deleted',
+                            name: 'Removed'
+                        }
+                    ];
+                }
+            },
+
+            _computedFromMethodList: {
+                type: Array,
+                computed: '_computeFromMethodList(_fromMethodList, integration)'
+            },
+
+            _fromPSOList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _computedFromPSOList: {
+                type: Array,
+                computed: '_computeFromPSOList(_fromPSOList, _selectedFromMethod, integration)'
+            },
+
+            _computedToPSOList: {
+                type: Array,
+                computed: '_computeToPSOList(_availableToPSOList, _selectedToMethod, integration)'
+            },
+
+            _fromConditionList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _fromConditionListExist: {
+                type: Boolean,
+                computed: '_computeEmptyArray(_fromConditionList)'
+            },
+
+            _toParamsList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _toParamsListExist: {
+                type: Boolean,
+                computed: '_computeEmptyArray(_toParamsList)'
+            },
+
+            _toMethodList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'add',
+                            name: 'Add'
+                        },
+                        {
+                            value: 'modify',
+                            name: 'Modify'
+                        },
+                        {
+                            value: 'delete',
+                            name: 'Remove'
+                        }
+                    ];
+                }
+            },
+
+            _computedToMethodList: {
+                type: Array,
+                computed: '_computeToMethodList(_toMethodList, integration)'
+            },
+
+            _toPSOList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _availableToPSOList: {
+                type: Array,
+                value: function () {
+                    return []
+                }
+            },
+
+            _appscoPSOList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _fromPSOSelected: {
+                type: Boolean,
+                value: false
+            },
+
+            _toPSOSelected: {
+                type: Boolean,
+                value: false
+            },
+
+            _conditionVisible: {
+                type: Boolean,
+                value: false
+            },
+
+            _paramsVisible: {
+                type: Boolean,
+                value: false
+            },
+
+            _loader: {
+                type: Boolean,
+                value: false
+            },
+
+            _errorMessage: {
+                type: String
+            },
+
+            _target: {
+                type: Object
+            },
+
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
+
+    ready() {
+        super.ready();
+
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this.$.fromConditionField,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this.$.fromConditionField,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+        this._target = this.$.form;
+
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
+
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinished);
+    }
+
+    setIntegration(integration) {
+        this.set('integration', integration);
+    }
+
+    open() {
+        this.$.dialog.open();
+    }
+
+    close() {
+        this.$.dialog.close();
+    }
+
+    toggle() {
+        this.$.dialog.toggle();
+    }
+
+    _showLoader() {
+        this._loader = true;
+    }
+
+    _hideLoader() {
+        this._loader = false;
+    }
+
+    _showError(message) {
+        this._errorMessage = message;
+    }
+
+    _hideError() {
+        this._errorMessage = '';
+    }
+
+    _reset() {
+        const me = this;
+
+        this._target.reset();
+        this._fromPSOSelected = false;
+        this._toPSOSelected = false;
+        this._conditionVisible = false;
+        this._paramsVisible = false;
+        this._hideConditionFields();
+        this.shadowRoot.getElementById('fromMethodList').selected = -1;
+        this.shadowRoot.getElementById('fromPSOList').selected = -1;
+        this.shadowRoot.getElementById('toMethodList').selected = -1;
+        this.shadowRoot.getElementById('toPSOList').selected = -1;
+
+        this._fromConditionList.forEach(function(element) {
+            if (me.$$('#fromCondition_' + element.key)) {
+                me.$$('#fromCondition_' + element.key).selected = null;
+            }
+            if (me.$$('#fromConditionOperator_' + element.key)) {
+                me.$$('#fromConditionOperator_' + element.key).selected = null;
+            }
+        });
+
+        dom(this.root).querySelectorAll('paper-button').forEach(function(element) {
+            element.active = false;
+        });
+    }
+
+    _computeFromMethodList(_fromMethodList, integration) {
+        const fromMethods = [];
+
+        if (integration
+            && integration.supported_actions
+            && integration.supported_actions.source
+            && integration.supported_actions.source.existing
+        ) {
+            for (const idx in integration.supported_actions.source.existing) {
+                for (const idx2 in _fromMethodList) {
+                    if (_fromMethodList[idx2].value == integration.supported_actions.source.existing[idx]) {
+                        fromMethods.push(
+                            _fromMethodList[idx2]
+                        );
+                    }
+                }
+            }
+        }
+
+        return fromMethods;
+    }
+
+    _computeToMethodList(_toMethodList, integration) {
+        const toMethods = [];
+
+        if (integration
+            && integration.supported_actions
+            && integration.supported_actions.target
+            && integration.supported_actions.target.existing
+        ) {
+            for (const idx in integration.supported_actions.target.existing) {
+                for (const idx2 in _toMethodList) {
+                    if (_toMethodList[idx2].value == integration.supported_actions.target.existing[idx]) {
+                        toMethods.push(
+                            _toMethodList[idx2]
+                        );
+                    }
+                }
+            }
+        }
+
+        return toMethods;
+    }
+
+    _computeFromPSOList(_fromPSOList, _selectedFromMethod, integration) {
+        const psos = [],
+            targets = {};
+        for (const idx in _fromPSOList) {
+            targets[_fromPSOList[idx].key] = _fromPSOList[idx];
+        }
+        if (integration
+            && integration.supported_actions
+            && integration.supported_actions.source
+            && integration.supported_actions.source.pso
+        ) {
+            for (const pso in integration.supported_actions.source.pso) {
+                if (integration.supported_actions.source.pso[pso].indexOf(_selectedFromMethod) > -1) {
+                    psos.push(targets[pso]);
+                }
+            }
+        }
+
+        return psos;
+    }
+
+    _computeToPSOList(_availableToPSOList, _selectedToMethod, integration) {
+        const psos = [],
+            available = {};
+        for (const idx in _availableToPSOList) {
+            available[_availableToPSOList[idx].key] = _availableToPSOList[idx];
+        }
+        if (integration
+            && integration.supported_actions
+            && integration.supported_actions.target
+            && integration.supported_actions.target.pso
+        ) {
+            for (const pso in integration.supported_actions.target.pso) {
+                if (integration.supported_actions.target.pso[pso].indexOf(_selectedToMethod) > -1
+                    && available[pso]
+                ) {
+                    psos.push(available[pso]);
+                }
+            }
+        }
+
+        return psos;
+    }
+
+    _onFromMethodSelected(event) {
+        this._selectedFromMethod = event.detail.selected;
+    }
+
+    _onToMethodSelected(event) {
+        this._selectedToMethod = event.detail.selected;
+    }
+
+    _computeGetIntegrationPSOSApi(integration) {
+        return integration.self ? (integration.self + '/pso') : null;
+    }
+
+    _computeGetAppscoPSOSApi(integration) {
+        return integration.self ? (integration.self + '/pso/appsco') : null;
+    }
+
+    _computeAddIntegrationRuleApi(integration) {
+        return integration.meta ? integration.meta.recipes : null;
+    }
+
+    _computeIntegrationKindRA(integration) {
+        return (integration.kind && 'ra' === integration.kind);
+    }
+
+    _computeEmptyArray(items) {
+        return items.length > 0;
+    }
+
+    _onDialogOpened() {
+        this.$.title.focus();
+    }
+
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this._reset();
+    }
+
+    _onIronOverlayEvents(event) {
+        event.stopPropagation();
+    }
+
+    _loadIntegrationPSOS() {
+        const getIntegrationPSOSRequest = this.$.getIntegrationPSOSApiRequest;
+
+        if (getIntegrationPSOSRequest.lastRequest) {
+            getIntegrationPSOSRequest.lastRequest.abort();
+        }
+
+        getIntegrationPSOSRequest.generateRequest();
+    }
+
+    _onIntegrationPSOSError() {
+        this.set('_fromPSOList', []);
+        this.set('_toPSOList', []);
+    }
+
+    _onIntegrationPSOSResponse(event) {
+        const response = event.detail.response,
+            appscoPSOList = JSON.parse(JSON.stringify(this._appscoPSOList));
+
+        if (this._integrationKindRA) {
+            this.set('_fromPSOList', (response && response.psos) ? response.psos : []);
+            this.set('_toPSOList', appscoPSOList);
+        }
+        else {
+            this.set('_fromPSOList', appscoPSOList);
+            this.set('_toPSOList', (response && response.psos) ? response.psos : []);
+        }
+    }
+
+    _onAppscoPSOSError() {
+        this.set('_appscoPSOList', []);
+    }
+
+    _onAppscoPSOSResponse(event) {
+        var response = event.detail.response;
+
+        this.set('_appscoPSOList', (response && response.psos) ? response.psos : []);
+        this._loadIntegrationPSOS();
+    }
+
+    _onFromPSOSelected(event) {
+        let selectedItem = event.detail.selected,
+            transformable = [],
+            filteredTargetPsos = [];
+
+        this._fromPSOSelected = true;
+        this._hideConditionFields();
+        this._conditionVisible = false;
+        this._fromPSOList.forEach(function(element) {
+            if (selectedItem === element.key) {
+                const _fromConditionList = [];
+                for (const idx in element.conditions) {
+                    _fromConditionList.push({
+                        key: idx,
+                        value: '',
+                        supportedOperators: element.conditions[idx],
+                        operator: element.conditions[idx][0],
+                        options: this._getOptions(element, idx)
+                    });
+                }
+                this.set('_fromConditionList', _fromConditionList);
+
+                return false;
+            }
+        }.bind(this));
+
+        this._fromPSOList.forEach(function(el) {
+            if (el.key === selectedItem) {
+                transformable = el.targets;
+            }
+        });
+
+        this._toPSOList.forEach(function(el) {
+            if (transformable.indexOf(el.key) !== -1) {
+                filteredTargetPsos.push(el);
+            }
+        });
+
+        this.set('_availableToPSOList', filteredTargetPsos);
+        if (transformable.indexOf(this.$.toPSOList.selected) === -1) {
+            this.$.toPSOList.selected = null;
+        }
+    }
+
+    _getOptions(element, idx) {
+        const result = [null];
+        if (!element.conditions || !element.condition_options || !element.conditions[idx] || !element.condition_options[idx]) {
+            return null;
+        }
+        for (const i in element.condition_options[idx]) {
+            result.push(element.condition_options[idx][i]);
+        }
+
+        return result;
+    }
+
+    _onToPSOSelected(event) {
+        const selectedItem = event.detail.selected;
+
+        this._toPSOSelected = true;
+        this._toPSOList.forEach(function(element) {
+
+            if (selectedItem === element.key) {
+                this.set('_toParamsList', element.params.map(function(el, index) {
+                    return {
+                        key: el,
+                        value: '',
+                        options: (element.target_options[el] && element.target_options[el].length ? element.target_options[el] : null)
+                    };
+                }));
+                return false;
+            }
+        }.bind(this));
+    }
+
+    _onToggleConditionAction(event) {
+        if (this.$.fromPSOList.selected) {
+            this._conditionVisible = !this._conditionVisible;
+            this._conditionVisible ? this._showConditionFields() : this._hideConditionFields();
+        }
+        else {
+            event.target.active = false;
+        }
+    }
+
+    _showConditionFields() {
+        this.animationConfig.entry.node.style.display = 'block';
+        this.playAnimation('entry');
+    }
+
+    _hideConditionFields() {
+        this.playAnimation('exit');
+        this.animationConfig.entry.node.style.display = 'none';
+    }
+
+    _onToggleParamsAction() {
+        if (this.$.toPSOList.selected) {
+            this._paramsVisible = !this._paramsVisible;
+        }
+        else {
+            event.target.active = false;
+        }
+    }
+
+    _onNeonAnimationFinished() {
+        if (this.animationConfig && !this._conditionVisible) {
+            this.animationConfig.exit.node.style.display = 'none';
+        }
+    }
+
+    _onEnterAction() {
+        this._onAddAction();
+    }
+
+    _onAddAction() {
+        this._hideError();
+
+        if (this._target.validate()) {
+            this._showLoader();
+            this._target.submit();
+        }
+    }
+
+    _onFormPresubmit(event) {
+        let index;
+        const form = event.target,
+            fromMethod = this.$.fromMethod,
+            fromPSO = this.$.fromPSO,
+            toMethod = this.$.toMethod,
+            toPSO = this.$.toPSO;
+
+        form.request.body['integration_recipe[fromMethod]'] = fromMethod.selectedItem ? fromMethod.selectedItem.value : '';
+        form.request.body['integration_recipe[fromPSO]'] = fromPSO.selectedItem ? fromPSO.selectedItem.value : '';
+        form.request.body['integration_recipe[toMethod]'] = toMethod.selectedItem ? toMethod.selectedItem.value : '';
+        form.request.body['integration_recipe[toPSO]'] = toPSO.selectedItem ? toPSO.selectedItem.value : '';
+
+        if (this._conditionVisible) {
+            index = 0;
+
+            this._fromConditionList.forEach(function(element) {
+                if ('' != element.value) {
+                    form.request.body['integration_recipe[fromCondition][' + index + '][field]'] = element.key;
+                    form.request.body['integration_recipe[fromCondition][' + index + '][value]'] = element.value;
+                    form.request.body['integration_recipe[fromCondition][' + index + '][operator]'] = element.operator;
+                    index ++;
+                }
+            });
+        }
+
+        if (this._paramsVisible) {
+            index = 0;
+
+            this._toParamsList.forEach(function(element) {
+                if ('' != element.value) {
+                    form.request.body['integration_recipe[toField][' + index + '][key]'] = element.key;
+                    form.request.body['integration_recipe[toField][' + index + '][value]'] = element.value;
+                    index ++;
+                }
+            });
+        }
+    }
+
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
+
+    _onFormResponse(event) {
+        this.close();
+
+        this.dispatchEvent(new CustomEvent('integration-rule-added', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: this.integration,
+                rule: event.detail.response
+            }
+        }));
+    }
+
+    _formatOperator(operatorKey) {
+        return this.$.operators.getOperator(operatorKey);
+    }
 }
 window.customElements.define(AppscoAddIntegrationRule.is, AppscoAddIntegrationRule);

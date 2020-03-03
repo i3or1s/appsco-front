@@ -4,9 +4,10 @@ import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoProvisioningActions extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -37,26 +38,26 @@ class AppscoProvisioningActions extends PolymerElement {
             <paper-button class="add-action" on-tap="_onAddAction">Add</paper-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-provisioning-actions'; }
+    static get is() { return 'appsco-provisioning-actions'; }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function () {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function () {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
-  }
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+    }
 
-  _onAddAction() {
-      this.dispatchEvent(new CustomEvent('add-integration', { bubbles: true, composed: true }));
-  }
+    _onAddAction() {
+        this.dispatchEvent(new CustomEvent('add-integration', { bubbles: true, composed: true }));
+    }
 
-  reset() {}
+    reset() {}
 }
 window.customElements.define(AppscoProvisioningActions.is, AppscoProvisioningActions);

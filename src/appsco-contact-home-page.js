@@ -22,12 +22,13 @@ import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/re
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactHomePage extends mixinBehaviors([
     NeonAnimatableBehavior,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-page-styles">
             :host {
                 --paper-tabs-selection-bar-color: var(--app-primary-color);
@@ -214,301 +215,301 @@ class AppscoContactHomePage extends mixinBehaviors([
         <appsco-application-settings-dialog id="appscoApplicationSettingsDialog" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" on-application-settings-saved="_onApplicationCredentialsChanged">
         </appsco-application-settings-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contact-home-page'; }
+    static get is() { return 'appsco-contact-home-page'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              notify: true
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                notify: true
+            },
 
-          account: {
-              type: Object
-          },
+            account: {
+                type: Object
+            },
 
-          applicationsApi: {
-              type: String
-          },
+            applicationsApi: {
+                type: String
+            },
 
-          pageConfig: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onPageConfigChanged'
-          },
+            pageConfig: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onPageConfigChanged'
+            },
 
-          _applications: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _applications: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _shared: {
-              type: Boolean,
-              computed: '_computeApplicationShared(application)',
-              notify: true
-          },
+            _shared: {
+                type: Boolean,
+                computed: '_computeApplicationShared(application)',
+                notify: true
+            },
 
-          _selectedTab: {
-              type: Number
-          },
+            _selectedTab: {
+                type: Number
+            },
 
-          _infoShown: {
-              type: Boolean,
-              value: false
-          },
+            _infoShown: {
+                type: Boolean,
+                value: false
+            },
 
-          _editClaims: {
-              type: Boolean,
-              computed: '_computeEditClaims(application)',
-              notify: true
-          },
+            _editClaims: {
+                type: Boolean,
+                computed: '_computeEditClaims(application)',
+                notify: true
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletS1024Screen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletS1024Screen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletS1280Screen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletS1280Screen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          laptopScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            laptopScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen, tabletS1024Screen, tabletS1280Screen, laptopScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopScreen) {
-              this.updateStyles();
-          }
-      });
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopScreen) {
+                this.updateStyles();
+            }
+        });
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.toolbar.addEventListener('search', this._onSearchApplications.bind(this));
-      this.toolbar.addEventListener('search-clear', this._onSearchApplicationsClear.bind(this));
-  }
+    _addListeners() {
+        this.toolbar.addEventListener('search', this._onSearchApplications.bind(this));
+        this.toolbar.addEventListener('search-clear', this._onSearchApplicationsClear.bind(this));
+    }
 
-  initializePage() {
-      this.setDefaultApplication();
-  }
+    initializePage() {
+        this.setDefaultApplication();
+    }
 
-  resetPage() {
-      this.$.appscoApplications.reset();
-      this.$.appscoApplications.reloadApplications();
-      this._hideInfo();
-  }
+    resetPage() {
+        this.$.appscoApplications.reset();
+        this.$.appscoApplications.reloadApplications();
+        this._hideInfo();
+    }
 
-  setDefaultApplication () {
-      this.set('application', this.$.appscoApplications.getFirstApplication());
-  }
+    setDefaultApplication () {
+        this.set('application', this.$.appscoApplications.getFirstApplication());
+    }
 
-  setApplication(application) {
-      this.application = application;
-      this.$.appscoApplications.modifyApplications([application]);
-  }
+    setApplication(application) {
+        this.application = application;
+        this.$.appscoApplications.modifyApplications([application]);
+    }
 
-  removeApplications (applications) {
-      this.$.appscoApplications.removeApplications(applications);
-  }
+    removeApplications (applications) {
+        this.$.appscoApplications.removeApplications(applications);
+    }
 
-  filterApplicationsByTerm(term) {
-      this.$.appscoApplications.filterByTerm(term);
-  }
+    filterApplicationsByTerm(term) {
+        this.$.appscoApplications.filterByTerm(term);
+    }
 
-  toggleInfo() {
-      this.$.appscoContent.toggleSection('info');
-      this._infoShown = !this._infoShown;
+    toggleInfo() {
+        this.$.appscoContent.toggleSection('info');
+        this._infoShown = !this._infoShown;
 
-      if (this._infoShown) {
-          this._selectedTab = 0;
-      }
-  }
+        if (this._infoShown) {
+            this._selectedTab = 0;
+        }
+    }
 
-  _pageLoaded () {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _pageLoaded () {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _showInfo() {
-      this.$.appscoContent.showSection('info');
-      this._infoShown = true;
-      this._selectedTab = 0;
-  }
+    _showInfo() {
+        this.$.appscoContent.showSection('info');
+        this._infoShown = true;
+        this._selectedTab = 0;
+    }
 
-  _hideInfo() {
-      this.$.appscoContent.hideSection('info');
-      this._infoShown = false;
-  }
+    _hideInfo() {
+        this.$.appscoContent.hideSection('info');
+        this._infoShown = false;
+    }
 
-  _updateScreen (mobile, tablet, tabletS1024Screen, tabletS1280Screen, laptop) {
-      this.updateStyles();
-  }
+    _updateScreen (mobile, tablet, tabletS1024Screen, tabletS1280Screen, laptop) {
+        this.updateStyles();
+    }
 
-  _computeApplicationShared(application) {
-      return application && !application.owner;
-  }
+    _computeApplicationShared(application) {
+        return application && !application.owner;
+    }
 
-  _computeEditClaims(application) {
-      return application.permisions && application.permisions.edit_claims;
-  }
+    _computeEditClaims(application) {
+        return application.permisions && application.permisions.edit_claims;
+    }
 
-  _onViewApplicationInfo(event) {
-      this.set('application', event.detail.application);
+    _onViewApplicationInfo(event) {
+        this.set('application', event.detail.application);
 
-      if (!this._infoShown) {
-          this._showInfo();
-      }
-  }
+        if (!this._infoShown) {
+            this._showInfo();
+        }
+    }
 
-  _onApplicationEdit (event) {
-      this.set('application', event.detail.application);
-      this.dispatchEvent(new CustomEvent('edit-application', { bubbles: true, composed: true }));
-  }
+    _onApplicationEdit (event) {
+        this.set('application', event.detail.application);
+        this.dispatchEvent(new CustomEvent('edit-application', { bubbles: true, composed: true }));
+    }
 
-  _onEditSharedApplication(event) {
-      this.dispatchEvent(new CustomEvent('edit-shared-application', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: event.detail.application
-          }
-      }));
-  }
+    _onEditSharedApplication(event) {
+        this.dispatchEvent(new CustomEvent('edit-shared-application', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: event.detail.application
+            }
+        }));
+    }
 
-  _onApplicationRemoved() {
-      this.setDefaultApplication();
-  }
+    _onApplicationRemoved() {
+        this.setDefaultApplication();
+    }
 
-  _onApplication (event) {
-      if(['unpw', 'item', 'none', 'saml', 'saml_dropbox', 'saml_office_365'].indexOf(event.detail.application.auth_type) > -1) {
-          window.open(event.detail.application.meta.plugin_go, "_blank");
-      } else {
-          this._onViewApplicationInfo(event);
-      }
-  }
+    _onApplication (event) {
+        if(['unpw', 'item', 'none', 'saml', 'saml_dropbox', 'saml_office_365'].indexOf(event.detail.application.auth_type) > -1) {
+            window.open(event.detail.application.meta.plugin_go, "_blank");
+        } else {
+            this._onViewApplicationInfo(event);
+        }
+    }
 
-  _onApplicationInfoEdit() {
-      this.dispatchEvent(new CustomEvent('info-edit-application', { bubbles: true, composed: true }));
-  }
+    _onApplicationInfoEdit() {
+        this.dispatchEvent(new CustomEvent('info-edit-application', { bubbles: true, composed: true }));
+    }
 
-  _onRevokeApplication() {
-      const dialog = this.shadowRoot.getElementById('appscoApplicationRevoke');
-      dialog.applicationInstance = this.application;
-      dialog.open();
-  }
+    _onRevokeApplication() {
+        const dialog = this.shadowRoot.getElementById('appscoApplicationRevoke');
+        dialog.applicationInstance = this.application;
+        dialog.open();
+    }
 
-  _onApplicationInstanceRevoked(event) {
-      this.removeApplications([event.detail.applicationInstance]);
-      this.setDefaultApplication();
-      this._notify('You have successfully revoked access to ' + event.detail.applicationInstance.application.title + '.');
-  }
+    _onApplicationInstanceRevoked(event) {
+        this.removeApplications([event.detail.applicationInstance]);
+        this.setDefaultApplication();
+        this._notify('You have successfully revoked access to ' + event.detail.applicationInstance.application.title + '.');
+    }
 
-  _onApplicationEditCredentials() {
-      const dialog = this.shadowRoot.getElementById('appscoApplicationSettingsDialog');
-      dialog.setApplication(event.detail.application);
-      dialog.toggle();
-  }
+    _onApplicationEditCredentials() {
+        const dialog = this.shadowRoot.getElementById('appscoApplicationSettingsDialog');
+        dialog.setApplication(event.detail.application);
+        dialog.toggle();
+    }
 
-  _onPageConfigChanged(newValue) {
-      newValue = newValue[this.getAttribute('name')];
+    _onPageConfigChanged(newValue) {
+        newValue = newValue[this.getAttribute('name')];
 
-      if (!newValue) {
-          return false;
-      }
+        if (!newValue) {
+            return false;
+        }
 
-      const appscoApplicationsComponent = this.$.appscoApplications;
+        const appscoApplicationsComponent = this.$.appscoApplications;
 
-      if (newValue.display_style) {
-          appscoApplicationsComponent.setDisplayStyle(newValue.display_style);
-      }
+        if (newValue.display_style) {
+            appscoApplicationsComponent.setDisplayStyle(newValue.display_style);
+        }
 
-      if (newValue.sort_field && 'undefined' !== typeof newValue.sort_ascending) {
-          appscoApplicationsComponent.setSort({
-              orderBy: newValue.sort_field,
-              ascending: newValue.sort_ascending
-          });
-      }
-  }
+        if (newValue.sort_field && 'undefined' !== typeof newValue.sort_ascending) {
+            appscoApplicationsComponent.setSort({
+                orderBy: newValue.sort_field,
+                ascending: newValue.sort_ascending
+            });
+        }
+    }
 
-  _onSearchApplications(event) {
-      this._showProgressBar();
-      this.filterApplicationsByTerm(event.detail.term);
-  }
+    _onSearchApplications(event) {
+        this._showProgressBar();
+        this.filterApplicationsByTerm(event.detail.term);
+    }
 
-  _onSearchApplicationsClear() {
-      this.filterApplicationsByTerm('');
-  }
+    _onSearchApplicationsClear() {
+        this.filterApplicationsByTerm('');
+    }
 
-  _onApplicationCredentialsChanged(event) {
-      const application = event.detail.application,
-          message = 'You successfully changed ' + application.title + ' credentials.';
+    _onApplicationCredentialsChanged(event) {
+        const application = event.detail.application,
+            message = 'You successfully changed ' + application.title + ' credentials.';
 
-      this._notify(message);
-  }
+        this._notify(message);
+    }
 }
 window.customElements.define(AppscoContactHomePage.is, AppscoContactHomePage);

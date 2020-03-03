@@ -1,24 +1,12 @@
-/*
-`appsco-account-image`
-Account image is used to present account in form of an image or initials if image is not present.
-
-    <appsco-account-image account="{}">
-    </appsco-account-image>
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-image/iron-image.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountImage extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -58,56 +46,56 @@ class AppscoAccountImage extends PolymerElement {
                 </div>
             </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-image'; }
+    static get is() { return 'appsco-account-image'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _accountInitials: {
-              type: String,
-              computed: '_computeAccountInitials(account)'
-          },
+            _accountInitials: {
+                type: String,
+                computed: '_computeAccountInitials(account)'
+            },
 
-          _pictureUrl: {
-              type: String,
-              computed: '_computePictureUrl(account)'
-          }
-      };
-  }
+            _pictureUrl: {
+                type: String,
+                computed: '_computePictureUrl(account)'
+            }
+        };
+    }
 
-  _computePictureUrl(account) {
-      if (!account) {
-          return '';
-      }
-      if (account.account && account.account.picture_url) {
-          return account.account.picture_url;
-      }
-      return account.picture_url ? account.picture_url : null;
-  }
+    _computePictureUrl(account) {
+        if (!account) {
+            return '';
+        }
+        if (account.account && account.account.picture_url) {
+            return account.account.picture_url;
+        }
+        return account.picture_url ? account.picture_url : null;
+    }
 
-  _computeAccountInitials(account) {
-      const acc = (account && !!account.account) ? account.account : account;
-      let initials = '';
+    _computeAccountInitials(account) {
+        const acc = (account && !!account.account) ? account.account : account;
+        let initials = '';
 
-      if (acc && acc.first_name && acc.last_name) {
-          initials = acc.first_name.substring(0, 1) + acc.last_name.substring(0, 1);
-      }
-      else if (acc && acc.name) {
-          initials = acc.name.substring(0, 2);
-      }
-      if(acc && acc.email && '' === initials) {
-          initials = acc.email.substring(0, 2);
-      }
+        if (acc && acc.first_name && acc.last_name) {
+            initials = acc.first_name.substring(0, 1) + acc.last_name.substring(0, 1);
+        }
+        else if (acc && acc.name) {
+            initials = acc.name.substring(0, 2);
+        }
+        if(acc && acc.email && '' === initials) {
+            initials = acc.email.substring(0, 2);
+        }
 
-      return initials;
-  }
+        return initials;
+    }
 }
 window.customElements.define(AppscoAccountImage.is, AppscoAccountImage);

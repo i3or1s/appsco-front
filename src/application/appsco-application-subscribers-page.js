@@ -12,9 +12,10 @@ import '../components/application/appsco-application-subscribers.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationSubscribersPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -44,80 +45,80 @@ class AppscoApplicationSubscribersPage extends mixinBehaviors([NeonSharedElement
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-subscribers-page'; }
+    static get is() { return 'appsco-application-subscribers-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _back() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _back() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  searchSubscribers(term) {
-      this.$.appscoApplicationSubscribers.search(term);
-  }
+    searchSubscribers(term) {
+        this.$.appscoApplicationSubscribers.search(term);
+    }
 
-  setupPage() {
-      this.dispatchEvent(new CustomEvent('enable-subscribers-search-action', { bubbles: true, composed: true }));
-  }
+    setupPage() {
+        this.dispatchEvent(new CustomEvent('enable-subscribers-search-action', { bubbles: true, composed: true }));
+    }
 
-  resetPage() {
-      this.dispatchEvent(new CustomEvent('disable-subscribers-search-action', { bubbles: true, composed: true }));
-  }
+    resetPage() {
+        this.dispatchEvent(new CustomEvent('disable-subscribers-search-action', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoApplicationSubscribersPage.is, AppscoApplicationSubscribersPage);

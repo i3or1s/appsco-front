@@ -3,8 +3,8 @@ import './components/components/appsco-loader.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 class AppscoLogoutPage extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -18,22 +18,22 @@ class AppscoLogoutPage extends PolymerElement {
 
         <appsco-loader active="" multi-color=""></appsco-loader>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-logout-page'; }
+    static get is() { return 'appsco-logout-page'; }
 
-  static get properties() {
-      return {
-          logoutApi: {
-              type: String
-          }
-      };
-  }
+    static get properties() {
+        return {
+            logoutApi: {
+                type: String
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      window.location.href = this.logoutApi;
-  }
+        window.location.href = this.logoutApi;
+    }
 }
 window.customElements.define(AppscoLogoutPage.is, AppscoLogoutPage);

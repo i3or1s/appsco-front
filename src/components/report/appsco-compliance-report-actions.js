@@ -3,6 +3,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoComplianceReportActions extends PolymerElement {
   static get template() {
     return html`
@@ -38,7 +39,7 @@ class AppscoComplianceReportActions extends PolymerElement {
   static get is() { return 'appsco-compliance-report-actions'; }
 
   _onExportAction() {
-      this.dispatchEvent(new CustomEvent('export-compliance-report', { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent('export-compliance-report', { bubbles: true, composed: true }));
   }
 }
 window.customElements.define(AppscoComplianceReportActions.is, AppscoComplianceReportActions);

@@ -16,9 +16,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddOAuthApplication extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -105,144 +106,144 @@ class AppscoAddOAuthApplication extends mixinBehaviors([Appsco.HeadersMixin], Po
 
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnterAction"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-add-oauth-application'; }
+    static get is() { return 'appsco-add-oauth-application'; }
 
-  static get properties() {
-      return {
-          oauthApplicationsApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            oauthApplicationsApi: {
+                type: String
+            },
 
-          company: {
-              type: Object,
-          },
+            company: {
+                type: Object,
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          },
+            _target: {
+                type: Object
+            },
 
-          _applicationIcon: {
-              type: String
-          }
-      };
-  }
+            _applicationIcon: {
+                type: String
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_onCompanyChanged(company)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_onCompanyChanged(company)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this.$.form;
-  }
+        this._target = this.$.form;
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _initialize() {
-      this._onCompanyChanged(this.company);
-      this.$.title.focus();
-  }
+    _initialize() {
+        this._onCompanyChanged(this.company);
+        this.$.title.focus();
+    }
 
-  _reset() {
-      this._target.reset();
-  }
+    _reset() {
+        this._target.reset();
+    }
 
-  _onDialogOpened() {
-      this._initialize();
-  }
+    _onDialogOpened() {
+        this._initialize();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this._reset();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this._reset();
+    }
 
-  _onCompanyChanged(company) {
-      this._applicationIcon = company.image ? company.image : null;
-  }
+    _onCompanyChanged(company) {
+        this._applicationIcon = company.image ? company.image : null;
+    }
 
-  _onIconInputValueChanged(event) {
-      this.debounce('setIconURL', function() {
-          this._applicationIcon = event.detail.value;
-      }.bind(this), 500);
-  }
+    _onIconInputValueChanged(event) {
+        this.debounce('setIconURL', function() {
+            this._applicationIcon = event.detail.value;
+        }.bind(this), 500);
+    }
 
-  _onEnterAction() {
-      this._onAddAction();
-  }
+    _onEnterAction() {
+        this._onAddAction();
+    }
 
-  _onAddAction() {
-      this._hideError();
+    _onAddAction() {
+        this._hideError();
 
-      if (this._target.validate()) {
-          this._showLoader();
-          this._target.submit();
-      }
+        if (this._target.validate()) {
+            this._showLoader();
+            this._target.submit();
+        }
 
-  }
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {
-      this.close();
+    _onFormResponse(event) {
+        this.close();
 
-      this.dispatchEvent(new CustomEvent('oauth-application-added', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: event.detail.response
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('oauth-application-added', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: event.detail.response
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoAddOAuthApplication.is, AppscoAddOAuthApplication);

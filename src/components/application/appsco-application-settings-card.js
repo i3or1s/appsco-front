@@ -6,9 +6,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationSettingsCard extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --appsco-application-settings-card;
@@ -25,57 +26,57 @@ class AppscoApplicationSettingsCard extends mixinBehaviors([NeonAnimationRunnerB
             </p>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-settings-card'; }
+    static get is() { return 'appsco-application-settings-card'; }
 
-  static get properties() {
-      return {
-          /**
-           * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-           */
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            /**
+             * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+             */
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          this._showApplicationDetails();
-      });
-  }
+        afterNextRender(this, function() {
+            this._showApplicationDetails();
+        });
+    }
 
-  _showApplicationDetails() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showApplicationDetails() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 }
 window.customElements.define(AppscoApplicationSettingsCard.is, AppscoApplicationSettingsCard);

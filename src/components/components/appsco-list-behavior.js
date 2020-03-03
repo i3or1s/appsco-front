@@ -7,7 +7,6 @@ import '@polymer/neon-animation/animations/slide-from-left-animation.js';
  * @polymerBehavior
  */
 export const AppscoListBehavior = {
-
     properties: {
 
         type: {

@@ -10,9 +10,10 @@ import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoResourceAdminsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -58,124 +59,124 @@ class AppscoResourceAdminsPage extends mixinBehaviors([NeonSharedElementAnimatab
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-resource-admins-page'; }
+    static get is() { return 'appsco-resource-admins-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _assigneesEmpty: {
-              type: Boolean,
-              value: false
-          },
+            _assigneesEmpty: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 600
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 600
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _onAssigneesEmpty() {
-      this._assigneesEmpty = true;
-  }
+    _onAssigneesEmpty() {
+        this._assigneesEmpty = true;
+    }
 
-  _onAssigneesLoaded() {
-      this._assigneesEmpty = false;
-  }
+    _onAssigneesLoaded() {
+        this._assigneesEmpty = false;
+    }
 
-  _onRevokeAssignee (event) {
-      event.stopPropagation();
-      this.dispatchEvent(new CustomEvent('revoke-resource-admin', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              assignee: event.detail.assignee,
-              application: this.application
-          }
-      }));
-  }
+    _onRevokeAssignee (event) {
+        event.stopPropagation();
+        this.dispatchEvent(new CustomEvent('revoke-resource-admin', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                assignee: event.detail.assignee,
+                application: this.application
+            }
+        }));
+    }
 
-  reload() {
-      this.reloadAssignees();
-  }
+    reload() {
+        this.reloadAssignees();
+    }
 
-  reloadAssignees() {
-      this.$.appscoApplicationAssignees.reload();
-  }
+    reloadAssignees() {
+        this.$.appscoApplicationAssignees.reload();
+    }
 
-  searchAssignees(term) {
-      this.$.appscoApplicationAssignees.search(term);
-  }
+    searchAssignees(term) {
+        this.$.appscoApplicationAssignees.search(term);
+    }
 
-  removeAssignee(assignee) {
-      this.$.appscoApplicationAssignees.removeAssignee(assignee);
-  }
+    removeAssignee(assignee) {
+        this.$.appscoApplicationAssignees.removeAssignee(assignee);
+    }
 
-  _addResourceAdmins() {
-      this.dispatchEvent(new CustomEvent('add-resource-admin', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              resource: this.application
-          }
-      }));
-  }
+    _addResourceAdmins() {
+        this.dispatchEvent(new CustomEvent('add-resource-admin', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                resource: this.application
+            }
+        }));
+    }
 
-  _back() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _back() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  setupPage() {
-      this.dispatchEvent(new CustomEvent('enable-assignees-search-action', { bubbles: true, composed: true }));
-  }
+    setupPage() {
+        this.dispatchEvent(new CustomEvent('enable-assignees-search-action', { bubbles: true, composed: true }));
+    }
 
-  resetPage() {
-      this.dispatchEvent(new CustomEvent('disable-assignees-search-action', { bubbles: true, composed: true }));
-  }
+    resetPage() {
+        this.dispatchEvent(new CustomEvent('disable-assignees-search-action', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoResourceAdminsPage.is, AppscoResourceAdminsPage);

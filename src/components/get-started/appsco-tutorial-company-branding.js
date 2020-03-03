@@ -6,12 +6,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoTutorialCompanyBranding extends mixinBehaviors([
     AppscoTutorialBehaviour,
     AppscoCoverBehaviour
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
             }
@@ -85,115 +86,115 @@ class AppscoTutorialCompanyBranding extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-tutorial-company-branding'; }
+    static get is() { return 'appsco-tutorial-company-branding'; }
 
-  static get properties() {
-      return {
-          page: {
-              type: String
-          }
-      };
-  }
+    static get properties() {
+        return {
+            page: {
+                type: String
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.tutorialId = 'company_branding';
-      this.tutorialTitle = 'Company branding';
-      this.description = ' Upload logo and set company branding';
-      this.icon = 'icons:settings';
-      this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109512-Company-Branding';
-  }
+        this.tutorialId = 'company_branding';
+        this.tutorialTitle = 'Company branding';
+        this.description = ' Upload logo and set company branding';
+        this.icon = 'icons:settings';
+        this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109512-Company-Branding';
+    }
 
-  connectedCallback() {
-      super.connectedCallback();
+    connectedCallback() {
+        super.connectedCallback();
 
-      this.tutorialId = 'company_branding';
-      this.tutorialTitle = 'Company branding';
-      this.description = ' Upload logo and set company branding';
-      this.icon = 'icons:settings';
-      this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109512-Company-Branding';
+        this.tutorialId = 'company_branding';
+        this.tutorialTitle = 'Company branding';
+        this.description = ' Upload logo and set company branding';
+        this.icon = 'icons:settings';
+        this.readme = 'https://support.appsco.com/hc/en-gb/articles/360000109512-Company-Branding';
 
-      afterNextRender(this, function() {
-          this.init();
-      });
-  }
+        afterNextRender(this, function() {
+            this.init();
+        });
+    }
 
-  _readMore() {
-      window.open(this.readme, '_blank');
-  }
+    _readMore() {
+        window.open(this.readme, '_blank');
+    }
 
-  pageChanged() {
-      if(this.page !== 'company' && this.step === 2) {
-          this.reset();
-      }
-      if(this.page === 'company' && this.step === 2) {
-          setTimeout(function(){
-              this.nextStep();
-          }.bind(this), 3000);
-      }
-  }
+    pageChanged() {
+        if(this.page !== 'company' && this.step === 2) {
+            this.reset();
+        }
+        if(this.page === 'company' && this.step === 2) {
+            setTimeout(function(){
+                this.nextStep();
+            }.bind(this), 3000);
+        }
+    }
 
-  getPopperConfig() {
-      return {
-          step1: {
-              reference: '* /deep/ #menuBurger',
-              coverTarget: '* /deep/ #menuBurger',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step2: {
-              reference: '* /deep/ #menuCompanySettingsText',
-              coverTarget: '* /deep/ #menuContainer',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step3: {
-              reference: '* /deep/ #companySettingsBrandingCardBtn',
-              coverTarget: '* /deep/ #companySettingsBrandingCard',
-              popperOptions: {
-                  placement: 'bottom'
-              }
-          },
-          step4: {
-              reference: '* /deep/ #companyBrandSettingsSaveBtn',
-              coverTarget: '* /deep/ #companyBrandSettings',
-              popperOptions: {
-                  placement: 'left-start'
-              }
-          },
-          step5: {
-              reference: '* /deep/ #menuBurger',
-              coverTarget: '* /deep/ #menuBurger',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-      };
-  }
+    getPopperConfig() {
+        return {
+            step1: {
+                reference: '* /deep/ #menuBurger',
+                coverTarget: '* /deep/ #menuBurger',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step2: {
+                reference: '* /deep/ #menuCompanySettingsText',
+                coverTarget: '* /deep/ #menuContainer',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step3: {
+                reference: '* /deep/ #companySettingsBrandingCardBtn',
+                coverTarget: '* /deep/ #companySettingsBrandingCard',
+                popperOptions: {
+                    placement: 'bottom'
+                }
+            },
+            step4: {
+                reference: '* /deep/ #companyBrandSettingsSaveBtn',
+                coverTarget: '* /deep/ #companyBrandSettings',
+                popperOptions: {
+                    placement: 'left-start'
+                }
+            },
+            step5: {
+                reference: '* /deep/ #menuBurger',
+                coverTarget: '* /deep/ #menuBurger',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+        };
+    }
 
-  step4(index, item, doneBuildingPopperHandler) {
-      // wait 400 msec for animation to finish
-      setTimeout(function() {
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this), 400);
-  }
+    step4(index, item, doneBuildingPopperHandler) {
+        // wait 400 msec for animation to finish
+        setTimeout(function() {
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this), 400);
+    }
 
-  start() {
-      this.step = 0;
-      this.nextStep();
-  }
+    start() {
+        this.step = 0;
+        this.nextStep();
+    }
 
-  _nextStep() {
-      this.currentStep.reference.click();
-  }
+    _nextStep() {
+        this.currentStep.reference.click();
+    }
 
-  _nextStep5() {
-      this.nextStep();
-  }
+    _nextStep5() {
+        this.nextStep();
+    }
 }
 window.customElements.define(AppscoTutorialCompanyBranding.is, AppscoTutorialCompanyBranding);

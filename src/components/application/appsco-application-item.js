@@ -1,29 +1,4 @@
-/**
-`appsco-application-item`
-Application item is used to present application in form of an item.
-
-    <appsco-application-item>
-    </appsco-application-item>
-
-### Styling
-
-`<appsco-application-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--item-background-color` | Background color applied to the root element | `#fff`
-`--color` | Color applied to all the text | `#33`
-`--appsco-application-item` | Mixin for the root element | `{}`
-
-@demo demo/appsco-application-item.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
@@ -38,9 +13,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 width: 100%;
@@ -99,236 +75,236 @@ class AppscoApplicationItem extends mixinBehaviors([NeonAnimationRunnerBehavior]
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-item'; }
+    static get is() { return 'appsco-application-item'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          /**
-           * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-           */
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onApplicationChanged'
-          },
+            /**
+             * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+             */
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onApplicationChanged'
+            },
 
-          displayGrid: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            displayGrid: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _applicationType: {
-              type: String,
-              computed: '_computeApplicationType(application)'
-          },
+            _applicationType: {
+                type: String,
+                computed: '_computeApplicationType(application)'
+            },
 
-          _orgUnits: {
-              type: String,
-              computed: '_computeOrganizationUnits(company, application)'
-          },
+            _orgUnits: {
+                type: String,
+                computed: '_computeOrganizationUnits(company, application)'
+            },
 
-          _groups: {
-              type: String,
-              computed: '_computeGroups(company, application)'
-          },
+            _groups: {
+                type: String,
+                computed: '_computeGroups(company, application)'
+            },
 
-          active: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            active: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _applicationIcon: {
-              type: String,
-              computed: '_computeApplicationIcon(company, application)'
-          },
+            _applicationIcon: {
+                type: String,
+                computed: '_computeApplicationIcon(company, application)'
+            },
 
-          _shared: {
-              type: Boolean,
-              computed: '_computeApplicationShared(company, application)'
-          },
+            _shared: {
+                type: Boolean,
+                computed: '_computeApplicationShared(company, application)'
+            },
 
-          _editable: {
-              type: Boolean,
-              computed: '_computeApplicationEditable(_shared, application)'
-          },
+            _editable: {
+                type: Boolean,
+                computed: '_computeApplicationEditable(_shared, application)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'inline-block';
-      });
-  }
+        beforeNextRender(this, function() {
+            this.style.display = 'inline-block';
+        });
+    }
 
-  _onApplicationChanged(application) {
-      if (this.company) {
-          this.active = application.selected;
-      }
-  }
+    _onApplicationChanged(application) {
+        if (this.company) {
+            this.active = application.selected;
+        }
+    }
 
-  _computeApplicationType(application) {
-      switch (application.auth_type) {
-          case 'login':
-              return 'Login';
-          case 'cc':
-              return 'Credit Card';
-          case 'softwarelicence':
-              return 'Software Licence';
-          case 'passport':
-              return 'Passport';
-          case 'securenote':
-              return 'Secure Note';
-          case 'none':
-              return 'Link';
-          case 'open_id':
-              return 'Open ID';
-          default:
-              return 'Application';
-      }
-  }
+    _computeApplicationType(application) {
+        switch (application.auth_type) {
+            case 'login':
+                return 'Login';
+            case 'cc':
+                return 'Credit Card';
+            case 'softwarelicence':
+                return 'Software Licence';
+            case 'passport':
+                return 'Passport';
+            case 'securenote':
+                return 'Secure Note';
+            case 'none':
+                return 'Link';
+            case 'open_id':
+                return 'Open ID';
+            default:
+                return 'Application';
+        }
+    }
 
-  _computeOrganizationUnits(company, application) {
-      if (company && application.org_units && application.org_units.length > 0) {
-          let result = '',
-              orgUnits = application.org_units,
-              length = orgUnits.length;
+    _computeOrganizationUnits(company, application) {
+        if (company && application.org_units && application.org_units.length > 0) {
+            let result = '',
+                orgUnits = application.org_units,
+                length = orgUnits.length;
 
-          for (let i = 0; i < length; i++) {
-              result += orgUnits[i].name;
-              result += (i === length -1) ? '' : ', ';
-          }
-          return result;
-      }
+            for (let i = 0; i < length; i++) {
+                result += orgUnits[i].name;
+                result += (i === length -1) ? '' : ', ';
+            }
+            return result;
+        }
 
-      return '';
-  }
+        return '';
+    }
 
-  _computeGroups(company, application) {
-      if (company && application.groups && application.groups.length > 0) {
-          let result = '',
-              groups = application.groups,
-              length = groups.length;
+    _computeGroups(company, application) {
+        if (company && application.groups && application.groups.length > 0) {
+            let result = '',
+                groups = application.groups,
+                length = groups.length;
 
-          for (let i = 0; i < length; i++) {
-              result += groups[i].name;
-              result += (i === length -1) ? '' : ', ';
-          }
+            for (let i = 0; i < length; i++) {
+                result += groups[i].name;
+                result += (i === length -1) ? '' : ', ';
+            }
 
-          return result;
-      }
+            return result;
+        }
 
-      return '';
-  }
+        return '';
+    }
 
-  _computeApplicationIcon(company, application) {
-      return company ? application.application_url : application.icon_url;
-  }
+    _computeApplicationIcon(company, application) {
+        return company ? application.application_url : application.icon_url;
+    }
 
-  _computeApplicationShared(company, application) {
-      return (!company && !application.owner);
-  }
+    _computeApplicationShared(company, application) {
+        return (!company && !application.owner);
+    }
 
-  _computeApplicationEditable(shared, application) {
-      return !shared || application.application.user_can_edit;
-  }
+    _computeApplicationEditable(shared, application) {
+        return !shared || application.application.user_can_edit;
+    }
 
-  _onInfo(event) {
-      event.stopPropagation();
+    _onInfo(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('info', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: this.application
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('info', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: this.application
+            }
+        }));
+    }
 
-  _onEdit(event) {
-      event.stopPropagation();
+    _onEdit(event) {
+        event.stopPropagation();
 
-      if (this._shared) {
-          this.dispatchEvent(new CustomEvent('edit-shared-application', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  application: this.application
-              }
-          }));
-      } else {
-          this.dispatchEvent(new CustomEvent('edit', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  application: this.application
-              }
-          }));
-      }
-  }
+        if (this._shared) {
+            this.dispatchEvent(new CustomEvent('edit-shared-application', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    application: this.application
+                }
+            }));
+        } else {
+            this.dispatchEvent(new CustomEvent('edit', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    application: this.application
+                }
+            }));
+        }
+    }
 
-  _onApplicationAction() {
-      this.active = !this.active;
+    _onApplicationAction() {
+        this.active = !this.active;
 
-      if (this.company) {
-          this.application.selected = this.active;
-      }
+        if (this.company) {
+            this.application.selected = this.active;
+        }
 
-      this.dispatchEvent(new CustomEvent('application', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: this.application
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('application', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: this.application
+            }
+        }));
+    }
 
-  select() {
-      this.active = true;
-  }
+    select() {
+        this.active = true;
+    }
 
-  deselect() {
-      this.active = false;
-  }
+    deselect() {
+        this.active = false;
+    }
 }
 window.customElements.define(AppscoApplicationItem.is, AppscoApplicationItem);

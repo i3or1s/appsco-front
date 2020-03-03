@@ -2,11 +2,11 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-class AppscoNotificationIcon extends PolymerElement {
-  static get template() {
-    return html`
-        <style>
 
+class AppscoNotificationIcon extends PolymerElement {
+    static get template() {
+        return html`
+        <style>
             div.notification-count {
                 position: absolute;
             }
@@ -72,32 +72,32 @@ class AppscoNotificationIcon extends PolymerElement {
             <paper-icon-button id="newNotificationsAction" class="action-icon new-notifications-icon" icon="social:notifications" title="Notifications"></paper-icon-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-notification-icon'; }
+    static get is() { return 'appsco-notification-icon'; }
 
-  static get properties() {
-      return {
-          notificationCount: {
-              type: Number,
-              value: 0
-          },
+    static get properties() {
+        return {
+            notificationCount: {
+                type: Number,
+                value: 0
+            },
 
-          hasNotifications: {
-              type: Boolean,
-              value: false,
-              computed: '_computeHasNotifications(notificationCount)',
-              reflectToAttribute: true
-          }
-      };
-  }
+            hasNotifications: {
+                type: Boolean,
+                value: false,
+                computed: '_computeHasNotifications(notificationCount)',
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  _computeHasNotifications(notificationCount) {
-      return notificationCount > 0;
-  }
+    _computeHasNotifications(notificationCount) {
+        return notificationCount > 0;
+    }
 
-  setNotificationsCount(notificationsCount) {
-      this.notificationCount = notificationsCount;
-  }
+    setNotificationsCount(notificationsCount) {
+        this.notificationCount = notificationsCount;
+    }
 }
 window.customElements.define(AppscoNotificationIcon.is, AppscoNotificationIcon);

@@ -11,9 +11,10 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoSubscriptionCancel extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -60,72 +61,72 @@ class AppscoSubscriptionCancel extends mixinBehaviors([Appsco.HeadersMixin], Pol
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-subscription-cancel'; }
+    static get is() { return 'appsco-subscription-cancel'; }
 
-  static get properties() {
-      return {
-          _subscription: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            _subscription: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          companyApi: {
-              type: String
-          },
+            companyApi: {
+                type: String
+            },
 
-          _subscriptionApi: {
-              type: String,
-              computed: '_computeSubscriptionApi(companyApi)'
-          },
+            _subscriptionApi: {
+                type: String,
+                computed: '_computeSubscriptionApi(companyApi)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  setSubscription(subscription) {
-      this._subscription = subscription;
-  }
+    setSubscription(subscription) {
+        this._subscription = subscription;
+    }
 
-  _computeSubscriptionApi(companyApi) {
-      return companyApi + '/billing/subscriptions';
-  }
+    _computeSubscriptionApi(companyApi) {
+        return companyApi + '/billing/subscriptions';
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _onDialogClosed() {
-      this._loader = false;
-  }
+    _onDialogClosed() {
+        this._loader = false;
+    }
 
-  _onConfirm() {
-      var request = document.createElement('iron-request'),
-          options = {
-              url: this._subscriptionApi + '/' + this._subscription.id,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onConfirm() {
+        var request = document.createElement('iron-request'),
+            options = {
+                url: this._subscriptionApi + '/' + this._subscription.id,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._loader = true;
+        this._loader = true;
 
-      request.send(options).then(function(request) {
-          this.$.dialog.close();
-          this.dispatchEvent(new CustomEvent('subscription-canceled', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  subscription: request.response
-              }
-          }));
-      }.bind(this));
-  }
+        request.send(options).then(function(request) {
+            this.$.dialog.close();
+            this.dispatchEvent(new CustomEvent('subscription-canceled', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    subscription: request.response
+                }
+            }));
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoSubscriptionCancel.is, AppscoSubscriptionCancel);

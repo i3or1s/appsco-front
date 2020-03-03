@@ -11,12 +11,13 @@ import '../resource/appsco-resource-auth-type.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccessReportAccountResourceItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 @apply --appsco-access-report-account-resource;
@@ -52,8 +53,8 @@ class AppscoAccessReportAccountResourceItem extends mixinBehaviors([
             <appsco-resource-auth-type auth-type="[[ item.auth_type ]]"></appsco-resource-auth-type>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-access-report-account-resource-item'; }
+    static get is() { return 'appsco-access-report-account-resource-item'; }
 }
 window.customElements.define(AppscoAccessReportAccountResourceItem.is, AppscoAccessReportAccountResourceItem);

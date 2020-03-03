@@ -15,12 +15,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationRuleItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host .item {
                 cursor: default;
@@ -109,84 +110,84 @@ class AppscoIntegrationRuleItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-rule-item'; }
+    static get is() { return 'appsco-integration-rule-item'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _isFromMethodLookup: {
-              type: Boolean,
-              computed: '_computeIsFromMethodLookup(item)'
-          },
+            _isFromMethodLookup: {
+                type: Boolean,
+                computed: '_computeIsFromMethodLookup(item)'
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen) {
-              this._updateScreen();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen) {
+                this._updateScreen();
+            }
+        });
+    }
 
-  _computeIsFromMethodLookup(rule) {
-      return ('from_lookup' === rule.fromMethod);
-  }
+    _computeIsFromMethodLookup(rule) {
+        return ('from_lookup' === rule.fromMethod);
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _onRunItemAction(event) {
-      event.stopPropagation();
+    _onRunItemAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('run-item', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              item: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('run-item', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                item: this.item
+            }
+        }));
+    }
 
-  _onRemoveItemAction(event) {
-      event.stopPropagation();
+    _onRemoveItemAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('remove-item', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              item: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('remove-item', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                item: this.item
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoIntegrationRuleItem.is, AppscoIntegrationRuleItem);

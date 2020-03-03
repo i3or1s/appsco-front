@@ -1,37 +1,4 @@
-/*
-`appsco-search`
-
-Implements search field used within AppsCo pages.
-
-    <appsco-search label=""
-                   float-label
-                   filter>
-    </appsco-search>
-
-### Styling
-
-`<appsco-search>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-search` | Mixin for the root element | `{}`
-`--paper-input-search` | Mixin for the inner paper-input element | `{}`
-`--paper-input-prefix` | Mixin for the prefix element in paper-input | `{}`
-`--paper-input-prefix-icon` | Mixin for the prefix icon in paper-input | `{}`
-`--paper-input-focused-prefix` | Mixin for the prefix element when paper-input is focused | `{}`
-`--paper-input-suffix` | Mixin for the suffix element in paper-input | `{}`
-`--paper-input-focused-suffix` | Mixin for the suffix element when paper-input is focused | `{}`
-`--paper-input-color` | Color for input field - input underline, prefix icon and suffix icon | ``
-`--paper-input-focused-color` | Color for focused input field - input underline, prefix icon and suffix icon | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
@@ -41,9 +8,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoSearch extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -142,110 +110,110 @@ class AppscoSearch extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement)
 
         </paper-input>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-search'; }
+    static get is() { return 'appsco-search'; }
 
-  static get properties() {
-      return {
-          label: {
-              type: String,
-              value: 'Search'
-          },
+    static get properties() {
+        return {
+            label: {
+                type: String,
+                value: 'Search'
+            },
 
-          floatLabel: {
-              type: Boolean,
-              value: false
-          },
+            floatLabel: {
+                type: Boolean,
+                value: false
+            },
 
-          filter: {
-              type: Boolean,
-              value: false
-          },
+            filter: {
+                type: Boolean,
+                value: false
+            },
 
-          _searchValue: {
-              type: String,
-              value: ''
-          },
+            _searchValue: {
+                type: String,
+                value: ''
+            },
 
-          _clearSearch: {
-              type: Boolean,
-              value: false
-          },
+            _clearSearch: {
+                type: Boolean,
+                value: false
+            },
 
-          _searchDebounce: {
-              type: Number,
-              value: 0
-          }
-      };
-  }
+            _searchDebounce: {
+                type: Number,
+                value: 0
+            }
+        };
+    }
 
-  _onFocus() {
-      this.dispatchEvent(new CustomEvent('focus', { bubbles: true, composed: true }));
-  }
+    _onFocus() {
+        this.dispatchEvent(new CustomEvent('focus', { bubbles: true, composed: true }));
+    }
 
-  _onValueChanged() {
-      this.dispatchEvent(new CustomEvent('value-changed', { bubbles: true, composed: true }));
-  }
+    _onValueChanged() {
+        this.dispatchEvent(new CustomEvent('value-changed', { bubbles: true, composed: true }));
+    }
 
-  _onSearch(event) {
-      const value = this._searchValue,
-          length = value.length;
+    _onSearch(event) {
+        const value = this._searchValue,
+            length = value.length;
 
-      if (this._searchDebounce > 0) {
-          clearTimeout(this._searchDebounce);
-      }
+        if (this._searchDebounce > 0) {
+            clearTimeout(this._searchDebounce);
+        }
 
-      this._searchDebounce = setTimeout(function() {
-          this.set('_clearSearch', (length > 0));
+        this._searchDebounce = setTimeout(function() {
+            this.set('_clearSearch', (length > 0));
 
-          this.dispatchEvent(new CustomEvent('search', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  term: encodeURIComponent(value)
-              }
-          }));
-      }.bind(this), 300);
-  }
+            this.dispatchEvent(new CustomEvent('search', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    term: encodeURIComponent(value)
+                }
+            }));
+        }.bind(this), 300);
+    }
 
-  _onClearSearch() {
-      this.reset();
-      this.setup();
+    _onClearSearch() {
+        this.reset();
+        this.setup();
 
-      this.dispatchEvent(new CustomEvent('search-clear', { bubbles: true, composed: true }));
-  }
+        this.dispatchEvent(new CustomEvent('search-clear', { bubbles: true, composed: true }));
+    }
 
-  getValue() {
-      return this._searchValue;
-  }
+    getValue() {
+        return this._searchValue;
+    }
 
-  setValue(value) {
-      if (!value) { value = ''; }
-      this._searchValue = value;
+    setValue(value) {
+        if (!value) { value = ''; }
+        this._searchValue = value;
 
-      this.set('_clearSearch', (value.length > 0));
-  }
+        this.set('_clearSearch', (value.length > 0));
+    }
 
-  focusAppscoSearchInput() {
-      this.$.searchInput.$.input.focus();
-  }
+    focusAppscoSearchInput() {
+        this.$.searchInput.$.input.focus();
+    }
 
-  enableAppscoSearchInput() {
-      this.$.searchInput.disabled = false;
-  }
+    enableAppscoSearchInput() {
+        this.$.searchInput.disabled = false;
+    }
 
-  disableAppscoSearchInput() {
-      this.$.searchInput.disabled = true;
-  }
+    disableAppscoSearchInput() {
+        this.$.searchInput.disabled = true;
+    }
 
-  setup() {
-      this.focusAppscoSearchInput();
-  }
+    setup() {
+        this.focusAppscoSearchInput();
+    }
 
-  reset() {
-      this._searchValue = '';
-      this._clearSearch = false;
-  }
+    reset() {
+        this._searchValue = '';
+        this._clearSearch = false;
+    }
 }
 window.customElements.define(AppscoSearch.is, AppscoSearch);

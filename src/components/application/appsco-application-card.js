@@ -1,29 +1,4 @@
-/*
-`appsco-application-card`
-Presents application in form of a card which contains image, title and close action if needed.
-
-    <appsco-application-card application="{}">
-    </appsco-application-card>
-
-### Styling
-
-`<appsco-application-card>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-application-card` | Mixin applied to the root element | `{}`
-`--application-card` | Mixin applied to application card | `{}`
-`--application-image` | Mixin applied to application image | `{}`
-`--application-title` | Mixin applied to application title | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/paper-styles/shadow.js';
@@ -37,9 +12,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationCard extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -91,90 +67,90 @@ class AppscoApplicationCard extends mixinBehaviors([NeonAnimationRunnerBehavior]
             </template>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-card'; }
+    static get is() { return 'appsco-application-card'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          removeAction: {
-              type: Boolean,
-              value: false
-          },
+            removeAction: {
+                type: Boolean,
+                value: false
+            },
 
-          _applicationImage: {
-              type: String,
-              computed: '_computeApplicationImage(application)'
-          },
+            _applicationImage: {
+                type: String,
+                computed: '_computeApplicationImage(application)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'flex';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'flex';
+        });
 
-      afterNextRender(this, function () {
-          this.playAnimation('entry');
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function () {
+            this.playAnimation('entry');
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('tap', this._onTap);
-      this.addEventListener('neon-animation-finish', this._onAnimationFinish);
-  }
+    _addListeners() {
+        this.addEventListener('tap', this._onTap);
+        this.addEventListener('neon-animation-finish', this._onAnimationFinish);
+    }
 
-  _computeApplicationImage(application) {
-      return application.icon_url ? application.icon_url : application.application_url;
-  }
+    _computeApplicationImage(application) {
+        return application.icon_url ? application.icon_url : application.application_url;
+    }
 
-  _onTap() {
-      this.playAnimation('exit', {
-          exit: true
-      });
-  }
+    _onTap() {
+        this.playAnimation('exit', {
+            exit: true
+        });
+    }
 
-  _onAnimationFinish(event) {
-      if (event.detail.exit) {
-          this.dispatchEvent(new CustomEvent('selected', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  application: this.application
-              }
-          }));
-      }
-  }
+    _onAnimationFinish(event) {
+        if (event.detail.exit) {
+            this.dispatchEvent(new CustomEvent('selected', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    application: this.application
+                }
+            }));
+        }
+    }
 }
 window.customElements.define(AppscoApplicationCard.is, AppscoApplicationCard);

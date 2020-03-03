@@ -10,9 +10,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactGroupItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -119,78 +120,78 @@ class AppscoContactGroupItem extends mixinBehaviors([NeonAnimationRunnerBehavior
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contact-group-item'; }
+    static get is() { return 'appsco-contact-group-item'; }
 
-  static get properties() {
-      return {
-          group: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            group: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          contact: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            contact: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'inline-block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'inline-block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _onRemoveAction(event) {
-      event.stopPropagation();
+    _onRemoveAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('remove-from-group', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              group: this.group,
-              contact: this.contact
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('remove-from-group', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                group: this.group,
+                contact: this.contact
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoContactGroupItem.is, AppscoContactGroupItem);

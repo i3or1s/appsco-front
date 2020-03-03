@@ -8,9 +8,10 @@ import './appsco-upload-image-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoImageUpload extends mixinBehaviors([AppscoUploadImageBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-upload-image-styles"></style>
 
         <div class="upload-container">
@@ -34,67 +35,67 @@ class AppscoImageUpload extends mixinBehaviors([AppscoUploadImageBehavior], Poly
             </template>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-image-upload'; }
+    static get is() { return 'appsco-image-upload'; }
 
-  static get properties() {
-      return {
-          image: {
-              type: String,
-              value: '',
-              notify: true
-          },
+    static get properties() {
+        return {
+            image: {
+                type: String,
+                value: '',
+                notify: true
+            },
 
-          loaderAlt: {
-              type: String,
-              value: 'AppsCo is saving image'
-          },
+            loaderAlt: {
+                type: String,
+                value: 'AppsCo is saving image'
+            },
 
-          imageAlt: {
-              type: String,
-              value: 'AppsCo image'
-          },
+            imageAlt: {
+                type: String,
+                value: 'AppsCo image'
+            },
 
-          _imagePreview: {
-              type: String,
-              computed: '_computeImagePreviewClass(image)'
-          }
-      };
-  }
+            _imagePreview: {
+                type: String,
+                computed: '_computeImagePreviewClass(image)'
+            }
+        };
+    }
 
-  reset() {
-      this.set('image', '');
-  }
+    reset() {
+        this.set('image', '');
+    }
 
-  _computeImagePreviewClass(image) {
-      return image ? 'has-image' : 'no-image';
-  }
+    _computeImagePreviewClass(image) {
+        return image ? 'has-image' : 'no-image';
+    }
 
-  _setNewImage(file) {
-      const reader = new FileReader();
+    _setNewImage(file) {
+        const reader = new FileReader();
 
-      reader.onload = function(e) {
-          this.set('image', e.target.result);
-      }.bind(this);
+        reader.onload = function(e) {
+            this.set('image', e.target.result);
+        }.bind(this);
 
-      reader.readAsDataURL(file);
-  }
+        reader.readAsDataURL(file);
+    }
 
-  _fireChangeEvent(response) {
-      this.dispatchEvent(new CustomEvent('image-changed', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              response: JSON.parse(response)
-          }
-      }));
-  }
+    _fireChangeEvent(response) {
+        this.dispatchEvent(new CustomEvent('image-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                response: JSON.parse(response)
+            }
+        }));
+    }
 
-  _setStateAfterImageIsRemoved(response) {
-      this.set('image', '');
-      this._fireChangeEvent(JSON.stringify(response));
-      this._hideLoader();
-  }
+    _setStateAfterImageIsRemoved(response) {
+        this.set('image', '');
+        this._fireChangeEvent(JSON.stringify(response));
+        this._hideLoader();
+    }
 }
 window.customElements.define(AppscoImageUpload.is, AppscoImageUpload);

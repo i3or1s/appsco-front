@@ -1,33 +1,4 @@
-/*
-`appsco-invitation-item`
-Invitation item is used to present invitation in form of an item.
-
-    <appsco-invitation-item>
-    </appsco-invitation-item>
-
-### Styling
-
-`<appsco-invitation-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--item-background-color` | Background color applied to the root element | `#fff`
-`--color` | Color applied to all the text | `#33`
-`--appsco-invitation-item` | Mixin applied to the root element | `{}`
-`--invitation-basic-info` | Mixin applied to the basic info | `{}`
-`--invitation-status-info` | Mixin applied to the status info | `{}`
-`--invitation-basic-info-values` | Mixin applied to the basic info values | `{}`
-`--invitation-status-info-values` | Mixin applied to the status info values | `{}`
-`--invitation-item-icon-fill-color` | Fill color for invitation icon | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-icons/iron-icons.js';
@@ -44,9 +15,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoInvitationItem extends mixinBehaviors([NeonAnimationRunnerBehavior, Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -233,157 +205,157 @@ class AppscoInvitationItem extends mixinBehaviors([NeonAnimationRunnerBehavior, 
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-invitation-item'; }
+    static get is() { return 'appsco-invitation-item'; }
 
-  static get properties() {
-      return {
-          invitation: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            invitation: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _invitationTitle: {
-              type: String,
-              value: ''
-          },
+            _invitationTitle: {
+                type: String,
+                value: ''
+            },
 
-          _invitationSent: {
-              type: Boolean,
-              computed: '_computeInvitationSentStatus(invitation)'
-          },
+            _invitationSent: {
+                type: Boolean,
+                computed: '_computeInvitationSentStatus(invitation)'
+            },
 
-          _initials: {
-              type: String,
-              computed: '_computeInitials(invitation)'
-          },
+            _initials: {
+                type: String,
+                computed: '_computeInitials(invitation)'
+            },
 
-          _resendApi: {
-              type: String,
-              computed: '_computeResendApi(invitation)'
-          },
+            _resendApi: {
+                type: String,
+                computed: '_computeResendApi(invitation)'
+            },
 
-          _progressBarDisplay: {
-              type: Boolean,
-              value: false
-          },
+            _progressBarDisplay: {
+                type: Boolean,
+                value: false
+            },
 
-          active: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            active: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'inline-block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'inline-block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _computeInvitationSentStatus(invitation) {
-      return invitation && 0 < parseInt(invitation.resent_count);
-  }
+    _computeInvitationSentStatus(invitation) {
+        return invitation && 0 < parseInt(invitation.resent_count);
+    }
 
-  _computeInitials(invitation) {
-      let initials = '';
+    _computeInitials(invitation) {
+        let initials = '';
 
-      if (invitation.self && invitation.first_name && invitation.last_name) {
-          initials = invitation.first_name.substring(0, 1) + invitation.last_name.substring(0, 1);
-          this._invitationTitle = invitation.first_name + ' ' + invitation.last_name;
-      }
-      else if (invitation.self && invitation.email) {
-          initials = invitation.email.substring(0, 2);
-          this._invitationTitle = invitation.email;
-      }
+        if (invitation.self && invitation.first_name && invitation.last_name) {
+            initials = invitation.first_name.substring(0, 1) + invitation.last_name.substring(0, 1);
+            this._invitationTitle = invitation.first_name + ' ' + invitation.last_name;
+        }
+        else if (invitation.self && invitation.email) {
+            initials = invitation.email.substring(0, 2);
+            this._invitationTitle = invitation.email;
+        }
 
-      return initials;
-  }
+        return initials;
+    }
 
-  _computeResendApi(invitation) {
-      return invitation && invitation.self ? invitation.self + '/resend' : null;
-  }
+    _computeResendApi(invitation) {
+        return invitation && invitation.self ? invitation.self + '/resend' : null;
+    }
 
-  _showProgressBar() {
-      this._progressBarDisplay = true;
-  }
+    _showProgressBar() {
+        this._progressBarDisplay = true;
+    }
 
-  _hideProgressBar() {
-      setTimeout(function() {
-          this._progressBarDisplay = false;
-      }.bind(this), 500);
-  }
+    _hideProgressBar() {
+        setTimeout(function() {
+            this._progressBarDisplay = false;
+        }.bind(this), 500);
+    }
 
-  _onResend(event) {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._resendApi,
-              method: 'PATCH',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onResend(event) {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._resendApi,
+                method: 'PATCH',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      event.stopPropagation();
+        event.stopPropagation();
 
-      this._showProgressBar();
+        this._showProgressBar();
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.invitation = request.response;
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.invitation = request.response;
 
-              this.dispatchEvent(new CustomEvent('invitation-resent', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      invitation: this.invitation
-                  }
-              }));
-          }
-          this._hideProgressBar();
-      }.bind(this));
-  }
+                this.dispatchEvent(new CustomEvent('invitation-resent', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        invitation: this.invitation
+                    }
+                }));
+            }
+            this._hideProgressBar();
+        }.bind(this));
+    }
 
-  _onRemove(event) {
-      event.stopPropagation();
+    _onRemove(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('remove', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              invitation: this.invitation
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('remove', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                invitation: this.invitation
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoInvitationItem.is, AppscoInvitationItem);

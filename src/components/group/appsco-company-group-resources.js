@@ -1,34 +1,4 @@
-/*
-`appsco-company-group-resources`
-Contains group's resource list and Load More action.
-Resources are loaded inside component through iron-ajax.
-
-    <appsco-company-group-resources list-api=""
-                           authorization-token=""
-                           size=""
-                           load-more
-                           preview>
-    </appsco-company-group-resources>
-
-### Styling
-
-`<appsco-company-group-resources>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-company-group-resources` | Mixin for the root element | `{}`
-`--appsco-company-group-resource-item` | Mixin for item style | `{}`
-`--group-resources-container` | Mixin for the resources container | `{}`
-`--group-resources-progress-bar` | Mixin applied to paper-progress for resource list | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
@@ -40,12 +10,13 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyGroupResources extends mixinBehaviors([
     Appsco.HeadersMixin,
     NeonAnimationRunnerBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -154,329 +125,329 @@ class AppscoCompanyGroupResources extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-group-resources'; }
+    static get is() { return 'appsco-company-group-resources'; }
 
-  static get properties() {
-      return {
-          listApi: {
-              type: String,
-              observer: '_onListApiChanged'
-          },
+    static get properties() {
+        return {
+            listApi: {
+                type: String,
+                observer: '_onListApiChanged'
+            },
 
-          size: {
-              type: Number,
-              value: 10
-          },
+            size: {
+                type: Number,
+                value: 10
+            },
 
-          loadMore: {
-              type: Boolean,
-              value: false
-          },
+            loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          preview: {
-              type: Boolean,
-              value: false
-          },
+            preview: {
+                type: Boolean,
+                value: false
+            },
 
-          group: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            group: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loadMore: {
-              type: Boolean,
-              value: false
-          },
+            _loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          _resources: {
-              type: Array,
-              value: function () {
-                  return [];
-              },
-              notify: true
-          },
+            _resources: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                notify: true
+            },
 
-          _allResources: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _allResources: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _resourcesEmpty: {
-              type: Boolean,
-              value: false
-          },
+            _resourcesEmpty: {
+                type: Boolean,
+                value: false
+            },
 
-          _message: {
-              type: String,
-              value: ''
-          },
+            _message: {
+                type: String,
+                value: ''
+            },
 
-          _nextPageApiUrl: {
-              type: String
-          },
+            _nextPageApiUrl: {
+                type: String
+            },
 
-          _totalResources: {
-              type: Number,
-              value: 0
-          },
+            _totalResources: {
+                type: Number,
+                value: 0
+            },
 
-          _renderedIndex: {
-              type: Number,
-              value: -1
-          },
+            _renderedIndex: {
+                type: Number,
+                value: -1
+            },
 
-          _loaders: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _loaders: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'slide-from-left-animation',
-              nodes: [],
-              nodeDelay: 50,
-              timing: {
-                  duration: 300
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'slide-from-left-animation',
+                nodes: [],
+                nodeDelay: 50,
+                timing: {
+                    duration: 300
+                }
+            }
+        };
+    }
 
-  _onListApiChanged(url) {
-      if (!url) {
-          return;
-      }
-      this._listApi = ((url.indexOf('extended') !== -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
-      if (url && url.length > 0) {
-          this._loadResources();
-      }
-  }
+    _onListApiChanged(url) {
+        if (!url) {
+            return;
+        }
+        this._listApi = ((url.indexOf('extended') !== -1) ? url : (url + '?extended=1')) + '&page=1&limit=' + this.size;
+        if (url && url.length > 0) {
+            this._loadResources();
+        }
+    }
 
-  _setLoadMoreAction() {
-      this._loadMore = (!this.preview && this.loadMore && this._allResources.length < this._totalResources);
-  }
+    _setLoadMoreAction() {
+        this._loadMore = (!this.preview && this.loadMore && this._allResources.length < this._totalResources);
+    }
 
-  _hideLoadMoreAction() {
-      this._loadMore = false;
-  }
+    _hideLoadMoreAction() {
+        this._loadMore = false;
+    }
 
-  loadItems() {
-      this._loadResources();
-  }
+    loadItems() {
+        this._loadResources();
+    }
 
-  _loadResources() {
-      this._showProgressBar();
-      this._loadMore = false;
-      this._clearResources();
-      this.$.getGroupResourcesApiRequest.generateRequest();
-  }
+    _loadResources() {
+        this._showProgressBar();
+        this._loadMore = false;
+        this._clearResources();
+        this.$.getGroupResourcesApiRequest.generateRequest();
+    }
 
-  reloadResources() {
-      this._loadResources();
-  }
+    reloadResources() {
+        this._loadResources();
+    }
 
-  _loadMoreResources() {
-      this._showLoadMoreProgressBar();
-      this.$.getGroupResourcesApiRequest.url = this._nextPageApiUrl;
-      this.$.getGroupResourcesApiRequest.generateRequest();
-  }
+    _loadMoreResources() {
+        this._showLoadMoreProgressBar();
+        this.$.getGroupResourcesApiRequest.url = this._nextPageApiUrl;
+        this.$.getGroupResourcesApiRequest.generateRequest();
+    }
 
-  _onError() {
-      this._message = 'We couldn\'t load resources at the moment. Please try again in a minute.';
-      this._handleEmptyLoad();
-  }
+    _onError() {
+        this._message = 'We couldn\'t load resources at the moment. Please try again in a minute.';
+        this._handleEmptyLoad();
+    }
 
-  _handleEmptyLoad() {
-      this._resourcesEmpty = true;
-      this._message = 'There are no resources attached to this group.';
+    _handleEmptyLoad() {
+        this._resourcesEmpty = true;
+        this._message = 'There are no resources attached to this group.';
 
-      this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
+        this.dispatchEvent(new CustomEvent('empty-load', { bubbles: true, composed: true }));
 
-      this._hideProgressBar();
-      this._hideLoadMoreProgressBar();
-  }
+        this._hideProgressBar();
+        this._hideLoadMoreProgressBar();
+    }
 
-  _clearLoaders() {
-      for (const idx in this._loaders) {
-          clearTimeout(this._loaders[idx]);
-      }
-      this.set('_loaders', []);
-  }
+    _clearLoaders() {
+        for (const idx in this._loaders) {
+            clearTimeout(this._loaders[idx]);
+        }
+        this.set('_loaders', []);
+    }
 
-  _clearResources() {
-      this._clearLoaders();
-      this.set('_resources', []);
-      this.set('_allResources', []);
-  }
+    _clearResources() {
+        this._clearLoaders();
+        this.set('_resources', []);
+        this.set('_allResources', []);
+    }
 
-  _onResponse(event) {
-      const response = event.detail.response;
+    _onResponse(event) {
+        const response = event.detail.response;
 
-      if (response && response.applications) {
-          const resources = response.applications,
-              meta = response.meta,
-              resourcesCount = resources.length - 1;
+        if (response && response.applications) {
+            const resources = response.applications,
+                meta = response.meta,
+                resourcesCount = resources.length - 1;
 
-          this._totalResources = meta.total;
-          this._nextPageApiUrl = meta.next + "&limit=" + this.size;
+            this._totalResources = meta.total;
+            this._nextPageApiUrl = meta.next + "&limit=" + this.size;
 
-          if (meta.total === 0) {
-              this._handleEmptyLoad();
-              return false;
-          }
+            if (meta.total === 0) {
+                this._handleEmptyLoad();
+                return false;
+            }
 
-          this._resourcesEmpty = false;
-          this._message = '';
+            this._resourcesEmpty = false;
+            this._message = '';
 
-          if (this.preview) {
-              this._clearResources();
-          }
-          resources.forEach(function(el, index) {
-              this._loaders.push(setTimeout(function() {
-                  this.push('_resources', el);
-                  this.push('_allResources', el);
+            if (this.preview) {
+                this._clearResources();
+            }
+            resources.forEach(function(el, index) {
+                this._loaders.push(setTimeout(function() {
+                    this.push('_resources', el);
+                    this.push('_allResources', el);
 
-                  if (index === resourcesCount) {
+                    if (index === resourcesCount) {
 
-                      this._loadMore = this.loadMore;
+                        this._loadMore = this.loadMore;
 
-                      if (this._resources.length === meta.total) {
-                          this._loadMore = false;
-                      }
+                        if (this._resources.length === meta.total) {
+                            this._loadMore = false;
+                        }
 
-                      this._hideProgressBar();
-                      this._hideLoadMoreProgressBar();
-                      this._setLoadMoreAction();
+                        this._hideProgressBar();
+                        this._hideLoadMoreProgressBar();
+                        this._setLoadMoreAction();
 
-                      this.dispatchEvent(new CustomEvent('loaded', {
-                          bubbles: true,
-                          composed: true,
-                          detail: {
-                              companyResources: resources
-                          }
-                      }));
-                  }
-              }.bind(this), (index + 1) * 30));
-          }.bind(this));
-      }
-  }
+                        this.dispatchEvent(new CustomEvent('loaded', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                companyResources: resources
+                            }
+                        }));
+                    }
+                }.bind(this), (index + 1) * 30));
+            }.bind(this));
+        }
+    }
 
-  addGroupItems(resources) {
-      const length = resources.length,
-          allResources = this._allResources,
-          allLength = allResources.length;
+    addGroupItems(resources) {
+        const length = resources.length,
+            allResources = this._allResources,
+            allLength = allResources.length;
 
-      this._resourcesEmpty = false;
-      this._message = '';
-      this._renderedIndex = length - 1;
+        this._resourcesEmpty = false;
+        this._message = '';
+        this._renderedIndex = length - 1;
 
-      for (let i = 0; i < length; i++) {
-          if (0 === allLength) {
-              this.push('_resources', resources[i]);
-              this.push('_allResources', resources[i]);
+        for (let i = 0; i < length; i++) {
+            if (0 === allLength) {
+                this.push('_resources', resources[i]);
+                this.push('_allResources', resources[i]);
 
-              this._totalResources++;
-          }
-          else {
-              for (let j = 0; j < allLength; j++) {
-                  if (allResources[j].alias === resources[i].alias) {
-                      break;
-                  }
-                  else if (j === allLength - 1) {
-                      this.unshift('_resources', resources[i]);
-                      this.unshift('_allResources', resources[i]);
+                this._totalResources++;
+            }
+            else {
+                for (let j = 0; j < allLength; j++) {
+                    if (allResources[j].alias === resources[i].alias) {
+                        break;
+                    }
+                    else if (j === allLength - 1) {
+                        this.unshift('_resources', resources[i]);
+                        this.unshift('_allResources', resources[i]);
 
-                      this._totalResources++;
-                  }
-              }
-          }
-      }
-  }
+                        this._totalResources++;
+                    }
+                }
+            }
+        }
+    }
 
-  removeGroupItems(resources) {
-      const length = resources.length,
-          _resources = this._resources,
-          _length = _resources.length,
-          allResources = this._allResources,
-          allLength = allResources.length;
+    removeGroupItems(resources) {
+        const length = resources.length,
+            _resources = this._resources,
+            _length = _resources.length,
+            allResources = this._allResources,
+            allLength = allResources.length;
 
-      for (let i = 0; i < length; i++) {
-          const resource = resources[i];
+        for (let i = 0; i < length; i++) {
+            const resource = resources[i];
 
-          for (var j = 0; j < _length; j++) {
-              if (resource.application.self === _resources[j].self) {
-                  this.splice('_resources', j, 1);
-                  break;
-              }
-          }
+            for (var j = 0; j < _length; j++) {
+                if (resource.application.self === _resources[j].self) {
+                    this.splice('_resources', j, 1);
+                    break;
+                }
+            }
 
-          for (let k = 0; k < allLength; k++) {
-              if (resource.application.self === allResources[k].self) {
-                  this.splice('_allResources', k, 1);
-                  break;
-              }
-          }
+            for (let k = 0; k < allLength; k++) {
+                if (resource.application.self === allResources[k].self) {
+                    this.splice('_allResources', k, 1);
+                    break;
+                }
+            }
 
-          this._totalResources--;
-      }
+            this._totalResources--;
+        }
 
-      if (0 === this._resources.length) {
-          this._handleEmptyLoad();
-      }
-  }
+        if (0 === this._resources.length) {
+            this._handleEmptyLoad();
+        }
+    }
 
-  _showProgressBar() {
-      this.shadowRoot.getElementById('paperProgress').hidden = false;
-  }
+    _showProgressBar() {
+        this.shadowRoot.getElementById('paperProgress').hidden = false;
+    }
 
-  _showLoadMoreProgressBar() {
-      this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
-  }
+    _showLoadMoreProgressBar() {
+        this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+    }
 
-  _hideProgressBar() {
-      setTimeout(function() {
-          this.shadowRoot.getElementById('paperProgress').hidden = true;
-      }.bind(this), 300);
-  }
+    _hideProgressBar() {
+        setTimeout(function() {
+            this.shadowRoot.getElementById('paperProgress').hidden = true;
+        }.bind(this), 300);
+    }
 
-  _hideLoadMoreProgressBar() {
-      setTimeout(function() {
-          this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
-      }.bind(this), 300);
-  }
+    _hideLoadMoreProgressBar() {
+        setTimeout(function() {
+            this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
+        }.bind(this), 300);
+    }
 
-  _onItemsDomChange() {
-      const index = this._renderedIndex;
-      if (-1 !== index) {
-          this.animationConfig.entry.nodes = [];
+    _onItemsDomChange() {
+        const index = this._renderedIndex;
+        if (-1 !== index) {
+            this.animationConfig.entry.nodes = [];
 
-          for (let i = 0; i <= index; i++) {
-              const addedItem = this.shadowRoot.getElementById('appscoGroupResourceItem_' + i);
-              this.animationConfig.entry.nodes.push(addedItem);
-          }
+            for (let i = 0; i <= index; i++) {
+                const addedItem = this.shadowRoot.getElementById('appscoGroupResourceItem_' + i);
+                this.animationConfig.entry.nodes.push(addedItem);
+            }
 
-          this.playAnimation('entry');
+            this.playAnimation('entry');
 
-          this._renderedIndex = -1;
-      }
-  }
+            this._renderedIndex = -1;
+        }
+    }
 }
 window.customElements.define(AppscoCompanyGroupResources.is, AppscoCompanyGroupResources);

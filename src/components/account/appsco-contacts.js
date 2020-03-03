@@ -9,12 +9,13 @@ import '../components/appsco-list-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContacts extends mixinBehaviors([
     AppscoListBehavior,
     AppscoListObserverBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host appsco-contact-item {
                 width: 100%;
@@ -50,19 +51,19 @@ class AppscoContacts extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contacts'; }
+    static get is() { return 'appsco-contacts'; }
 
-  static get observers() {
-      return [
-          '_observeItems(_listItems)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_observeItems(_listItems)'
+        ];
+    }
 
-  _observeItems(items) {
-      this.setObservableType('contacts');
-      this.populateItems(items);
-  }
+    _observeItems(items) {
+        this.setObservableType('contacts');
+        this.populateItems(items);
+    }
 }
 window.customElements.define(AppscoContacts.is, AppscoContacts);

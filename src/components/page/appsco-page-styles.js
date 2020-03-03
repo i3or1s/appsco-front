@@ -2,6 +2,7 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '../../shared-styles.js';
 import '../../webkit-scrollbar-style.js';
+
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="appsco-page-styles">

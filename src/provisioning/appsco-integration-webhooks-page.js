@@ -10,12 +10,13 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationWebhooksPage extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -71,109 +72,109 @@ class AppscoIntegrationWebhooksPage extends mixinBehaviors([
 
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-webhooks-page'; }
+    static get is() { return 'appsco-integration-webhooks-page'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _integrationWebhooksApi: {
-              type: String,
-              computed: '_computeIntegrationWebhooksApi(integration)'
-          },
+            _integrationWebhooksApi: {
+                type: String,
+                computed: '_computeIntegrationWebhooksApi(integration)'
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  addIntegrationWatcher(watcher) {
-      this.$.appscoIntegrationWebhooks.addIntegrationWatcher(watcher);
-  }
+    addIntegrationWatcher(watcher) {
+        this.$.appscoIntegrationWebhooks.addIntegrationWatcher(watcher);
+    }
 
-  removeIntegrationWatcher(watcher) {
-      this.$.appscoIntegrationWebhooks.removeIntegrationWatcher(watcher);
-  }
+    removeIntegrationWatcher(watcher) {
+        this.$.appscoIntegrationWebhooks.removeIntegrationWatcher(watcher);
+    }
 
-  _computeIntegrationWebhooksApi(integration) {
-      return integration.meta ? integration.meta.webHooks : null;
-  }
+    _computeIntegrationWebhooksApi(integration) {
+        return integration.meta ? integration.meta.webHooks : null;
+    }
 
-  _onRegisterIntegrationWebhookAction(event) {
-      this.dispatchEvent(new CustomEvent('register-integration-webhook', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: this.integration,
-              webhook: event.detail.item
-          }
-      }));
-  }
+    _onRegisterIntegrationWebhookAction(event) {
+        this.dispatchEvent(new CustomEvent('register-integration-webhook', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: this.integration,
+                webhook: event.detail.item
+            }
+        }));
+    }
 
-  _onUnregisterIntegrationWebhookAction(event) {
-      this.dispatchEvent(new CustomEvent('unregister-integration-webhook', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: this.integration,
-              webhook: event.detail.item
-          }
-      }));
-  }
+    _onUnregisterIntegrationWebhookAction(event) {
+        this.dispatchEvent(new CustomEvent('unregister-integration-webhook', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: this.integration,
+                webhook: event.detail.item
+            }
+        }));
+    }
 
-  _onClosePageAction() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onClosePageAction() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoIntegrationWebhooksPage.is, AppscoIntegrationWebhooksPage);

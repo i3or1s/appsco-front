@@ -15,9 +15,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoManageIntegrationComponentsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-layout-with-cards-styles"></style>
 
         <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
@@ -65,116 +66,116 @@ class AppscoManageIntegrationComponentsPage extends mixinBehaviors([NeonSharedEl
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-integration-components-page'; }
+    static get is() { return 'appsco-manage-integration-components-page'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          webhookApi: {
-              type: String
-          },
+            webhookApi: {
+                type: String
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          _isRA: {
-              type: Boolean,
-              computed: '_computeIsRA(integration)'
-          },
+            _isRA: {
+                type: Boolean,
+                computed: '_computeIsRA(integration)'
+            },
 
-          _showManageWebHooks: {
-              type: Boolean,
-              value: false
-          },
+            _showManageWebHooks: {
+                type: Boolean,
+                value: false
+            },
 
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: dom(this.root).querySelectorAll('paper-card'),
-              nodeDelay: 50,
-              timing: {
-                  delay: 200,
-                  duration: 100
-              }
-          },
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }]
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: dom(this.root).querySelectorAll('paper-card'),
+                nodeDelay: 50,
+                timing: {
+                    delay: 200,
+                    duration: 100
+                }
+            },
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }]
+        };
+    }
 
-  _setSharedElement(target) {
+    _setSharedElement(target) {
 
-      if (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
-          target = target.parentNode;
-      }
+        if (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+            target = target.parentNode;
+        }
 
-      this.sharedElements = {
-          'hero': target
-      };
-  }
+        this.sharedElements = {
+            'hero': target
+        };
+    }
 
-  _onManageIntegrationSettings(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-integration-settings', { bubbles: true, composed: true }));
-  }
+    _onManageIntegrationSettings(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-integration-settings', { bubbles: true, composed: true }));
+    }
 
-  _onManageIntegrationRules(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-integration-rules', { bubbles: true, composed: true }));
-  }
+    _onManageIntegrationRules(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-integration-rules', { bubbles: true, composed: true }));
+    }
 
-  _onManageWebhooks(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-integration-webhooks', { bubbles: true, composed: true }));
-  }
+    _onManageWebhooks(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-integration-webhooks', { bubbles: true, composed: true }));
+    }
 
-  _onWebHooksLoaded(event) {
-      (event.detail.web_hooks.length > 0) ? this._showManageWebHooks = true : this._showManageWebHooks = false;
-  }
+    _onWebHooksLoaded(event) {
+        (event.detail.web_hooks.length > 0) ? this._showManageWebHooks = true : this._showManageWebHooks = false;
+    }
 
-  _computeIsRA(integration) {
-      return integration.kind === 'ra';
-  }
+    _computeIsRA(integration) {
+        return integration.kind === 'ra';
+    }
 }
 window.customElements.define(AppscoManageIntegrationComponentsPage.is, AppscoManageIntegrationComponentsPage);

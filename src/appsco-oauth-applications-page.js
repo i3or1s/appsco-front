@@ -26,8 +26,8 @@ class AppscoOauthApplicationsPage extends mixinBehaviors([
     NeonAnimatableBehavior,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-page-styles">
             :host {
 
@@ -128,194 +128,194 @@ class AppscoOauthApplicationsPage extends mixinBehaviors([
         <appsco-add-oauth-application id="appscoAddOauthApplication" authorization-token="[[ authorizationToken ]]" oauth-applications-api="[[ oAuthApplicationsApi ]]" company="[[ currentCompany ]]" api-errors="[[ apiErrors ]]" on-oauth-application-added="_onOauthApplicationAdded">
         </appsco-add-oauth-application>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-oauth-applications-page'; }
+    static get is() { return 'appsco-oauth-applications-page'; }
 
-  static get properties() {
-      return {
-          oAuthApplication: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            oAuthApplication: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          currentCompany: {
-              type: Object
-          },
+            currentCompany: {
+                type: Object
+            },
 
-          oAuthApplicationsApi: {
-              type: String
-          },
+            oAuthApplicationsApi: {
+                type: String
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _oAuthApplicationSelectAction: {
-              type: Number,
-              value: 0
-          },
+            _oAuthApplicationSelectAction: {
+                type: Number,
+                value: 0
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen) {
-              this.updateStyles();
-          }
-      });
+        beforeNextRender(this, function() {
+            if (this.mobileScreen) {
+                this.updateStyles();
+            }
+        });
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.toolbar.addEventListener('add-oauth-application', this._onAddOAuthApplicationAction.bind(this));
-  }
+    _addListeners() {
+        this.toolbar.addEventListener('add-oauth-application', this._onAddOAuthApplicationAction.bind(this));
+    }
 
-  initializePage() {
-      this._setDefaultOAuthApplication();
-  }
+    initializePage() {
+        this._setDefaultOAuthApplication();
+    }
 
-  _setDefaultOAuthApplication() {
-      this.set('oAuthApplication', this.$.oAuthApplications.getFirstItem());
-  }
+    _setDefaultOAuthApplication() {
+        this.set('oAuthApplication', this.$.oAuthApplications.getFirstItem());
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _onPageLoaded() {
-      this.pageLoaded = true;
-      this.initializePage();
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _onPageLoaded() {
+        this.pageLoaded = true;
+        this.initializePage();
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _resetPageList() {
-      this.$.oAuthApplications.resetAllItems();
-  }
+    _resetPageList() {
+        this.$.oAuthApplications.resetAllItems();
+    }
 
-  resetPage() {
-      this.hideInfo();
-      this._resetPageList();
-  }
+    resetPage() {
+        this.hideInfo();
+        this._resetPageList();
+    }
 
-  _onOAuthApplicationsLoaded() {
-      this._onPageLoaded();
-  }
+    _onOAuthApplicationsLoaded() {
+        this._onPageLoaded();
+    }
 
-  _onOAuthApplicationsEmptyLoad() {
-      this._onPageLoaded();
-  }
+    _onOAuthApplicationsEmptyLoad() {
+        this._onPageLoaded();
+    }
 
-  hideInfo() {
-      this.$.appscoContent.hideSection('info');
-  }
+    hideInfo() {
+        this.$.appscoContent.hideSection('info');
+    }
 
-  _showInfo() {
-      this.$.appscoContent.showSection('info');
-  }
+    _showInfo() {
+        this.$.appscoContent.showSection('info');
+    }
 
-  reloadOAuthApplications() {
-      this.$.oAuthApplications.reloadItems();
-  }
+    reloadOAuthApplications() {
+        this.$.oAuthApplications.reloadItems();
+    }
 
-  _onOAuthApplicationAction(event) {
-      if (event.detail.item.activated) {
-          this.set('oAuthApplication', event.detail.item);
-          this._showInfo();
-      }
-      else {
-          this.hideInfo();
-          this._setDefaultOAuthApplication();
-      }
-  }
+    _onOAuthApplicationAction(event) {
+        if (event.detail.item.activated) {
+            this.set('oAuthApplication', event.detail.item);
+            this._showInfo();
+        }
+        else {
+            this.hideInfo();
+            this._setDefaultOAuthApplication();
+        }
+    }
 
-  _onInfoEditAction() {
-      this.dispatchEvent(new CustomEvent('edit-oauth-application', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              application: this.oAuthApplication
-          }
-      }));
-  }
+    _onInfoEditAction() {
+        this.dispatchEvent(new CustomEvent('edit-oauth-application', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                application: this.oAuthApplication
+            }
+        }));
+    }
 
-  _onAddOAuthApplicationAction() {
-      this.shadowRoot.getElementById('appscoAddOauthApplication').open();
-  }
+    _onAddOAuthApplicationAction() {
+        this.shadowRoot.getElementById('appscoAddOauthApplication').open();
+    }
 
-  _onOauthApplicationAdded(event) {
-      const application = event.detail.application;
+    _onOauthApplicationAdded(event) {
+        const application = event.detail.application;
 
-      this.reloadOAuthApplications();
-      this.hideInfo();
+        this.reloadOAuthApplications();
+        this.hideInfo();
 
-      this._notify('OAuth application ' + application.title + ' has been successfully added.');
-  }
+        this._notify('OAuth application ' + application.title + ' has been successfully added.');
+    }
 
-  _onRemoveOAuthApplicationAction(event) {
-      const dialog = this.shadowRoot.getElementById('appscoRemoveOAuthApplication');
-      dialog.setApplication(event.detail.application);
-      dialog.open();
-  }
+    _onRemoveOAuthApplicationAction(event) {
+        const dialog = this.shadowRoot.getElementById('appscoRemoveOAuthApplication');
+        dialog.setApplication(event.detail.application);
+        dialog.open();
+    }
 }
 window.customElements.define(AppscoOauthApplicationsPage.is, AppscoOauthApplicationsPage);

@@ -8,20 +8,21 @@ import { AppscoApplicationFormBehavior } from './appsco-application-form-behavio
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationFormSamlOffice365 extends mixinBehaviors([AppscoApplicationFormBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
-          paper-dropdown-menu {
+            paper-dropdown-menu {
               display: block;
-          }
-          paper-toggle-button {
+            }
+            paper-toggle-button {
               margin-top: 20px;
-          }
-          paper-toggle-button[disabled] {
+            }
+            paper-toggle-button[disabled] {
               --paper-toggle-button-label-color: var(--secondary-text-color);
-          }
-      </style>
+            }
+        </style>
         <paper-input id="samlIssuer" data-field="" label="SAML Issuer" value="[[ claims.samlIssuer ]]" name\$="[[ claimsNamePrefix ]][samlIssuer]" error-message="Please enter SAML Issuer" auto-validate="" required=""></paper-input>
 
         <paper-input id="domain" data-field="" label="Domain registered at SP" value="[[ claims.domain ]]" name\$="[[ claimsNamePrefix ]][domain]" error-message="Please enter domain" auto-validate="" required=""></paper-input>
@@ -54,87 +55,87 @@ class AppscoApplicationFormSamlOffice365 extends mixinBehaviors([AppscoApplicati
 
         <paper-toggle-button id="allowCreate" checked\$="[[ claims.allowCreate ]]" name="[[ claimsNamePrefix ]][allowCreate]" disabled="true">Allow create</paper-toggle-button>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-form-saml-office-365'; }
+    static get is() { return 'appsco-application-form-saml-office-365'; }
 
-  static get properties() {
-      return {
-          claims: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onClaimsChanged'
-          },
+    static get properties() {
+        return {
+            claims: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onClaimsChanged'
+            },
 
-          claimsNamePrefix: {
-              type: String,
-              value: 'claims_saml_office_365'
-          },
+            claimsNamePrefix: {
+                type: String,
+                value: 'claims_saml_office_365'
+            },
 
-          domain: {
-              type: String
-          },
+            domain: {
+                type: String
+            },
 
-          _nameIdPolicyList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'Email',
-                          value: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
-                      },
-                      {
-                          name: 'Persistent',
-                          value: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
-                      }
-                  ];
-              }
-          },
+            _nameIdPolicyList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'Email',
+                            value: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
+                        },
+                        {
+                            name: 'Persistent',
+                            value: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
+                        }
+                    ];
+                }
+            },
 
-          _confirmationMethodList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'Bearer',
-                          value: 'urn:oasis:names:tc:SAML:2.0:cm:bearer'
-                      }
-                  ];
-              }
-          },
+            _confirmationMethodList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'Bearer',
+                            value: 'urn:oasis:names:tc:SAML:2.0:cm:bearer'
+                        }
+                    ];
+                }
+            },
 
-          _authenticationContextList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'Password',
-                          value: 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password'
-                      },
-                      {
-                          name: 'Password protected transport',
-                          value: 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'
-                      }
-                  ];
-              }
-          }
-      };
-  }
+            _authenticationContextList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'Password',
+                            value: 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password'
+                        },
+                        {
+                            name: 'Password protected transport',
+                            value: 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'
+                        }
+                    ];
+                }
+            }
+        };
+    }
 
-  _onClaimsChanged(claims) {
-      for (let key in claims) {
-          return false;
-      }
+    _onClaimsChanged(claims) {
+        for (let key in claims) {
+            return false;
+        }
 
-      this.set('claims', {
-          samlIssuer : this.domain,
-          nameIdPolicy : 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
-          confirmationMethod : 'urn:oasis:names:tc:SAML:2.0:cm:bearer',
-          authenticationContext : 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
-          allowCreate : false
-      });
-  }
+        this.set('claims', {
+            samlIssuer : this.domain,
+            nameIdPolicy : 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
+            confirmationMethod : 'urn:oasis:names:tc:SAML:2.0:cm:bearer',
+            authenticationContext : 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
+            allowCreate : false
+        });
+    }
 }
 window.customElements.define(AppscoApplicationFormSamlOffice365.is, AppscoApplicationFormSamlOffice365);

@@ -18,12 +18,13 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddIntegrationForm extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -62,196 +63,196 @@ class AppscoAddIntegrationForm extends mixinBehaviors([
         <iron-a11y-keys target="[[ _form ]]" keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-add-integration-form'; }
+    static get is() { return 'appsco-add-integration-form'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _formAction: {
-              type: String,
-              computed: '_computeFormAction(integration)'
-          },
+            _formAction: {
+                type: String,
+                computed: '_computeFormAction(integration)'
+            },
 
-          _integrationKindList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'ra',
-                          name: 'From integration system to AppsCo'
-                      },
-                      {
-                          value: 'pst',
-                          name: 'From AppsCo to integration system'
-                      }
-                  ];
-              }
-          },
+            _integrationKindList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'ra',
+                            name: 'From integration system to AppsCo'
+                        },
+                        {
+                            value: 'pst',
+                            name: 'From AppsCo to integration system'
+                        }
+                    ];
+                }
+            },
 
-          _integrationScheduleSyncList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'daily',
-                          name: 'Every day'
-                      },
-                      {
-                          value: 'weekly',
-                          name: 'Every Monday'
-                      },
-                      {
-                          value: 'monthly',
-                          name: 'Every 1st in the month'
-                      }
-                  ];
-              }
-          },
+            _integrationScheduleSyncList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'daily',
+                            name: 'Every day'
+                        },
+                        {
+                            value: 'weekly',
+                            name: 'Every Monday'
+                        },
+                        {
+                            value: 'monthly',
+                            name: 'Every 1st in the month'
+                        }
+                    ];
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _form: {
-              type: Object
-          },
+            _form: {
+                type: Object
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._form = this.$.form;
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 600
-              }
-          }],
-          'exit': {
-              name: 'fade-out-animation',
-              node: this
-          }
-      };
-      this.sharedElements = {
-          'hero': this.$.appscoAddIntegrationForm
-      }
-  }
+        this._form = this.$.form;
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 600
+                }
+            }],
+            'exit': {
+                name: 'fade-out-animation',
+                node: this
+            }
+        };
+        this.sharedElements = {
+            'hero': this.$.appscoAddIntegrationForm
+        }
+    }
 
-  setIntegration(integration) {
-      this.set('integration', integration);
-  }
+    setIntegration(integration) {
+        this.set('integration', integration);
+    }
 
-  addIntegration() {
-      var form = this._form;
+    addIntegration() {
+        var form = this._form;
 
-      if (form.validate()) {
-          this._showLoader();
-          form.submit();
-      }
-  }
+        if (form.validate()) {
+            this._showLoader();
+            form.submit();
+        }
+    }
 
-  reset() {
-      this._form.reset();
-      this.$.appscoIntegrationForm.setToggleChecked(false);
-      this.set('integration', {});
-      this._hideError();
-      this._hideLoader();
-  }
+    reset() {
+        this._form.reset();
+        this.$.appscoIntegrationForm.setToggleChecked(false);
+        this.set('integration', {});
+        this._hideError();
+        this._hideLoader();
+    }
 
-  _computeFormAction(integration) {
-      return integration.self ? integration.self : null;
-  }
+    _computeFormAction(integration) {
+        return integration.self ? integration.self : null;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onSelectClosed(event) {
-      event.stopPropagation();
-  }
+    _onSelectClosed(event) {
+        event.stopPropagation();
+    }
 
-  _onEnter() {
-      this.addIntegration();
-  }
+    _onEnter() {
+        this.addIntegration();
+    }
 
-  _onFormPresubmit(event) {
-      var form = event.target,
-          integrationKind = this.$.appscoIntegrationForm.getIntegrationKind(),
-          integrationScheduleSync = this.$.appscoIntegrationForm.getIntegrationScheduleSync(),
-          integrationForceSync = this.$.appscoIntegrationForm.getIntegrationForceSync();
+    _onFormPresubmit(event) {
+        var form = event.target,
+            integrationKind = this.$.appscoIntegrationForm.getIntegrationKind(),
+            integrationScheduleSync = this.$.appscoIntegrationForm.getIntegrationScheduleSync(),
+            integrationForceSync = this.$.appscoIntegrationForm.getIntegrationForceSync();
 
-      form.request.body['activate_integration[kind]'] =
-          integrationKind ? integrationKind : '';
-      form.request.body['activate_integration[scheduleSyncInterval]'] =
-          integrationScheduleSync ? integrationScheduleSync : '';
-      form.request.body['activate_integration[forceSyncInterval]'] =
-          integrationForceSync ? integrationForceSync : '';
-  }
+        form.request.body['activate_integration[kind]'] =
+            integrationKind ? integrationKind : '';
+        form.request.body['activate_integration[scheduleSyncInterval]'] =
+            integrationScheduleSync ? integrationScheduleSync : '';
+        form.request.body['activate_integration[forceSyncInterval]'] =
+            integrationForceSync ? integrationForceSync : '';
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {
-      this._hideLoader();
+    _onFormResponse(event) {
+        this._hideLoader();
 
-      if (200 === event.detail.status) {
-          this.dispatchEvent(new CustomEvent('integration-requested', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  authorizationUrl: event.detail.response.authorization_url
-              }
-          }));
-      }
-  }
+        if (200 === event.detail.status) {
+            this.dispatchEvent(new CustomEvent('integration-requested', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    authorizationUrl: event.detail.response.authorization_url
+                }
+            }));
+        }
+    }
 }
 window.customElements.define(AppscoAddIntegrationForm.is, AppscoAddIntegrationForm);

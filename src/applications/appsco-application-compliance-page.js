@@ -15,12 +15,13 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationCompliancePage extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -84,145 +85,145 @@ class AppscoApplicationCompliancePage extends mixinBehaviors([
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-compliance-page'; }
+    static get is() { return 'appsco-application-compliance-page'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_computeValues',
-              notify: true
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_computeValues',
+                notify: true
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _complianceUpdateApi: {
-              type: String,
-              computed: '_computeComplianceUpdateApi(application)'
-          },
+            _complianceUpdateApi: {
+                type: String,
+                computed: '_computeComplianceUpdateApi(application)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _complianceFieldsValue: {
-              type: String,
-              compute: '_computeComplianceFieldsValue(application)'
-          },
+            _complianceFieldsValue: {
+                type: String,
+                compute: '_computeComplianceFieldsValue(application)'
+            },
 
-          _descriptionValue: {
-              type: String,
-              value: ''
-          },
+            _descriptionValue: {
+                type: String,
+                value: ''
+            },
 
-          _fieldsValue: {
-              type: String,
-              value: ''
-          },
+            _fieldsValue: {
+                type: String,
+                value: ''
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _computeComplianceUpdateApi(application) {
-      return application ? application.self + '/compliance' : null;
-  }
+    _computeComplianceUpdateApi(application) {
+        return application ? application.self + '/compliance' : null;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onBack() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onBack() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  _onSaveAction() {
-      this.$.form.submit();
-  }
+    _onSaveAction() {
+        this.$.form.submit();
+    }
 
-  _onFormPresubmit() {
-      this._showLoader();
-      this.$.form.request.method = 'PATCH';
-  }
+    _onFormPresubmit() {
+        this._showLoader();
+        this.$.form.request.method = 'PATCH';
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  _onFormResponse() {
-      this._hideLoader();
-      this.dispatchEvent(new CustomEvent('compliance-info-updated', { bubbles: true, composed: true }));
-  }
+    _onFormResponse() {
+        this._hideLoader();
+        this.dispatchEvent(new CustomEvent('compliance-info-updated', { bubbles: true, composed: true }));
+    }
 
-  _computeValues(newValue) {
-      this._descriptionValue = (newValue && newValue.compliance && newValue.compliance.description) ? newValue.compliance.description : '';
-      this._fieldsValue = (newValue && newValue.compliance && newValue.compliance.fields) ? newValue.compliance.fields: '';
-  }
+    _computeValues(newValue) {
+        this._descriptionValue = (newValue && newValue.compliance && newValue.compliance.description) ? newValue.compliance.description : '';
+        this._fieldsValue = (newValue && newValue.compliance && newValue.compliance.fields) ? newValue.compliance.fields: '';
+    }
 }
 window.customElements.define(AppscoApplicationCompliancePage.is, AppscoApplicationCompliancePage);

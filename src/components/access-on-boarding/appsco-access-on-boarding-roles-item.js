@@ -22,13 +22,14 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles"></style>
 
         <style>
@@ -187,224 +188,224 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
             </div>
         </iron-collapse>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-access-on-boarding-roles-item'; }
+    static get is() { return 'appsco-access-on-boarding-roles-item'; }
 
-  static get properties() {
-      return {
-          screen800: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            screen800: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          eventTypesList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            eventTypesList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _eventsVisible: {
-              type: Boolean,
-              value: false
-          },
+            _eventsVisible: {
+                type: Boolean,
+                value: false
+            },
 
-          _resolveRequests: {
-              type: Number,
-              value: 0
-          },
+            _resolveRequests: {
+                type: Number,
+                value: 0
+            },
 
-          _resolvedEvents: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _resolvedEvents: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _unresolvedEvents: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _unresolvedEvents: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(screen800)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(screen800)'
+        ];
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onShowEvents() {
-      this.$.events.show();
-      this._eventsVisible = true;
-  }
+    _onShowEvents() {
+        this.$.events.show();
+        this._eventsVisible = true;
+    }
 
-  _onHideEvents() {
-      this.$.events.hide();
-      this._eventsVisible = false;
-  }
+    _onHideEvents() {
+        this.$.events.hide();
+        this._eventsVisible = false;
+    }
 
-  _isUnresolvedEvent(item) {
-      item.selected = item.selected ? item.selected : false;
+    _isUnresolvedEvent(item) {
+        item.selected = item.selected ? item.selected : false;
 
-      return ('unresolved' === item.status);
-  }
+        return ('unresolved' === item.status);
+    }
 
-  _getParameter(item, parameter) {
-      const eventTypes = this.eventTypesList;
+    _getParameter(item, parameter) {
+        const eventTypes = this.eventTypesList;
 
-      for (let i = 0; i < eventTypes.length; i++) {
-          const eventType = eventTypes[i];
+        for (let i = 0; i < eventTypes.length; i++) {
+            const eventType = eventTypes[i];
 
-          if (eventType.name === item.event_type) {
-              return eventType[parameter];
-          }
-      }
+            if (eventType.name === item.event_type) {
+                return eventType[parameter];
+            }
+        }
 
-      return '';
-  }
+        return '';
+    }
 
-  _removeItemIfNoUnresolvedEvents() {
-      if (0 === this.item.access_onboardings.length) {
-          this.dispatchEvent(new CustomEvent('remove-item', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  item: this.item
-              }
-          }));
-      }
-  }
+    _removeItemIfNoUnresolvedEvents() {
+        if (0 === this.item.access_onboardings.length) {
+            this.dispatchEvent(new CustomEvent('remove-item', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    item: this.item
+                }
+            }));
+        }
+    }
 
-  _onResolveEventsFinished() {
-      if (0 < this._resolvedEvents.length) {
-          this.dispatchEvent(new CustomEvent('access-on-boarding-events-resolved', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  resolvedItems: this._resolvedEvents,
-                  unresolvedItems: this._unresolvedEvents
-              }
-          }));
-      }
-      else {
-          this._showError('There was an error while resolving events. Please try again. If error continues contact AppsCo support.');
-      }
+    _onResolveEventsFinished() {
+        if (0 < this._resolvedEvents.length) {
+            this.dispatchEvent(new CustomEvent('access-on-boarding-events-resolved', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    resolvedItems: this._resolvedEvents,
+                    unresolvedItems: this._unresolvedEvents
+                }
+            }));
+        }
+        else {
+            this._showError('There was an error while resolving events. Please try again. If error continues contact AppsCo support.');
+        }
 
-      this.set('_resolvedEvents', []);
-      this.set('_unresolvedEvents', []);
-      this._hideLoader();
-      this._removeItemIfNoUnresolvedEvents();
-  }
+        this.set('_resolvedEvents', []);
+        this.set('_unresolvedEvents', []);
+        this._hideLoader();
+        this._removeItemIfNoUnresolvedEvents();
+    }
 
-  _resolveEvent(item) {
-      return new Promise(function(resolve, reject) {
-          const request = document.createElement('iron-request'),
-              options = {
-                  url: item.meta.resolve,
-                  method: 'PUT',
-                  handleAs: 'json',
-                  headers: this._headers
-              };
+    _resolveEvent(item) {
+        return new Promise(function(resolve, reject) {
+            const request = document.createElement('iron-request'),
+                options = {
+                    url: item.meta.resolve,
+                    method: 'PUT',
+                    handleAs: 'json',
+                    headers: this._headers
+                };
 
-          request.send(options).then(function() {
-              if (200 === request.status) {
-                  resolve(request.response);
-              }
-          }.bind(this), function() {
-              if (404 === request.status) {
-                  reject(item);
-              }
-          }.bind(this));
-      }.bind(this));
-  }
+            request.send(options).then(function() {
+                if (200 === request.status) {
+                    resolve(request.response);
+                }
+            }.bind(this), function() {
+                if (404 === request.status) {
+                    reject(item);
+                }
+            }.bind(this));
+        }.bind(this));
+    }
 
-  _removeResolvedEvent(item) {
-      const events = this.item.access_onboardings,
-          eventsClone = JSON.parse(JSON.stringify(this.item.access_onboardings));
+    _removeResolvedEvent(item) {
+        const events = this.item.access_onboardings,
+            eventsClone = JSON.parse(JSON.stringify(this.item.access_onboardings));
 
-      events.forEach(function(ev, i) {
-          if (item.self === ev.self) {
-              eventsClone.splice(i, 1);
-          }
-      }.bind(this));
+        events.forEach(function(ev, i) {
+            if (item.self === ev.self) {
+                eventsClone.splice(i, 1);
+            }
+        }.bind(this));
 
-      this.set('item.access_onboardings', []);
-      this.set('item.access_onboardings', eventsClone);
-  }
+        this.set('item.access_onboardings', []);
+        this.set('item.access_onboardings', eventsClone);
+    }
 
-  _onResolveSelectedAction() {
-      const resolveList = this.item.access_onboardings.filter(function (el) {
-              return el.selected;
-          }),
-          length = resolveList.length;
+    _onResolveSelectedAction() {
+        const resolveList = this.item.access_onboardings.filter(function (el) {
+                return el.selected;
+            }),
+            length = resolveList.length;
 
-      if (0 === length) {
-          this._showError('Please select at least one event to resolve.');
-          return false;
-      }
+        if (0 === length) {
+            this._showError('Please select at least one event to resolve.');
+            return false;
+        }
 
-      this._resolveRequests = length;
+        this._resolveRequests = length;
 
-      this._showLoader();
-      this._hideError();
+        this._showLoader();
+        this._hideError();
 
-      for (let i = 0; i < length; i++) {
-          const item = resolveList[i];
+        for (let i = 0; i < length; i++) {
+            const item = resolveList[i];
 
-          (function(me) {
-              me._resolveEvent(item).then(function(item) {
-                  me.push('_resolvedEvents', item);
-                  me._removeResolvedEvent(item);
-                  me._resolveRequests--;
+            (function(me) {
+                me._resolveEvent(item).then(function(item) {
+                    me.push('_resolvedEvents', item);
+                    me._removeResolvedEvent(item);
+                    me._resolveRequests--;
 
-                  if (me._resolveRequests === 0) {
-                      me._onResolveEventsFinished();
-                  }
-              }.bind(me), function(item) {
-                  me.push('_unresolvedEvents', item);
-                  me._resolveRequests--;
+                    if (me._resolveRequests === 0) {
+                        me._onResolveEventsFinished();
+                    }
+                }.bind(me), function(item) {
+                    me.push('_unresolvedEvents', item);
+                    me._resolveRequests--;
 
-                  if (me._resolveRequests === 0) {
-                      me._onResolveEventsFinished();
-                  }
-              }.bind(me));
+                    if (me._resolveRequests === 0) {
+                        me._onResolveEventsFinished();
+                    }
+                }.bind(me));
 
-          })(this);
-      }
-  }
+            })(this);
+        }
+    }
 }
 window.customElements.define(AppscoAccessOnBoardingRolesItem.is, AppscoAccessOnBoardingRolesItem);

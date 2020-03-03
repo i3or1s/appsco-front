@@ -1,22 +1,4 @@
-/*
-`appsco-resource-remove-from-group`
-Shows dialog screen with confirmation for removal company resource from group.
-
-    <appsco-resource-remove-from-group group="{}"
-                                       item="{}"
-                                       resource-type=""
-                                       authorization-token=""
-                                       api-errors="{}">
-    </appsco-resource-remove-from-group>
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -29,9 +11,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoResourceRemoveFromGroup extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -92,190 +75,190 @@ class AppscoResourceRemoveFromGroup extends mixinBehaviors([Appsco.HeadersMixin]
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-resource-remove-from-group'; }
+    static get is() { return 'appsco-resource-remove-from-group'; }
 
-  static get properties() {
-      return {
-          group: {
-              type: Array,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            group: {
+                type: Array,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Item to remove from group.
-           */
-          item: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            /**
+             * Item to remove from group.
+             */
+            item: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          resourceType: {
-              type: String,
-              value: ''
-          },
+            resourceType: {
+                type: String,
+                value: ''
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _removeFromGroupsApi: {
-              type: String,
-              computed: '_computeRemoveFromGroupApi(group, resourceType)'
-          },
+            _removeFromGroupsApi: {
+                type: String,
+                computed: '_computeRemoveFromGroupApi(group, resourceType)'
+            },
 
-          _responseItems: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _responseItems: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _resourceType: {
-              type: Boolean,
-              computed: '_computeResourceType(resourceType)'
-          },
+            _resourceType: {
+                type: Boolean,
+                computed: '_computeResourceType(resourceType)'
+            },
 
-          _roleType: {
-              type: Boolean,
-              computed: '_computeRoleType(resourceType)'
-          },
+            _roleType: {
+                type: Boolean,
+                computed: '_computeRoleType(resourceType)'
+            },
 
-          _contactType: {
-              type: Boolean,
-              computed: '_computeContactType(resourceType)'
-          },
+            _contactType: {
+                type: Boolean,
+                computed: '_computeContactType(resourceType)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _requests: {
-              type: Number,
-              value: 0
-          }
-      };
-  }
+            _requests: {
+                type: Number,
+                value: 0
+            }
+        };
+    }
 
-  setGroup(group) {
-      this.group = group;
-  }
+    setGroup(group) {
+        this.group = group;
+    }
 
-  setItem(item) {
-      this.item = item;
-  }
+    setItem(item) {
+        this.item = item;
+    }
 
-  setType(type) {
-      this.resourceType = type;
-  }
+    setType(type) {
+        this.resourceType = type;
+    }
 
-  open () {
-      this.$.dialog.open();
-  }
+    open () {
+        this.$.dialog.open();
+    }
 
-  close () {
-      this.$.dialog.close();
-  }
+    close () {
+        this.$.dialog.close();
+    }
 
-  toggle () {
-      this.$.dialog.toggle();
-  }
+    toggle () {
+        this.$.dialog.toggle();
+    }
 
-  _computeRemoveFromGroupApi(group, resourceType) {
-      for (const key in group) {
-          return ('resource' === resourceType)
-                  ? group.meta.applications
-                  : ('role' === resourceType)
-                          ? group.meta.company_roles
-                          : ('contact' === resourceType)
-                              ? group.meta.contacts
-                              : '';
-      }
+    _computeRemoveFromGroupApi(group, resourceType) {
+        for (const key in group) {
+            return ('resource' === resourceType)
+                ? group.meta.applications
+                : ('role' === resourceType)
+                    ? group.meta.company_roles
+                    : ('contact' === resourceType)
+                        ? group.meta.contacts
+                        : '';
+        }
 
-      return '';
-  }
+        return '';
+    }
 
-  _computeResourceType(resourceType) {
-      return 'resource' === resourceType;
-  }
+    _computeResourceType(resourceType) {
+        return 'resource' === resourceType;
+    }
 
-  _computeRoleType(resourceType) {
-      return 'role' === resourceType;
-  }
+    _computeRoleType(resourceType) {
+        return 'role' === resourceType;
+    }
 
-  _computeContactType(resourceType) {
-      return 'contact' === resourceType;
-  }
+    _computeContactType(resourceType) {
+        return 'contact' === resourceType;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogClosed() {
-      this._hideError();
-      this._hideLoader();
-  }
+    _onDialogClosed() {
+        this._hideError();
+        this._hideLoader();
+    }
 
-  _onRemoveAction() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._removeFromGroupsApi + '/' + this.item.alias,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onRemoveAction() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._removeFromGroupsApi + '/' + this.item.alias,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      if (!this._removeFromGroupsApi) {
-          this._showError(this.apiErrors.getError(404));
-          return false;
-      }
+        if (!this._removeFromGroupsApi) {
+            this._showError(this.apiErrors.getError(404));
+            return false;
+        }
 
-      this._hideError();
-      this._showLoader();
+        this._hideError();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('resource-removed-from-group', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      group: this.group,
-                      item: request.response,
-                      resourceType: this.resourceType
-                  }
-              }));
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('resource-removed-from-group', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        group: this.group,
+                        item: request.response,
+                        resourceType: this.resourceType
+                    }
+                }));
 
-              this.close();
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+                this.close();
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoResourceRemoveFromGroup.is, AppscoResourceRemoveFromGroup);

@@ -29,8 +29,8 @@ class AppscoPoliciesPage extends mixinBehaviors([
     Appsco.HeadersMixin,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-page-styles">
             :host {
                 --item-basic-info: {
@@ -142,268 +142,268 @@ class AppscoPoliciesPage extends mixinBehaviors([
         <appsco-change-policy-status id="appscoChangePolicyStatus" authorization-token="[[ authorizationToken ]]" api-errors="[[ _apiErrors ]]" on-policy-status-changed="_onPolicyStatusChanged">
         </appsco-change-policy-status>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-policies-page'; }
+    static get is() { return 'appsco-policies-page'; }
 
-  static get properties() {
-      return {
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          policy: {
-              type: Object,
-              value: function () {
-                  return {}
-              }
-          },
+            policy: {
+                type: Object,
+                value: function () {
+                    return {}
+                }
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          companyPoliciesApi: {
-              type: String
-          },
+            companyPoliciesApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _policyExists: {
-              type: Boolean,
-              computed: '_computePolicyExistence(policy)'
-          },
+            _policyExists: {
+                type: Boolean,
+                computed: '_computePolicyExistence(policy)'
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          },
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            },
 
-          _page: {
-              type: String,
-              value: 'policies'
-          },
+            _page: {
+                type: String,
+                value: 'policies'
+            },
 
-          _infoShown: {
-              type: Boolean,
-              value: false
-          },
+            _infoShown: {
+                type: Boolean,
+                value: false
+            },
 
-          _selectedTab: {
-              type: Number
-          }
-      };
-  }
+            _selectedTab: {
+                type: Number
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen)'
+        ];
+    }
 
-  pageSelected() {}
+    pageSelected() {}
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.mobileScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  initializePage() {
-      this._setDefaultPolicy();
-  }
+    initializePage() {
+        this._setDefaultPolicy();
+    }
 
-  resetPage() {
-      this._resetPageLists();
-      this.hideInfo();
-  }
+    resetPage() {
+        this._resetPageLists();
+        this.hideInfo();
+    }
 
-  hideResource() {
-      this.$.appscoContent.hideSection('resource');
-  }
+    hideResource() {
+        this.$.appscoContent.hideSection('resource');
+    }
 
-  showPage(page) {
-      this._page = page;
-  }
+    showPage(page) {
+        this._page = page;
+    }
 
-  toggleInfo() {
-      if (this._policyExists) {
-          this.$.appscoContent.toggleSection('info');
-          this._infoShown = !this._infoShown;
+    toggleInfo() {
+        if (this._policyExists) {
+            this.$.appscoContent.toggleSection('info');
+            this._infoShown = !this._infoShown;
 
-          if (this._infoShown) {
-              this._selectedTab = 0;
-          }
-          else {
-              this.$.appscoPolicies.deactivateItem(this.policy);
-              this._setDefaultPolicy();
-          }
-      }
-  }
+            if (this._infoShown) {
+                this._selectedTab = 0;
+            }
+            else {
+                this.$.appscoPolicies.deactivateItem(this.policy);
+                this._setDefaultPolicy();
+            }
+        }
+    }
 
-  hideInfo() {
-      this.$.appscoContent.hideSection('info');
-      this._infoShown = false;
-  }
+    hideInfo() {
+        this.$.appscoContent.hideSection('info');
+        this._infoShown = false;
+    }
 
-  toggleResource() {
-      this.$.appscoContent.toggleSection('resource');
-  }
+    toggleResource() {
+        this.$.appscoContent.toggleSection('resource');
+    }
 
-  modifyPolicy(policy) {
-      this.set('policy', {});
-      this.set('policy', policy);
-  }
+    modifyPolicy(policy) {
+        this.set('policy', {});
+        this.set('policy', policy);
+    }
 
-  modifyPolicies(policies) {
-      this.$.appscoPolicies.modifyItems(policies);
-  }
+    modifyPolicies(policies) {
+        this.$.appscoPolicies.modifyItems(policies);
+    }
 
-  _onObservableItemListChange(event, data) {
-      if (data.type === this._page) {
-          this.setObservableType('policies-page');
-          this.populateItems(data.items);
-      }
+    _onObservableItemListChange(event, data) {
+        if (data.type === this._page) {
+            this.setObservableType('policies-page');
+            this.populateItems(data.items);
+        }
 
-      event.stopPropagation();
-  }
+        event.stopPropagation();
+    }
 
-  _setDefaultPolicy() {
-      this.set('policy', this.$.appscoPolicies.getFirstItem());
-  }
+    _setDefaultPolicy() {
+        this.set('policy', this.$.appscoPolicies.getFirstItem());
+    }
 
-  _resetPageLists() {
-      this.$.appscoPolicies.reset();
-  }
+    _resetPageLists() {
+        this.$.appscoPolicies.reset();
+    }
 
-  _computePolicyExistence(policy) {
-      for (const key in policy) {
-          return true;
-      }
+    _computePolicyExistence(policy) {
+        for (const key in policy) {
+            return true;
+        }
 
-      return false;
-  }
+        return false;
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _onPoliciesLoaded() {
-      this._onPageLoaded();
-      this._setDefaultPolicy();
-  }
+    _onPoliciesLoaded() {
+        this._onPageLoaded();
+        this._setDefaultPolicy();
+    }
 
-  _onPoliciesEmptyLoad() {
-      this._onPageLoaded();
-  }
+    _onPoliciesEmptyLoad() {
+        this._onPageLoaded();
+    }
 
-  _onPageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _onPageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _onPolicyAction(event) {
-      if (event.detail.item.activated) {
-          this._onViewInfo(event);
-      }
-      else {
-          this.hideInfo();
-          this._setDefaultPolicy();
-      }
-  }
+    _onPolicyAction(event) {
+        if (event.detail.item.activated) {
+            this._onViewInfo(event);
+        }
+        else {
+            this.hideInfo();
+            this._setDefaultPolicy();
+        }
+    }
 
-  _showInfo() {
-      this.$.appscoContent.showSection('info');
-      this._infoShown = true;
-      this._selectedTab = 0;
-  }
+    _showInfo() {
+        this.$.appscoContent.showSection('info');
+        this._infoShown = true;
+        this._selectedTab = 0;
+    }
 
-  _handleInfo(policy) {
-      this.set('policy', policy);
+    _handleInfo(policy) {
+        this.set('policy', policy);
 
-      if (!this._infoShown) {
-          this._showInfo();
-      }
-  }
+        if (!this._infoShown) {
+            this._showInfo();
+        }
+    }
 
-  _onViewInfo(event) {
-      this._handleInfo(event.detail.item);
-  }
+    _onViewInfo(event) {
+        this._handleInfo(event.detail.item);
+    }
 
-  _changePolicyStatus(policy, action) {
-      const dialog = this.shadowRoot.getElementById('appscoChangePolicyStatus');
-      dialog.setPolicy(policy);
-      dialog.setAction(action);
-      dialog.open();
-  }
+    _changePolicyStatus(policy, action) {
+        const dialog = this.shadowRoot.getElementById('appscoChangePolicyStatus');
+        dialog.setPolicy(policy);
+        dialog.setAction(action);
+        dialog.open();
+    }
 
-  _onEnablePolicyAction(event) {
-      this._changePolicyStatus((event.detail.policy ? event.detail.policy : this.policy), 'enable');
-  }
+    _onEnablePolicyAction(event) {
+        this._changePolicyStatus((event.detail.policy ? event.detail.policy : this.policy), 'enable');
+    }
 
-  _onDisablePolicyAction(event) {
-      this._changePolicyStatus((event.detail.policy ? event.detail.policy : this.policy), 'disable');
-  }
+    _onDisablePolicyAction(event) {
+        this._changePolicyStatus((event.detail.policy ? event.detail.policy : this.policy), 'disable');
+    }
 
-  _onChangePolicyStatusAction(event) {
-      const dialog = this.shadowRoot.getElementById('appscoChangePolicyStatus');
-      dialog.setPolicy(event.detail.policy);
-      dialog.setAction(event.detail.action);
-      dialog.open();
-  }
+    _onChangePolicyStatusAction(event) {
+        const dialog = this.shadowRoot.getElementById('appscoChangePolicyStatus');
+        dialog.setPolicy(event.detail.policy);
+        dialog.setAction(event.detail.action);
+        dialog.open();
+    }
 
-  _onPolicyStatusChanged(event) {
-      const policy = event.detail.policy;
-      this.modifyPolicy(policy);
-      this.modifyPolicies([policy]);
-      this._notify('Company policy successfully ' + (('active' === policy.status) ? 'enabled' : 'disabled') + '.');
-  }
+    _onPolicyStatusChanged(event) {
+        const policy = event.detail.policy;
+        this.modifyPolicy(policy);
+        this.modifyPolicies([policy]);
+        this._notify('Company policy successfully ' + (('active' === policy.status) ? 'enabled' : 'disabled') + '.');
+    }
 
-  _onPolicyUpdated(event) {
-      const policy = event.detail.policy;
-      this.modifyPolicy(policy);
-      this.modifyPolicies([policy]);
-      this._notify('Company policy successfully updated.');
-  }
+    _onPolicyUpdated(event) {
+        const policy = event.detail.policy;
+        this.modifyPolicy(policy);
+        this.modifyPolicies([policy]);
+        this._notify('Company policy successfully updated.');
+    }
 }
 window.customElements.define(AppscoPoliciesPage.is, AppscoPoliciesPage);

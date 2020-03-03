@@ -5,8 +5,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 class Appsco404Page extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -94,42 +94,42 @@ class Appsco404Page extends PolymerElement {
             <paper-button class="back-to-home" on-tap="_onBackToHomeAction">Back to home</paper-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-not-found-page'; }
+    static get is() { return 'appsco-not-found-page'; }
 
-  static get properties() {
-      return {
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+    static get properties() {
+        return {
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(tabletScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(tabletScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      beforeNextRender(this, function() {
-          if (this.tabletScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.tabletScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  _updateScreen(tablet) {
-      this.updateStyles();
-  }
+    _updateScreen(tablet) {
+        this.updateStyles();
+    }
 
-  _onBackToHomeAction() {
-      this.dispatchEvent(new CustomEvent('back-to-home-page', { bubbles: true, composed: true }));
-  }
+    _onBackToHomeAction() {
+        this.dispatchEvent(new CustomEvent('back-to-home-page', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(Appsco404Page.is, Appsco404Page);

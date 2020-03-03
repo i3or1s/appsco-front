@@ -1,17 +1,4 @@
-/*
-`appsco-report-item`
-Presents report in form of an item.
-
-    <appsco-report-item item="{}"></appsco-report-item>
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-icons/iron-icons.js';
@@ -27,12 +14,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoReportItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 width: 100%;
@@ -91,42 +79,42 @@ class AppscoReportItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-report-item'; }
+    static get is() { return 'appsco-report-item'; }
 
-  static get properties() {
-      return {
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          item: {
-              type: Object,
-              value:function() {
-                  return {};
-              }
-          }
-      };
-  }
+            item: {
+                type: Object,
+                value:function() {
+                    return {};
+                }
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          this.dispatchEvent(new CustomEvent('component-ready', {bubbles: true, composed: true}));
-      });
-  }
+        afterNextRender(this, function() {
+            this.dispatchEvent(new CustomEvent('component-ready', {bubbles: true, composed: true}));
+        });
+    }
 
-  openReport() {
-      this.dispatchEvent(new CustomEvent(this.item.openEvent, { bubbles: true, composed: true }));
-  }
+    openReport() {
+        this.dispatchEvent(new CustomEvent(this.item.openEvent, { bubbles: true, composed: true }));
+    }
 
-  _onOpenItemAction(event) {
-      event.stopPropagation();
-      this.openReport();
-  }
+    _onOpenItemAction(event) {
+        event.stopPropagation();
+        this.openReport();
+    }
 }
 window.customElements.define(AppscoReportItem.is, AppscoReportItem);

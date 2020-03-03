@@ -16,12 +16,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccessOnBoardingPage extends mixinBehaviors([
     NeonAnimatableBehavior,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-page-styles">
             :host {
                 --content-background-color: #ffffff;
@@ -66,230 +67,230 @@ class AppscoAccessOnBoardingPage extends mixinBehaviors([
 
         </appsco-content>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-access-on-boarding-page'; }
+    static get is() { return 'appsco-access-on-boarding-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          groupsApi: {
-              type: String
-          },
+            groupsApi: {
+                type: String
+            },
 
-          accessOnBoardingUsersApi: {
-              type: String
-          },
+            accessOnBoardingUsersApi: {
+                type: String
+            },
 
-          exportAccessOnBoardingApi: {
-              type: String
-          },
+            exportAccessOnBoardingApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          },
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen, screen992)',
-          '_toggleFilters(mobileScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen, screen992)',
+            '_toggleFilters(mobileScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen) {
-              this.updateStyles();
-          }
-      });
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.mobileScreen) {
+                this.updateStyles();
+            }
+        });
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
-      this.toolbar.addEventListener('export-access-on-boarding', this._onExportAccessOnBoardingAction.bind(this));
-  }
+    _addListeners() {
+        this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+        this.toolbar.addEventListener('export-access-on-boarding', this._onExportAccessOnBoardingAction.bind(this));
+    }
 
-  _toggleFilters(mobile) {
-      if (mobile) {
-          this.hideResource();
-      } else {
-          this.showResource();
-      }
-  }
+    _toggleFilters(mobile) {
+        if (mobile) {
+            this.hideResource();
+        } else {
+            this.showResource();
+        }
+    }
 
-  hideResource() {
-      this.$.appscoContent.hideSection('resource');
-  }
+    hideResource() {
+        this.$.appscoContent.hideSection('resource');
+    }
 
-  showResource() {
-      this.$.appscoContent.showSection('resource');
-  }
+    showResource() {
+        this.$.appscoContent.showSection('resource');
+    }
 
-  initializePage() {}
+    initializePage() {}
 
-  resetPage() {
-      this._reloadLists();
-      this._resetFilters();
-  }
+    resetPage() {
+        this._reloadLists();
+        this._resetFilters();
+    }
 
-  toggleResource() {
-      this.$.appscoContent.toggleSection('resource');
-  }
+    toggleResource() {
+        this.$.appscoContent.toggleSection('resource');
+    }
 
-  reloadRoles() {
-      this._reloadLists();
-  }
+    reloadRoles() {
+        this._reloadLists();
+    }
 
-  export() {
-      const request = document.createElement('iron-request'),
-          options = {
-              method: 'GET',
-              handleAs: 'blob',
-              headers: {
-                  'Authorization': 'token ' + this.authorizationToken
-              }
-          },
-          filters = this._getAccessOnBoardingFilters();
+    export() {
+        const request = document.createElement('iron-request'),
+            options = {
+                method: 'GET',
+                handleAs: 'blob',
+                headers: {
+                    'Authorization': 'token ' + this.authorizationToken
+                }
+            },
+            filters = this._getAccessOnBoardingFilters();
 
-      let url = this.exportAccessOnBoardingApi
+        let url = this.exportAccessOnBoardingApi
 
-      if (filters.group.alias && 'all' !== filters.group.alias) {
-          url += (-1 < url.indexOf('?')) ?
-              ('&group=' + filters.group.alias) :
-              ('?group=' + filters.group.alias);
-      }
+        if (filters.group.alias && 'all' !== filters.group.alias) {
+            url += (-1 < url.indexOf('?')) ?
+                ('&group=' + filters.group.alias) :
+                ('?group=' + filters.group.alias);
+        }
 
-      if (2 < filters.term.length) {
-          url += (-1 < url.indexOf('?')) ?
-              ('&term=' + filters.term) :
-              ('?term=' + filters.term);
-      }
+        if (2 < filters.term.length) {
+            url += (-1 < url.indexOf('?')) ?
+                ('&term=' + filters.term) :
+                ('?term=' + filters.term);
+        }
 
-      options.url = url;
+        options.url = url;
 
-      request.send(options).then(function() {
-          const fileReader = new FileReader();
+        request.send(options).then(function() {
+            const fileReader = new FileReader();
 
-          fileReader.onload = function(event) {
-              const link = document.createElement('a');
+            fileReader.onload = function(event) {
+                const link = document.createElement('a');
 
-              link.href = event.target.result;
-              link.setAttribute('download', 'AppsCo - Access On-boarding Status List.xlsx');
-              document.body.appendChild(link);
+                link.href = event.target.result;
+                link.setAttribute('download', 'AppsCo - Access On-boarding Status List.xlsx');
+                document.body.appendChild(link);
 
-              if (link.click) {
-                  link.click();
-              }
-              else if (document.createEvent) {
-                  const clickEvent = document.createEvent('MouseEvents');
+                if (link.click) {
+                    link.click();
+                }
+                else if (document.createEvent) {
+                    const clickEvent = document.createEvent('MouseEvents');
 
-                  clickEvent.initEvent('click', true, true);
-                  link.dispatchEvent(clickEvent);
-              }
+                    clickEvent.initEvent('click', true, true);
+                    link.dispatchEvent(clickEvent);
+                }
 
-              document.body.removeChild(link);
-          };
+                document.body.removeChild(link);
+            };
 
-          fileReader.readAsDataURL(request.response);
+            fileReader.readAsDataURL(request.response);
 
-          this._hideProgressBar();
-      }.bind(this), function() {
-          this._hideProgressBar();
-          this._notify('Export of Access On Boarding Report failed. Please contact AppsCo support.');
-      }.bind(this));
-  }
+            this._hideProgressBar();
+        }.bind(this), function() {
+            this._hideProgressBar();
+            this._notify('Export of Access On Boarding Report failed. Please contact AppsCo support.');
+        }.bind(this));
+    }
 
-  _getAccessOnBoardingFilters() {
-      return this.$.accessOnBoardingPageFilters.getFilters();
-  }
+    _getAccessOnBoardingFilters() {
+        return this.$.accessOnBoardingPageFilters.getFilters();
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _reloadLists() {
-      this.$.appscoAccessOnBoardingRoles.reloadItems();
-  }
+    _reloadLists() {
+        this.$.appscoAccessOnBoardingRoles.reloadItems();
+    }
 
-  _resetFilters() {
-      this.$.accessOnBoardingPageFilters.reset();
-  }
+    _resetFilters() {
+        this.$.accessOnBoardingPageFilters.reset();
+    }
 
-  _onPageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _onPageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _onRolesLoadFinished() {
-      this._onPageLoaded();
-  }
+    _onRolesLoadFinished() {
+        this._onPageLoaded();
+    }
 
-  _onFilterPageAction(event) {
-      this.$.appscoAccessOnBoardingRoles.filterRoles(event.detail.filters);
-      this._showProgressBar();
-  }
+    _onFilterPageAction(event) {
+        this.$.appscoAccessOnBoardingRoles.filterRoles(event.detail.filters);
+        this._showProgressBar();
+    }
 
-  _onEventsResolved(event) {
-      this._notify((0 === event.detail.unresolvedItems.length) ?
-          'Selected events have been resolved manually.' :
-          'There was an error while resolving some events. Not all events were resolved.');
-  }
-  _onExportAccessOnBoardingAction() {
-      this._showProgressBar();
-      this.export();
-  }
+    _onEventsResolved(event) {
+        this._notify((0 === event.detail.unresolvedItems.length) ?
+            'Selected events have been resolved manually.' :
+            'There was an error while resolving some events. Not all events were resolved.');
+    }
+    _onExportAccessOnBoardingAction() {
+        this._showProgressBar();
+        this.export();
+    }
 }
 window.customElements.define(AppscoAccessOnBoardingPage.is, AppscoAccessOnBoardingPage);

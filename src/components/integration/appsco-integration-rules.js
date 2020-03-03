@@ -8,9 +8,10 @@ import '../components/appsco-list-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationRules extends mixinBehaviors([AppscoListBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host appsco-integration-rule-item {
                 width: 100%;
@@ -46,19 +47,19 @@ class AppscoIntegrationRules extends mixinBehaviors([AppscoListBehavior], Polyme
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-rules'; }
+    static get is() { return 'appsco-integration-rules'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          }
-      };
-  }
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            }
+        };
+    }
 }
 window.customElements.define(AppscoIntegrationRules.is, AppscoIntegrationRules);

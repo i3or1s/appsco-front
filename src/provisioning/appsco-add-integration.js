@@ -15,9 +15,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddIntegration extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 display: block;
@@ -78,132 +79,132 @@ class AppscoAddIntegration extends mixinBehaviors([NeonAnimationRunnerBehavior],
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-add-integration'; }
+    static get is() { return 'appsco-add-integration'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          availableIntegrationsApi: {
-              type: String
-          },
+            availableIntegrationsApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _selected: {
-              type: String,
-              value: 'appsco-add-integration-search',
-              notify: true
-          },
+            _selected: {
+                type: String,
+                value: 'appsco-add-integration-search',
+                notify: true
+            },
 
-          _addAction: {
-              type: Boolean,
-              value: false
-          },
+            _addAction: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this.$.addAction,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this.$.addAction,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this.$.addAction,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this.$.addAction,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('_selected-changed', this._onSelectedChanged);
-      this.addEventListener('neon-animation-finish', this._onAddActionAnimationFinish);
-  }
+    _addListeners() {
+        this.addEventListener('_selected-changed', this._onSelectedChanged);
+        this.addEventListener('neon-animation-finish', this._onAddActionAnimationFinish);
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  _showIntegrationSearch() {
-      this._selected = 'appsco-add-integration-search';
-  }
+    _showIntegrationSearch() {
+        this._selected = 'appsco-add-integration-search';
+    }
 
-  _showIntegrationForm() {
-      this._selected = 'appsco-add-integration-form';
-  }
+    _showIntegrationForm() {
+        this._selected = 'appsco-add-integration-form';
+    }
 
-  _reset() {
-      this.$.appscoAddIntegrationSearch.reset();
-      this.$.appscoAddIntegrationForm.reset();
-      this._showIntegrationSearch();
-  }
+    _reset() {
+        this.$.appscoAddIntegrationSearch.reset();
+        this.$.appscoAddIntegrationForm.reset();
+        this._showIntegrationSearch();
+    }
 
-  _onDialogClosed() {
-      this._reset();
-  }
+    _onDialogClosed() {
+        this._reset();
+    }
 
-  _onSelectedChanged() {
-      if (this._selected != 'appsco-add-integration-search') {
-          this.$.addAction.style.display = 'block';
-          this.playAnimation('entry');
-          this._addAction = true;
-      }
-      else {
-          this._addAction = false;
-          this.playAnimation('exit');
-      }
-  }
+    _onSelectedChanged() {
+        if (this._selected != 'appsco-add-integration-search') {
+            this.$.addAction.style.display = 'block';
+            this.playAnimation('entry');
+            this._addAction = true;
+        }
+        else {
+            this._addAction = false;
+            this.playAnimation('exit');
+        }
+    }
 
-  _onAddActionAnimationFinish() {
-      if (!this._addAction) {
-          this.$.addAction.style.display = 'none';
-      }
-  }
+    _onAddActionAnimationFinish() {
+        if (!this._addAction) {
+            this.$.addAction.style.display = 'none';
+        }
+    }
 
-  _onAvailableIntegrationSelected(event) {
-      this.$.appscoAddIntegrationForm.setIntegration(event.detail.integration);
-      this._showIntegrationForm();
-  }
+    _onAvailableIntegrationSelected(event) {
+        this.$.appscoAddIntegrationForm.setIntegration(event.detail.integration);
+        this._showIntegrationForm();
+    }
 
-  _onAddAction() {
-      this.$.appscoAddIntegrationForm.addIntegration();
-  }
+    _onAddAction() {
+        this.$.appscoAddIntegrationForm.addIntegration();
+    }
 
-  _onIntegrationRequested(event) {
-      if (event.detail.authorizationUrl) {
-          this.close();
-      }
-  }
+    _onIntegrationRequested(event) {
+        if (event.detail.authorizationUrl) {
+            this.close();
+        }
+    }
 }
 window.customElements.define(AppscoAddIntegration.is, AppscoAddIntegration);

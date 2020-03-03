@@ -14,9 +14,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: inline-block;
@@ -140,226 +141,226 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Pol
             </paper-card>
         </appsco-dropdown>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-page-config-dropdown'; }
+    static get is() { return 'appsco-page-config-dropdown'; }
 
-  static get properties() {
-      return {
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          pageConfigApi: {
-              type: String
-          },
+            pageConfigApi: {
+                type: String
+            },
 
-          page: {
-              type: String,
-              value: ''
-          },
+            page: {
+                type: String,
+                value: ''
+            },
 
-          pageConfig: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            pageConfig: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          optionHideResourceSection: {
-              type: Boolean,
-              value: false
-          },
+            optionHideResourceSection: {
+                type: Boolean,
+                value: false
+            },
 
-          optionDisplayList: {
-              type: Boolean,
-              value: false
-          },
+            optionDisplayList: {
+                type: Boolean,
+                value: false
+            },
 
-          optionSort: {
-              type: Boolean,
-              value: false
-          },
+            optionSort: {
+                type: Boolean,
+                value: false
+            },
 
-          _displayKindList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {value: 'list', name: 'List'},
-                      {value: 'grid', name: 'Grid'}
-                  ];
-              }
-          },
+            _displayKindList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {value: 'list', name: 'List'},
+                        {value: 'grid', name: 'Grid'}
+                    ];
+                }
+            },
 
-          _sortOptionList: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          value: 'created0',
-                          name: 'Newest to oldest',
-                          sortField: 'created',
-                          sortAscending: false
-                      },
-                      {
-                          value: 'created1',
-                          name: 'Oldest to newest',
-                          sortField: 'created',
-                          sortAscending: true
-                      },
-                      {
-                          value: 'title1',
-                          name: 'A to Z',
-                          sortField: 'title',
-                          sortAscending: true
-                      },
-                      {
-                          value: 'title0',
-                          name: 'Z to A',
-                          sortField: 'title',
-                          sortAscending: false
-                      }
-                  ];
-              }
-          },
+            _sortOptionList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            value: 'created0',
+                            name: 'Newest to oldest',
+                            sortField: 'created',
+                            sortAscending: false
+                        },
+                        {
+                            value: 'created1',
+                            name: 'Oldest to newest',
+                            sortField: 'created',
+                            sortAscending: true
+                        },
+                        {
+                            value: 'title1',
+                            name: 'A to Z',
+                            sortField: 'title',
+                            sortAscending: true
+                        },
+                        {
+                            value: 'title0',
+                            name: 'Z to A',
+                            sortField: 'title',
+                            sortAscending: false
+                        }
+                    ];
+                }
+            },
 
-          /**
-           * DOM element which triggers the dropdown.
-           */
-          _triggerDropdown: {
-              type: Object,
-              notify: true
-          },
+            /**
+             * DOM element which triggers the dropdown.
+             */
+            _triggerDropdown: {
+                type: Object,
+                notify: true
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _hideResourceSection: {
-              type: Boolean,
-              computed: '_computeHideResourceSection(pageConfig, page)'
-          },
+            _hideResourceSection: {
+                type: Boolean,
+                computed: '_computeHideResourceSection(pageConfig, page)'
+            },
 
-          _displayKind: {
-              type: Boolean,
-              computed: '_computeDisplayKind(pageConfig, page)'
-          },
+            _displayKind: {
+                type: Boolean,
+                computed: '_computeDisplayKind(pageConfig, page)'
+            },
 
-          _sortOption: {
-              type: String,
-              computed: '_computeSortOption(pageConfig, page)'
-          }
-      };
-  }
+            _sortOption: {
+                type: String,
+                computed: '_computeSortOption(pageConfig, page)'
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._triggerDropdown = this.shadowRoot.getElementById('dropdownActions');
-  }
+        this._triggerDropdown = this.shadowRoot.getElementById('dropdownActions');
+    }
 
-  toggle(target) {
-      this._triggerDropdown = target;
-      this.$.pageSettingsDropdown.toggle();
-  }
+    toggle(target) {
+        this._triggerDropdown = target;
+        this.$.pageSettingsDropdown.toggle();
+    }
 
-  _computeHideResourceSection(pageConfig, page) {
-      return pageConfig[page] ? !!pageConfig[page].hide_resource_section : false;
-  }
+    _computeHideResourceSection(pageConfig, page) {
+        return pageConfig[page] ? !!pageConfig[page].hide_resource_section : false;
+    }
 
-  _computeDisplayKind(pageConfig, page) {
-      return pageConfig[page] ? pageConfig[page].display_style : 'list';
-  }
+    _computeDisplayKind(pageConfig, page) {
+        return pageConfig[page] ? pageConfig[page].display_style : 'list';
+    }
 
-  _computeSortOption(pageConfig, page) {
-      return pageConfig[page] ?
-          (pageConfig[page].sort_field + (pageConfig[page].sort_ascending ? 1 : 0)) :
-          (this._sortOptionList ? this._sortOptionList[0].value : '');
-  }
+    _computeSortOption(pageConfig, page) {
+        return pageConfig[page] ?
+            (pageConfig[page].sort_field + (pageConfig[page].sort_ascending ? 1 : 0)) :
+            (this._sortOptionList ? this._sortOptionList[0].value : '');
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _saveChanges(settings) {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this.pageConfigApi,
-              method: 'PUT',
-              handleAs: 'json',
-              headers: this._headers
-          };
-      let body = 'page_config[page]=' + encodeURIComponent(this.page);
+    _saveChanges(settings) {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this.pageConfigApi,
+                method: 'PUT',
+                handleAs: 'json',
+                headers: this._headers
+            };
+        let body = 'page_config[page]=' + encodeURIComponent(this.page);
 
-      for (const key in settings) {
-          body += ('&page_config[' + key +']=' +
-          (('boolean' === typeof settings[key]) ?
-              (settings[key] ? 1 : 0) :
-              encodeURIComponent(settings[key])));
-      }
+        for (const key in settings) {
+            body += ('&page_config[' + key +']=' +
+                (('boolean' === typeof settings[key]) ?
+                    (settings[key] ? 1 : 0) :
+                    encodeURIComponent(settings[key])));
+        }
 
-      options.body = body;
+        options.body = body;
 
-      request.send(options).then(function(request) {
-          if (200 === request.status) {
-              const pageConfig = request.response;
+        request.send(options).then(function(request) {
+            if (200 === request.status) {
+                const pageConfig = request.response;
 
-              this.set('pageConfig', pageConfig);
-              this.dispatchEvent(new CustomEvent('page-settings-changed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      page: this.page,
-                      pageConfig: pageConfig
-                  }
-              }));
+                this.set('pageConfig', pageConfig);
+                this.dispatchEvent(new CustomEvent('page-settings-changed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        page: this.page,
+                        pageConfig: pageConfig
+                    }
+                }));
 
-              this._hideLoader();
-          }
-      }.bind(this), function() {
-          this.dispatchEvent(new CustomEvent('notify-about-error', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  message: this.apiErrors.getError(request.response.code)
-              }
-          }));
+                this._hideLoader();
+            }
+        }.bind(this), function() {
+            this.dispatchEvent(new CustomEvent('notify-about-error', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    message: this.apiErrors.getError(request.response.code)
+                }
+            }));
 
-         this._hideLoader();
-      }.bind(this));
-  }
+            this._hideLoader();
+        }.bind(this));
+    }
 
-  _onSaveChanges() {
-      const settings = {};
+    _onSaveChanges() {
+        const settings = {};
 
-      this._showLoader();
+        this._showLoader();
 
-      setTimeout(function() {
-          dom(this.root).querySelectorAll('[data-field]').forEach(function(field) {
-              if ('choice' === field.getAttribute('data-field') && field.selectedItem) {
-                  settings[field.name] = field.selectedItem.value;
-              }
-              else if ('sort' === field.getAttribute('data-field') && field.selectedItem) {
-                  settings['sort_field'] = field.selectedItem.sortField;
-                  settings['sort_ascending'] = field.selectedItem.sortAscending;
-              }
-              else if ('undefined' !== typeof field.checked) {
-                  settings[field.name] = field.checked;
-              }
-              else if (field.value) {
-                  settings[field.name] = field.value;
-              }
-          }.bind(this));
-          this._saveChanges(settings);
-      }.bind(this), 30);
-  }
+        setTimeout(function() {
+            dom(this.root).querySelectorAll('[data-field]').forEach(function(field) {
+                if ('choice' === field.getAttribute('data-field') && field.selectedItem) {
+                    settings[field.name] = field.selectedItem.value;
+                }
+                else if ('sort' === field.getAttribute('data-field') && field.selectedItem) {
+                    settings['sort_field'] = field.selectedItem.sortField;
+                    settings['sort_ascending'] = field.selectedItem.sortAscending;
+                }
+                else if ('undefined' !== typeof field.checked) {
+                    settings[field.name] = field.checked;
+                }
+                else if (field.value) {
+                    settings[field.name] = field.value;
+                }
+            }.bind(this));
+            this._saveChanges(settings);
+        }.bind(this), 30);
+    }
 }
 window.customElements.define(AppscoPageConfigDropdown.is, AppscoPageConfigDropdown);

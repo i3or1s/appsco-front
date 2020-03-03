@@ -16,9 +16,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddContact extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -129,143 +130,143 @@ class AppscoAddContact extends mixinBehaviors([Appsco.HeadersMixin], PolymerElem
 
         <iron-a11y-keys keys="enter" on-keys-pressed="_onEnter"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-add-contact'; }
+    static get is() { return 'appsco-add-contact'; }
 
-  static get properties() {
-      return {
-          addContactApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            addContactApi: {
+                type: String
+            },
 
-          addInvitationApi: {
-              type: String
-          },
+            addInvitationApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogOpened() {
-      this.$.firstName.focus();
-  }
+    _onDialogOpened() {
+        this.$.firstName.focus();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this.$.form.reset();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this.$.form.reset();
+    }
 
-  _onEnter() {
-      this._onAddAction();
-  }
+    _onEnter() {
+        this._onAddAction();
+    }
 
-  _onAddAction() {
-      const form = this.$.form;
+    _onAddAction() {
+        const form = this.$.form;
 
-      if (form.validate()) {
-          this._showLoader();
-          form.submit();
-      }
-  }
+        if (form.validate()) {
+            this._showLoader();
+            form.submit();
+        }
+    }
 
-  _onFormError(event) {
-      const code = event.detail.request.response.code;
+    _onFormError(event) {
+        const code = event.detail.request.response.code;
 
-      if (1499245276 == code) {
-          this._createInvitation(event.target);
-          return false;
-      }
+        if (1499245276 == code) {
+            this._createInvitation(event.target);
+            return false;
+        }
 
-      this._showError(this.apiErrors.getError(code));
-      this._hideLoader();
-  }
+        this._showError(this.apiErrors.getError(code));
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {
-      const response = event.detail.response;
+    _onFormResponse(event) {
+        const response = event.detail.response;
 
-      if (200 === event.detail.status && response) {
-          this.$.dialog.close();
+        if (200 === event.detail.status && response) {
+            this.$.dialog.close();
 
-          this.dispatchEvent(new CustomEvent('contact-created', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  contact: response
-              }
-          }));
-      }
-  }
+            this.dispatchEvent(new CustomEvent('contact-created', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    contact: response
+                }
+            }));
+        }
+    }
 
-  _createInvitation(form) {
-      const formData = form.serializeForm(),
-          request = document.createElement('iron-request'),
-          options = {
-              url: this.addInvitationApi,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _createInvitation(form) {
+        const formData = form.serializeForm(),
+            request = document.createElement('iron-request'),
+            options = {
+                url: this.addInvitationApi,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      let body = 'invitation[type]=contact';
+        let body = 'invitation[type]=contact';
 
-      for (const key in formData) {
-          body += '&' + key.replace('contact', 'invitation') + '=' + encodeURIComponent(formData[key]);
-      }
+        for (const key in formData) {
+            body += '&' + key.replace('contact', 'invitation') + '=' + encodeURIComponent(formData[key]);
+        }
 
-      options.body = body;
+        options.body = body;
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.$.dialog.close();
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.$.dialog.close();
 
-              this.dispatchEvent(new CustomEvent('invitation-created', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      invitation: request.response
-                  }
-              }));
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+                this.dispatchEvent(new CustomEvent('invitation-created', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        invitation: request.response
+                    }
+                }));
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoAddContact.is, AppscoAddContact);

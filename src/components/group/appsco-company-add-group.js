@@ -14,9 +14,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyAddGroup extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -77,120 +78,120 @@ class AppscoCompanyAddGroup extends mixinBehaviors([Appsco.HeadersMixin], Polyme
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-add-group'; }
+    static get is() { return 'appsco-company-add-group'; }
 
-  static get properties() {
-      return {
-          companyGroupsApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            companyGroupsApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          }
-      };
-  }
+            _target: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this.$.form;
-  }
+        this._target = this.$.form;
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogOpened() {
-      this.$.groupName.focus();
-  }
+    _onDialogOpened() {
+        this.$.groupName.focus();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this._target.reset();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this._target.reset();
+    }
 
-  /**
-   * Submits form on ENTER key using iron-a11y-keys component.
-   *
-   * @private
-   */
-  _onEnter() {
-      this._submitForm();
-  }
+    /**
+     * Submits form on ENTER key using iron-a11y-keys component.
+     *
+     * @private
+     */
+    _onEnter() {
+        this._submitForm();
+    }
 
-  _submitForm() {
-      this._hideError();
+    _submitForm() {
+        this._hideError();
 
-      if (this._target.validate()) {
-          this._showLoader();
-          this._target.submit();
-      }
-  }
+        if (this._target.validate()) {
+            this._showLoader();
+            this._target.submit();
+        }
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  /**
-   * Called after group has been added.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onFormResponse(event) {
-      this.close();
-      this.dispatchEvent(new CustomEvent('group-added', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              group: event.detail.response
-          }
-      }));
-  }
+    /**
+     * Called after group has been added.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onFormResponse(event) {
+        this.close();
+        this.dispatchEvent(new CustomEvent('group-added', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                group: event.detail.response
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoCompanyAddGroup.is, AppscoCompanyAddGroup);

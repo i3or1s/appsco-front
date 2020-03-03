@@ -1,23 +1,4 @@
-/**
-`appsco-account-remove-orgunit`
-Shows dialog screen with confirmation for account removal from organization unit.
-
-    <appsco-account-remove-orgunit account="[]" orgunit="{}">
-    </appsco-account-remove-orgunit>
-
-### Styling
-
-`<appsco-account-remove-orgunit>` provides the following custom properties and mixins for styling:
-
-@demo demo/company/appsco-account-remove-orgunit.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -30,9 +11,10 @@ import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountRemoveOrgunit extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -80,83 +62,83 @@ class AppscoAccountRemoveOrgunit extends mixinBehaviors([Appsco.HeadersMixin], P
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-remove-orgunit'; }
+    static get is() { return 'appsco-account-remove-orgunit'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Array,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Array,
+                value: function () {
+                    return {};
+                }
+            },
 
-          orgunit: {
-              type: Array,
-              value: function () {
-                  return {};
-              }
-          },
+            orgunit: {
+                type: Array,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.open();
-  }
+    toggle() {
+        this.$.dialog.open();
+    }
 
-  setOrgUnit(orgunit) {
-      this.orgunit = orgunit;
-  }
+    setOrgUnit(orgunit) {
+        this.orgunit = orgunit;
+    }
 
-  setAccount(account) {
-      this.account = account;
-  }
+    setAccount(account) {
+        this.account = account;
+    }
 
-  _onDialogClosed() {
-      this._errorMessage = '';
-      this._loader = false;
-  }
+    _onDialogClosed() {
+        this._errorMessage = '';
+        this._loader = false;
+    }
 
-  _remove() {
-      const appRequest = document.createElement('iron-request'),
-          options = {
-              url: this.orgunit.meta.remove,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _remove() {
+        const appRequest = document.createElement('iron-request'),
+            options = {
+                url: this.orgunit.meta.remove,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._loader = true;
+        this._loader = true;
 
-      appRequest.send(options).then(function(request) {
-          this.$.dialog.close();
+        appRequest.send(options).then(function(request) {
+            this.$.dialog.close();
 
-          this.dispatchEvent(new CustomEvent('account-removed-from-orgunit', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  account: request.response,
-                  orgunit: this.orgunit
-              }
-          }));
-      }.bind(this), function() {
-          if (appRequest.status === 404) {
-              this._errorMessage = 'This account doesn\'t belong to your company.';
-          }
+            this.dispatchEvent(new CustomEvent('account-removed-from-orgunit', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    account: request.response,
+                    orgunit: this.orgunit
+                }
+            }));
+        }.bind(this), function() {
+            if (appRequest.status === 404) {
+                this._errorMessage = 'This account doesn\'t belong to your company.';
+            }
 
-          this._loader = false;
-      }.bind(this));
-  }
+            this._loader = false;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoAccountRemoveOrgunit.is, AppscoAccountRemoveOrgunit);

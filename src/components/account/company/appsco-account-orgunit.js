@@ -1,19 +1,4 @@
-/**
-`appsco-account-orgunit`
-Provides functionality of adding accounts to organization units.
-
-    <appsco-account-orgunit accounts="[]">
-    </appsco-account-orgunit>
-
-@demo demo/company/appsco-account-orgunit.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/paper-styles/shadow.js';
@@ -33,9 +18,10 @@ import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountOrgunit extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -122,133 +108,133 @@ class AppscoAccountOrgunit extends mixinBehaviors([Appsco.HeadersMixin], Polymer
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-orgunit'; }
+    static get is() { return 'appsco-account-orgunit'; }
 
-  static get properties() {
-      return {
-          companyOrgunitsApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            companyOrgunitsApi: {
+                type: String
+            },
 
-          accounts: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            accounts: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _orgunits: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _orgunits: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _message: {
-              type: String
-          },
+            _message: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  setAccounts(accounts) {
-      this.accounts = accounts;
-  }
+    setAccounts(accounts) {
+        this.accounts = accounts;
+    }
 
-  _onDialogOpened() {
-      this.$.orgunitsAjax.generateRequest();
-  }
+    _onDialogOpened() {
+        this.$.orgunitsAjax.generateRequest();
+    }
 
-  _onDialogClosed() {
-      this.$.orgunits.select(0);
-      this._loader = false;
-      this._error = '';
-      this._message = '';
-  }
+    _onDialogClosed() {
+        this.$.orgunits.select(0);
+        this._loader = false;
+        this._error = '';
+        this._message = '';
+    }
 
-  _onOrgunitsDropdownClosed(event) {
-      event.stopPropagation();
-  }
+    _onOrgunitsDropdownClosed(event) {
+        event.stopPropagation();
+    }
 
-  _handleResponse(event) {
-      const response = event.detail.response;
+    _handleResponse(event) {
+        const response = event.detail.response;
 
-      this.set('_orgunits', []);
+        this.set('_orgunits', []);
 
-      if (response && response.orgunits.length > 0) {
-          this._message = '';
+        if (response && response.orgunits.length > 0) {
+            this._message = '';
 
-          response.orgunits.forEach(function(item, index) {
-              this.push('_orgunits', item);
-          }.bind(this));
-      }
-      else {
-          this._message = 'There are no organization units.';
-      }
-  }
+            response.orgunits.forEach(function(item, index) {
+                this.push('_orgunits', item);
+            }.bind(this));
+        }
+        else {
+            this._message = 'There are no organization units.';
+        }
+    }
 
-  _handleError() {
-      this._message = 'We couldn\'t load organization units at the moment. Please try again in a minute.';
-  }
+    _handleError() {
+        this._message = 'We couldn\'t load organization units at the moment. Please try again in a minute.';
+    }
 
-  _onAddAction() {
-      const orgunit = this.$.orgunits.selectedItem;
+    _onAddAction() {
+        const orgunit = this.$.orgunits.selectedItem;
 
-      this._loader = true;
+        this._loader = true;
 
-      if (!orgunit) {
-          this._message = 'Please choose organization unit to add accounts to.';
-          this._loader = false;
-          return false;
-      }
+        if (!orgunit) {
+            this._message = 'Please choose organization unit to add accounts to.';
+            this._loader = false;
+            return false;
+        }
 
-      let accounts = this.accounts,
-          length = accounts.length - 1,
-          appRequest = document.createElement('iron-request'),
-          options = {
-              url: orgunit.value + '/roles',
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          },
-          body = '';
+        let accounts = this.accounts,
+            length = accounts.length - 1,
+            appRequest = document.createElement('iron-request'),
+            options = {
+                url: orgunit.value + '/roles',
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            },
+            body = '';
 
-      this._message = '';
+        this._message = '';
 
-      for (let i = 0; i <= length; i++) {
-          const next = (i === length) ? '' : '&';
-          body += 'roles[]=' + encodeURIComponent(accounts[i].self) + next;
-      }
+        for (let i = 0; i <= length; i++) {
+            const next = (i === length) ? '' : '&';
+            body += 'roles[]=' + encodeURIComponent(accounts[i].self) + next;
+        }
 
-      options.body = body;
+        options.body = body;
 
-      appRequest.send(options).then(function(request) {
-          this.$.dialog.close();
+        appRequest.send(options).then(function(request) {
+            this.$.dialog.close();
 
-          this.dispatchEvent(new CustomEvent('added-to-orgunit', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  accounts: request.response.company_roles,
-                  orgunit: {
-                      name: orgunit.name,
-                      self: orgunit.value
-                  }
-              }
-          }));
+            this.dispatchEvent(new CustomEvent('added-to-orgunit', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    accounts: request.response.company_roles,
+                    orgunit: {
+                        name: orgunit.name,
+                        self: orgunit.value
+                    }
+                }
+            }));
 
-          this._loader = false;
-      }.bind(this));
-  }
+            this._loader = false;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoAccountOrgunit.is, AppscoAccountOrgunit);

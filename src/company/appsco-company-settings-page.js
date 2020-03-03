@@ -10,9 +10,10 @@ import './appsco-company-settings.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanySettingsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -42,89 +43,89 @@ class AppscoCompanySettingsPage extends mixinBehaviors([NeonSharedElementAnimata
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-settings-page'; }
+    static get is() { return 'appsco-company-settings-page'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String
-          },
+            authorizationToken: {
+                type: String
+            },
 
-          settingsApi: {
-              type: String
-          },
+            settingsApi: {
+                type: String
+            },
 
-          saveIpWhiteListApi: {
-              type: String
-          },
+            saveIpWhiteListApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-      this.sharedElements = {
-          'hero': this.$.companySettingsSettings
-      };
-  }
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+        this.sharedElements = {
+            'hero': this.$.companySettingsSettings
+        };
+    }
 
-  _onBack() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onBack() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  setupPage() {
-      this.$.appscoCompanySettings.setup();
-  }
+    setupPage() {
+        this.$.appscoCompanySettings.setup();
+    }
 
-  resetPage() {
-      this.$.appscoCompanySettings.reset();
-  }
+    resetPage() {
+        this.$.appscoCompanySettings.reset();
+    }
 }
 window.customElements.define(AppscoCompanySettingsPage.is, AppscoCompanySettingsPage);

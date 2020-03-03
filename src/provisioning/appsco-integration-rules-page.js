@@ -10,9 +10,10 @@ import '../components/integration/appsco-integration-rules.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationRulesPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -65,138 +66,138 @@ class AppscoIntegrationRulesPage extends mixinBehaviors([NeonSharedElementAnimat
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-rules-page'; }
+    static get is() { return 'appsco-integration-rules-page'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _integrationRulesApi: {
-              type: String,
-              computed: '_computeIntegrationRulesApi(integration)'
-          },
+            _integrationRulesApi: {
+                type: String,
+                computed: '_computeIntegrationRulesApi(integration)'
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  addIntegrationRule(rule) {
-      this.$.appscoIntegrationRules.addItems([rule]);
-  }
+    addIntegrationRule(rule) {
+        this.$.appscoIntegrationRules.addItems([rule]);
+    }
 
-  modifyIntegrationRule(rule) {
-      this.$.appscoIntegrationRules.modifyItems([rule]);
-  }
+    modifyIntegrationRule(rule) {
+        this.$.appscoIntegrationRules.modifyItems([rule]);
+    }
 
-  removeIntegrationRule(rule) {
-      this.$.appscoIntegrationRules.removeItems([rule]);
-  }
+    removeIntegrationRule(rule) {
+        this.$.appscoIntegrationRules.removeItems([rule]);
+    }
 
-  _computeIntegrationRulesApi(integration) {
-      return integration.meta ? integration.meta.recipes : null;
-  }
+    _computeIntegrationRulesApi(integration) {
+        return integration.meta ? integration.meta.recipes : null;
+    }
 
-  _onAddAction() {
-      this.dispatchEvent(new CustomEvent('add-integration-rule', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: this.integration
-          }
-      }));
-  }
+    _onAddAction() {
+        this.dispatchEvent(new CustomEvent('add-integration-rule', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: this.integration
+            }
+        }));
+    }
 
-  _onEditIntegrationRuleAction(event) {
-      this.dispatchEvent(new CustomEvent('edit-integration-rule', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: this.integration,
-              rule: event.detail.item
-          }
-      }));
-  }
+    _onEditIntegrationRuleAction(event) {
+        this.dispatchEvent(new CustomEvent('edit-integration-rule', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: this.integration,
+                rule: event.detail.item
+            }
+        }));
+    }
 
-  _onRunIntegrationRuleAction(event) {
-      this.dispatchEvent(new CustomEvent('run-integration-rule', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: this.integration,
-              rule: event.detail.item
-          }
-      }));
-  }
+    _onRunIntegrationRuleAction(event) {
+        this.dispatchEvent(new CustomEvent('run-integration-rule', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: this.integration,
+                rule: event.detail.item
+            }
+        }));
+    }
 
-  _onRemoveIntegrationRuleAction(event) {
-      this.dispatchEvent(new CustomEvent('remove-integration-rule', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              integration: this.integration,
-              rule: event.detail.item
-          }
-      }));
-  }
+    _onRemoveIntegrationRuleAction(event) {
+        this.dispatchEvent(new CustomEvent('remove-integration-rule', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                integration: this.integration,
+                rule: event.detail.item
+            }
+        }));
+    }
 
-  _onClosePageAction() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onClosePageAction() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoIntegrationRulesPage.is, AppscoIntegrationRulesPage);

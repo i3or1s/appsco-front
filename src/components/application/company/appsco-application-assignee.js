@@ -1,26 +1,4 @@
-/**
-`appsco-application-assignee`
-Is used to represent assignee for application.
-
-Example:
-
-    <body>
-      <appsco-application-assignee assignee="{}" preview>
-     </appsco-application-assignee>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-application-assignee` | Mixin applied to root element | `{}`
-
-@demo demo/company/appsco-application-assignee.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/neon-animation/animations/fade-in-animation.js';
@@ -34,9 +12,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationAssignee extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: none;
@@ -165,128 +144,128 @@ class AppscoApplicationAssignee extends mixinBehaviors([NeonAnimationRunnerBehav
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-assignee'; }
+    static get is() { return 'appsco-application-assignee'; }
 
-  static get properties() {
-      return {
-          /**
-           * Application which is assigned to account.
-           */
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            /**
+             * Application which is assigned to account.
+             */
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          infoSection: {
-              type: Boolean,
-              value: function () {
-                  return true;
-              }
-          },
+            infoSection: {
+                type: Boolean,
+                value: function () {
+                    return true;
+                }
+            },
 
-          /**
-           * Assignee to display.
-           *
-           * @type {Object}
-           */
-          assignee: {
-              type: Object
-          },
+            /**
+             * Assignee to display.
+             *
+             * @type {Object}
+             */
+            assignee: {
+                type: Object
+            },
 
-          preview: {
-              type: Boolean,
-              value: false
-          },
+            preview: {
+                type: Boolean,
+                value: false
+            },
 
-          _individualClaims: {
-              type: Boolean,
-              computed: '_computeIndividualClaims(application)'
-          },
+            _individualClaims: {
+                type: Boolean,
+                computed: '_computeIndividualClaims(application)'
+            },
 
-          _securityScorePermission: {
-              type: Boolean,
-              computed: '_computeSecurityScorePermission(application, infoSection)'
-          },
+            _securityScorePermission: {
+                type: Boolean,
+                computed: '_computeSecurityScorePermission(application, infoSection)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'inline-block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'inline-block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _computeIndividualClaims(application) {
-      return application.claim_type === 'individual';
-  }
+    _computeIndividualClaims(application) {
+        return application.claim_type === 'individual';
+    }
 
-  _computeSecurityScorePermission(application, infoSection) {
-      return (-1 < ['unpw', 'item'].indexOf(application.auth_type)) && infoSection;
-  }
+    _computeSecurityScorePermission(application, infoSection) {
+        return (-1 < ['unpw', 'item'].indexOf(application.auth_type)) && infoSection;
+    }
 
-  _onAssigneeAction() {
-      this.dispatchEvent(new CustomEvent('assignee', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              assignee: this.assignee
-          }
-      }));
-  }
+    _onAssigneeAction() {
+        this.dispatchEvent(new CustomEvent('assignee', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                assignee: this.assignee
+            }
+        }));
+    }
 
-  _onClaimsAction(event) {
-      event.stopPropagation();
+    _onClaimsAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('assignee-claims', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              assignee: this.assignee
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('assignee-claims', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                assignee: this.assignee
+            }
+        }));
+    }
 
-  _onRevokeAction(event) {
-      event.stopPropagation();
+    _onRevokeAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('revoke-assignee', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              assignee: this.assignee
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('revoke-assignee', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                assignee: this.assignee
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoApplicationAssignee.is, AppscoApplicationAssignee);

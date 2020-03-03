@@ -1,30 +1,4 @@
-/*
-`appsco-company-certificates`
-Contains certificate list and Load More action.
-Domains are loaded inside component through iron-ajax.
-
-    <appsco-company-certificates company="{}">
-    </appsco-company-certificates>
-
-### Styling
-
-`<appsco-company-certificates>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-company-certificates` | Mixin for the root element | `{}`
-`--appsco-company-certificate-item` | Mixin for item style | `{}`
-`--certificates-container` | Mixin for the certificates container | `{}`
-`--certificates-progress-bar` | Mixin applied to paper-progress for certificate list | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
@@ -36,9 +10,10 @@ import './appsco-company-idp-settings-certificate-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyIdpSettingsCertificates extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -78,86 +53,86 @@ class AppscoCompanyIdpSettingsCertificates extends mixinBehaviors([NeonAnimation
 
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-idp-settings-certificates'; }
+    static get is() { return 'appsco-company-idp-settings-certificates'; }
 
-  static get properties() {
-      return {
-          certificates: {
-              type: Array,
-              value: function () {
-                  return []
-              }
-          },
+    static get properties() {
+        return {
+            certificates: {
+                type: Array,
+                value: function () {
+                    return []
+                }
+            },
 
-          _certificatesEmpty: {
-              type: Boolean,
-              computed: '_computeCertificatesEmpty(certificates)'
-          },
+            _certificatesEmpty: {
+                type: Boolean,
+                computed: '_computeCertificatesEmpty(certificates)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'slide-from-left-animation',
-              nodes: [],
-              nodeDelay: 50,
-              timing: {
-                  duration: 300
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'slide-from-left-animation',
+                nodes: [],
+                nodeDelay: 50,
+                timing: {
+                    duration: 300
+                }
+            }
+        };
+    }
 
-  _computeCertificatesEmpty(certificates) {
-      return !certificates || certificates.length === 0;
-  }
+    _computeCertificatesEmpty(certificates) {
+        return !certificates || certificates.length === 0;
+    }
 
-  addCertificate(certificate) {
-      if (!this.certificates) {
-          this.certificates = [];
-      }
-      this.certificates.push(certificate);
-      this.certificates = JSON.parse(JSON.stringify(this.certificates));
+    addCertificate(certificate) {
+        if (!this.certificates) {
+            this.certificates = [];
+        }
+        this.certificates.push(certificate);
+        this.certificates = JSON.parse(JSON.stringify(this.certificates));
 
-      this.dispatchEvent(new CustomEvent('idp-certificate-added', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              source: this
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('idp-certificate-added', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                source: this
+            }
+        }));
+    }
 
-  getCertificates() {
-      return this.certificates;
-  }
+    getCertificates() {
+        return this.certificates;
+    }
 
-  _onAddCertificateAction() {
-      this.dispatchEvent(new CustomEvent('idp-certificate-add', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              source: this
-          }
-      }));
-  }
+    _onAddCertificateAction() {
+        this.dispatchEvent(new CustomEvent('idp-certificate-add', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                source: this
+            }
+        }));
+    }
 
-  _removeCert(event) {
-      const index = this.certificates.indexOf(event.detail.certificate);
-      if (index > -1) {
-          this.certificates.splice(index, 1);
-          this.set('certificates', JSON.parse(JSON.stringify(this.certificates)));
-      }
-  }
+    _removeCert(event) {
+        const index = this.certificates.indexOf(event.detail.certificate);
+        if (index > -1) {
+            this.certificates.splice(index, 1);
+            this.set('certificates', JSON.parse(JSON.stringify(this.certificates)));
+        }
+    }
 }
 window.customElements.define(AppscoCompanyIdpSettingsCertificates.is, AppscoCompanyIdpSettingsCertificates);

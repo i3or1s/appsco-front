@@ -1,19 +1,4 @@
-/**
-`appsco-application-assignee-revoke`
-Shows dialog screen with application assignees and confirmation for assignee revoking.
-
-    <appsco-application-assignee-revoke assignee="{}">
-    </appsco-application-assignee-revoke>
-
-@demo demo/company/appsco-application-assignee-revoke.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -24,9 +9,10 @@ import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationAssigneeRevoke extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -63,62 +49,62 @@ class AppscoApplicationAssigneeRevoke extends mixinBehaviors([Appsco.HeadersMixi
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-assignee-revoke'; }
+    static get is() { return 'appsco-application-assignee-revoke'; }
 
-  static get properties() {
-      return {
-          /**
-           * Assignee to revoke access for.
-           */
-          assignee: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            /**
+             * Assignee to revoke access for.
+             */
+            assignee: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  setAssignee(assignee) {
-      this.set('assignee', assignee);
-  }
+    setAssignee(assignee) {
+        this.set('assignee', assignee);
+    }
 
-  _onRevokeAccessAction() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this.assignee.meta.revoke,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onRevokeAccessAction() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this.assignee.meta.revoke,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._loader = true;
+        this._loader = true;
 
-      request.send(options).then(function() {
-          this._loader = false;
+        request.send(options).then(function() {
+            this._loader = false;
 
-          this.dispatchEvent(new CustomEvent('access-revoked', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  assignee: this.assignee,
-                  application: request.response
-              }
-          }));
+            this.dispatchEvent(new CustomEvent('access-revoked', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    assignee: this.assignee,
+                    application: request.response
+                }
+            }));
 
-          this.$.dialog.close();
-      }.bind(this));
-  }
+            this.$.dialog.close();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoApplicationAssigneeRevoke.is, AppscoApplicationAssigneeRevoke);

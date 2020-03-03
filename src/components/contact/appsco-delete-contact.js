@@ -1,20 +1,4 @@
-/*
-`appsco-delete-contact`
-Shows dialog screen with confirmation for contact deleting.
-
-    <appsco-delete-contact contact="{}"
-                           authorization-token=""
-                           api-errors="{}">
-    </appsco-delete-contact>
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -26,9 +10,10 @@ import '../components/appsco-form-error.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDeleteContact extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -76,113 +61,113 @@ class AppscoDeleteContact extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-delete-contact'; }
+    static get is() { return 'appsco-delete-contact'; }
 
-  static get properties() {
-      return {
-          /**
-           * Contact to delete.
-           */
-          contact: {
-              type: Array,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            /**
+             * Contact to delete.
+             */
+            contact: {
+                type: Array,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _deleteContactApi: {
-              type: String,
-              computed: '_computeDeleteContactApi(contact)'
-          },
+            _deleteContactApi: {
+                type: String,
+                computed: '_computeDeleteContactApi(contact)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  setContact(contact) {
-      this.contact = contact;
-  }
+    setContact(contact) {
+        this.contact = contact;
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _computeDeleteContactApi(contact) {
-      return contact.self ? contact.self : null;
-  }
+    _computeDeleteContactApi(contact) {
+        return contact.self ? contact.self : null;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogClosed() {
-      this._hideError();
-      this._hideLoader();
-  }
+    _onDialogClosed() {
+        this._hideError();
+        this._hideLoader();
+    }
 
-  _onDeleteAction() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._deleteContactApi,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onDeleteAction() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._deleteContactApi,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._showLoader();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          this.close();
+        request.send(options).then(function() {
+            this.close();
 
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('contact-deleted', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      contact: request.response
-                  }
-              }));
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('contact-deleted', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        contact: request.response
+                    }
+                }));
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoDeleteContact.is, AppscoDeleteContact);

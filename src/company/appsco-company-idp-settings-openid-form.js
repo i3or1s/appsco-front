@@ -5,12 +5,13 @@ import { AppscoCompanyIdpSettingsFormBehavior } from './appsco-company-idp-setti
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyIdpSettingsOpenidForm extends mixinBehaviors([
     NeonAnimatableBehavior,
     AppscoCompanyIdpSettingsFormBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
         </style>
 
@@ -51,95 +52,95 @@ class AppscoCompanyIdpSettingsOpenidForm extends mixinBehaviors([
             </paper-input>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-idp-settings-openid-form'; }
+    static get is() { return 'appsco-company-idp-settings-openid-form'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onIntegrationChanged'
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onIntegrationChanged'
+            },
 
-          _subdomain: {
-              type: String,
-              value: ''
-          },
+            _subdomain: {
+                type: String,
+                value: ''
+            },
 
-          _needsSubDomain: {
-              type: Boolean,
-              computed: '_computeNeedsSubDomain(integration)'
-          },
+            _needsSubDomain: {
+                type: Boolean,
+                computed: '_computeNeedsSubDomain(integration)'
+            },
 
-          _needsClientId: {
-              type: Boolean,
-              computed: '_computeNeedsClientId(integration)'
-          },
+            _needsClientId: {
+                type: Boolean,
+                computed: '_computeNeedsClientId(integration)'
+            },
 
-          _needsClientSecret: {
-              type: Boolean,
-              computed: '_computeNeedsClientSecret(integration)'
-          },
+            _needsClientSecret: {
+                type: Boolean,
+                computed: '_computeNeedsClientSecret(integration)'
+            },
 
-          _needsAuthUrl: {
-              type: Boolean,
-              computed: '_computeNeedsAuthUrl(integration)'
-          },
+            _needsAuthUrl: {
+                type: Boolean,
+                computed: '_computeNeedsAuthUrl(integration)'
+            },
 
-          _needsUserInfoUrl: {
-              type: Boolean,
-              computed: '_computeNeedsUserInfoUrl(integration)'
-          },
+            _needsUserInfoUrl: {
+                type: Boolean,
+                computed: '_computeNeedsUserInfoUrl(integration)'
+            },
 
-          _needsTokenUrl: {
-              type: Boolean,
-              computed: '_computeNeedsTokenUrl(integration)'
-          },
+            _needsTokenUrl: {
+                type: Boolean,
+                computed: '_computeNeedsTokenUrl(integration)'
+            },
 
-          _needsScope: {
-              type: Boolean,
-              computed: '_computeNeedsScope(integration)'
-          }
-      };
-  }
+            _needsScope: {
+                type: Boolean,
+                computed: '_computeNeedsScope(integration)'
+            }
+        };
+    }
 
-  _computeNeedsSubDomain(integration) {
-      return integration.id === 'bamboo_hr';
-  }
+    _computeNeedsSubDomain(integration) {
+        return integration.id === 'bamboo_hr';
+    }
 
-  _computeNeedsClientId(integration) {
-      return integration.id === 'generic_open_id';
-  }
+    _computeNeedsClientId(integration) {
+        return integration.id === 'generic_open_id';
+    }
 
-  _computeNeedsClientSecret(integration) {
-      return integration.id === 'generic_open_id';
-  }
+    _computeNeedsClientSecret(integration) {
+        return integration.id === 'generic_open_id';
+    }
 
-  _computeNeedsAuthUrl(integration) {
-      return integration.id === 'generic_open_id';
-  }
+    _computeNeedsAuthUrl(integration) {
+        return integration.id === 'generic_open_id';
+    }
 
-  _computeNeedsUserInfoUrl(integration) {
-      return integration.id === 'generic_open_id';
-  }
+    _computeNeedsUserInfoUrl(integration) {
+        return integration.id === 'generic_open_id';
+    }
 
-  _computeNeedsTokenUrl(integration) {
-      return integration.id === 'generic_open_id';
-  }
+    _computeNeedsTokenUrl(integration) {
+        return integration.id === 'generic_open_id';
+    }
 
-  _computeNeedsScope(integration) {
-      return integration.id === 'generic_open_id';
-  }
+    _computeNeedsScope(integration) {
+        return integration.id === 'generic_open_id';
+    }
 
-  _onIntegrationChanged(integration) {
-      this._subdomain = 'bamboo_hr' === integration.id ?
-          '.bamboohr.com' :
-          ''
-      ;
-  }
+    _onIntegrationChanged(integration) {
+        this._subdomain = 'bamboo_hr' === integration.id ?
+            '.bamboohr.com' :
+            ''
+        ;
+    }
 }
 window.customElements.define(AppscoCompanyIdpSettingsOpenidForm.is, AppscoCompanyIdpSettingsOpenidForm);

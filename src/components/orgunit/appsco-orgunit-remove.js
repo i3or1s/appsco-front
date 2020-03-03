@@ -1,27 +1,4 @@
-/**
-`appsco-orgunit-remove`
-Shows dialog screen with confirmation for removal of orgunit.
-
-    <appsco-orgunit-remove>
-    </appsco-orgunit-remove>
-
-### Styling
-
-`<appsco-orgunit-remove>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-orgunit-remove` | Mixin for the root element | `{}`
-
-@demo demo/appsco-orgunit-remove.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -33,9 +10,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOrgUnitRemove extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -76,65 +54,65 @@ class AppscoOrgUnitRemove extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-orgunit-remove'; }
+    static get is() { return 'appsco-orgunit-remove'; }
 
-  static get properties() {
-      return {
-          orgUnit: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            orgUnit: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String,
-              value: ''
-          }
-      };
-  }
+            _errorMessage: {
+                type: String,
+                value: ''
+            }
+        };
+    }
 
-  open() {
-      this.$.removeDialog.open();
-  }
+    open() {
+        this.$.removeDialog.open();
+    }
 
-  _onDialogClosed() {
-      this._errorMessage = '';
-      this._loader = false;
-  }
+    _onDialogClosed() {
+        this._errorMessage = '';
+        this._loader = false;
+    }
 
-  _remove() {
-      const appRequest = document.createElement('iron-request');
+    _remove() {
+        const appRequest = document.createElement('iron-request');
 
-      this._loader = true;
+        this._loader = true;
 
-      appRequest.send({
-          url: this.orgUnit.self,
-          method: "DELETE",
-          handleAs: 'json',
-          headers: this._headers
-      }).then(function() {
-          this.dispatchEvent(new CustomEvent('orgunit-removed', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  orgUnit: this.orgUnit
-              }
-          }));
+        appRequest.send({
+            url: this.orgUnit.self,
+            method: "DELETE",
+            handleAs: 'json',
+            headers: this._headers
+        }).then(function() {
+            this.dispatchEvent(new CustomEvent('orgunit-removed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    orgUnit: this.orgUnit
+                }
+            }));
 
-          this.$.removeDialog.close();
-      }.bind(this), function() {
-          this._loader = false;
-          this._errorMessage = 'It is not allowed to remove organization unit which have applications or accounts assigned to it.';
-      }.bind(this));
-  }
+            this.$.removeDialog.close();
+        }.bind(this), function() {
+            this._loader = false;
+            this._errorMessage = 'It is not allowed to remove organization unit which have applications or accounts assigned to it.';
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoOrgUnitRemove.is, AppscoOrgUnitRemove);

@@ -10,9 +10,10 @@ import './appsco-group-actions.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+
 class AppscoGroupsPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --layout-horizontal;
@@ -51,126 +52,126 @@ class AppscoGroupsPageActions extends mixinBehaviors([NeonAnimatableBehavior], P
 
         <appsco-page-global id="appscoPageGlobal" info=""></appsco-page-global>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-groups-page-actions'; }
+    static get is() { return 'appsco-groups-page-actions'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _searchActive: {
-              type: Boolean,
-              value: false
-          },
+            _searchActive: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mobileScreen, tabletScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mobileScreen, tabletScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 200,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 200,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  _updateScreen(mobile, tablet) {
-      this.updateStyles();
-  }
+    _updateScreen(mobile, tablet) {
+        this.updateStyles();
+    }
 
-  _showSearch() {
-      this.$.appscoGroupsActions.focusSearch();
+    _showSearch() {
+        this.$.appscoGroupsActions.focusSearch();
 
-      this.updateStyles({
-          '--input-search-max-width': '100%',
-          '--paper-input-search-container-tablet': 'width: 100%;'
-      });
-  }
+        this.updateStyles({
+            '--input-search-max-width': '100%',
+            '--paper-input-search-container-tablet': 'width: 100%;'
+        });
+    }
 
-  _closeSearch() {
-      this._searchActive = false;
+    _closeSearch() {
+        this._searchActive = false;
 
-      this.updateStyles({'--input-search-max-width': '22px'});
+        this.updateStyles({'--input-search-max-width': '22px'});
 
-      // Wait for animation to finish.
-      setTimeout(function() {
-          this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
-      }.bind(this), 200);
+        // Wait for animation to finish.
+        setTimeout(function() {
+            this.updateStyles({'--paper-input-search-container-tablet': 'width: auto'});
+        }.bind(this), 200);
 
-      this.updateStyles();
-  }
+        this.updateStyles();
+    }
 
-  _onSearchIcon() {
-      this._searchActive = !this._searchActive;
-      this._searchActive ? this._showSearch() : this._closeSearch();
-  }
+    _onSearchIcon() {
+        this._searchActive = !this._searchActive;
+        this._searchActive ? this._showSearch() : this._closeSearch();
+    }
 
-  showBulkActions() {
-      this.shadowRoot.getElementById('appscoGroupsActions').showBulkActions();
-  }
+    showBulkActions() {
+        this.shadowRoot.getElementById('appscoGroupsActions').showBulkActions();
+    }
 
-  hideBulkActions() {
-      this.shadowRoot.getElementById('appscoGroupsActions').hideBulkActions();
-  }
+    hideBulkActions() {
+        this.shadowRoot.getElementById('appscoGroupsActions').hideBulkActions();
+    }
 
-  showBulkSelectAll() {
-      this.shadowRoot.getElementById('appscoGroupsActions').showBulkSelectAll();
-  }
+    showBulkSelectAll() {
+        this.shadowRoot.getElementById('appscoGroupsActions').showBulkSelectAll();
+    }
 
-  hideBulkSelectAll() {
-      this.shadowRoot.getElementById('appscoGroupsActions').hideBulkSelectAll();
-  }
+    hideBulkSelectAll() {
+        this.shadowRoot.getElementById('appscoGroupsActions').hideBulkSelectAll();
+    }
 
-  resetPage() {
-      this.$.appscoGroupsActions.reset();
-  }
+    resetPage() {
+        this.$.appscoGroupsActions.reset();
+    }
 
-  resetPageActions() {
-      this.resetPage();
-  }
+    resetPageActions() {
+        this.resetPage();
+    }
 }
 window.customElements.define(AppscoGroupsPageActions.is, AppscoGroupsPageActions);

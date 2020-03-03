@@ -11,12 +11,13 @@ import '../components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoResourceListItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 --resource-image: {
@@ -52,8 +53,8 @@ class AppscoResourceListItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-resource-list-item'; }
+    static get is() { return 'appsco-resource-list-item'; }
 }
 window.customElements.define(AppscoResourceListItem.is, AppscoResourceListItem);

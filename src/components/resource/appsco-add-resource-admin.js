@@ -20,11 +20,11 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAddResourceAdmin extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
-        <style include="appsco-list-item-styles"></style>
-        <style>
+    static get template() {
+        return html`
+        <style include="appsco-list-item-styles">
             :host {
                 display: block;
                 position: relative;
@@ -213,427 +213,427 @@ class AppscoAddResourceAdmin extends mixinBehaviors([Appsco.HeadersMixin], Polym
             </div>
         </paper-dialog>
 `;
-  }
-
-  static get is() { return 'appsco-add-resource-admin'; }
-
-  static get properties() {
-      return {
-          getRolesApi: {
-              type: String
-          },
-
-          getContactsApi: {
-              type: String
-          },
-
-          resources: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _responseApplications: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _accountList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _accountListAll: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _message: {
-              type: String
-          },
-
-          _selectedAccounts: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _shareLoader: {
-              type: Boolean,
-              value: false
-          },
-
-          _rolesLoaded: {
-              type: Boolean,
-              value: false
-          },
-
-          _componentReady: {
-              type: Boolean,
-              value: false
-          },
-
-          _bulkSelect: {
-              type: Boolean,
-              value: false
-          },
-
-          _accountsCount: {
-              type: Number,
-              value: 0
-          },
-
-          _numberOfSelectedAccounts: {
-              type: Number,
-              value: 0
-          },
-
-          _filterTerm: {
-              type: String,
-              value: ''
-          }
-      };
-  }
-
-  static get observers() {
-      return [
-          '_setAccountList(_rolesLoaded)'
-      ];
-  }
-
-  toggle() {
-      this.$.dialog.toggle();
-  }
-
-  setResources(resources) {
-      this.resources = resources;
-  }
-
-  _showLoader() {
-      this._shareLoader = true;
-  }
-
-  _hideLoader() {
-      this._shareLoader = false;
-  }
-
-  _showError(message) {
-      this._errorMessage = message;
-  }
-
-  _hideError() {
-      this._errorMessage = '';
-  }
-
-  _showMessage(message) {
-      this._message = message;
-  }
-
-  _hideMessage() {
-      this._message = '';
-  }
-
-  _showAccountListProgress() {
-      this.$.accountListProgress.hidden = false;
-  }
-
-  _hideAccountListProgress() {
-      setTimeout(function() {
-          this.$.accountListProgress.hidden = true;
-      }.bind(this), 500);
-  }
-
-  _onDialogOpened() {
-      this.$.appscoSearch.setup();
-      this.shadowRoot.getElementById('appscoRoles').reloadItems();
-      this._componentReady = true;
-  }
-
-  _onDialogClosed() {
-      this._reset();
-  }
-
-  _onAccountsLoadFinished() {
-      this._rolesLoaded = true;
-  }
-
-  _setAccountList(rolesLoaded) {
-      const listItems = [];
-
-      this._showAccountListProgress();
-
-      this.set('_accountList', []);
-      this.set('_accountListAll', []);
-
-      if (rolesLoaded) {
-          const rolesComponent = this.shadowRoot.getElementById('appscoRoles'),
-              roles = rolesComponent.getAllItems();
-
-          roles.forEach(function(role, index) {
-              role.account.type = 'user';
-              role.account.selected = false;
-              listItems.push(role.account);
-          }.bind(this));
-      }
-
-      this.set('_accountList', listItems);
-      this.set('_accountListAll', listItems);
-      this._accountsCount = this._accountList.length;
-      this._hideAccountListProgress();
-  }
-
-  _onBulkSelect() {
-      this._hideError();
-
-      if (this._componentReady) {
-          this._bulkSelect = !this._bulkSelect;
-          this._bulkSelect ? this._selectAllAccounts() : this._deselectAllAccounts();
-      }
-  }
-
-  _selectAllAccounts() {
-      const list = JSON.parse(JSON.stringify(this._accountList)),
-          length = list.length,
-          listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length;
-
-      for (let i = 0; i < length; i++) {
-          list[i].selected = true;
-
-          for (let j = 0; j < lengthAll; j++) {
-              if (listAll[j].self === list[i].self) {
-                  listAll[j].selected = true;
-              }
-          }
-      }
-
-      this.set('_accountList', []);
-      this.set('_accountList', list);
-
-      this.set('_accountListAll', []);
-      this.set('_accountListAll', listAll);
-
-      this._recalculateInfo();
-  }
-
-  _deselectAllAccounts() {
-      const list = JSON.parse(JSON.stringify(this._accountList)),
-          length = list.length,
-          listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length;
-
-      for (let i = 0; i < length; i++) {
-          list[i].selected = false;
-
-          for (let j = 0; j < lengthAll; j++) {
-              if (listAll[j].self === list[i].self) {
-                  listAll[j].selected = false;
-              }
-          }
-      }
-
-      this.set('_accountList', []);
-      this.set('_accountList', list);
-
-      this.set('_accountListAll', []);
-      this.set('_accountListAll', listAll);
-
-      this._recalculateInfo();
-  }
-
-  _onAccountListItemSelectChanged(event) {
-      const item = event.detail.item,
-          listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          lengthAll = listAll.length;
-
-      if (!item.selected) {
-          this._bulkSelect = false;
-      }
-
-      for (let j = 0; j < lengthAll; j++) {
-          if (listAll[j].self === item.self) {
-              listAll[j].selected = item.selected;
-          }
-      }
-
-      this.set('_accountListAll', []);
-      this.set('_accountListAll', listAll);
-
-      this._recalculateInfo();
-      this._setBulkSelectStatus();
-      this._hideError();
-  }
-
-  _recalculateInfo() {
-      const list = this._accountListAll,
-          length = list.length;
-
-      this._numberOfSelectedAccounts = 0;
-
-      for (let i = 0; i < length; i++) {
-          if (list[i].selected) {
-              this._numberOfSelectedAccounts++;
-          }
-      }
-  }
-
-  _setBulkSelectStatus() {
-      this._bulkSelect = (this._numberOfSelectedAccounts === this._accountListAll.length);
-  }
-
-  _onSearchAccounts(event) {
-      const searchValue = event.detail.term,
-          searchLength = searchValue.length;
-
-      this._filterTerm = searchValue;
-
-      if (searchLength < 3) {
-          this._filterTerm = '';
-      }
-
-      this._filterAccountList();
-  }
-
-  _onSearchAccountsClear() {
-      this._filterTerm = '';
-      this._filterAccountList();
-  }
-
-  _filterAccountList() {
-      const listAll = JSON.parse(JSON.stringify(this._accountListAll)),
-          term = this._filterTerm.toLowerCase();
-
-      this._hideMessage();
-      this.set('_accountList', []);
-
-      for(const index in listAll) {
-          const account = listAll[index];
-          if (
-              (account.name.toLowerCase().indexOf(term) > -1) ||
-              (account.email.toLowerCase().indexOf(term) > -1)
-          ) {
-              this.push('_accountList', account);
-          }
-      }
-
-      if (0 === this._accountList.length) {
-          this._showMessage('There are no accounts available according to selected filters.');
-      }
-  }
-
-  _reset() {
-      this.$.appscoSearch.reset();
-      this.set('_accountList', []);
-      this.set('_accountListAll', []);
-      this.set('resources', []);
-      this.set('_selectedAccounts', []);
-      this._componentReady = false;
-      this._rolesLoaded = false;
-      this._filterTerm = '';
-      this._numberOfSelectedAccounts = 0;
-      this._accountsCount = 0;
-      this._bulkSelect = false;
-      this._hideLoader();
-      this._hideError();
-      this._hideMessage();
-  }
-
-  _resourcesShareFinished() {
-      this.$.dialog.close();
-
-      this.dispatchEvent(new CustomEvent('resources-shared', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              resources: this._responseApplications
-          }
-      }));
-
-      this.set('_selectedAccounts', []);
-      this.set('_responseApplications', []);
-      this._hideLoader();
-  }
-
-  _promoteAccounts(application, last) {
-      const accounts = this._selectedAccounts,
-          length = accounts.length - 1,
-          request = document.createElement('iron-request'),
-          options = {
-              url: application.meta.resource_admin_assign,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
-
-      let body = '';
-
-      for (let i = 0; i <= length; i++) {
-          let next = (i === length) ? '' : '&';
-          body += 'accounts[]=' + encodeURIComponent(accounts[i].self) + next;
-      }
-
-      options.body = body;
-
-      request.send(options).then(function() {
-          this.push('_responseApplications', request.response);
-
-          if (last) {
-              this._resourcesShareFinished();
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
-
-  _onPromoteResourceAdminAction() {
-      const list = JSON.parse(JSON.stringify(this._accountListAll));
-      let length = list.length;
-
-      this.set('_selectedAccounts', []);
-      for (let i = 0; i < length; i++) {
-          if (list[i].selected) {
-              this._selectedAccounts.push(list[i]);
-          }
-      }
-
-      if (0 === this._selectedAccounts.length) {
-          this._showError('Please select at least one user to promote to resource administrator.');
-          return false;
-      }
-
-      const resources = this.resources;
-      length = resources.length - 1;
-
-      this._showLoader();
-
-      for (let i = 0; i <= length; i++) {
-          if (i === length) {
-              this._promoteAccounts(resources[i], true);
-              return false;
-          }
-
-          this._promoteAccounts(resources[i], false);
-      }
-  }
-
-  _onInnerIronOverlay(event) {
-      event.stopPropagation();
-  }
+    }
+
+    static get is() { return 'appsco-add-resource-admin'; }
+
+    static get properties() {
+        return {
+            getRolesApi: {
+                type: String
+            },
+
+            getContactsApi: {
+                type: String
+            },
+
+            resources: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _responseApplications: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _accountList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _accountListAll: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _message: {
+                type: String
+            },
+
+            _selectedAccounts: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _shareLoader: {
+                type: Boolean,
+                value: false
+            },
+
+            _rolesLoaded: {
+                type: Boolean,
+                value: false
+            },
+
+            _componentReady: {
+                type: Boolean,
+                value: false
+            },
+
+            _bulkSelect: {
+                type: Boolean,
+                value: false
+            },
+
+            _accountsCount: {
+                type: Number,
+                value: 0
+            },
+
+            _numberOfSelectedAccounts: {
+                type: Number,
+                value: 0
+            },
+
+            _filterTerm: {
+                type: String,
+                value: ''
+            }
+        };
+    }
+
+    static get observers() {
+        return [
+            '_setAccountList(_rolesLoaded)'
+        ];
+    }
+
+    toggle() {
+        this.$.dialog.toggle();
+    }
+
+    setResources(resources) {
+        this.resources = resources;
+    }
+
+    _showLoader() {
+        this._shareLoader = true;
+    }
+
+    _hideLoader() {
+        this._shareLoader = false;
+    }
+
+    _showError(message) {
+        this._errorMessage = message;
+    }
+
+    _hideError() {
+        this._errorMessage = '';
+    }
+
+    _showMessage(message) {
+        this._message = message;
+    }
+
+    _hideMessage() {
+        this._message = '';
+    }
+
+    _showAccountListProgress() {
+        this.$.accountListProgress.hidden = false;
+    }
+
+    _hideAccountListProgress() {
+        setTimeout(function() {
+            this.$.accountListProgress.hidden = true;
+        }.bind(this), 500);
+    }
+
+    _onDialogOpened() {
+        this.$.appscoSearch.setup();
+        this.shadowRoot.getElementById('appscoRoles').reloadItems();
+        this._componentReady = true;
+    }
+
+    _onDialogClosed() {
+        this._reset();
+    }
+
+    _onAccountsLoadFinished() {
+        this._rolesLoaded = true;
+    }
+
+    _setAccountList(rolesLoaded) {
+        const listItems = [];
+
+        this._showAccountListProgress();
+
+        this.set('_accountList', []);
+        this.set('_accountListAll', []);
+
+        if (rolesLoaded) {
+            const rolesComponent = this.shadowRoot.getElementById('appscoRoles'),
+                roles = rolesComponent.getAllItems();
+
+            roles.forEach(function(role, index) {
+                role.account.type = 'user';
+                role.account.selected = false;
+                listItems.push(role.account);
+            }.bind(this));
+        }
+
+        this.set('_accountList', listItems);
+        this.set('_accountListAll', listItems);
+        this._accountsCount = this._accountList.length;
+        this._hideAccountListProgress();
+    }
+
+    _onBulkSelect() {
+        this._hideError();
+
+        if (this._componentReady) {
+            this._bulkSelect = !this._bulkSelect;
+            this._bulkSelect ? this._selectAllAccounts() : this._deselectAllAccounts();
+        }
+    }
+
+    _selectAllAccounts() {
+        const list = JSON.parse(JSON.stringify(this._accountList)),
+            length = list.length,
+            listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length;
+
+        for (let i = 0; i < length; i++) {
+            list[i].selected = true;
+
+            for (let j = 0; j < lengthAll; j++) {
+                if (listAll[j].self === list[i].self) {
+                    listAll[j].selected = true;
+                }
+            }
+        }
+
+        this.set('_accountList', []);
+        this.set('_accountList', list);
+
+        this.set('_accountListAll', []);
+        this.set('_accountListAll', listAll);
+
+        this._recalculateInfo();
+    }
+
+    _deselectAllAccounts() {
+        const list = JSON.parse(JSON.stringify(this._accountList)),
+            length = list.length,
+            listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length;
+
+        for (let i = 0; i < length; i++) {
+            list[i].selected = false;
+
+            for (let j = 0; j < lengthAll; j++) {
+                if (listAll[j].self === list[i].self) {
+                    listAll[j].selected = false;
+                }
+            }
+        }
+
+        this.set('_accountList', []);
+        this.set('_accountList', list);
+
+        this.set('_accountListAll', []);
+        this.set('_accountListAll', listAll);
+
+        this._recalculateInfo();
+    }
+
+    _onAccountListItemSelectChanged(event) {
+        const item = event.detail.item,
+            listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            lengthAll = listAll.length;
+
+        if (!item.selected) {
+            this._bulkSelect = false;
+        }
+
+        for (let j = 0; j < lengthAll; j++) {
+            if (listAll[j].self === item.self) {
+                listAll[j].selected = item.selected;
+            }
+        }
+
+        this.set('_accountListAll', []);
+        this.set('_accountListAll', listAll);
+
+        this._recalculateInfo();
+        this._setBulkSelectStatus();
+        this._hideError();
+    }
+
+    _recalculateInfo() {
+        const list = this._accountListAll,
+            length = list.length;
+
+        this._numberOfSelectedAccounts = 0;
+
+        for (let i = 0; i < length; i++) {
+            if (list[i].selected) {
+                this._numberOfSelectedAccounts++;
+            }
+        }
+    }
+
+    _setBulkSelectStatus() {
+        this._bulkSelect = (this._numberOfSelectedAccounts === this._accountListAll.length);
+    }
+
+    _onSearchAccounts(event) {
+        const searchValue = event.detail.term,
+            searchLength = searchValue.length;
+
+        this._filterTerm = searchValue;
+
+        if (searchLength < 3) {
+            this._filterTerm = '';
+        }
+
+        this._filterAccountList();
+    }
+
+    _onSearchAccountsClear() {
+        this._filterTerm = '';
+        this._filterAccountList();
+    }
+
+    _filterAccountList() {
+        const listAll = JSON.parse(JSON.stringify(this._accountListAll)),
+            term = this._filterTerm.toLowerCase();
+
+        this._hideMessage();
+        this.set('_accountList', []);
+
+        for(const index in listAll) {
+            const account = listAll[index];
+            if (
+                (account.name.toLowerCase().indexOf(term) > -1) ||
+                (account.email.toLowerCase().indexOf(term) > -1)
+            ) {
+                this.push('_accountList', account);
+            }
+        }
+
+        if (0 === this._accountList.length) {
+            this._showMessage('There are no accounts available according to selected filters.');
+        }
+    }
+
+    _reset() {
+        this.$.appscoSearch.reset();
+        this.set('_accountList', []);
+        this.set('_accountListAll', []);
+        this.set('resources', []);
+        this.set('_selectedAccounts', []);
+        this._componentReady = false;
+        this._rolesLoaded = false;
+        this._filterTerm = '';
+        this._numberOfSelectedAccounts = 0;
+        this._accountsCount = 0;
+        this._bulkSelect = false;
+        this._hideLoader();
+        this._hideError();
+        this._hideMessage();
+    }
+
+    _resourcesShareFinished() {
+        this.$.dialog.close();
+
+        this.dispatchEvent(new CustomEvent('resources-shared', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                resources: this._responseApplications
+            }
+        }));
+
+        this.set('_selectedAccounts', []);
+        this.set('_responseApplications', []);
+        this._hideLoader();
+    }
+
+    _promoteAccounts(application, last) {
+        const accounts = this._selectedAccounts,
+            length = accounts.length - 1,
+            request = document.createElement('iron-request'),
+            options = {
+                url: application.meta.resource_admin_assign,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
+
+        let body = '';
+
+        for (let i = 0; i <= length; i++) {
+            let next = (i === length) ? '' : '&';
+            body += 'accounts[]=' + encodeURIComponent(accounts[i].self) + next;
+        }
+
+        options.body = body;
+
+        request.send(options).then(function() {
+            this.push('_responseApplications', request.response);
+
+            if (last) {
+                this._resourcesShareFinished();
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
+
+    _onPromoteResourceAdminAction() {
+        const list = JSON.parse(JSON.stringify(this._accountListAll));
+        let length = list.length;
+
+        this.set('_selectedAccounts', []);
+        for (let i = 0; i < length; i++) {
+            if (list[i].selected) {
+                this._selectedAccounts.push(list[i]);
+            }
+        }
+
+        if (0 === this._selectedAccounts.length) {
+            this._showError('Please select at least one user to promote to resource administrator.');
+            return false;
+        }
+
+        const resources = this.resources;
+        length = resources.length - 1;
+
+        this._showLoader();
+
+        for (let i = 0; i <= length; i++) {
+            if (i === length) {
+                this._promoteAccounts(resources[i], true);
+                return false;
+            }
+
+            this._promoteAccounts(resources[i], false);
+        }
+    }
+
+    _onInnerIronOverlay(event) {
+        event.stopPropagation();
+    }
 }
 window.customElements.define(AppscoAddResourceAdmin.is, AppscoAddResourceAdmin);

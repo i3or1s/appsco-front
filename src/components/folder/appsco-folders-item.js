@@ -15,13 +15,14 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoFoldersItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior,
     AppscoDropHTMLElementBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 @apply --folder-item-host;
@@ -71,104 +72,104 @@ class AppscoFoldersItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-folders-item'; }
+    static get is() { return 'appsco-folders-item'; }
 
-  static get properties() {
-      return {
-          requestHeaders: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            requestHeaders: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          this.initializeDropBehavior();
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this.initializeDropBehavior();
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('item-dropped', this._onItemDropped);
-  }
+    _addListeners() {
+        this.addEventListener('item-dropped', this._onItemDropped);
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onItemDropped(event) {
-      const item = event.detail.item;
+    _onItemDropped(event) {
+        const item = event.detail.item;
 
-      this._addResourceToFolder(item);
-  }
+        this._addResourceToFolder(item);
+    }
 
-  _getAddResourceToFolderApi(resource) {
-      return (this.item.self && resource.alias) ? (this.item.self + '/resource/' + resource.alias) : null;
-  }
+    _getAddResourceToFolderApi(resource) {
+        return (this.item.self && resource.alias) ? (this.item.self + '/resource/' + resource.alias) : null;
+    }
 
-  _addResourceToFolder(item) {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._getAddResourceToFolderApi(item),
-              method: 'POST',
-              handleAs: 'json',
-              headers: this.requestHeaders
-          };
+    _addResourceToFolder(item) {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._getAddResourceToFolderApi(item),
+                method: 'POST',
+                handleAs: 'json',
+                headers: this.requestHeaders
+            };
 
-      if (!options.url) {
-          return false;
-      }
+        if (!options.url) {
+            return false;
+        }
 
-      this._showLoader();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('resource-moved-to-folder', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      resource: request.response,
-                      folder: this.item,
-                      sourceFolder: null
-                  }
-              }));
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('resource-moved-to-folder', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        resource: request.response,
+                        folder: this.item,
+                        sourceFolder: null
+                    }
+                }));
 
-              this._hideLoader();
-          }
-      }.bind(this), function() {
-          this.dispatchEvent(new CustomEvent('resource-moved-to-folder-failed', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  resource: request.response,
-                  folder: this.item
-              }
-          }));
+                this._hideLoader();
+            }
+        }.bind(this), function() {
+            this.dispatchEvent(new CustomEvent('resource-moved-to-folder-failed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    resource: request.response,
+                    folder: this.item
+                }
+            }));
 
-          this._hideLoader();
-      }.bind(this));
-  }
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoFoldersItem.is, AppscoFoldersItem);

@@ -1,22 +1,4 @@
-/*
-`appsco-company-domain-token`
-Shows dialog screen with confirmation for account removal from organization unit.
-
-    <appsco-company-domain-token domain="{}" authorization-token="">
-    </appsco-company-domain-token>
-
-### Styling
-
-`<appsco-company-domain-token>` provides the following custom properties and mixins for styling:
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -28,9 +10,10 @@ import '@polymer/paper-styles/typography.js';
 import '../components/components/appsco-copy.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyDomainToken extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -108,42 +91,42 @@ class AppscoCompanyDomainToken extends PolymerElement {
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-domain-token'; }
+    static get is() { return 'appsco-company-domain-token'; }
 
-  static get properties() {
-      return {
-          domain: {
-              type: Array,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            domain: {
+                type: Array,
+                value: function () {
+                    return {};
+                }
+            },
 
-          token: {
-              type: String,
-              value: 'DVH4KHonhRQtsksUx4UPbm4JgvqoGLD3AVS8RQVgG3eT_W6NhXb1yB92OnmWREqWp66e7KGMwGT_a4E'
-          }
-      };
-  }
+            token: {
+                type: String,
+                value: 'DVH4KHonhRQtsksUx4UPbm4JgvqoGLD3AVS8RQVgG3eT_W6NhXb1yB92OnmWREqWp66e7KGMwGT_a4E'
+            }
+        };
+    }
 
-  setDomain(domain) {
-      this.domain = domain;
-  }
+    setDomain(domain) {
+        this.domain = domain;
+    }
 
-  open () {
-      this.$.dialog.open();
-  }
+    open () {
+        this.$.dialog.open();
+    }
 
-  close () {
-      this.$.dialog.close();
-  }
+    close () {
+        this.$.dialog.close();
+    }
 
-  toggle () {
-      this.$.dialog.toggle();
-  }
+    toggle () {
+        this.$.dialog.toggle();
+    }
 
-  _onDialogClosed() {}
+    _onDialogClosed() {}
 }
 window.customElements.define(AppscoCompanyDomainToken.is, AppscoCompanyDomainToken);

@@ -29,8 +29,8 @@ class AppscoCustomerBillingPage extends mixinBehaviors([
     Appsco.HeadersMixin,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-page-styles">
             :host {
                 --resource-width: 300px;
@@ -499,547 +499,547 @@ class AppscoCustomerBillingPage extends mixinBehaviors([
         <appsco-billing-send-invoice id="appscoBillingSendInvoice" company="[[ currentCompany ]]" authorization-token="[[ authorizationToken ]]" company-api="[[ companyApi ]]" on-invoice-sent="_onInvoiceSent">
         </appsco-billing-send-invoice>
 `;
-  }
-
-  static get is() { return 'appsco-customer-billing-page'; }
-
-  static get properties() {
-      return {
-          companyApi: {
-              type: String
-          },
-
-          currentCompany: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _subscription: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onSubscriptionChanged'
-          },
-
-          _invoices: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
-
-          _selectedInvoice: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _selectedIndex: {
-              type: Number,
-              value: -1
-          },
-
-          _creditCardApi: {
-              type: String,
-              computed: '_computeCreditCardApi(companyApi)',
-              observer: '_showCCLoader'
-          },
-
-          _subscriptionApi: {
-              type: String,
-              computed: '_computeSubscriptionApi(companyApi)',
-              observer: '_showSubscriptionLoader'
-          },
-
-          _upcomingInvoiceApi: {
-              type: String,
-              computed: '_computeUpcomingInvoiceApi(companyApi, _subscription)',
-              observer: '_showUpcomingInvoiceLoader'
-          },
-
-          _invoiceListApi: {
-              type: String,
-              computed: '_computeInvoiceListApi(companyApi, _subscription)',
-              observer: '_showInvoiceListLoader'
-          },
-
-          _cc: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          _ccLoader: {
-              type: Boolean,
-              value: true
-          },
-
-          _subscriptionLoader: {
-              type: Boolean,
-              value: true
-          },
-
-          _upcomingInvoiceLoader: {
-              type: Boolean,
-              value: true
-          },
-
-          _invoiceListLoader: {
-              type: Boolean,
-              value: true
-          },
-
-          _paymentMethod: {
-              type: Boolean,
-              computed: '_computePaymentMethod(_cc)'
-          },
-
-          _paymentMethodInfo: {
-              type: Boolean,
-              value: false
-          },
-
-          _computedCCLogo: {
-              type: String,
-              computed: '_computeCCLogo(_cc)'
-          },
-
-          _isPaidByInvoice: {
-              type: Boolean,
-              computed: '_computeIsPaidByInvoice(currentCompany)'
-          },
-
-          _isPaidByCC: {
-              type: Boolean,
-              computed: '_computeIsPaidByCC(currentCompany)'
-          },
-
-          _numberOfDistributedLicences: {
-              type: String,
-              computed: '_computeNumberOfDistributedLicences(currentCompany)'
-          },
-
-          _numberOfAvailableLicences: {
-              type: String,
-              computed: '_computeNumberOfAvailableLicences(_subscription)'
-          },
-
-          _numberOfRemainingLicences: {
-              type: String,
-              computed: '_computeNumberOfRemainingLicences(currentCompany)'
-          },
-
-          _invoicesExists: {
-              type: Boolean,
-              value: false
-          },
-
-          _subscriptionCanceled: {
-              type: Boolean,
-              computed: '_computeSubscriptionCanceled(_subscription)',
-              observer: '_toggleCancelSubscriptionAction'
-          },
-
-          _cancelSubscription: {
-              type: Boolean,
-              value: false
-          },
-
-          lastInvoice: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
-
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          animationConfig: {
-              type: Object
-          },
-
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
-
-  static get observers() {
-      return [
-          '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-      ];
-  }
-
-  ready() {
-      super.ready();
-
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
-
-      afterNextRender(this, function() {
-          this._pageLoaded();
-      });
-  }
-
-  pageSelected() {
-      this.$.billingCCRequest.generateRequest();
-      this.reloadSubscription();
-  }
-
-  resetPage() {
-      this.set('_subscription', {});
-      this.set('_cc', {});
-      this.set('_upcomingInvoice', {});
-      this.set('_selectedInvoice', {});
-      this.set('_invoices', []);
-      this._paymentMethodInfo = false;
-      this._numberOfAvailableLicences = '0';
-      this._numberOfDistributedLicences = '0';
-      this._numberOfRemainingLicences = '0';
-      this._cancelSubscription = false;
-      this._onCloseInfoAction();
-  }
-
-  setCreditCard(cc) {
-      this._paymentMethodInfo = false;
-      this._ccLoader = true;
-      this.set('_cc', cc);
-
-      setTimeout(function() {
-          this._ccLoader = false;
-      }.bind(this), 1000);
-  }
-
-  reloadSubscription() {
-      this._subscriptionLoader = true;
-      this.$.billingSubscriptionRequest.generateRequest();
-  }
-
-  _onSubscriptionChanged(subscription) {
-      for (const key in subscription) {
-          this._loadUpcomingInvoice();
-          this._loadInvoiceList();
-          return false;
-      }
-  }
-
-  _toggleCancelSubscriptionAction() {
-      if (this._subscription.status && !this._subscriptionCanceled) {
-          setTimeout(function() {
-              this._cancelSubscription = true;
-          }.bind(this), 1000);
-      }
-      else {
-          this._cancelSubscription = false;
-      }
-  }
-
-  _loadUpcomingInvoice() {
-      this._upcomingInvoiceLoader = true;
-      this.$.upcomingInvoiceCall.generateRequest();
-  }
-
-  _loadInvoiceList() {
-      this._invoicesExists = false;
-      this._invoiceListLoader = true;
-      this.$.invoiceListCall.generateRequest();
-  }
-
-  _updateScreen(medium, tablet, mobile) {
-      this.updateStyles();
-
-      if (mobile) {
-          this.$.appscoContent.hideSection('resource');
-      }
-      else if(!this.$.appscoContent.resourceActive) {
-          this.$.appscoContent.showSection('resource');
-      }
-  }
-
-  _pageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
-
-  _showSubscriptionLoader() {
-      this._subscriptionLoader = true;
-  }
-
-  _showCCLoader() {
-      this._ccLoader = true;
-  }
-
-  _showUpcomingInvoiceLoader() {
-      this._upcomingInvoiceLoader = true;
-  }
-
-  _showInvoiceListLoader() {
-      this._invoiceListLoader = true;
-  }
-
-  _onManageCreditCard() {
-      this.shadowRoot.getElementById('appscoCreditCard').toggle();
-  }
-
-  _onChangePlan() {
-      const dialog = this.shadowRoot.getElementById('appscoUpdateSubscriptionAction');
-      dialog.setSubscription(this._subscription);
-      dialog.toggle();
-  }
-
-  _computeIsPaidByInvoice(currentCompany) {
-      return currentCompany && currentCompany.payingForCustomerType === 'invoice';
-  }
-
-  _computeIsPaidByCC(currentCompany) {
-      return currentCompany && (currentCompany.payingForCustomerType === 'cc' || !currentCompany.payingForCustomerType);
-  }
-
-  _computeNumberOfDistributedLicences(currentCompany) {
-      return currentCompany && currentCompany.distributedLicences ? currentCompany.distributedLicences : '0';
-  }
-
-  _computeNumberOfAvailableLicences(subscription) {
-      return subscription && subscription.quantity ? subscription.quantity : '0';
-  }
-
-  _computeNumberOfRemainingLicences(currentCompany) {
-      return currentCompany && currentCompany.remainingLicences ? currentCompany.remainingLicences : '0';
-  }
-
-  _computePaymentMethod(cc) {
-      for (let key in cc) {
-          return true;
-      }
-      return false;
-  }
-
-  _computeCCLogo(cc) {
-      let logoUrl = '/images/cc/';
-
-      if (cc.brand) {
-          if (cc.brand === 'American Express') {
-              logoUrl += 'amex.png';
-          }
-          else {
-              logoUrl += cc.brand.toLowerCase().replace(' ', '_') + '.png';
-          }
-      }
-      else {
-          logoUrl += 'unknown.png';
-      }
-
-      return logoUrl;
-  }
-
-  _computeCreditCardApi(companyApi) {
-      return companyApi ? companyApi + '/billing/cc' : null;
-  }
-
-  _computeSubscriptionApi(companyApi) {
-      return companyApi ? companyApi + '/billing/subscriptions' : null;
-  }
-
-  _computeUpcomingInvoiceApi(companyApi, subscription) {
-      return companyApi && subscription && subscription.id ? companyApi + '/billing/invoice/upcoming/' + subscription.id : null;
-  }
-
-  _computeInvoiceListApi(companyApi, subscription) {
-      return companyApi && subscription && subscription.id ? companyApi + '/billing/invoice/list/' + subscription.id : null;
-  }
-
-  _computeSubscriptionCanceled(subscription) {
-      return subscription.status === 'canceled';
-  }
-
-  _handleCCResponse(event) {
-      const response = event.detail.response;
-      this.set('_cc', {});
-
-      if (null == response || 0 === response.length) {
-          this._paymentMethodInfo = true;
-          this._ccLoader = false;
-          return false;
-      }
-
-      this.set('_cc', response);
-      this._paymentMethodInfo = false;
-      this._ccLoader = false;
-  }
-
-  _handleSubscriptionResponse(e) {
-      if(null == e.detail.response) {
-          return;
-      }
-
-      const subscriptions = e.detail.response;
-      let activeSubscription = '';
-
-      subscriptions.forEach(function(element) {
-          if (element.type === 'distribution' && element.status === 'active') {
-              this._subscription = activeSubscription = element;
-          }
-      }.bind(this));
-
-      if (!activeSubscription) {
-          this._subscription = {};
-          this._cancelSubscription = false;
-      }
-
-      this._subscriptionLoader = false;
-  }
-
-  _handleUpcomingInvoiceResponse(e) {
-      if (null == e.detail.response) {
-          return;
-      }
-
-      this._upcomingInvoice = e.detail.response;
-      this._upcomingInvoiceLoader = false;
-  }
-
-  _handleInvoicesResponse(event) {
-      const response = event.detail.response;
-
-      this.set('_invoices', []);
-
-      if (null == response) {
-          this._invoiceListLoader = false;
-          return false;
-      }
-
-      if (response.length > 0) {
-          this._invoicesExists = true;
-
-          response.forEach(function(el, index) {
-              if (0 === index) {
-                  this.lastInvoice = el;
-              }
-
-              setTimeout(function() {
-                  this.push('_invoices', el);
-
-                  if (index === response.length - 1) {
-                      this._invoiceListLoader = false;
-                      this._toggleCancelSubscriptionAction();
-                  }
-
-              }.bind(this), (index + 1) * 30);
-          }.bind(this));
-      }
-      else {
-          this._invoiceListLoader = false;
-          this._toggleCancelSubscriptionAction();
-      }
-  }
-
-  _onInvoiceAction(event) {
-      const selectedInvoice = event.model.item;
-
-      if (selectedInvoice.id != this._selectedInvoice.id) {
-          this._selectedInvoice = selectedInvoice;
-
-          if (this._selectedIndex !== -1) {
-              this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex).deselect();
-          }
-
-          this._selectedIndex = event.model.index;
-
-          this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex).select();
-
-          if (!this._infoShown) {
-              this._showInfo();
-          }
-      }
-      else {
-          this._onCloseInfoAction();
-      }
-  }
-
-  _deselectInvoice() {
-      this._hideInfo();
-      this.set('_selectedInvoice', {});
-
-      if (this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex)) {
-          this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex).deselect();
-      }
-
-      this._selectedIndex = -1;
-  }
-
-  _onCloseInfoAction() {
-      this._hideInfo();
-      this._deselectInvoice();
-  }
-
-  _showInfo() {
-      this.$.appscoContent.showSection('info');
-      this._infoShown = true;
-  }
-
-  _hideInfo() {
-      this.$.appscoContent.hideSection('info');
-      this._infoShown = false;
-  }
-
-  _onCancelSubscription() {
-      const dialog = this.shadowRoot.getElementById('appscoSubscriptionCancel');
-      dialog.setSubscription(this._subscription);
-      dialog.toggle();
-  }
-
-  _onSendInvoice() {
-      const dialog = this.shadowRoot.getElementById('appscoBillingSendInvoice');
-      dialog.setInvoice(this._selectedInvoice);
-      dialog.setSubscription(this._subscription);
-      dialog.toggle();
-  }
-
-  _onInvoiceSent(event) {
-      this._notify('Invoice has been sent to ' + event.detail.sentTo + '.');
-  }
+    }
+
+    static get is() { return 'appsco-customer-billing-page'; }
+
+    static get properties() {
+        return {
+            companyApi: {
+                type: String
+            },
+
+            currentCompany: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _subscription: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onSubscriptionChanged'
+            },
+
+            _invoices: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+
+            _selectedInvoice: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _selectedIndex: {
+                type: Number,
+                value: -1
+            },
+
+            _creditCardApi: {
+                type: String,
+                computed: '_computeCreditCardApi(companyApi)',
+                observer: '_showCCLoader'
+            },
+
+            _subscriptionApi: {
+                type: String,
+                computed: '_computeSubscriptionApi(companyApi)',
+                observer: '_showSubscriptionLoader'
+            },
+
+            _upcomingInvoiceApi: {
+                type: String,
+                computed: '_computeUpcomingInvoiceApi(companyApi, _subscription)',
+                observer: '_showUpcomingInvoiceLoader'
+            },
+
+            _invoiceListApi: {
+                type: String,
+                computed: '_computeInvoiceListApi(companyApi, _subscription)',
+                observer: '_showInvoiceListLoader'
+            },
+
+            _cc: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            _ccLoader: {
+                type: Boolean,
+                value: true
+            },
+
+            _subscriptionLoader: {
+                type: Boolean,
+                value: true
+            },
+
+            _upcomingInvoiceLoader: {
+                type: Boolean,
+                value: true
+            },
+
+            _invoiceListLoader: {
+                type: Boolean,
+                value: true
+            },
+
+            _paymentMethod: {
+                type: Boolean,
+                computed: '_computePaymentMethod(_cc)'
+            },
+
+            _paymentMethodInfo: {
+                type: Boolean,
+                value: false
+            },
+
+            _computedCCLogo: {
+                type: String,
+                computed: '_computeCCLogo(_cc)'
+            },
+
+            _isPaidByInvoice: {
+                type: Boolean,
+                computed: '_computeIsPaidByInvoice(currentCompany)'
+            },
+
+            _isPaidByCC: {
+                type: Boolean,
+                computed: '_computeIsPaidByCC(currentCompany)'
+            },
+
+            _numberOfDistributedLicences: {
+                type: String,
+                computed: '_computeNumberOfDistributedLicences(currentCompany)'
+            },
+
+            _numberOfAvailableLicences: {
+                type: String,
+                computed: '_computeNumberOfAvailableLicences(_subscription)'
+            },
+
+            _numberOfRemainingLicences: {
+                type: String,
+                computed: '_computeNumberOfRemainingLicences(currentCompany)'
+            },
+
+            _invoicesExists: {
+                type: Boolean,
+                value: false
+            },
+
+            _subscriptionCanceled: {
+                type: Boolean,
+                computed: '_computeSubscriptionCanceled(_subscription)',
+                observer: '_toggleCancelSubscriptionAction'
+            },
+
+            _cancelSubscription: {
+                type: Boolean,
+                value: false
+            },
+
+            lastInvoice: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            animationConfig: {
+                type: Object
+            },
+
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
+
+    static get observers() {
+        return [
+            '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+        ];
+    }
+
+    ready() {
+        super.ready();
+
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
+
+        afterNextRender(this, function() {
+            this._pageLoaded();
+        });
+    }
+
+    pageSelected() {
+        this.$.billingCCRequest.generateRequest();
+        this.reloadSubscription();
+    }
+
+    resetPage() {
+        this.set('_subscription', {});
+        this.set('_cc', {});
+        this.set('_upcomingInvoice', {});
+        this.set('_selectedInvoice', {});
+        this.set('_invoices', []);
+        this._paymentMethodInfo = false;
+        this._numberOfAvailableLicences = '0';
+        this._numberOfDistributedLicences = '0';
+        this._numberOfRemainingLicences = '0';
+        this._cancelSubscription = false;
+        this._onCloseInfoAction();
+    }
+
+    setCreditCard(cc) {
+        this._paymentMethodInfo = false;
+        this._ccLoader = true;
+        this.set('_cc', cc);
+
+        setTimeout(function() {
+            this._ccLoader = false;
+        }.bind(this), 1000);
+    }
+
+    reloadSubscription() {
+        this._subscriptionLoader = true;
+        this.$.billingSubscriptionRequest.generateRequest();
+    }
+
+    _onSubscriptionChanged(subscription) {
+        for (const key in subscription) {
+            this._loadUpcomingInvoice();
+            this._loadInvoiceList();
+            return false;
+        }
+    }
+
+    _toggleCancelSubscriptionAction() {
+        if (this._subscription.status && !this._subscriptionCanceled) {
+            setTimeout(function() {
+                this._cancelSubscription = true;
+            }.bind(this), 1000);
+        }
+        else {
+            this._cancelSubscription = false;
+        }
+    }
+
+    _loadUpcomingInvoice() {
+        this._upcomingInvoiceLoader = true;
+        this.$.upcomingInvoiceCall.generateRequest();
+    }
+
+    _loadInvoiceList() {
+        this._invoicesExists = false;
+        this._invoiceListLoader = true;
+        this.$.invoiceListCall.generateRequest();
+    }
+
+    _updateScreen(medium, tablet, mobile) {
+        this.updateStyles();
+
+        if (mobile) {
+            this.$.appscoContent.hideSection('resource');
+        }
+        else if(!this.$.appscoContent.resourceActive) {
+            this.$.appscoContent.showSection('resource');
+        }
+    }
+
+    _pageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
+
+    _showSubscriptionLoader() {
+        this._subscriptionLoader = true;
+    }
+
+    _showCCLoader() {
+        this._ccLoader = true;
+    }
+
+    _showUpcomingInvoiceLoader() {
+        this._upcomingInvoiceLoader = true;
+    }
+
+    _showInvoiceListLoader() {
+        this._invoiceListLoader = true;
+    }
+
+    _onManageCreditCard() {
+        this.shadowRoot.getElementById('appscoCreditCard').toggle();
+    }
+
+    _onChangePlan() {
+        const dialog = this.shadowRoot.getElementById('appscoUpdateSubscriptionAction');
+        dialog.setSubscription(this._subscription);
+        dialog.toggle();
+    }
+
+    _computeIsPaidByInvoice(currentCompany) {
+        return currentCompany && currentCompany.payingForCustomerType === 'invoice';
+    }
+
+    _computeIsPaidByCC(currentCompany) {
+        return currentCompany && (currentCompany.payingForCustomerType === 'cc' || !currentCompany.payingForCustomerType);
+    }
+
+    _computeNumberOfDistributedLicences(currentCompany) {
+        return currentCompany && currentCompany.distributedLicences ? currentCompany.distributedLicences : '0';
+    }
+
+    _computeNumberOfAvailableLicences(subscription) {
+        return subscription && subscription.quantity ? subscription.quantity : '0';
+    }
+
+    _computeNumberOfRemainingLicences(currentCompany) {
+        return currentCompany && currentCompany.remainingLicences ? currentCompany.remainingLicences : '0';
+    }
+
+    _computePaymentMethod(cc) {
+        for (let key in cc) {
+            return true;
+        }
+        return false;
+    }
+
+    _computeCCLogo(cc) {
+        let logoUrl = '/images/cc/';
+
+        if (cc.brand) {
+            if (cc.brand === 'American Express') {
+                logoUrl += 'amex.png';
+            }
+            else {
+                logoUrl += cc.brand.toLowerCase().replace(' ', '_') + '.png';
+            }
+        }
+        else {
+            logoUrl += 'unknown.png';
+        }
+
+        return logoUrl;
+    }
+
+    _computeCreditCardApi(companyApi) {
+        return companyApi ? companyApi + '/billing/cc' : null;
+    }
+
+    _computeSubscriptionApi(companyApi) {
+        return companyApi ? companyApi + '/billing/subscriptions' : null;
+    }
+
+    _computeUpcomingInvoiceApi(companyApi, subscription) {
+        return companyApi && subscription && subscription.id ? companyApi + '/billing/invoice/upcoming/' + subscription.id : null;
+    }
+
+    _computeInvoiceListApi(companyApi, subscription) {
+        return companyApi && subscription && subscription.id ? companyApi + '/billing/invoice/list/' + subscription.id : null;
+    }
+
+    _computeSubscriptionCanceled(subscription) {
+        return subscription.status === 'canceled';
+    }
+
+    _handleCCResponse(event) {
+        const response = event.detail.response;
+        this.set('_cc', {});
+
+        if (null == response || 0 === response.length) {
+            this._paymentMethodInfo = true;
+            this._ccLoader = false;
+            return false;
+        }
+
+        this.set('_cc', response);
+        this._paymentMethodInfo = false;
+        this._ccLoader = false;
+    }
+
+    _handleSubscriptionResponse(e) {
+        if(null == e.detail.response) {
+            return;
+        }
+
+        const subscriptions = e.detail.response;
+        let activeSubscription = '';
+
+        subscriptions.forEach(function(element) {
+            if (element.type === 'distribution' && element.status === 'active') {
+                this._subscription = activeSubscription = element;
+            }
+        }.bind(this));
+
+        if (!activeSubscription) {
+            this._subscription = {};
+            this._cancelSubscription = false;
+        }
+
+        this._subscriptionLoader = false;
+    }
+
+    _handleUpcomingInvoiceResponse(e) {
+        if (null == e.detail.response) {
+            return;
+        }
+
+        this._upcomingInvoice = e.detail.response;
+        this._upcomingInvoiceLoader = false;
+    }
+
+    _handleInvoicesResponse(event) {
+        const response = event.detail.response;
+
+        this.set('_invoices', []);
+
+        if (null == response) {
+            this._invoiceListLoader = false;
+            return false;
+        }
+
+        if (response.length > 0) {
+            this._invoicesExists = true;
+
+            response.forEach(function(el, index) {
+                if (0 === index) {
+                    this.lastInvoice = el;
+                }
+
+                setTimeout(function() {
+                    this.push('_invoices', el);
+
+                    if (index === response.length - 1) {
+                        this._invoiceListLoader = false;
+                        this._toggleCancelSubscriptionAction();
+                    }
+
+                }.bind(this), (index + 1) * 30);
+            }.bind(this));
+        }
+        else {
+            this._invoiceListLoader = false;
+            this._toggleCancelSubscriptionAction();
+        }
+    }
+
+    _onInvoiceAction(event) {
+        const selectedInvoice = event.model.item;
+
+        if (selectedInvoice.id != this._selectedInvoice.id) {
+            this._selectedInvoice = selectedInvoice;
+
+            if (this._selectedIndex !== -1) {
+                this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex).deselect();
+            }
+
+            this._selectedIndex = event.model.index;
+
+            this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex).select();
+
+            if (!this._infoShown) {
+                this._showInfo();
+            }
+        }
+        else {
+            this._onCloseInfoAction();
+        }
+    }
+
+    _deselectInvoice() {
+        this._hideInfo();
+        this.set('_selectedInvoice', {});
+
+        if (this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex)) {
+            this.shadowRoot.getElementById('invoiceItem_' + this._selectedIndex).deselect();
+        }
+
+        this._selectedIndex = -1;
+    }
+
+    _onCloseInfoAction() {
+        this._hideInfo();
+        this._deselectInvoice();
+    }
+
+    _showInfo() {
+        this.$.appscoContent.showSection('info');
+        this._infoShown = true;
+    }
+
+    _hideInfo() {
+        this.$.appscoContent.hideSection('info');
+        this._infoShown = false;
+    }
+
+    _onCancelSubscription() {
+        const dialog = this.shadowRoot.getElementById('appscoSubscriptionCancel');
+        dialog.setSubscription(this._subscription);
+        dialog.toggle();
+    }
+
+    _onSendInvoice() {
+        const dialog = this.shadowRoot.getElementById('appscoBillingSendInvoice');
+        dialog.setInvoice(this._selectedInvoice);
+        dialog.setSubscription(this._subscription);
+        dialog.toggle();
+    }
+
+    _onInvoiceSent(event) {
+        this._notify('Invoice has been sent to ' + event.detail.sentTo + '.');
+    }
 }
 window.customElements.define(AppscoCustomerBillingPage.is, AppscoCustomerBillingPage);

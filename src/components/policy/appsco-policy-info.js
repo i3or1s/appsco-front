@@ -8,12 +8,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoPolicyInfo extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppLocalizeBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --appsco-policy-info;
@@ -47,84 +48,88 @@ class AppscoPolicyInfo extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-policy-info'; }
+    static get is() { return 'appsco-policy-info'; }
 
-  static get properties() {
-      return {
-          policy: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            policy: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          language: {
-              type: String,
-              value: 'en'
-          },
+            language: {
+                type: String,
+                value: 'en'
+            },
 
-          _info: {
-              type: String,
-              computed: '_computeInfo(policy, "info")'
-          },
+            _info: {
+                type: String,
+                computed: '_computeInfo(policy, "info")'
+            },
 
-          _warning: {
-              type: String,
-              computed: '_computeInfo(policy, "warning")'
-          },
+            _warning: {
+                type: String,
+                computed: '_computeInfo(policy, "warning")'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    static get importMeta() {
+        return import.meta;
+    }
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-      beforeNextRender(this, function() {
-          this.loadResources(this.resolveUrl('data/policy-info.json'));
-      });
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          this._addListeners();
-          this._showInfo();
-      });
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+        beforeNextRender(this, function() {
+            this.loadResources(this.resolveUrl('./data/policy-info.json'));
+        });
 
-  _addListeners() {
-      this.addEventListener('policy-changed', this._onPolicyChanged);
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+            this._showInfo();
+        });
+    }
 
-  _computeInfo(policy, type) {
-      return policy.name ? (this.localize(policy.name.toLowerCase().replace(/ /g, '_') + '_' + type)) : '';
-  }
+    _addListeners() {
+        this.addEventListener('policy-changed', this._onPolicyChanged);
+    }
 
-  _onPolicyChanged() {
-      this._showInfo();
-  }
+    _computeInfo(policy, type) {
+        return policy.name ? (this.localize(policy.name.toLowerCase().replace(/ /g, '_') + '_' + type)) : '';
+    }
 
-  _showInfo() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _onPolicyChanged() {
+        this._showInfo();
+    }
+
+    _showInfo() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 }
 window.customElements.define(AppscoPolicyInfo.is, AppscoPolicyInfo);

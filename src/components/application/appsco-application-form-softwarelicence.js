@@ -6,9 +6,10 @@ import { AppscoApplicationFormBehavior } from './appsco-application-form-behavio
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationFormSoftwareLicence extends mixinBehaviors([AppscoApplicationFormBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <div class="input-container">
             <paper-input id="productName" data-field="" label="Product name" name\$="[[ claimsNamePrefix ]][productName]" value="[[ claims.productName ]]"></paper-input>
         </div>
@@ -41,17 +42,17 @@ class AppscoApplicationFormSoftwareLicence extends mixinBehaviors([AppscoApplica
             <paper-textarea id="note" rows="3" data-field="" label="Note" value="[[ claims.note ]]" name\$="[[ claimsNamePrefix ]][note]"></paper-textarea>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-form-softwarelicence'; }
+    static get is() { return 'appsco-application-form-softwarelicence'; }
 
-  static get properties() {
-      return {
-          claimsNamePrefix: {
-              type: String,
-              value: "claims_softwarelicence"
-          }
-      };
-  }
+    static get properties() {
+        return {
+            claimsNamePrefix: {
+                type: String,
+                value: "claims_softwarelicence"
+            }
+        };
+    }
 }
 window.customElements.define(AppscoApplicationFormSoftwareLicence.is, AppscoApplicationFormSoftwareLicence);

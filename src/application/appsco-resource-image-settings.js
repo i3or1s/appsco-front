@@ -10,9 +10,10 @@ import '../components/components/appsco-upload-image-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoResourceImageSettings extends mixinBehaviors([AppscoUploadImageBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-upload-image-styles">
             :host .upload-container {
                 width: 64px;
@@ -44,62 +45,62 @@ class AppscoResourceImageSettings extends mixinBehaviors([AppscoUploadImageBehav
 
         <slot name="info" old-content-selector="[info]"></slot>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-resource-image-settings'; }
+    static get is() { return 'appsco-resource-image-settings'; }
 
-  static get properties() {
-      return {
-          /**
-           * resource to update.
-           */
-          resource: {
-              type: Object,
-              value: function () {
-                  return {}
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            /**
+             * resource to update.
+             */
+            resource: {
+                type: Object,
+                value: function () {
+                    return {}
+                },
+                notify: true
+            },
 
-          _imagePreview: {
-              type: String,
-              computed: '_computeImagePreviewClass(resource)'
-          }
-      };
-  }
+            _imagePreview: {
+                type: String,
+                computed: '_computeImagePreviewClass(resource)'
+            }
+        };
+    }
 
-  /**
-   * Resets component.
-   */
-  reset() {
-      var resource = JSON.parse(JSON.stringify(this.resource));
+    /**
+     * Resets component.
+     */
+    reset() {
+        var resource = JSON.parse(JSON.stringify(this.resource));
 
-      this.set('resource', {});
-      this.set('resource', resource);
-  }
+        this.set('resource', {});
+        this.set('resource', resource);
+    }
 
-  _computeImagePreviewClass(resource) {
-      return (resource && resource.application_url) ? 'has-image' : 'no-image';
-  }
+    _computeImagePreviewClass(resource) {
+        return (resource && resource.application_url) ? 'has-image' : 'no-image';
+    }
 
-  _setNewImage(file) {
-      var reader = new FileReader();
+    _setNewImage(file) {
+        var reader = new FileReader();
 
-      reader.onload = function(e) {
-          this._setObjectAttribute('resource', 'application_url', e.target.result);
-      }.bind(this);
+        reader.onload = function(e) {
+            this._setObjectAttribute('resource', 'application_url', e.target.result);
+        }.bind(this);
 
-      reader.readAsDataURL(file);
-  }
+        reader.readAsDataURL(file);
+    }
 
-  _fireChangeEvent() {
-      this.dispatchEvent(new CustomEvent('resource-image-changed', { bubbles: true, composed: true }));
-  }
+    _fireChangeEvent() {
+        this.dispatchEvent(new CustomEvent('resource-image-changed', { bubbles: true, composed: true }));
+    }
 
-  _setStateAfterImageIsRemoved(response) {
-      this.set('resource', response);
-      this._fireChangeEvent();
-      this._hideLoader();
-  }
+    _setStateAfterImageIsRemoved(response) {
+        this.set('resource', response);
+        this._fireChangeEvent();
+        this._hideLoader();
+    }
 }
 window.customElements.define(AppscoResourceImageSettings.is, AppscoResourceImageSettings);

@@ -10,9 +10,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactApplications extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -97,179 +98,179 @@ class AppscoContactApplications extends mixinBehaviors([Appsco.HeadersMixin], Po
             </p>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contact-applications'; }
+    static get is() { return 'appsco-contact-applications'; }
 
-  static get properties() {
-      return {
-          contact: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            contact: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Number of applications to load.
-           */
-          size: {
-              type: Number,
-              value: 5
-          },
+            /**
+             * Number of applications to load.
+             */
+            size: {
+                type: Number,
+                value: 5
+            },
 
-          loadMore: {
-              type: Boolean,
-              value: false
-          },
+            loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _nextPage: {
-              type: Number,
-              value: 1
-          },
+            _nextPage: {
+                type: Number,
+                value: 1
+            },
 
-          _moreApplications: {
-              type: Boolean,
-              value: true
-          },
+            _moreApplications: {
+                type: Boolean,
+                value: true
+            },
 
-          _computedAction: {
-              type: String
-          },
+            _computedAction: {
+                type: String
+            },
 
-          _applications: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _applications: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _totalApplications: {
-              type: Number,
-              value: 0
-          },
+            _totalApplications: {
+                type: Number,
+                value: 0
+            },
 
-          _loadMore: {
-              type: Boolean,
-              value: false
-          },
+            _loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          _message: {
-              type: String
-          }
-      };
-  }
+            _message: {
+                type: String
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_computeAction(contact, _nextPage, size)',
-          '_onContactChanged(contact)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_computeAction(contact, _nextPage, size)',
+            '_onContactChanged(contact)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      beforeNextRender(this, function() {
-          this.load();
-      });
-  }
+        beforeNextRender(this, function() {
+            this.load();
+        });
+    }
 
-  _onContactChanged() {
-      this.load();
-  }
+    _onContactChanged() {
+        this.load();
+    }
 
-  _computeAction(contact, nextPage, size) {
-      this._computedAction = contact.meta ? contact.meta.applications + '?page=' + nextPage + '&limit=' + size + '&extended=1' : null;
-  }
+    _computeAction(contact, nextPage, size) {
+        this._computedAction = contact.meta ? contact.meta.applications + '?page=' + nextPage + '&limit=' + size + '&extended=1' : null;
+    }
 
-  _clearList() {
-      this.set('_applications', []);
-      this._message = '';
-      this._nextPage = 1;
-      this._totalApplications = 0;
-  }
+    _clearList() {
+        this.set('_applications', []);
+        this._message = '';
+        this._nextPage = 1;
+        this._totalApplications = 0;
+    }
 
-  load() {
-      this.$.progress.hidden = false;
-      this._clearList();
-      this.$.getApplicationsCall.generateRequest();
-  }
+    load() {
+        this.$.progress.hidden = false;
+        this._clearList();
+        this.$.getApplicationsCall.generateRequest();
+    }
 
-  _loadMore() {
-      this.$.progress.hidden = false;
-      this.$.getApplicationsCall.generateRequest();
-  }
+    _loadMore() {
+        this.$.progress.hidden = false;
+        this.$.getApplicationsCall.generateRequest();
+    }
 
-  _handleError(event) {
-      this._message = 'We couldn\'t load resources at the moment. Please try again in a minute. If error continues contact us.';
-      this._handleEmpty();
-  }
+    _handleError(event) {
+        this._message = 'We couldn\'t load resources at the moment. Please try again in a minute. If error continues contact us.';
+        this._handleEmpty();
+    }
 
-  _handleResponse(event) {
-      const response = event.detail.response;
+    _handleResponse(event) {
+        const response = event.detail.response;
 
-      if (!response) {
-          return false;
-      }
+        if (!response) {
+            return false;
+        }
 
-      const applications = response.applications,
-          currentLength = this._applications.length,
-          total = response.meta.total;
+        const applications = response.applications,
+            currentLength = this._applications.length,
+            total = response.meta.total;
 
-      this._totalApplications = total;
+        this._totalApplications = total;
 
-      if (applications && applications.length > 0) {
-          this._nextPage += 1;
+        if (applications && applications.length > 0) {
+            this._nextPage += 1;
 
-          applications.forEach(function(application, index) {
-              setTimeout( function() {
-                  this.push('_applications', applications[index]);
+            applications.forEach(function(application, index) {
+                setTimeout( function() {
+                    this.push('_applications', applications[index]);
 
-                  if (index === (applications.length - 1)) {
-                      this._moreApplications = this._applications.length !== total;
+                    if (index === (applications.length - 1)) {
+                        this._moreApplications = this._applications.length !== total;
 
-                      this._hideProgressBar();
-                      this.dispatchEvent(new CustomEvent('applications-loaded', { bubbles: true, composed: true }));
-                  }
-              }.bind(this), (index + 1) * 30 );
-          }.bind(this));
-      }
-      else if (applications && !applications.length) {
-          if (!currentLength) {
-              this._message = 'There are no company resources shared with this contact.';
-          }
+                        this._hideProgressBar();
+                        this.dispatchEvent(new CustomEvent('applications-loaded', { bubbles: true, composed: true }));
+                    }
+                }.bind(this), (index + 1) * 30 );
+            }.bind(this));
+        }
+        else if (applications && !applications.length) {
+            if (!currentLength) {
+                this._message = 'There are no company resources shared with this contact.';
+            }
 
-          this._moreApplications = false;
-          this._handleEmpty();
-      }
-      else if (!currentLength) {
-          this._message = 'We couldn\'t load resources at the moment.';
-          this._moreApplications = false;
-          this._handleEmpty();
-      }
-  }
+            this._moreApplications = false;
+            this._handleEmpty();
+        }
+        else if (!currentLength) {
+            this._message = 'We couldn\'t load resources at the moment.';
+            this._moreApplications = false;
+            this._handleEmpty();
+        }
+    }
 
-  _handleEmpty() {
-      this._hideProgressBar();
-      this.dispatchEvent(new CustomEvent('applications-empty', { bubbles: true, composed: true }));
-  }
+    _handleEmpty() {
+        this._hideProgressBar();
+        this.dispatchEvent(new CustomEvent('applications-empty', { bubbles: true, composed: true }));
+    }
 
-  _hideProgressBar() {
-      setTimeout(function() {
-          this.$.progress.hidden = true;
-      }.bind(this), 500);
-  }
+    _hideProgressBar() {
+        setTimeout(function() {
+            this.$.progress.hidden = true;
+        }.bind(this), 500);
+    }
 
-  reload() {
-      this._clearList();
-      this.$.getApplicationsCall.generateRequest();
-  }
+    reload() {
+        this._clearList();
+        this.$.getApplicationsCall.generateRequest();
+    }
 }
 window.customElements.define(AppscoContactApplications.is, AppscoContactApplications);

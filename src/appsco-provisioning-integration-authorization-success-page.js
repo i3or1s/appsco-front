@@ -7,8 +7,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 class AppscoProvisioningIntegrationAuthorizationSuccessPage extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 display: block;
@@ -54,35 +54,35 @@ class AppscoProvisioningIntegrationAuthorizationSuccessPage extends PolymerEleme
             </div>
         </appsco-content>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-provisioning-integration-authorization-success-page'; }
+    static get is() { return 'appsco-provisioning-integration-authorization-success-page'; }
 
-  static get properties() {
-      return {
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+    static get properties() {
+        return {
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      afterNextRender(this, function() {
-          this._pageLoaded();
-      });
-  }
+        this.pageLoaded = false;
+        afterNextRender(this, function() {
+            this._pageLoaded();
+        });
+    }
 
-  _pageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _pageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _onProvisioningAction() {
-      this.dispatchEvent(new CustomEvent('provisioning', { bubbles: true, composed: true }));
-  }
+    _onProvisioningAction() {
+        this.dispatchEvent(new CustomEvent('provisioning', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoProvisioningIntegrationAuthorizationSuccessPage.is, AppscoProvisioningIntegrationAuthorizationSuccessPage);

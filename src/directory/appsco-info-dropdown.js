@@ -1,35 +1,13 @@
-/*
-`appsco-info-dropdown`
-Is used to present subscription info dropdown.
-
-Example:
-
-    <body>
-      <appsco-info-dropdown>
-     </appsco-info-dropdown>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-info-dropdown` | Mixin applied to inner appsco-dropdown within root element | `{}`
-`--subscription-info-dropdown-action` | Mixin applied to dropdown action button | `{}`
-`--subscription-info-dropdown-header-text` | Mixin applied to paper-card header text | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-card/paper-card.js';
 import '../components/header/appsco-dropdown.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoInfoDropdown extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: inline-block;
@@ -91,41 +69,41 @@ class AppscoInfoDropdown extends PolymerElement {
 
         </appsco-dropdown>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-info-dropdown'; }
+    static get is() { return 'appsco-info-dropdown'; }
 
-  static get properties() {
-      return {
-          actionLabel: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            actionLabel: {
+                type: String,
+                value: ''
+            },
 
-          /**
-           * DOM element which triggers the dropdown.
-           */
-          _triggerDropdown: {
-              type: Object,
-              notify: true
-          }
-      };
-  }
+            /**
+             * DOM element which triggers the dropdown.
+             */
+            _triggerDropdown: {
+                type: Object,
+                notify: true
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._triggerDropdown = this.shadowRoot.getElementById('dropdownActions');
-  }
+        this._triggerDropdown = this.shadowRoot.getElementById('dropdownActions');
+    }
 
-  toggle(target) {
-      this._triggerDropdown = target;
-      this.$.dropdown.toggle();
-  }
+    toggle(target) {
+        this._triggerDropdown = target;
+        this.$.dropdown.toggle();
+    }
 
-  _onDropdownAction() {
-      this.dispatchEvent(new CustomEvent('info-action', { bubbles: true, composed: true }));
-      this.toggle();
-  }
+    _onDropdownAction() {
+        this.dispatchEvent(new CustomEvent('info-action', { bubbles: true, composed: true }));
+        this.toggle();
+    }
 }
 window.customElements.define(AppscoInfoDropdown.is, AppscoInfoDropdown);

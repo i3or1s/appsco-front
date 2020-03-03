@@ -5,13 +5,12 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
  * @polymerBehavior
  */
 export const AppscoDragHTMLElementBehavior = {
-
     properties: {},
 
     _addDragElementOverlay: function(dragElement) {
-        var overlay = '<div class="application-overlay" ' +
-                'style="background: rgba(0, 0, 0, 0.4); position: absolute;' +
-                'top: 0;left: 0;right: 0;bottom: 0;"></div>',
+        const overlay = '<div class="application-overlay" ' +
+            'style="background: rgba(0, 0, 0, 0.4); position: absolute;' +
+            'top: 0;left: 0;right: 0;bottom: 0;"></div>',
             template = document.createElement('template');
 
         template.innerHTML = overlay;
@@ -19,13 +18,13 @@ export const AppscoDragHTMLElementBehavior = {
     },
 
     _removeDragElementOverlay: function(dragElement) {
-        var draggedElement = dom(dragElement.root);
+        const draggedElement = dom(dragElement.root);
 
         draggedElement.removeChild(draggedElement.childNodes[draggedElement.childNodes.length - 1]);
     },
 
     dragStart: function(event) {
-        var draggedHTMLElement = event.target;
+        const draggedHTMLElement = event.target;
 
         event.stopPropagation();
 
@@ -37,7 +36,7 @@ export const AppscoDragHTMLElementBehavior = {
     },
 
     dragEnd: function(event) {
-        var draggedHTMLElement = event.target;
+        const draggedHTMLElement = event.target;
 
         event.stopPropagation();
 
@@ -46,13 +45,13 @@ export const AppscoDragHTMLElementBehavior = {
     },
 
     initializeDragBehavior: function() {
-        var dragElements = dom(this.root).querySelectorAll('.drag-item');
+        const dragElements = dom(this.root).querySelectorAll('.drag-item');
 
         if (dragElements && 0 < dragElements.length) {
-            var length = dragElements.length;
+            const length = dragElements.length;
 
-            for (var i = 0; i < length; i++) {
-                var dragElement = dragElements[i];
+            for (let i = 0; i < length; i++) {
+                const dragElement = dragElements[i];
 
                 dragElement.addEventListener('dragstart', this.dragStart, false);
                 dragElement.addEventListener('dragend', this.dragEnd, false);

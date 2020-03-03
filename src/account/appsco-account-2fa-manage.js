@@ -14,12 +14,13 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccount2faManage extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -80,141 +81,141 @@ class AppscoAccount2faManage extends mixinBehaviors([
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-2fa-manage'; }
+    static get is() { return 'appsco-account-2fa-manage'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          twoFaApi: {
-              type: String,
-              notify: true
-          },
+            twoFaApi: {
+                type: String,
+                notify: true
+            },
 
-          twoFaQrApi: {
-              type: String,
-              notify: true
-          },
+            twoFaQrApi: {
+                type: String,
+                notify: true
+            },
 
-          twoFaCodesApi: {
-              type: String,
-              notify: true
-          },
+            twoFaCodesApi: {
+                type: String,
+                notify: true
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          recoveryCodes: {
-              type: Boolean,
-              value: true
-          },
+            recoveryCodes: {
+                type: Boolean,
+                value: true
+            },
 
-          _codes: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _codes: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-              'exit': {
-              name: 'slide-right-animation',
-                  node: this,
-                  timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onBackAction() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onBackAction() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  _toggleRecoveryCodes() {
+    _toggleRecoveryCodes() {
 
-      if (this._codes.length > 0) {
-          this.recoveryCodes = !this.recoveryCodes;
-          return false;
-      }
+        if (this._codes.length > 0) {
+            this.recoveryCodes = !this.recoveryCodes;
+            return false;
+        }
 
-      var request = document.createElement('iron-request'),
-          options = {
-              url: this.twoFaCodesApi,
-              method: 'GET',
-              handleAs: 'json',
-              headers: this._headers
-          };
+        var request = document.createElement('iron-request'),
+            options = {
+                url: this.twoFaCodesApi,
+                method: 'GET',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      request.send(options).then(function() {
+        request.send(options).then(function() {
 
-          if (200 === request.status) {
-              this.set('_codes', request.response);
-              this.recoveryCodes = !this.recoveryCodes;
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-      });
+            if (200 === request.status) {
+                this.set('_codes', request.response);
+                this.recoveryCodes = !this.recoveryCodes;
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+        });
 
-  }
+    }
 
-  _onDisableAction() {
-      this.dispatchEvent(new CustomEvent('disable-twofa', { bubbles: true, composed: true }));
-  }
+    _onDisableAction() {
+        this.dispatchEvent(new CustomEvent('disable-twofa', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoAccount2faManage.is, AppscoAccount2faManage);

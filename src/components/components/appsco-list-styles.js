@@ -1,6 +1,7 @@
 import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
+
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="appsco-list-styles">
@@ -71,11 +72,3 @@ $_documentContainer.innerHTML = `<dom-module id="appsco-list-styles">
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);
-
-/* shared styles for appsco-list components */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
-;

@@ -11,9 +11,10 @@ import '../components/components/appsco-search.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="shared-styles">
             :host {
                 @apply --layout-horizontal;
@@ -83,114 +84,114 @@ class AppscoCompanyPageActions extends mixinBehaviors([NeonAnimatableBehavior], 
             <paper-icon-button class="info-action" icon="info-outline" title="Resource section" on-tap="_onResourceAction"></paper-icon-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-page-actions'; }
+    static get is() { return 'appsco-company-page-actions'; }
 
-  static get properties() {
-      return {
-          _domainsActionsActive: {
-              type: Boolean,
-              value: false
-          },
+    static get properties() {
+        return {
+            _domainsActionsActive: {
+                type: Boolean,
+                value: false
+            },
 
-          _groupsActionsActive: {
-              type: Boolean,
-              value: false,
-              observer: '_onGroupsActionsActiveChanged'
-          },
+            _groupsActionsActive: {
+                type: Boolean,
+                value: false,
+                observer: '_onGroupsActionsActiveChanged'
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 300,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 300,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+    }
 
-  showDomainsPageActions() {
-      this._domainsActionsActive = true;
-  }
+    showDomainsPageActions() {
+        this._domainsActionsActive = true;
+    }
 
-  hideDomainsPageActions() {
-      this._domainsActionsActive = false;
-  }
+    hideDomainsPageActions() {
+        this._domainsActionsActive = false;
+    }
 
-  showGroupsPageActions() {
-      this._groupsActionsActive = true;
-  }
+    showGroupsPageActions() {
+        this._groupsActionsActive = true;
+    }
 
-  hideGroupsPageActions() {
-      this._onSearchClear();
-      this._groupsActionsActive = false;
-  }
+    hideGroupsPageActions() {
+        this._onSearchClear();
+        this._groupsActionsActive = false;
+    }
 
-  _onGroupsActionsActiveChanged(active) {
-      if (active) {
-          this.hideDomainsPageActions();
-      }
-  }
+    _onGroupsActionsActiveChanged(active) {
+        if (active) {
+            this.hideDomainsPageActions();
+        }
+    }
 
-  _onResourceAction() {
-      this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
-  }
+    _onResourceAction() {
+        this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+    }
 
-  _onAddDomainAction() {
-      this.dispatchEvent(new CustomEvent('add-domain', { bubbles: true, composed: true }));
-  }
+    _onAddDomainAction() {
+        this.dispatchEvent(new CustomEvent('add-domain', { bubbles: true, composed: true }));
+    }
 
-  _onSearch(event) {
-      this.dispatchEvent(new CustomEvent('search-groups', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              term: event.detail.term
-          }
-      }));
-  }
+    _onSearch(event) {
+        this.dispatchEvent(new CustomEvent('search-groups', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                term: event.detail.term
+            }
+        }));
+    }
 
-  _onSearchClear() {
-      this._resetSearch();
+    _onSearchClear() {
+        this._resetSearch();
 
-      this.dispatchEvent(new CustomEvent('search-groups-clear', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              term: ''
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('search-groups-clear', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                term: ''
+            }
+        }));
+    }
 
-  _resetSearch() {
-      if (this._groupsActionsActive) {
-          this.shadowRoot.getElementById('appscoSearch').reset();
-      }
-  }
+    _resetSearch() {
+        if (this._groupsActionsActive) {
+            this.shadowRoot.getElementById('appscoSearch').reset();
+        }
+    }
 }
 window.customElements.define(AppscoCompanyPageActions.is, AppscoCompanyPageActions);

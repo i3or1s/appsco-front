@@ -1,21 +1,4 @@
-/*
-`appsco-group-add-resource`
-Provides functionality of adding resource items to group.
-
-    <appsco-group-add-resource group="{}"
-                               groups-api=""
-                               authorization-token=""
-                               resource-type=""
-                               size=""></appsco-group-add-resource>
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/paper-styles/shadow.js';
@@ -34,9 +17,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoGroupAddResource extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -155,381 +139,381 @@ class AppscoGroupAddResource extends mixinBehaviors([Appsco.HeadersMixin], Polym
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-group-add-resource'; }
+    static get is() { return 'appsco-group-add-resource'; }
 
-  static get properties() {
-      return {
-          group: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+    static get properties() {
+        return {
+            group: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          listItemsApi: {
-              type: String
-          },
+            listItemsApi: {
+                type: String
+            },
 
-          size: {
-              type: Number,
-              value: 8
-          },
+            size: {
+                type: Number,
+                value: 8
+            },
 
-          resourceType: {
-              type: String,
-              value: ''
-          },
+            resourceType: {
+                type: String,
+                value: ''
+            },
 
-          /**
-           * Items to add to groups.
-           */
-          _items: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Items to add to groups.
+             */
+            _items: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _resourceTypeTitle: {
-              type: String,
-              computed: '_computeResourceTypeTitle(resourceType)'
-          },
+            _resourceTypeTitle: {
+                type: String,
+                computed: '_computeResourceTypeTitle(resourceType)'
+            },
 
-          _isResourceTypeApplication: {
-              type: String,
-              computed: '_computeResourceTypeApplication(resourceType)'
-          },
+            _isResourceTypeApplication: {
+                type: String,
+                computed: '_computeResourceTypeApplication(resourceType)'
+            },
 
-          _computedTitle: {
-              type: String,
-              computed: '_computeTitle(_resourceTypeTitle)'
-          },
+            _computedTitle: {
+                type: String,
+                computed: '_computeTitle(_resourceTypeTitle)'
+            },
 
-          /**
-           * Items which are added to group.
-           * This array is populated from adding API response.
-           */
-          _responseItems: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Items which are added to group.
+             * This array is populated from adding API response.
+             */
+            _responseItems: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          /**
-           * Groups list from search.
-           */
-          _searchList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Groups list from search.
+             */
+            _searchList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          /**
-           * Selected items from search list.
-           */
-          _selectedItems: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Selected items from search list.
+             */
+            _selectedItems: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _message: {
-              type: String,
-              value: ''
-          },
+            _message: {
+                type: String,
+                value: ''
+            },
 
-          /**
-           * Indicates if search loader should be displayed or not.
-           */
-          _searchLoader: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if search loader should be displayed or not.
+             */
+            _searchLoader: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * Indicates if dialog loader should be displayed or not.
-           */
-          _dialogLoader: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if dialog loader should be displayed or not.
+             */
+            _dialogLoader: {
+                type: Boolean,
+                value: false
+            },
 
-          _requests: {
-              type: Number,
-              value: 0
-          }
-      };
-  }
+            _requests: {
+                type: Number,
+                value: 0
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  setGroup(group) {
-      this.group = group;
-  }
+    setGroup(group) {
+        this.group = group;
+    }
 
-  setType(type) {
-      this.resourceType = type;
-  }
+    setType(type) {
+        this.resourceType = type;
+    }
 
-  setListItemsApi(listApi) {
-      this.listItemsApi = listApi;
-  }
+    setListItemsApi(listApi) {
+        this.listItemsApi = listApi;
+    }
 
-  _computeTitle(resourceType) {
-      return resourceType ? ('Add ' + resourceType + 's to group') : 'Add to group';
-  }
+    _computeTitle(resourceType) {
+        return resourceType ? ('Add ' + resourceType + 's to group') : 'Add to group';
+    }
 
-  _computeResourceTypeTitle(resourceType) {
-      return ('role' === resourceType) ? 'user' : resourceType;
-  }
+    _computeResourceTypeTitle(resourceType) {
+        return ('role' === resourceType) ? 'user' : resourceType;
+    }
 
-  _computeResourceTypeApplication(resourceType) {
-      return 'resource' === resourceType;
-  }
+    _computeResourceTypeApplication(resourceType) {
+        return 'resource' === resourceType;
+    }
 
-  _onDialogOpened() {
-      this.$.appscoSearch.setup();
-  }
+    _onDialogOpened() {
+        this.$.appscoSearch.setup();
+    }
 
-  _onDialogClosed() {
-      this._reset();
-      this.set('_selectedItems', []);
-  }
+    _onDialogClosed() {
+        this._reset();
+        this.set('_selectedItems', []);
+    }
 
-  _showDialogLoader() {
-      this._dialogLoader = true;
-  }
+    _showDialogLoader() {
+        this._dialogLoader = true;
+    }
 
-  _hideDialogLoader() {
-      this._dialogLoader = false;
-  }
+    _hideDialogLoader() {
+        this._dialogLoader = false;
+    }
 
-  _showSearchLoader() {
-      this._searchLoader = true;
-  }
+    _showSearchLoader() {
+        this._searchLoader = true;
+    }
 
-  _hideSearchLoader() {
-      this._searchLoader = false;
-  }
+    _hideSearchLoader() {
+        this._searchLoader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _reset() {
-      this.$.appscoSearch.reset();
-      this.set('_searchList', []);
-      this._hideSearchLoader();
-      this._hideDialogLoader();
-      this._hideError();
-      this._message = '';
-  }
+    _reset() {
+        this.$.appscoSearch.reset();
+        this.set('_searchList', []);
+        this._hideSearchLoader();
+        this._hideDialogLoader();
+        this._hideError();
+        this._message = '';
+    }
 
-  _handleSearchItemsResult(result, term) {
-      let items;
+    _handleSearchItemsResult(result, term) {
+        let items;
 
-      switch (this.resourceType) {
-          case 'resource':
-              items = result.applications;
-              break;
-          case 'role':
-              items = result.company_roles;
-              break;
-          case 'contact':
-              items = result.contacts;
-              break;
-          default:
-              items = [];
-      }
+        switch (this.resourceType) {
+            case 'resource':
+                items = result.applications;
+                break;
+            case 'role':
+                items = result.company_roles;
+                break;
+            case 'contact':
+                items = result.contacts;
+                break;
+            default:
+                items = [];
+        }
 
-      if (items && items.length > 0) {
-          this.set('_searchList', items);
-      }
-      else {
-          this.set('_searchList', []);
-          this._message = this._resourceTypeTitle + ' with name \'' + decodeURIComponent(term) + '\' does not exist.';
-      }
-  }
+        if (items && items.length > 0) {
+            this.set('_searchList', items);
+        }
+        else {
+            this.set('_searchList', []);
+            this._message = this._resourceTypeTitle + ' with name \'' + decodeURIComponent(term) + '\' does not exist.';
+        }
+    }
 
-  /**
-   * Gets groups by term.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onSearch(event) {
-      const searchValue = event.detail.term,
-          searchLength = searchValue.length;
+    /**
+     * Gets groups by term.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onSearch(event) {
+        const searchValue = event.detail.term,
+            searchLength = searchValue.length;
 
-      this._showSearchLoader();
-      this._message = '';
-      this._hideError();
+        this._showSearchLoader();
+        this._message = '';
+        this._hideError();
 
-      if (searchLength === 0) {
-          this._message = '';
-          this._hideSearchLoader();
-          this.set('_searchList', []);
-          return false;
-      }
+        if (searchLength === 0) {
+            this._message = '';
+            this._hideSearchLoader();
+            this.set('_searchList', []);
+            return false;
+        }
 
-      if (searchLength < 2) {
-          this._message = 'Please type two or more letters.';
-          this._hideSearchLoader();
-          this.set('_searchList', []);
-          return false;
-      }
+        if (searchLength < 2) {
+            this._message = 'Please type two or more letters.';
+            this._hideSearchLoader();
+            this.set('_searchList', []);
+            return false;
+        }
 
-      const request = document.createElement('iron-request'),
-          url = this.listItemsApi + '?extended=1&limit=' + this.size + '&term=' + searchValue,
-          options = {
-              url: url,
-              method: 'GET',
-              handleAs: 'json',
-              headers: this._headers
-          };
+        const request = document.createElement('iron-request'),
+            url = this.listItemsApi + '?extended=1&limit=' + this.size + '&term=' + searchValue,
+            options = {
+                url: url,
+                method: 'GET',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this._handleSearchItemsResult(request.response, searchValue);
-          }
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this._handleSearchItemsResult(request.response, searchValue);
+            }
 
-          this._hideSearchLoader();
-      }.bind(this));
-  }
+            this._hideSearchLoader();
+        }.bind(this));
+    }
 
-  _onSearchClear() {
-      this._reset();
-  }
+    _onSearchClear() {
+        this._reset();
+    }
 
-  /**
-   * Called after group has been selected from search list.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onItemSelected(event) {
-      this._hideError();
-      this.push('_selectedItems', event.model.item);
-      this.splice('_searchList', this._searchList.indexOf(event.model.item), 1);
-  }
+    /**
+     * Called after group has been selected from search list.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onItemSelected(event) {
+        this._hideError();
+        this.push('_selectedItems', event.model.item);
+        this.splice('_searchList', this._searchList.indexOf(event.model.item), 1);
+    }
 
-  _onRemoveSelectedItem(event) {
-      this.push('_searchList', event.model.item);
-      this.splice('_selectedItems', this._selectedItems.indexOf(event.model.item), 1);
-  }
+    _onRemoveSelectedItem(event) {
+        this.push('_searchList', event.model.item);
+        this.splice('_selectedItems', this._selectedItems.indexOf(event.model.item), 1);
+    }
 
-  _onAddActionFinished() {
-      if (this._responseItems.length > 0) {
-          this.dispatchEvent(new CustomEvent('resources-added-to-group', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  group: this.group,
-                  items: this._responseItems,
-                  resourceType: this.resourceType
-              }
-          }));
+    _onAddActionFinished() {
+        if (this._responseItems.length > 0) {
+            this.dispatchEvent(new CustomEvent('resources-added-to-group', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    group: this.group,
+                    items: this._responseItems,
+                    resourceType: this.resourceType
+                }
+            }));
 
-          this.close();
-      }
-      else {
-          this._showError('There was an error while adding ' + this.resourceType + 's to group. Please close the dialog and try again.');
-      }
+            this.close();
+        }
+        else {
+            this._showError('There was an error while adding ' + this.resourceType + 's to group. Please close the dialog and try again.');
+        }
 
-      this.set('_selectedItems', []);
-      this.set('_responseItems', []);
-      this._hideDialogLoader();
-  }
+        this.set('_selectedItems', []);
+        this.set('_responseItems', []);
+        this._hideDialogLoader();
+    }
 
-  _addResourceToGroup(item) {
-      return new Promise(function(resolve, reject) {
-          let request = document.createElement('iron-request'),
-              options = {
-                  url: item.self + '/groups',
-                  method: 'POST',
-                  handleAs: 'json',
-                  headers: this._headers
-              },
-              body;
+    _addResourceToGroup(item) {
+        return new Promise(function(resolve, reject) {
+            let request = document.createElement('iron-request'),
+                options = {
+                    url: item.self + '/groups',
+                    method: 'POST',
+                    handleAs: 'json',
+                    headers: this._headers
+                },
+                body;
 
-          body = this.group.meta ? 'groups[]=' + encodeURIComponent(this.group.meta.self) : '';
-          options.body = body;
+            body = this.group.meta ? 'groups[]=' + encodeURIComponent(this.group.meta.self) : '';
+            options.body = body;
 
-          request.send(options).then(function() {
-              if (200 === request.status) {
-                  switch (this.resourceType) {
-                      case 'resource':
-                          resolve(request.response.application);
-                          break;
+            request.send(options).then(function() {
+                if (200 === request.status) {
+                    switch (this.resourceType) {
+                        case 'resource':
+                            resolve(request.response.application);
+                            break;
 
-                      case 'role':
-                      case 'contact':
-                          resolve(request.response);
-                          break;
-                  }
-              }
-          }.bind(this), function() {
-              if (404 === request.status) {
-                  reject('There was an error while adding resources to group. Not all ' + this.resourceType + 's were added to group.');
-              }
-          }.bind(this));
-      }.bind(this));
-  }
+                        case 'role':
+                        case 'contact':
+                            resolve(request.response);
+                            break;
+                    }
+                }
+            }.bind(this), function() {
+                if (404 === request.status) {
+                    reject('There was an error while adding resources to group. Not all ' + this.resourceType + 's were added to group.');
+                }
+            }.bind(this));
+        }.bind(this));
+    }
 
-  _onAddResourcesToGroupAction() {
-      if (0 === this._selectedItems.length) {
-          this._showError('Please add at least one ' + this.resourceType + ' to add to group.');
-          return false;
-      }
+    _onAddResourcesToGroupAction() {
+        if (0 === this._selectedItems.length) {
+            this._showError('Please add at least one ' + this.resourceType + ' to add to group.');
+            return false;
+        }
 
-      const items = this._selectedItems,
-          length = items.length;
+        const items = this._selectedItems,
+            length = items.length;
 
-      this._requests = length;
+        this._requests = length;
 
-      this._hideError();
-      this._showDialogLoader();
+        this._hideError();
+        this._showDialogLoader();
 
-      for (let i = 0; i < length; i++) {
-          const item = items[i];
+        for (let i = 0; i < length; i++) {
+            const item = items[i];
 
-          (function(me) {
-              me._addResourceToGroup(item).then(function(item) {
-                  me.push('_responseItems', item);
-                  me._requests--;
+            (function(me) {
+                me._addResourceToGroup(item).then(function(item) {
+                    me.push('_responseItems', item);
+                    me._requests--;
 
-                  if (me._requests === 0) {
-                      me._onAddActionFinished();
-                  }
-              }.bind(me), function(message) {
-                  me._showError(message);
-                  me._requests--;
+                    if (me._requests === 0) {
+                        me._onAddActionFinished();
+                    }
+                }.bind(me), function(message) {
+                    me._showError(message);
+                    me._requests--;
 
-                  if (me._requests === 0) {
-                      me._onAddActionFinished();
-                  }
-              }.bind(me));
-          })(this);
-      }
-  }
+                    if (me._requests === 0) {
+                        me._onAddActionFinished();
+                    }
+                }.bind(me));
+            })(this);
+        }
+    }
 }
 window.customElements.define(AppscoGroupAddResource.is, AppscoGroupAddResource);

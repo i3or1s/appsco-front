@@ -12,12 +12,13 @@ import '../components/components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAvailableIntegrationItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host {
                 --icon-action-border-radius: 16px;
@@ -43,18 +44,18 @@ class AppscoAvailableIntegrationItem extends mixinBehaviors([
 
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-available-integration-item'; }
+    static get is() { return 'appsco-available-integration-item'; }
 
-  static get properties() {
-      return {
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+    static get properties() {
+        return {
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 }
 window.customElements.define(AppscoAvailableIntegrationItem.is, AppscoAvailableIntegrationItem);

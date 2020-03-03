@@ -1,17 +1,4 @@
-/*
-`appsco-remove-customers`
-Shows dialog screen with confirmation for customer removal.
-
-    <appsco-remove-customers customers="[]">
-    </appsco-remove-customers>
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -23,9 +10,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoRemoveCustomers extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -71,74 +59,74 @@ class AppscoRemoveCustomers extends mixinBehaviors([Appsco.HeadersMixin], Polyme
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-remove-customers'; }
+    static get is() { return 'appsco-remove-customers'; }
 
-  static get properties() {
-      return {
-          customers: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+    static get properties() {
+        return {
+            customers: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          customersApi: {
-              type: String
-          },
+            customersApi: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _onDeleteAction() {
-      let customers = this.customers,
-          length = customers.length - 1,
-          appRequest = document.createElement('iron-request'),
-          options = {
-              url: this.customersApi,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          },
-          body = '';
+    _onDeleteAction() {
+        let customers = this.customers,
+            length = customers.length - 1,
+            appRequest = document.createElement('iron-request'),
+            options = {
+                url: this.customersApi,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            },
+            body = '';
 
-      this._loader = true;
+        this._loader = true;
 
-      for (let i = 0; i <= length; i++) {
-          let next = (i === length) ? '' : '&';
-          body += 'customers[]=' + encodeURIComponent(customers[i].self) + next;
-      }
+        for (let i = 0; i <= length; i++) {
+            let next = (i === length) ? '' : '&';
+            body += 'customers[]=' + encodeURIComponent(customers[i].self) + next;
+        }
 
-      options.body = body;
+        options.body = body;
 
-      appRequest.send(options).then(function(request) {
-          this.$.dialog.close();
+        appRequest.send(options).then(function(request) {
+            this.$.dialog.close();
 
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('customers-removed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      customers: request.response.customers
-                  }
-              }));
-          }
-          else {
-              this.dispatchEvent(new CustomEvent('customers-remove-failed', { bubbles: true, composed: true }));
-          }
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('customers-removed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        customers: request.response.customers
+                    }
+                }));
+            }
+            else {
+                this.dispatchEvent(new CustomEvent('customers-remove-failed', { bubbles: true, composed: true }));
+            }
 
-          this.set('customers', []);
-          this._loader = false;
-      }.bind(this));
-  }
+            this.set('customers', []);
+            this._loader = false;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoRemoveCustomers.is, AppscoRemoveCustomers);

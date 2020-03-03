@@ -13,9 +13,10 @@ import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyResourceSettingsDialog extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -67,125 +68,125 @@ class AppscoCompanyResourceSettingsDialog extends mixinBehaviors([Appsco.Headers
 
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-resource-settings-dialog'; }
+    static get is() { return 'appsco-company-resource-settings-dialog'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          domain: {
-              type: String
-          },
+            domain: {
+                type: String
+            },
 
-          _applicationSettings: {
-              type: Boolean,
-              value: false
-          },
+            _applicationSettings: {
+                type: Boolean,
+                value: false
+            },
 
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          companyApplication: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            companyApplication: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  setApplication(application) {
-      this._loadCompanyApplication(application);
-      this.application = application;
-  }
+    setApplication(application) {
+        this._loadCompanyApplication(application);
+        this.application = application;
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _onDialogClosed() {
-      this._loader = false;
-  }
+    _onDialogClosed() {
+        this._loader = false;
+    }
 
-  _onSave() {
-      const _self = this;
-      this.$.appscoCompanyResourceSettings.save(function() {
-          _self.toggle();
-          _self.dispatchEvent(new CustomEvent('company-resource-edited', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  resource: _self.companyApplication
-              }
-          }));
-      });
-  }
+    _onSave() {
+        const _self = this;
+        this.$.appscoCompanyResourceSettings.save(function() {
+            _self.toggle();
+            _self.dispatchEvent(new CustomEvent('company-resource-edited', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    resource: _self.companyApplication
+                }
+            }));
+        });
+    }
 
-  _onApplicationsSettingsSaved() {
-      this._hideLoader();
-      this.toggle();
-  }
+    _onApplicationsSettingsSaved() {
+        this._hideLoader();
+        this.toggle();
+    }
 
-  _onFormError() {
-      this._hideLoader();
-  }
+    _onFormError() {
+        this._hideLoader();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _loadCompanyApplication(application) {
-      const applicationSelf = application && application.application
-          ? application.application.meta.company_self
-          : application.self;
+    _loadCompanyApplication(application) {
+        const applicationSelf = application && application.application
+            ? application.application.meta.company_self
+            : application.self;
 
-      const request = document.createElement('iron-request'),
-          options = {
-              url: applicationSelf,
-              method: 'GET',
-              handleAs: 'json',
-              headers: this._headers
-          };
+        const request = document.createElement('iron-request'),
+            options = {
+                url: applicationSelf,
+                method: 'GET',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._showLoader();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              var resource = request.response;
-              this.set('companyApplication', resource);
-              this._hideLoader();
-          }
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                var resource = request.response;
+                this.set('companyApplication', resource);
+                this._hideLoader();
+            }
 
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.error.code));
-      }.bind(this));
-  }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.error.code));
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoCompanyResourceSettingsDialog.is, AppscoCompanyResourceSettingsDialog);

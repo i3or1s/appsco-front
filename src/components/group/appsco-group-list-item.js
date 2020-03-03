@@ -11,14 +11,14 @@ import '../components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoGroupListItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
-        <style include="appsco-list-item-styles"></style>
-        <style>
+    static get template() {
+        return html`
+        <style include="appsco-list-item-styles">
             :host {
                 --group-image: {
                     width: 32px;
@@ -46,10 +46,10 @@ class AppscoGroupListItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() {
-      return 'appsco-group-list-item';
-  }
+    static get is() {
+        return 'appsco-group-list-item';
+    }
 }
 window.customElements.define(AppscoGroupListItem.is, AppscoGroupListItem);

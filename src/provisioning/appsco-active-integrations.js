@@ -8,12 +8,11 @@ import '../components/components/appsco-list-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-class AppscoActiveIntegrations extends mixinBehaviors([AppscoListBehavior], PolymerElement) {
-  static get template() {
-    return html`
-        <style include="appsco-list-styles"></style>
 
-        <style>
+class AppscoActiveIntegrations extends mixinBehaviors([AppscoListBehavior], PolymerElement) {
+    static get template() {
+        return html`
+        <style include="appsco-list-styles">
             :host {
                 --appsco-list-item: {
                     @apply --appsco-active-integration-item;
@@ -56,12 +55,12 @@ class AppscoActiveIntegrations extends mixinBehaviors([AppscoListBehavior], Poly
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-active-integrations'; }
+    static get is() { return 'appsco-active-integrations'; }
 
-  reloadIntegrations() {
-      this.reloadItems();
-  }
+    reloadIntegrations() {
+        this.reloadItems();
+    }
 }
 window.customElements.define(AppscoActiveIntegrations.is, AppscoActiveIntegrations);

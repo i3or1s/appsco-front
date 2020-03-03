@@ -8,9 +8,10 @@ import '../components/appsco-list-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOAuthApplicationCertificates extends mixinBehaviors([AppscoListBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host appsco-oauth-application-certificate-item {
                 width: 100%;
@@ -47,17 +48,17 @@ class AppscoOAuthApplicationCertificates extends mixinBehaviors([AppscoListBehav
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-oauth-application-certificates'; }
+    static get is() { return 'appsco-oauth-application-certificates'; }
 
-  static get properties() {
-      return {
-          preview: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+    static get properties() {
+        return {
+            preview: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 }
 window.customElements.define(AppscoOAuthApplicationCertificates.is, AppscoOAuthApplicationCertificates);

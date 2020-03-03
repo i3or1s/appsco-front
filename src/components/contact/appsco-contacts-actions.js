@@ -17,9 +17,10 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactsActions extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -143,189 +144,189 @@ class AppscoContactsActions extends mixinBehaviors([NeonAnimationRunnerBehavior]
             <paper-tooltip for="sendNotificationAction" position="bottom">Send notification</paper-tooltip>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contacts-actions'; }
+    static get is() { return 'appsco-contacts-actions'; }
 
-  static get properties() {
-      return {
-          /**
-           * Indicates if bulk actions are visible or not.
-           * Used to show / hide bulk actions.
-           */
-          _bulkActions: {
-              type: Boolean,
-              value: false,
-              observer: '_onBulkActionsChanged'
-          },
+    static get properties() {
+        return {
+            /**
+             * Indicates if bulk actions are visible or not.
+             * Used to show / hide bulk actions.
+             */
+            _bulkActions: {
+                type: Boolean,
+                value: false,
+                observer: '_onBulkActionsChanged'
+            },
 
-          _bulkSelectAll: {
-              type: Boolean,
-              value: true,
-              observer: '_onBulkSelectAllChanged'
-          },
+            _bulkSelectAll: {
+                type: Boolean,
+                value: true,
+                observer: '_onBulkSelectAllChanged'
+            },
 
-          _pages: {
-              type: Array,
-              value: function () {
-                  return [
-                      {
-                          name: 'Contacts',
-                          value: 0
-                      },
-                      {
-                          name: 'Invitations',
-                          value: 1
-                      }];
-              }
-          },
+            _pages: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            name: 'Contacts',
+                            value: 0
+                        },
+                        {
+                            name: 'Invitations',
+                            value: 1
+                        }];
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: [],
-              nodeDelay: 50,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'cascaded-animation',
-              animation: 'fade-out-animation',
-              nodes: [],
-              nodeDelay: 0,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: [],
+                nodeDelay: 50,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'cascaded-animation',
+                animation: 'fade-out-animation',
+                nodes: [],
+                nodeDelay: 0,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
-  }
+    _addListeners() {
+        this.addEventListener('neon-animation-finish', this._onNeonAnimationFinish);
+    }
 
-  showBulkActions() {
-      this._bulkActions = true;
-  }
+    showBulkActions() {
+        this._bulkActions = true;
+    }
 
-  hideBulkActions() {
-      this._bulkActions = false;
-  }
+    hideBulkActions() {
+        this._bulkActions = false;
+    }
 
-  /**
-   * Sets focus on search input field.
-   */
-  focusSearch() {
-      this.$.appscoSearch.setup();
-  }
+    /**
+     * Sets focus on search input field.
+     */
+    focusSearch() {
+        this.$.appscoSearch.setup();
+    }
 
-  reset() {
-      this.resetActions();
-      this.shadowRoot.getElementById('pagesListbox').selected = 0;
-  }
+    reset() {
+        this.resetActions();
+        this.shadowRoot.getElementById('pagesListbox').selected = 0;
+    }
 
-  resetActions() {
-      this.$.appscoSearch.reset();
-      this.hideBulkActions();
-  }
+    resetActions() {
+        this.$.appscoSearch.reset();
+        this.hideBulkActions();
+    }
 
-  _onAddContactAction() {
-      this.dispatchEvent(new CustomEvent('add-contact', { bubbles: true, composed: true }));
-  }
+    _onAddContactAction() {
+        this.dispatchEvent(new CustomEvent('add-contact', { bubbles: true, composed: true }));
+    }
 
-  _onImportContactsAction() {
-      this.dispatchEvent(new CustomEvent('import-contacts', { bubbles: true, composed: true }));
-  }
+    _onImportContactsAction() {
+        this.dispatchEvent(new CustomEvent('import-contacts', { bubbles: true, composed: true }));
+    }
 
-  _onDeleteContactsAction() {
-      this.dispatchEvent(new CustomEvent('delete-contacts', { bubbles: true, composed: true }));
-  }
+    _onDeleteContactsAction() {
+        this.dispatchEvent(new CustomEvent('delete-contacts', { bubbles: true, composed: true }));
+    }
 
-  _onAddToGroupAction() {
-      this.dispatchEvent(new CustomEvent('add-groups-to-contacts', { bubbles: true, composed: true }));
-  }
+    _onAddToGroupAction() {
+        this.dispatchEvent(new CustomEvent('add-groups-to-contacts', { bubbles: true, composed: true }));
+    }
 
-  _onSelectAllAction() {
-      this.dispatchEvent(new CustomEvent('select-all-contacts', { bubbles: true, composed: true }));
-  }
+    _onSelectAllAction() {
+        this.dispatchEvent(new CustomEvent('select-all-contacts', { bubbles: true, composed: true }));
+    }
 
-  _onSendNotificationAction() {
-      this.dispatchEvent(new CustomEvent('send-notification', { bubbles: true, composed: true }));
-  }
+    _onSendNotificationAction() {
+        this.dispatchEvent(new CustomEvent('send-notification', { bubbles: true, composed: true }));
+    }
 
-  _onActivePageSelected(event) {
-      this.dispatchEvent(new CustomEvent('page-selected', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              page: event.detail.item.getAttribute('name')
-          }
-      }));
-  }
+    _onActivePageSelected(event) {
+        this.dispatchEvent(new CustomEvent('page-selected', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                page: event.detail.item.getAttribute('name')
+            }
+        }));
+    }
 
-  _onBulkActionsChanged() {
-      const bulkActions = dom(this.root).querySelectorAll('.bulk-action');
+    _onBulkActionsChanged() {
+        const bulkActions = dom(this.root).querySelectorAll('.bulk-action');
 
-      if (this.animationConfig) {
-          this.animationConfig.entry.nodes = bulkActions;
-          this.animationConfig.exit.nodes = bulkActions;
-      }
+        if (this.animationConfig) {
+            this.animationConfig.entry.nodes = bulkActions;
+            this.animationConfig.exit.nodes = bulkActions;
+        }
 
-      if (this._bulkActions) {
-          const length = bulkActions.length;
+        if (this._bulkActions) {
+            const length = bulkActions.length;
 
-          for (let i = 0; i < length; i++) {
-              bulkActions[i].style.display = 'flex';
-          }
+            for (let i = 0; i < length; i++) {
+                bulkActions[i].style.display = 'flex';
+            }
 
-          this.playAnimation('entry');
-      }
-      else {
-          this.playAnimation('exit');
-      }
-  }
+            this.playAnimation('entry');
+        }
+        else {
+            this.playAnimation('exit');
+        }
+    }
 
-  showBulkSelectAll() {
-      this._bulkSelectAll = true;
-  }
+    showBulkSelectAll() {
+        this._bulkSelectAll = true;
+    }
 
-  hideBulkSelectAll() {
-      this._bulkSelectAll = false;
-  }
+    hideBulkSelectAll() {
+        this._bulkSelectAll = false;
+    }
 
-  _onBulkSelectAllChanged () {
-      const bulkSelectAll = dom(this.root).querySelectorAll('.bulk-select-all');
-      if (this._bulkSelectAll) {
-          bulkSelectAll[0].style.display = 'block';
-      }else {
-          bulkSelectAll[0].style.display = 'none';
-      }
-  }
+    _onBulkSelectAllChanged () {
+        const bulkSelectAll = dom(this.root).querySelectorAll('.bulk-select-all');
+        if (this._bulkSelectAll) {
+            bulkSelectAll[0].style.display = 'block';
+        }else {
+            bulkSelectAll[0].style.display = 'none';
+        }
+    }
 
-  _onNeonAnimationFinish() {
-      if (!this._bulkActions) {
-          const bulkActions = dom(this.root).querySelectorAll('.bulk-action'),
-              length = bulkActions.length;
+    _onNeonAnimationFinish() {
+        if (!this._bulkActions) {
+            const bulkActions = dom(this.root).querySelectorAll('.bulk-action'),
+                length = bulkActions.length;
 
-          for (let i = 0; i < length; i++) {
-              bulkActions[i].style.display = 'none';
-          }
-      }
-  }
+            for (let i = 0; i < length; i++) {
+                bulkActions[i].style.display = 'none';
+            }
+        }
+    }
 }
 window.customElements.define(AppscoContactsActions.is, AppscoContactsActions);

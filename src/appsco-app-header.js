@@ -269,11 +269,3 @@ $_documentContainer.innerHTML = `<dom-module id="appsco-app-header">
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);
-
-/* Behaviours */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
-;

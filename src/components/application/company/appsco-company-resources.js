@@ -1,35 +1,4 @@
-/*
-`appsco-company-resources`
-Contains company resource list and Load More action.
-Resources are loaded inside component through iron-ajax.
-
-    <appsco-company-resources list-api=""
-                              authorization-token=""
-                              size=""
-                              load-more=""
-                              api-errors="{}">
-    </appsco-company-resources>
-
-### Styling
-
-`<appsco-company-resources>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-list` | Mixin for the root element | `{}`
-`--appsco-company-resource-item` | Mixin for item style | `{}`
-`--list` | Mixin for the resources container | `{}`
-`--appsco-list-progress-bar` | Mixin applied to paper-progress for resource list | `{}`
-`--load-more-button` | Mixin applied to load more action button | `{}`
-`--info-message` | Mixin applied to info message | `{}`
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-progress/paper-progress.js';
@@ -44,12 +13,13 @@ import { AppscoListObserverBehavior } from '../../components/appsco-list-observe
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyResources extends mixinBehaviors([
     AppscoListBehavior,
     AppscoListObserverBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles"></style>
 
         <style>
@@ -103,55 +73,55 @@ class AppscoCompanyResources extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-resources'; }
+    static get is() { return 'appsco-company-resources'; }
 
-  static get properties() {
-      return {
-          resourceAdmin: {
-              type: Boolean,
-              value: false
-          },
+    static get properties() {
+        return {
+            resourceAdmin: {
+                type: Boolean,
+                value: false
+            },
 
-          displayStyle: {
-              type: String,
-              value: 'list',
-              observer: '_displayStyleChanged'
-          },
+            displayStyle: {
+                type: String,
+                value: 'list',
+                observer: '_displayStyleChanged'
+            },
 
-          displayGrid: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            displayGrid: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_observeItems(_listItems)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_observeItems(_listItems)'
+        ];
+    }
 
-  _observeItems(items) {
-      this.setObservableType('resources');
-      this.populateItems(items);
-  }
+    _observeItems(items) {
+        this.setObservableType('resources');
+        this.populateItems(items);
+    }
 
-  _displayStyleChanged(newValue) {
-      this.displayGrid = (newValue === 'grid');
-  }
+    _displayStyleChanged(newValue) {
+        this.displayGrid = (newValue === 'grid');
+    }
 
-  setDisplayStyle(displayStyle) {
-      this.displayStyle = displayStyle;
-  }
+    setDisplayStyle(displayStyle) {
+        this.displayStyle = displayStyle;
+    }
 
-  _onError(response) {
-      if (response.detail.request.status === 403) {
-          this.dispatchEvent(new CustomEvent('load-forbidden', { bubbles: true, composed: true }));
-      }
-      this._onGetListError(response);
-  }
+    _onError(response) {
+        if (response.detail.request.status === 403) {
+            this.dispatchEvent(new CustomEvent('load-forbidden', { bubbles: true, composed: true }));
+        }
+        this._onGetListError(response);
+    }
 }
 window.customElements.define(AppscoCompanyResources.is, AppscoCompanyResources);

@@ -1,34 +1,4 @@
-/*
-`appsco-company-group-item`
-Presents group in form of an item.
-
-    <appsco-company-group-item item="{}"
-                               authorization-token=""
-                               preview>
-    </appsco-company-group-item>
-
-### Styling
-
-`<appsco-company-group-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--item-background-color` | Background color applied to the root element | `#fff`
-`--color` | Color applied to all the text | `#33`
-`--appsco-company-group-item` | Mixin applied to group item element | `{}`
-`--group-basic-info` | Mixin applied to the basic info | `{}`
-`--group-status-info` | Mixin applied to the status info | `{}`
-`--group-basic-info-values` | Mixin applied to the basic info values | `{}`
-`--group-status-info-values` | Mixin applied to the status info values | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-button/paper-button.js';
@@ -45,13 +15,14 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyGroupItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host([preview][activated]) {
                 background-color: #e8e8e8;
@@ -126,166 +97,166 @@ class AppscoCompanyGroupItem extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-group-item'; }
+    static get is() { return 'appsco-company-group-item'; }
 
-  static get properties() {
-      return {
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _groupRolesApiUrl: {
-              type: String,
-              computed: '_computeGroupRolesApiUrl(item)'
-          },
+            _groupRolesApiUrl: {
+                type: String,
+                computed: '_computeGroupRolesApiUrl(item)'
+            },
 
-          _groupResourcesApiUrl: {
-              type: String,
-              computed: '_computeGroupResourcesApiUrl(item)'
-          },
+            _groupResourcesApiUrl: {
+                type: String,
+                computed: '_computeGroupResourcesApiUrl(item)'
+            },
 
-          _groupContactsApiUrl: {
-              type: String,
-              computed: '_computeGroupContactsApiUrl(item)'
-          },
+            _groupContactsApiUrl: {
+                type: String,
+                computed: '_computeGroupContactsApiUrl(item)'
+            },
 
-          _groupRolesCount: {
-              type: Number,
-              value: 0
-          },
+            _groupRolesCount: {
+                type: Number,
+                value: 0
+            },
 
-          _groupRolesLoaded: {
-              type: Boolean,
-              value: false
-          },
+            _groupRolesLoaded: {
+                type: Boolean,
+                value: false
+            },
 
-          _groupResourcesCount: {
-              type: Number,
-              value: 0
-          },
+            _groupResourcesCount: {
+                type: Number,
+                value: 0
+            },
 
-          _groupResourcesLoaded: {
-              type: Boolean,
-              value: false
-          },
+            _groupResourcesLoaded: {
+                type: Boolean,
+                value: false
+            },
 
-          _groupContactsCount: {
-              type: Number,
-              value: 0
-          },
+            _groupContactsCount: {
+                type: Number,
+                value: 0
+            },
 
-          _groupContactsLoaded: {
-              type: Boolean,
-              value: false
-          },
+            _groupContactsLoaded: {
+                type: Boolean,
+                value: false
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_listenForItemInfoLoad(_groupRolesLoaded, _groupResourcesLoaded, _groupContactsLoaded)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_listenForItemInfoLoad(_groupRolesLoaded, _groupResourcesLoaded, _groupContactsLoaded)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('tap', this._onItemAction);
-  }
+    _addListeners() {
+        this.addEventListener('tap', this._onItemAction);
+    }
 
-  recalculateTotals() {
-      this.$.getGroupRolesApiRequest.generateRequest();
-      this.$.getGroupContactsApiRequest.generateRequest();
-      this.$.getGroupResourcesApiRequest.generateRequest();
-  }
+    recalculateTotals() {
+        this.$.getGroupRolesApiRequest.generateRequest();
+        this.$.getGroupContactsApiRequest.generateRequest();
+        this.$.getGroupResourcesApiRequest.generateRequest();
+    }
 
-  increaseGroupRolesCount(count) {
-      this._groupRolesCount += count;
-  }
+    increaseGroupRolesCount(count) {
+        this._groupRolesCount += count;
+    }
 
-  decreaseGroupRolesCount(count) {
-      this._groupRolesCount -= count;
-  }
+    decreaseGroupRolesCount(count) {
+        this._groupRolesCount -= count;
+    }
 
-  _computeGroupRolesApiUrl(group) {
-      return group.meta ? group.meta.company_roles : null;
-  }
+    _computeGroupRolesApiUrl(group) {
+        return group.meta ? group.meta.company_roles : null;
+    }
 
-  _computeGroupResourcesApiUrl(group) {
-      return group.meta ? group.meta.applications : null;
-  }
+    _computeGroupResourcesApiUrl(group) {
+        return group.meta ? group.meta.applications : null;
+    }
 
-  _computeGroupContactsApiUrl(group) {
-      return group.meta ? group.meta.contacts : null;
-  }
+    _computeGroupContactsApiUrl(group) {
+        return group.meta ? group.meta.contacts : null;
+    }
 
-  _onGroupRolesError() {
-      this._groupRolesCount = 0;
-      this._groupRolesLoaded = true;
-  }
+    _onGroupRolesError() {
+        this._groupRolesCount = 0;
+        this._groupRolesLoaded = true;
+    }
 
-  _onGroupContactsError() {
-      this._groupContactsCount = 0;
-      this._groupContactsLoaded = true;
-  }
+    _onGroupContactsError() {
+        this._groupContactsCount = 0;
+        this._groupContactsLoaded = true;
+    }
 
-  _onGroupResourcesError() {
-      this._groupResourcesCount = 0;
-      this._groupResourcesLoaded = true;
-  }
+    _onGroupResourcesError() {
+        this._groupResourcesCount = 0;
+        this._groupResourcesLoaded = true;
+    }
 
-  _onGroupRolesResponse(event) {
-      const response = event.detail.response;
+    _onGroupRolesResponse(event) {
+        const response = event.detail.response;
 
-      this._groupRolesCount = (response && response.meta) ? response.meta.total : 0;
-      this._groupRolesLoaded = true;
-  }
+        this._groupRolesCount = (response && response.meta) ? response.meta.total : 0;
+        this._groupRolesLoaded = true;
+    }
 
-  _onGroupResourcesResponse(event) {
-      const response = event.detail.response;
+    _onGroupResourcesResponse(event) {
+        const response = event.detail.response;
 
-      this._groupResourcesCount = (response && response.meta) ? response.meta.total : 0;
-      this._groupResourcesLoaded = true;
-  }
+        this._groupResourcesCount = (response && response.meta) ? response.meta.total : 0;
+        this._groupResourcesLoaded = true;
+    }
 
-  _onGroupContactsResponse(event) {
-      const response = event.detail.response;
+    _onGroupContactsResponse(event) {
+        const response = event.detail.response;
 
-      this._groupContactsCount = (response && response.meta) ? response.meta.total : 0;
-      this._groupContactsLoaded = true;
-  }
+        this._groupContactsCount = (response && response.meta) ? response.meta.total : 0;
+        this._groupContactsLoaded = true;
+    }
 
-  _listenForItemInfoLoad(rolesLoaded, resourcesLoaded, contactsLoaded) {
-      if (this.noAutoDisplay && rolesLoaded && resourcesLoaded && contactsLoaded) {
-          this._showItem();
-      }
-  }
+    _listenForItemInfoLoad(rolesLoaded, resourcesLoaded, contactsLoaded) {
+        if (this.noAutoDisplay && rolesLoaded && resourcesLoaded && contactsLoaded) {
+            this._showItem();
+        }
+    }
 
-  _onRenameGroupAction(event) {
-      event.stopPropagation();
-      this.dispatchEvent(new CustomEvent('group-rename', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              group: this.item
-          }
-      }));
-  }
+    _onRenameGroupAction(event) {
+        event.stopPropagation();
+        this.dispatchEvent(new CustomEvent('group-rename', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                group: this.item
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoCompanyGroupItem.is, AppscoCompanyGroupItem);

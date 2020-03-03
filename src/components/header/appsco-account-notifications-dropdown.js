@@ -1,28 +1,4 @@
-/**
-`appsco-account-notifications-dropdown`
-Is used to present notifications dropdown.
-
-Example:
-
-    <body>
-      <appsco-account-notifications-dropdown>
-     </appsco-account-notifications-dropdown>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-account-notifications-dropdown` | Mixin applied to inner appsco-dropdown within root element | `{}`
-`--appsco-account-notifications-all-action` | Mixin applied to All Notifications action button | `{}`
-`--notifications-paper-card-header-text` | Mixin applied to paper-card header text | `{}`
-
-@demo demo/appsco-account-notifications-dropdown.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/iron-icons/social-icons.js';
@@ -31,9 +7,10 @@ import './appsco-dropdown.js';
 import '../account/appsco-account-notifications.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountNotificationsDropdown extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="iron-flex iron-flex-alignment">
             :host {
                 display: inline-block;
@@ -113,71 +90,71 @@ class AppscoAccountNotificationsDropdown extends PolymerElement {
 
         </appsco-dropdown>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-notifications-dropdown'; }
+    static get is() { return 'appsco-account-notifications-dropdown'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String
+            },
 
-          notificationsApi: {
-              type: String
-          },
+            notificationsApi: {
+                type: String
+            },
 
-          /**
-           * Number of notifications to load.
-           */
-          notificationsSize: {
-              type: Number,
-              value: 5
-          },
+            /**
+             * Number of notifications to load.
+             */
+            notificationsSize: {
+                type: Number,
+                value: 5
+            },
 
-          /**
-           * Indicates if notifications are opened or not.
-           */
-          _open: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if notifications are opened or not.
+             */
+            _open: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * DOM element which triggers the dropdown.
-           */
-          _triggerDropdown: {
-              type: Object,
-              notify: true
-          }
-      };
-  }
+            /**
+             * DOM element which triggers the dropdown.
+             */
+            _triggerDropdown: {
+                type: Object,
+                notify: true
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._triggerDropdown = this.shadowRoot.getElementById('notificationsAction');
-  }
+        this._triggerDropdown = this.shadowRoot.getElementById('notificationsAction');
+    }
 
-  toggleNotifications(target) {
-      this._open = !this._open;
-      this._triggerDropdown = target;
-      this.$.appscoNotificationsDropdown.toggle();
+    toggleNotifications(target) {
+        this._open = !this._open;
+        this._triggerDropdown = target;
+        this.$.appscoNotificationsDropdown.toggle();
 
-      if (this._open) {
-          this.$.appscoAccountNotifications.loadNotifications();
-      }
-  }
+        if (this._open) {
+            this.$.appscoAccountNotifications.loadNotifications();
+        }
+    }
 
-  _onNotificationsLoad() {
-      this.$.notificationsActions.hidden = false;
-      this.dispatchEvent(new CustomEvent('notifications-seen', { bubbles: true, composed: true }));
-  }
+    _onNotificationsLoad() {
+        this.$.notificationsActions.hidden = false;
+        this.dispatchEvent(new CustomEvent('notifications-seen', { bubbles: true, composed: true }));
+    }
 
-  _seeAllNotificationsAction() {
-      this.dispatchEvent(new CustomEvent('all-notifications', { bubbles: true, composed: true }));
+    _seeAllNotificationsAction() {
+        this.dispatchEvent(new CustomEvent('all-notifications', { bubbles: true, composed: true }));
 
-      this.toggleNotifications();
-  }
+        this.toggleNotifications();
+    }
 }
 window.customElements.define(AppscoAccountNotificationsDropdown.is, AppscoAccountNotificationsDropdown);

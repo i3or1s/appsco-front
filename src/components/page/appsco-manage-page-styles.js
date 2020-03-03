@@ -3,6 +3,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '../../shared-styles.js';
 import '../../webkit-scrollbar-style.js';
 import './appsco-page-styles.js';
+
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="appsco-manage-page-styles">

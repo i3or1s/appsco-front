@@ -8,9 +8,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOAuthApplicationDetails extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --appsco-oauth-application-details;
@@ -70,62 +71,62 @@ class AppscoOAuthApplicationDetails extends mixinBehaviors([NeonAnimationRunnerB
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-oauth-application-details'; }
+    static get is() { return 'appsco-oauth-application-details'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          this._showApplicationDetails();
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._showApplicationDetails();
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('application-changed', this._onApplicationChanged);
-  }
+    _addListeners() {
+        this.addEventListener('application-changed', this._onApplicationChanged);
+    }
 
-  _onApplicationChanged() {
-      this._showApplicationDetails();
-  }
+    _onApplicationChanged() {
+        this._showApplicationDetails();
+    }
 
-  _showApplicationDetails() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showApplicationDetails() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 }
 window.customElements.define(AppscoOAuthApplicationDetails.is, AppscoOAuthApplicationDetails);

@@ -10,9 +10,10 @@ import '../components/account/appsco-account-change-password.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountChangePasswordPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -41,75 +42,75 @@ class AppscoAccountChangePasswordPage extends mixinBehaviors([NeonSharedElementA
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-change-password-page'; }
+    static get is() { return 'appsco-account-change-password-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String
+            },
 
-          /**
-           * Change account password link.
-           */
-          changePasswordApi: {
-              type: String
-          },
+            /**
+             * Change account password link.
+             */
+            changePasswordApi: {
+                type: String
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _back() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _back() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  setPage() {
-      this.$.appscoAccountChangePassword.setUp();
-  }
+    setPage() {
+        this.$.appscoAccountChangePassword.setUp();
+    }
 
-  resetPage() {
-      this.$.appscoAccountChangePassword.reset();
-  }
+    resetPage() {
+        this.$.appscoAccountChangePassword.reset();
+    }
 }
 window.customElements.define(AppscoAccountChangePasswordPage.is, AppscoAccountChangePasswordPage);

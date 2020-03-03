@@ -3,9 +3,10 @@ import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoBillingReportActions extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -31,12 +32,12 @@ class AppscoBillingReportActions extends PolymerElement {
             <paper-button class="export-action" on-tap="_onExportAction">Export</paper-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-billing-report-actions'; }
+    static get is() { return 'appsco-billing-report-actions'; }
 
-  _onExportAction() {
-      this.dispatchEvent(new CustomEvent('export-billing-report', { bubbles: true, composed: true }));
-  }
+    _onExportAction() {
+        this.dispatchEvent(new CustomEvent('export-billing-report', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoBillingReportActions.is, AppscoBillingReportActions);

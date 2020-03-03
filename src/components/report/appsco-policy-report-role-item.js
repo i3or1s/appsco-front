@@ -19,16 +19,15 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoPolicyReportRoleItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+    static get template() {
+        return html`
+        <style include="appsco-list-item-styles">
             :host {
                 --appsco-policies-report-breached-policy-item: {
                     width: calc(100% / 3);
@@ -118,127 +117,127 @@ class AppscoPolicyReportRoleItem extends mixinBehaviors([
             </div>
         </iron-collapse>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-policy-report-role-item'; }
+    static get is() { return 'appsco-policy-report-role-item'; }
 
-  static get properties() {
-      return {
-          policiesReportApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            policiesReportApi: {
+                type: String
+            },
 
-          screen800: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            screen800: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          screen1300: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            screen1300: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _policies: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _policies: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _getPoliciesApiUrl: {
-              type: String,
-              computed: '_computeGetPoliciesApiUrl(item, policiesReportApi)'
-          },
+            _getPoliciesApiUrl: {
+                type: String,
+                computed: '_computeGetPoliciesApiUrl(item, policiesReportApi)'
+            },
 
-          _policiesCount: {
-              type: Number,
-              value: 0
-          },
+            _policiesCount: {
+                type: Number,
+                value: 0
+            },
 
-          _policiesLoaded: {
-              type: Boolean,
-              value: false
-          },
+            _policiesLoaded: {
+                type: Boolean,
+                value: false
+            },
 
-          _policiesVisible: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _policiesVisible: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(screen800, screen1300)',
-          '_checkStatus(_policiesLoaded)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(screen800, screen1300)',
+            '_checkStatus(_policiesLoaded)'
+        ];
+    }
 
-  connectedCallback() {
-      super.connectedCallback();
+    connectedCallback() {
+        super.connectedCallback();
 
-      afterNextRender(this, function() {
-          this._checkStatus(this._policiesLoaded);
-      });
-  }
+        afterNextRender(this, function() {
+            this._checkStatus(this._policiesLoaded);
+        });
+    }
 
-  _checkStatus(policiesLoaded) {
-      if (!this.noAutoDisplay && policiesLoaded) {
-          this._showItem();
-      }
-  }
+    _checkStatus(policiesLoaded) {
+        if (!this.noAutoDisplay && policiesLoaded) {
+            this._showItem();
+        }
+    }
 
-  getPolicies() {
-      return this._policies;
-  }
+    getPolicies() {
+        return this._policies;
+    }
 
-  _computeGetPoliciesApiUrl(item, policiesReportApi) {
-      return policiesReportApi ? (policiesReportApi + '?extended=1&limit=1000&account=' + encodeURIComponent(item.account.self)) : null;
-  }
+    _computeGetPoliciesApiUrl(item, policiesReportApi) {
+        return policiesReportApi ? (policiesReportApi + '?extended=1&limit=1000&account=' + encodeURIComponent(item.account.self)) : null;
+    }
 
-  _updateScreen() {
-      this.updateStyles();
-  }
+    _updateScreen() {
+        this.updateStyles();
+    }
 
-  _setApiRequestUrl(url) {
-      this.$.getPoliciesApiRequest.url = url;
-  }
+    _setApiRequestUrl(url) {
+        this.$.getPoliciesApiRequest.url = url;
+    }
 
-  _onGetPoliciesError() {
-      this.set('_policies', []);
-      this._policiesCount = 0;
-      this._policiesLoaded = true;
-  }
+    _onGetPoliciesError() {
+        this.set('_policies', []);
+        this._policiesCount = 0;
+        this._policiesLoaded = true;
+    }
 
-  _onGetPoliciesResponse(event) {
-      const response = event.detail.response;
+    _onGetPoliciesResponse(event) {
+        const response = event.detail.response;
 
-      if (response && response.logs) {
-          const policies = response.logs;
+        if (response && response.logs) {
+            const policies = response.logs;
 
-          this._policiesCount = response.count ? response.count : 0;
+            this._policiesCount = response.count ? response.count : 0;
 
-          policies.forEach(function(el, index) {
-              setTimeout(function() {
-                  this.push('_policies', el);
-              }.bind(this), (index + 1) * 30 );
+            policies.forEach(function(el, index) {
+                setTimeout(function() {
+                    this.push('_policies', el);
+                }.bind(this), (index + 1) * 30 );
 
-          }.bind(this));
+            }.bind(this));
 
-          this._policiesLoaded = true;
-      }
-  }
+            this._policiesLoaded = true;
+        }
+    }
 
-  _onShowResources() {
-      this.$.resources.show();
-      this._policiesVisible = true;
-  }
+    _onShowResources() {
+        this.$.resources.show();
+        this._policiesVisible = true;
+    }
 
-  _onHideResources() {
-      this.$.resources.hide();
-      this._policiesVisible = false;
-  }
+    _onHideResources() {
+        this.$.resources.hide();
+        this._policiesVisible = false;
+    }
 }
 window.customElements.define(AppscoPolicyReportRoleItem.is, AppscoPolicyReportRoleItem);

@@ -1,27 +1,4 @@
-/**
-`appsco-account-authorized-app-revoke`
-Shows dialog screen with confirmation for application revoke.
-
-    <appsco-account-authorized-app-revoke>
-    </appsco-account-authorized-app-revoke>
-
-### Styling
-
-`<appsco-account-authorized-app-revoke>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--account-authorized-app-revoke` | Mixin for the root element | `{}`
-
-@demo demo/appsco-account-authorized-app-revoke.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
@@ -32,9 +9,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountAuthorizedAppRevoke extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -73,57 +51,57 @@ class AppscoAccountAuthorizedAppRevoke extends mixinBehaviors([Appsco.HeadersMix
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-authorized-app-revoke'; }
+    static get is() { return 'appsco-account-authorized-app-revoke'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  open() {
-      this.$.revokeDialog.open();
-  }
+    open() {
+        this.$.revokeDialog.open();
+    }
 
-  setApplication(application) {
-      this.application = application;
-  }
+    setApplication(application) {
+        this.application = application;
+    }
 
-  _revokeApplication() {
-      const appRequest = document.createElement('iron-request');
+    _revokeApplication() {
+        const appRequest = document.createElement('iron-request');
 
-      this._loader = true;
+        this._loader = true;
 
-      appRequest.send({
-          url: this.application.revoke,
-          method: "DELETE",
-          handleAs: 'json',
-          headers: this._headers
-      }).then(function() {
-          this._loader = false;
+        appRequest.send({
+            url: this.application.revoke,
+            method: "DELETE",
+            handleAs: 'json',
+            headers: this._headers
+        }).then(function() {
+            this._loader = false;
 
-          this.dispatchEvent(new CustomEvent('application-revoked', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  application: this.application
-              }
-          }));
-          this.$.revokeDialog.close();
-      }.bind(this));
-  }
+            this.dispatchEvent(new CustomEvent('application-revoked', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    application: this.application
+                }
+            }));
+            this.$.revokeDialog.close();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoAccountAuthorizedAppRevoke.is, AppscoAccountAuthorizedAppRevoke);

@@ -16,9 +16,10 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoManageGroupComponentsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-layout-with-cards-styles"></style>
 
         <iron-media-query query="(max-width: 1200px)" query-matches="{{ mediumScreen }}"></iron-media-query>
@@ -62,163 +63,163 @@ class AppscoManageGroupComponentsPage extends mixinBehaviors([NeonSharedElementA
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-group-components-page'; }
+    static get is() { return 'appsco-manage-group-components-page'; }
 
-  static get properties() {
-      return {
-          group: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            group: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          groupRolesApi: {
-              type: String
-          },
+            groupRolesApi: {
+                type: String
+            },
 
-          groupContactsApi: {
-              type: String
-          },
+            groupContactsApi: {
+                type: String
+            },
 
-          groupResourcesApi: {
-              type: String
-          },
+            groupResourcesApi: {
+                type: String
+            },
 
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(tabletScreen, mediumScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(tabletScreen, mediumScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: dom(this.root).querySelectorAll('paper-card'),
-              nodeDelay: 50,
-              timing: {
-                  delay: 200,
-                  duration: 100
-              }
-          }],
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }]
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: dom(this.root).querySelectorAll('paper-card'),
+                nodeDelay: 50,
+                timing: {
+                    delay: 200,
+                    duration: 100
+                }
+            }],
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }]
+        };
 
-      beforeNextRender(this, function() {
-          if (this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  loadPage() {
-      this._loadRoles();
-      this._loadContacts();
-      this._loadResources();
-  }
+    loadPage() {
+        this._loadRoles();
+        this._loadContacts();
+        this._loadResources();
+    }
 
-  addGroupRoles(roles) {
-      this.$.appscoCompanyGroupRoles.addGroupItems(roles);
-  }
+    addGroupRoles(roles) {
+        this.$.appscoCompanyGroupRoles.addGroupItems(roles);
+    }
 
-  addGroupContacts(contacts) {
-      this.$.appscoCompanyGroupContacts.addGroupItems(contacts);
-  }
+    addGroupContacts(contacts) {
+        this.$.appscoCompanyGroupContacts.addGroupItems(contacts);
+    }
 
-  addGroupResources(resources) {
-      this.$.appscoCompanyGroupResources.addGroupItems(resources);
-  }
+    addGroupResources(resources) {
+        this.$.appscoCompanyGroupResources.addGroupItems(resources);
+    }
 
-  removeGroupRoles(roles) {
-      this.$.appscoCompanyGroupRoles.removeGroupItems(roles);
-  }
+    removeGroupRoles(roles) {
+        this.$.appscoCompanyGroupRoles.removeGroupItems(roles);
+    }
 
-  removeGroupContacts(contacts) {
-      this.$.appscoCompanyGroupContacts.removeGroupItems(contacts);
-  }
+    removeGroupContacts(contacts) {
+        this.$.appscoCompanyGroupContacts.removeGroupItems(contacts);
+    }
 
-  removeGroupResources(resources) {
-      this.$.appscoCompanyGroupResources.removeGroupItems(resources);
-  }
+    removeGroupResources(resources) {
+        this.$.appscoCompanyGroupResources.removeGroupItems(resources);
+    }
 
-  _loadRoles() {
-      this.$.appscoCompanyGroupRoles.loadItems();
-  }
+    _loadRoles() {
+        this.$.appscoCompanyGroupRoles.loadItems();
+    }
 
-  _loadContacts() {
-      this.$.appscoCompanyGroupContacts.loadItems();
-  }
+    _loadContacts() {
+        this.$.appscoCompanyGroupContacts.loadItems();
+    }
 
-  _loadResources() {
-      this.$.appscoCompanyGroupResources.loadItems();
-  }
+    _loadResources() {
+        this.$.appscoCompanyGroupResources.loadItems();
+    }
 
-  _updateScreen(tablet, medium) {
-      this.updateStyles();
-  }
+    _updateScreen(tablet, medium) {
+        this.updateStyles();
+    }
 
-  _setSharedElement(target) {
-      while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
-          target = target.parentNode;
-      }
+    _setSharedElement(target) {
+        while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+            target = target.parentNode;
+        }
 
-      this.sharedElements = {
-          'hero': target
-      };
-  }
+        this.sharedElements = {
+            'hero': target
+        };
+    }
 
-  _onManageGroupRoles(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-group-roles', { bubbles: true, composed: true }));
-  }
+    _onManageGroupRoles(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-group-roles', { bubbles: true, composed: true }));
+    }
 
-  _onManageGroupContacts(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-group-contacts', { bubbles: true, composed: true }));
-  }
+    _onManageGroupContacts(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-group-contacts', { bubbles: true, composed: true }));
+    }
 
-  _onManageGroupResources(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-group-resources', { bubbles: true, composed: true }));
-  }
+    _onManageGroupResources(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-group-resources', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoManageGroupComponentsPage.is, AppscoManageGroupComponentsPage);

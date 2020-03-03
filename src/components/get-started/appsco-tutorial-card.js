@@ -12,15 +12,14 @@ import '../components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoTutorialCard extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+    static get template() {
+        return html`
+        <style include="appsco-list-item-styles">
             :host {
                 width: 100%;
                 margin-bottom: 10px;
@@ -63,72 +62,72 @@ class AppscoTutorialCard extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-tutorial-card'; }
+    static get is() { return 'appsco-tutorial-card'; }
 
-  static get properties() {
-      return {
-          tutorial: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            tutorial: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _isDone: {
-              type: Boolean,
-              value: false,
-              computed: '_isTutorialDone(tutorial)'
-          },
+            _isDone: {
+                type: Boolean,
+                value: false,
+                computed: '_isTutorialDone(tutorial)'
+            },
 
-          index: {
-              type: Number,
-              value: 0
-          },
+            index: {
+                type: Number,
+                value: 0
+            },
 
-          firstUnfinishedIndex: {
-              type: Number,
-              value: 0
-          },
+            firstUnfinishedIndex: {
+                type: Number,
+                value: 0
+            },
 
-          _startCaption: {
-              type: String,
-              value: 'Start',
-              computed: '_computeStartCaption(index, firstUnfinishedIndex)'
-          }
-      };
-  }
+            _startCaption: {
+                type: String,
+                value: 'Start',
+                computed: '_computeStartCaption(index, firstUnfinishedIndex)'
+            }
+        };
+    }
 
-  _onStartAction(evt) {
-      let scrollElement = document.querySelector('* app-header-layout #contentContainer');
-      if(null === scrollElement) {
-          scrollElement = document.querySelector('* /deep/ app-header-layout /deep/ #contentContainer');
-      }
-      if (scrollElement) {
-          scrollElement.scrollTop = 0;
-      }
-      this.dispatchEvent(new CustomEvent('tutorial-start', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              tutorialId: this.tutorial.id
-          }
-      }));
-  }
+    _onStartAction(evt) {
+        let scrollElement = document.querySelector('* app-header-layout #contentContainer');
+        if(null === scrollElement) {
+            scrollElement = document.querySelector('* /deep/ app-header-layout /deep/ #contentContainer');
+        }
+        if (scrollElement) {
+            scrollElement.scrollTop = 0;
+        }
+        this.dispatchEvent(new CustomEvent('tutorial-start', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                tutorialId: this.tutorial.id
+            }
+        }));
+    }
 
-  _isTutorialDone(tutorial) {
-      return tutorial.isDone;
-  }
+    _isTutorialDone(tutorial) {
+        return tutorial.isDone;
+    }
 
-  _computeStartCaption(index, firstUnfinishedIndex) {
-      return index == firstUnfinishedIndex ? 'Start' : 'Next up';
-  }
+    _computeStartCaption(index, firstUnfinishedIndex) {
+        return index == firstUnfinishedIndex ? 'Start' : 'Next up';
+    }
 }
 window.customElements.define(AppscoTutorialCard.is, AppscoTutorialCard);

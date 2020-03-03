@@ -7,9 +7,10 @@ import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animat
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoTimePicker extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --layout-vertical;
@@ -92,193 +93,193 @@ class AppscoTimePicker extends mixinBehaviors([NeonAnimationRunnerBehavior], Pol
 
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-time-picker'; }
+    static get is() { return 'appsco-time-picker'; }
 
-  static get properties() {
-      return {
-          label: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            label: {
+                type: String,
+                value: ''
+            },
 
-          value: {
-              type: String,
-              value: '',
-              notify: true
-          },
+            value: {
+                type: String,
+                value: '',
+                notify: true
+            },
 
-          options: {
-              type: Array,
-              value: function () {
-                  return [
-                      '00:00',
-                      '00:30',
-                      '01:00',
-                      '01:30',
-                      '02:00',
-                      '02:30',
-                      '03:00',
-                      '03:30',
-                      '04:00',
-                      '04:30',
-                      '05:00',
-                      '05:30',
-                      '06:00',
-                      '06:30',
-                      '07:00',
-                      '07:30',
-                      '08:00',
-                      '08:30',
-                      '09:00',
-                      '09:30',
-                      '10:00',
-                      '10:30',
-                      '11:00',
-                      '11:30',
-                      '12:00',
-                      '12:30',
-                      '13:00',
-                      '13:30',
-                      '14:00',
-                      '14:30',
-                      '15:00',
-                      '15:30',
-                      '16:00',
-                      '16:30',
-                      '17:00',
-                      '17:30',
-                      '18:00',
-                      '18:30',
-                      '19:00',
-                      '19:30',
-                      '20:00',
-                      '20:30',
-                      '21:00',
-                      '21:30',
-                      '22:00',
-                      '22:30',
-                      '23:00',
-                      '23:30'
-                  ];
-              },
-              observer: '_onOptionsChanged'
-          },
+            options: {
+                type: Array,
+                value: function () {
+                    return [
+                        '00:00',
+                        '00:30',
+                        '01:00',
+                        '01:30',
+                        '02:00',
+                        '02:30',
+                        '03:00',
+                        '03:30',
+                        '04:00',
+                        '04:30',
+                        '05:00',
+                        '05:30',
+                        '06:00',
+                        '06:30',
+                        '07:00',
+                        '07:30',
+                        '08:00',
+                        '08:30',
+                        '09:00',
+                        '09:30',
+                        '10:00',
+                        '10:30',
+                        '11:00',
+                        '11:30',
+                        '12:00',
+                        '12:30',
+                        '13:00',
+                        '13:30',
+                        '14:00',
+                        '14:30',
+                        '15:00',
+                        '15:30',
+                        '16:00',
+                        '16:30',
+                        '17:00',
+                        '17:30',
+                        '18:00',
+                        '18:30',
+                        '19:00',
+                        '19:30',
+                        '20:00',
+                        '20:30',
+                        '21:00',
+                        '21:30',
+                        '22:00',
+                        '22:30',
+                        '23:00',
+                        '23:30'
+                    ];
+                },
+                observer: '_onOptionsChanged'
+            },
 
-          _times: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _times: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _active: {
-              type: Boolean,
-              value: false
-          },
+            _active: {
+                type: Boolean,
+                value: false
+            },
 
-          _selectedItem: {
-              type: String,
-              value: ''
-          },
+            _selectedItem: {
+                type: String,
+                value: ''
+            },
 
-          _clearPanelSearch: {
-              type: Boolean,
-              value: ''
-          },
+            _clearPanelSearch: {
+                type: Boolean,
+                value: ''
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'scale-up-animation',
-              axis: 'y',
-              transformOrigin: '0 0',
-              node: this.shadowRoot.getElementById('filterPanel'),
-              timing: {
-                  delay: 50,
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this.shadowRoot.getElementById('filterPanel'),
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'scale-up-animation',
+                axis: 'y',
+                transformOrigin: '0 0',
+                node: this.shadowRoot.getElementById('filterPanel'),
+                timing: {
+                    delay: 50,
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this.shadowRoot.getElementById('filterPanel'),
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+    }
 
-  _stopPropagation(e) {
-      e.stopPropagation();
-  }
+    _stopPropagation(e) {
+        e.stopPropagation();
+    }
 
-  _focusFirstPanel() {
-      this.shadowRoot.getElementById('itemList').items[0].focus();
-  }
+    _focusFirstPanel() {
+        this.shadowRoot.getElementById('itemList').items[0].focus();
+    }
 
-  _filterItems(term) {
-      const items = this.options,
-          length = items.length;
+    _filterItems(term) {
+        const items = this.options,
+            length = items.length;
 
-      if (length === 0) {
-          this.set('_times', JSON.parse(JSON.stringify(this.options)));
-          return;
-      }
+        if (length === 0) {
+            this.set('_times', JSON.parse(JSON.stringify(this.options)));
+            return;
+        }
 
-      this.set('_times', []);
+        this.set('_times', []);
 
-      for (let i = 0; i < length; i++) {
-          const item = items[i];
+        for (let i = 0; i < length; i++) {
+            const item = items[i];
 
-          if ((null === item) || (item && item.toLowerCase().indexOf(term.toLowerCase()) >= 0))    {
-              this.push('_times', item);
-          }
-      }
-  }
+            if ((null === item) || (item && item.toLowerCase().indexOf(term.toLowerCase()) >= 0))    {
+                this.push('_times', item);
+            }
+        }
+    }
 
-  _onFilterPanelKeyup(event) {
-      const term = event.target.value ? event.target.value : '';
-      this._filterItems(term);
-  }
+    _onFilterPanelKeyup(event) {
+        const term = event.target.value ? event.target.value : '';
+        this._filterItems(term);
+    }
 
-  _showPanelList() {
-      this.shadowRoot.getElementById('searchPanelInput').focus();
-  }
+    _showPanelList() {
+        this.shadowRoot.getElementById('searchPanelInput').focus();
+    }
 
-  _onItemActivate(event) {
-      const input = this.shadowRoot.getElementById('searchPanelInput');
-      input.value = event.detail.selected;
-  }
+    _onItemActivate(event) {
+        const input = this.shadowRoot.getElementById('searchPanelInput');
+        input.value = event.detail.selected;
+    }
 
-  _onFilterPanelBlur() {
-      setTimeout(function() {
-          if (this.shadowRoot.getElementById('searchPanelInput').contains(document.activeElement)) {
-              return;
-          }
-          this.animationConfig.entry.node.style.display = 'none';
-          this.playAnimation('exit');
-      }.bind(this), 300);
-  }
+    _onFilterPanelBlur() {
+        setTimeout(function() {
+            if (this.shadowRoot.getElementById('searchPanelInput').contains(document.activeElement)) {
+                return;
+            }
+            this.animationConfig.entry.node.style.display = 'none';
+            this.playAnimation('exit');
+        }.bind(this), 300);
+    }
 
-  _onFilterPanelFocus() {
-      this.animationConfig.entry.node.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _onFilterPanelFocus() {
+        this.animationConfig.entry.node.style.display = 'block';
+        this.playAnimation('entry');
+    }
 
-  _onOptionsChanged(newValue) {
-      if (newValue) {
-          this.set('_times', JSON.parse(JSON.stringify(newValue)));
-      }
-  }
+    _onOptionsChanged(newValue) {
+        if (newValue) {
+            this.set('_times', JSON.parse(JSON.stringify(newValue)));
+        }
+    }
 }
 window.customElements.define(AppscoTimePicker.is, AppscoTimePicker);

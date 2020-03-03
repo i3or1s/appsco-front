@@ -1,27 +1,4 @@
-/**
-`appsco-application-subscribers`
-Contains info about subscribers to application (accounts to whom app is shared, including owner).
-
-    <appsco-application-subscribers>
-    </appsco-application-subscribers>
-
-### Styling
-
-`<appsco-application-subscribers>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-application-subscribers` | Mixin for the root element | `{}`
-
-@demo demo/appsco-application-subscribers.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-ajax/iron-request.js';
@@ -34,9 +11,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationSubscribers extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
             @apply --layout-vertical;
@@ -141,299 +119,299 @@ class AppscoApplicationSubscribers extends mixinBehaviors([Appsco.HeadersMixin],
             </p>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-subscribers'; }
+    static get is() { return 'appsco-application-subscribers'; }
 
-  static get properties() {
-      return {
-          /**
-           * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
-           */
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onApplicationChanged'
-          },
+    static get properties() {
+        return {
+            /**
+             * [Application](https://developers.appsco.com/api/dashboard/id/icons/id) that is to be rendered
+             */
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onApplicationChanged'
+            },
 
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Number of accounts to load and present
-           */
-          size: {
-              type: Number,
-              value: 5
-          },
+            /**
+             * Number of accounts to load and present
+             */
+            size: {
+                type: Number,
+                value: 5
+            },
 
-          loadMore: {
-              type: Boolean,
-              value: false
-          },
+            loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _nextPage: {
-              type: Number,
-              value: 1
-          },
+            _nextPage: {
+                type: Number,
+                value: 1
+            },
 
-          /**
-           * Computed action.
-           */
-          _computedAction: {
-              type: String
-          },
+            /**
+             * Computed action.
+             */
+            _computedAction: {
+                type: String
+            },
 
-          _searchAccountsApi: {
-              type: String,
-              computed: '_computeSearchAccountsApi(application)'
-          },
+            _searchAccountsApi: {
+                type: String,
+                computed: '_computeSearchAccountsApi(application)'
+            },
 
-          /**
-           * [Accounts](https://developers.appsco.com/api/accounts/id) that is to be rendered
-           */
-          _accounts: {
-              type: Array,
-              value: function () {
-                  return [];
-              },
-              notify: true
-          },
+            /**
+             * [Accounts](https://developers.appsco.com/api/accounts/id) that is to be rendered
+             */
+            _accounts: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                notify: true
+            },
 
-          _allAccounts: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _allAccounts: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _totalSubscribers: {
-              type: Number
-          },
+            _totalSubscribers: {
+                type: Number
+            },
 
-          _loadMore: {
-              type: Boolean,
-              value: false
-          },
+            _loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          _message: {
-              type: String
-          }
-      };
-  }
+            _message: {
+                type: String
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._computedAction = this.application.meta ? this.application.meta.subscribers + '?page=1' + '&limit=' + this.size + '&extended=1' : null;
+        this._computedAction = this.application.meta ? this.application.meta.subscribers + '?page=1' + '&limit=' + this.size + '&extended=1' : null;
 
-      beforeNextRender(this, function() {
-          this.load();
-      });
-  }
+        beforeNextRender(this, function() {
+            this.load();
+        });
+    }
 
-  _computeAction() {
-      this._computedAction = this.application.meta ? this.application.meta.subscribers + '?page=' + this._nextPage + '&limit=' + this.size + '&extended=1' : null;
-  }
+    _computeAction() {
+        this._computedAction = this.application.meta ? this.application.meta.subscribers + '?page=' + this._nextPage + '&limit=' + this.size + '&extended=1' : null;
+    }
 
-  _computeSearchAccountsApi(application) {
-      return application.meta ? application.meta.subscribers + '?page=1&limit=100&extended=1' : null;
-  }
+    _computeSearchAccountsApi(application) {
+        return application.meta ? application.meta.subscribers + '?page=1&limit=100&extended=1' : null;
+    }
 
-  _showLoadMoreAction() {
-      this._loadMore = true;
-  }
+    _showLoadMoreAction() {
+        this._loadMore = true;
+    }
 
-  _hideLoadMoreAction() {
-      this._loadMore = false;
-  }
+    _hideLoadMoreAction() {
+        this._loadMore = false;
+    }
 
-  _setLoadMoreAction() {
-      this._allAccounts.length < this._totalSubscribers ? this._showLoadMoreAction() : this._hideLoadMoreAction();
-  }
+    _setLoadMoreAction() {
+        this._allAccounts.length < this._totalSubscribers ? this._showLoadMoreAction() : this._hideLoadMoreAction();
+    }
 
-  _showLoadMoreProgressBar() {
-      this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
-  }
+    _showLoadMoreProgressBar() {
+        this.shadowRoot.getElementById('loadMoreProgress').hidden = false;
+    }
 
-  _hideLoadMoreProgressBar() {
-      setTimeout(function() {
-          if (this.shadowRoot.getElementById('loadMoreProgress')) {
-              this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
-          }
-      }.bind(this), 300);
+    _hideLoadMoreProgressBar() {
+        setTimeout(function() {
+            if (this.shadowRoot.getElementById('loadMoreProgress')) {
+                this.shadowRoot.getElementById('loadMoreProgress').hidden = true;
+            }
+        }.bind(this), 300);
 
-  }
+    }
 
-  _hideProgressBar() {
-      setTimeout(function() {
-          this.$.progress.hidden = true;
-      }.bind(this), 500);
+    _hideProgressBar() {
+        setTimeout(function() {
+            this.$.progress.hidden = true;
+        }.bind(this), 500);
 
-  }
+    }
 
-  _onApplicationChanged(application, applicationOld) {
-      if (application && applicationOld && application.self !== applicationOld.self) {
-          this._computedAction = application.meta ? application.meta.subscribers + '?page=1' + '&limit=' + this.size + '&extended=1' : null;
-          this.load();
-      }
-  }
+    _onApplicationChanged(application, applicationOld) {
+        if (application && applicationOld && application.self !== applicationOld.self) {
+            this._computedAction = application.meta ? application.meta.subscribers + '?page=1' + '&limit=' + this.size + '&extended=1' : null;
+            this.load();
+        }
+    }
 
-  load() {
-      if (this.application.owner) {
-          this.$.progress.hidden = false;
-          this.set('_accounts', []);
-          this.set('_allAccounts', []);
-          this._message = '';
-          this._nextPage = 1;
+    load() {
+        if (this.application.owner) {
+            this.$.progress.hidden = false;
+            this.set('_accounts', []);
+            this.set('_allAccounts', []);
+            this._message = '';
+            this._nextPage = 1;
 
-          this.$.getSubscribersCall.generateRequest();
-      }
-  }
+            this.$.getSubscribersCall.generateRequest();
+        }
+    }
 
-  _loadMoreSubscribers() {
-      this._showLoadMoreProgressBar();
-      this._computeAction();
-      this.$.getSubscribersCall.generateRequest();
-  }
+    _loadMoreSubscribers() {
+        this._showLoadMoreProgressBar();
+        this._computeAction();
+        this.$.getSubscribersCall.generateRequest();
+    }
 
-  _handleEmpty() {
-      this._hideProgressBar();
-      this._hideLoadMoreProgressBar();
-      this.dispatchEvent(new CustomEvent('subscribers-empty', { bubbles: true, composed: true }));
-  }
+    _handleEmpty() {
+        this._hideProgressBar();
+        this._hideLoadMoreProgressBar();
+        this.dispatchEvent(new CustomEvent('subscribers-empty', { bubbles: true, composed: true }));
+    }
 
-  _handleError(event) {
-      this._message = 'We couldn\'t load subscribers at the moment. Please try again in a minute. If error continues contact us.';
-      this._totalSubscribers = 0;
-      this._handleEmpty();
-  }
+    _handleError(event) {
+        this._message = 'We couldn\'t load subscribers at the moment. Please try again in a minute. If error continues contact us.';
+        this._totalSubscribers = 0;
+        this._handleEmpty();
+    }
 
-  _handleResponse(event) {
-      const response = event.detail.response;
+    _handleResponse(event) {
+        const response = event.detail.response;
 
-      if (!response) {
-          this._hideProgressBar();
-          this._hideLoadMoreProgressBar();
-          return false;
-      }
+        if (!response) {
+            this._hideProgressBar();
+            this._hideLoadMoreProgressBar();
+            return false;
+        }
 
-      const accounts = response.accounts,
-          currentLength = this._accounts.length,
-          total = response.meta.total;
+        const accounts = response.accounts,
+            currentLength = this._accounts.length,
+            total = response.meta.total;
 
-      if (!this._loadMore) {
-          this.set('_accounts', []);
-          this.set('_allAccounts', []);
-      }
+        if (!this._loadMore) {
+            this.set('_accounts', []);
+            this.set('_allAccounts', []);
+        }
 
-      this._hideLoadMoreAction();
+        this._hideLoadMoreAction();
 
-      this._totalSubscribers = total;
+        this._totalSubscribers = total;
 
-      if (accounts && accounts.length > 0) {
-          this._nextPage += 1;
+        if (accounts && accounts.length > 0) {
+            this._nextPage += 1;
 
-          accounts.forEach(function(account, index) {
-              setTimeout( function() {
-                  this.push('_accounts', account);
-                  this.push('_allAccounts', account);
+            accounts.forEach(function(account, index) {
+                setTimeout( function() {
+                    this.push('_accounts', account);
+                    this.push('_allAccounts', account);
 
-                  if (index === (accounts.length - 1)) {
-                      this._hideProgressBar();
-                      this._hideLoadMoreProgressBar();
-                      this._setLoadMoreAction();
-                      this.dispatchEvent(new CustomEvent('subscribers-loaded', { bubbles: true, composed: true }));
-                  }
-              }.bind(this), (index + 1) * 30 );
-          }.bind(this));
-      }
-      else if (accounts && !accounts.length) {
-          if (!currentLength) {
-              this._message = 'You haven\'t shared this resource to anyone yet.';
-          }
+                    if (index === (accounts.length - 1)) {
+                        this._hideProgressBar();
+                        this._hideLoadMoreProgressBar();
+                        this._setLoadMoreAction();
+                        this.dispatchEvent(new CustomEvent('subscribers-loaded', { bubbles: true, composed: true }));
+                    }
+                }.bind(this), (index + 1) * 30 );
+            }.bind(this));
+        }
+        else if (accounts && !accounts.length) {
+            if (!currentLength) {
+                this._message = 'You haven\'t shared this resource to anyone yet.';
+            }
 
-          this._hideLoadMoreAction();
-          this._handleEmpty();
-      }
-      else if (!currentLength) {
-          this._message = 'We couldn\'t load subscribers at the moment.';
-          this._hideLoadMoreAction();
-          this._handleEmpty();
-      }
-  }
+            this._hideLoadMoreAction();
+            this._handleEmpty();
+        }
+        else if (!currentLength) {
+            this._message = 'We couldn\'t load subscribers at the moment.';
+            this._hideLoadMoreAction();
+            this._handleEmpty();
+        }
+    }
 
-  _searchAccounts(term) {
-      return new Promise(function(resolve, reject) {
-          const request = document.createElement('iron-request'),
-              options = {
-                  url: this._searchAccountsApi + '&term=' + term,
-                  method: 'GET',
-                  handleAs: 'json',
-                  headers: this._headers
-              };
+    _searchAccounts(term) {
+        return new Promise(function(resolve, reject) {
+            const request = document.createElement('iron-request'),
+                options = {
+                    url: this._searchAccountsApi + '&term=' + term,
+                    method: 'GET',
+                    handleAs: 'json',
+                    headers: this._headers
+                };
 
-          request.send(options).then(function() {
-              if (request.response) {
-                  resolve(request.response.accounts);
-              }
+            request.send(options).then(function() {
+                if (request.response) {
+                    resolve(request.response.accounts);
+                }
 
-          }, function() {
-              if (request.response) {
-                  reject(request.response.message);
-              }
-              else {
-                  reject('There was an error in searching subscribers with given term. Please contact AppsCo support.');
-              }
-          });
-      }.bind(this));
-  }
+            }, function() {
+                if (request.response) {
+                    reject(request.response.message);
+                }
+                else {
+                    reject('There was an error in searching subscribers with given term. Please contact AppsCo support.');
+                }
+            });
+        }.bind(this));
+    }
 
-  search(term) {
-      if (term.length < 3) {
-          this._message = '';
-          this.set('_accounts', JSON.parse(JSON.stringify(this._allAccounts)));
-          this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
-          this._setLoadMoreAction();
-          return false;
-      }
+    search(term) {
+        if (term.length < 3) {
+            this._message = '';
+            this.set('_accounts', JSON.parse(JSON.stringify(this._allAccounts)));
+            this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
+            this._setLoadMoreAction();
+            return false;
+        }
 
-      this._searchAccounts(term).then(function(accounts) {
-          this._hideLoadMoreAction();
-          this.set('_accounts', []);
+        this._searchAccounts(term).then(function(accounts) {
+            this._hideLoadMoreAction();
+            this.set('_accounts', []);
 
-          if (accounts.length > 0) {
-              this._message = '';
+            if (accounts.length > 0) {
+                this._message = '';
 
-              accounts.forEach(function(account, index) {
-                  this.push('_accounts', account);
+                accounts.forEach(function(account, index) {
+                    this.push('_accounts', account);
 
-                  if (index === (accounts.length - 1)) {
-                      this._hideProgressBar();
-                      this.dispatchEvent(new CustomEvent('subscribers-loaded', { bubbles: true, composed: true }));
-                  }
-              }.bind(this));
-          }
-          else {
-              this._message = 'There are no subscribers with asked term.';
-          }
-      }.bind(this), function(message) {
-          this.set('_accounts', []);
-          this._hideLoadMoreAction();
-          this._message = message;
-      }.bind(this));
-  }
+                    if (index === (accounts.length - 1)) {
+                        this._hideProgressBar();
+                        this.dispatchEvent(new CustomEvent('subscribers-loaded', { bubbles: true, composed: true }));
+                    }
+                }.bind(this));
+            }
+            else {
+                this._message = 'There are no subscribers with asked term.';
+            }
+        }.bind(this), function(message) {
+            this.set('_accounts', []);
+            this._hideLoadMoreAction();
+            this._message = message;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoApplicationSubscribers.is, AppscoApplicationSubscribers);

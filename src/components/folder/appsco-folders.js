@@ -14,12 +14,13 @@ import '../vaadin-context-menu/vaadin-context-menu-override.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoFolders extends mixinBehaviors([
     AppscoListBehavior,
     AppscoListObserverBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host {
                 --folder-item-host: {
@@ -99,52 +100,52 @@ class AppscoFolders extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-folders'; }
+    static get is() { return 'appsco-folders'; }
 
-  static get properties() {
-      return {
-          preview: {
-              type: Boolean,
-              value: false
-          },
+    static get properties() {
+        return {
+            preview: {
+                type: Boolean,
+                value: false
+            },
 
-          selectable: {
-              type: Boolean,
-              value: true
-          }
-      };
-  }
+            selectable: {
+                type: Boolean,
+                value: true
+            }
+        };
+    }
 
-  _openRenameDialog(event) {
-      const menuItem = event.target,
-          folderItem = menuItem.listItem;
+    _openRenameDialog(event) {
+        const menuItem = event.target,
+            folderItem = menuItem.listItem;
 
-      if (folderItem && folderItem.item) {
-          this.dispatchEvent(new CustomEvent('open-rename-folder-dialog', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  folderItem: folderItem.item
-              }
-          }));
-      }
-  }
+        if (folderItem && folderItem.item) {
+            this.dispatchEvent(new CustomEvent('open-rename-folder-dialog', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    folderItem: folderItem.item
+                }
+            }));
+        }
+    }
 
-  _openRemoveDialog(event) {
-      const menuItem = event.target,
-          folderItem = menuItem.listItem;
+    _openRemoveDialog(event) {
+        const menuItem = event.target,
+            folderItem = menuItem.listItem;
 
-      if (folderItem && folderItem.item) {
-          this.dispatchEvent(new CustomEvent('open-remove-folder-dialog', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  folderItem: folderItem.item
-              }
-          }));
-      }
-  }
+        if (folderItem && folderItem.item) {
+            this.dispatchEvent(new CustomEvent('open-remove-folder-dialog', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    folderItem: folderItem.item
+                }
+            }));
+        }
+    }
 }
 window.customElements.define(AppscoFolders.is, AppscoFolders);

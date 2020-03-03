@@ -11,9 +11,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoRemoveOAuthApplication extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -61,117 +62,117 @@ class AppscoRemoveOAuthApplication extends mixinBehaviors([Appsco.HeadersMixin],
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-remove-oauth-application'; }
+    static get is() { return 'appsco-remove-oauth-application'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _removeApi: {
-              type: String,
-              computed: '_computeRemoveApi(application)'
-          },
+            _removeApi: {
+                type: String,
+                computed: '_computeRemoveApi(application)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  setApplication(application) {
-      this.set('application', application);
-  }
+    setApplication(application) {
+        this.set('application', application);
+    }
 
-  open () {
-      this.$.dialog.open();
-  }
+    open () {
+        this.$.dialog.open();
+    }
 
-  close () {
-      this.$.dialog.close();
-  }
+    close () {
+        this.$.dialog.close();
+    }
 
-  toggle () {
-      this.$.dialog.toggle();
-  }
+    toggle () {
+        this.$.dialog.toggle();
+    }
 
-  _computeRemoveApi(application) {
-      return application.self ? application.self : null;
-  }
+    _computeRemoveApi(application) {
+        return application.self ? application.self : null;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogClosed() {
-      this._hideError();
-      this._hideLoader();
-  }
+    _onDialogClosed() {
+        this._hideError();
+        this._hideLoader();
+    }
 
-  _onRemoveAction() {
+    _onRemoveAction() {
 
-      if (!this._removeApi || !this._headers['Authorization']) {
-          this._showError(this.apiErrors.getError(404));
-          return false;
-      }
+        if (!this._removeApi || !this._headers['Authorization']) {
+            this._showError(this.apiErrors.getError(404));
+            return false;
+        }
 
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._removeApi,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._removeApi,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._showLoader();
+        this._showLoader();
 
-      request.send(options).then(function() {
-          this.close();
+        request.send(options).then(function() {
+            this.close();
 
-          if (200 === request.status) {
-              this.dispatchEvent(new CustomEvent('oauth-application-removed', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      application: request.response
-                  }
-              }));
-          }
+            if (200 === request.status) {
+                this.dispatchEvent(new CustomEvent('oauth-application-removed', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        application: request.response
+                    }
+                }));
+            }
 
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoRemoveOAuthApplication.is, AppscoRemoveOAuthApplication);

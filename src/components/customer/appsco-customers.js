@@ -9,12 +9,13 @@ import { AppscoListObserverBehavior } from '../components/appsco-list-observer-b
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCustomers extends mixinBehaviors([
     AppscoListBehavior,
     AppscoListObserverBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host appsco-customer-item {
                 width: 100%;
@@ -51,29 +52,29 @@ class AppscoCustomers extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-customers'; }
+    static get is() { return 'appsco-customers'; }
 
-  static get observers() {
-      return [
-          '_observeItems(_listItems)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_observeItems(_listItems)'
+        ];
+    }
 
-  reloadInfo(group) {
-      const groups = JSON.parse(JSON.stringify(this._listItems));
+    reloadInfo(group) {
+        const groups = JSON.parse(JSON.stringify(this._listItems));
 
-      for (let idx in groups) {
-          if (group.self === groups[idx].self) {
-              this.shadowRoot.getElementById('appscoListItem_' + idx).reloadInfo(group);
-          }
-      }
-  }
+        for (let idx in groups) {
+            if (group.self === groups[idx].self) {
+                this.shadowRoot.getElementById('appscoListItem_' + idx).reloadInfo(group);
+            }
+        }
+    }
 
-  _observeItems(items) {
-      this.setObservableType('customers');
-      this.populateItems(items);
-  }
+    _observeItems(items) {
+        this.setObservableType('customers');
+        this.populateItems(items);
+    }
 }
 window.customElements.define(AppscoCustomers.is, AppscoCustomers);

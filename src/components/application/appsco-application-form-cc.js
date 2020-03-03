@@ -13,9 +13,10 @@ import { AppscoApplicationFormBehavior } from './appsco-application-form-behavio
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationFormCC extends mixinBehaviors([AppscoApplicationFormBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <appsco-credit-card-types types="{{ cardTypes }}"></appsco-credit-card-types>
 
         <div class="input-container">
@@ -52,35 +53,35 @@ class AppscoApplicationFormCC extends mixinBehaviors([AppscoApplicationFormBehav
 
         <paper-textarea id="note" rows="3" data-field="" label="Note" value="[[ claims.note ]]" name\$="[[ claimsNamePrefix ]][note]"></paper-textarea>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-form-cc'; }
+    static get is() { return 'appsco-application-form-cc'; }
 
-  static get properties() {
-      return {
-          _cardNumber: {
-              type: String,
-              computed: '_cardNumberComputed(claims)'
-          },
+    static get properties() {
+        return {
+            _cardNumber: {
+                type: String,
+                computed: '_cardNumberComputed(claims)'
+            },
 
-          _verificationNumber: {
-              type: String,
-              computed: '_verificationNumberComputed(claims)'
-          },
+            _verificationNumber: {
+                type: String,
+                computed: '_verificationNumberComputed(claims)'
+            },
 
-          claimsNamePrefix: {
-              type: String,
-              value: "claims_cc"
-          }
-      };
-  }
+            claimsNamePrefix: {
+                type: String,
+                value: "claims_cc"
+            }
+        };
+    }
 
-  _cardNumberComputed(claims) {
-      return (claims && claims.cardNumber) ? claims.cardNumber : '';
-  }
+    _cardNumberComputed(claims) {
+        return (claims && claims.cardNumber) ? claims.cardNumber : '';
+    }
 
-  _verificationNumberComputed(claims) {
-      return (claims && claims.verificationNumber) ? claims.verificationNumber : '';
-  }
+    _verificationNumberComputed(claims) {
+        return (claims && claims.verificationNumber) ? claims.verificationNumber : '';
+    }
 }
 window.customElements.define(AppscoApplicationFormCC.is, AppscoApplicationFormCC);

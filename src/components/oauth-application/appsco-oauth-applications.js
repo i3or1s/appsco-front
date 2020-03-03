@@ -8,9 +8,10 @@ import '../components/appsco-list-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOAuthApplications extends mixinBehaviors([AppscoListBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host appsco-oauth-application-item {
                 width: 100%;
@@ -47,8 +48,8 @@ class AppscoOAuthApplications extends mixinBehaviors([AppscoListBehavior], Polym
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-oauth-applications'; }
+    static get is() { return 'appsco-oauth-applications'; }
 }
 window.customElements.define(AppscoOAuthApplications.is, AppscoOAuthApplications);

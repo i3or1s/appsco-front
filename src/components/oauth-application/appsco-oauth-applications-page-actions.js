@@ -8,9 +8,10 @@ import './appsco-oauth-applications-actions.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOAuthApplicationsPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --layout-horizontal;
@@ -27,46 +28,46 @@ class AppscoOAuthApplicationsPageActions extends mixinBehaviors([NeonAnimatableB
 
         <appsco-oauth-applications-actions id="appscoOAuthApplicationsActions"></appsco-oauth-applications-actions>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-oauth-applications-page-actions'; }
+    static get is() { return 'appsco-oauth-applications-page-actions'; }
 
-  static get properties() {
-      return {
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+    static get properties() {
+        return {
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 200,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 200,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+    }
 
-  resetPage() {
-      this.$.appscoOAuthApplicationsActions.reset();
-  }
+    resetPage() {
+        this.$.appscoOAuthApplicationsActions.reset();
+    }
 
-  resetPageActions() {
-      this.resetPage();
-  }
+    resetPageActions() {
+        this.resetPage();
+    }
 }
 window.customElements.define(AppscoOAuthApplicationsPageActions.is, AppscoOAuthApplicationsPageActions);

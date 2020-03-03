@@ -1,42 +1,14 @@
-/**
-`appsco-header-account-actions`
-Is used to present account related actions.
-
-Example:
-
-    <body>
-      <appsco-header-account-actions
-            intranet="url_to_website"
-            chat>
-     </appsco-header-account-actions>
-
-
-### Styling
-
-`<appsco-header-account-actions>` provides the following custom mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-account-action-color` | Color for icon-button actions | ``
-`--appsco-header-account-actions` | Mixin applied to root appsco-header-account-actions element. | `{}`
-@demo demo/appsco-header-account-actions.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/iron-icons/communication-icons.js';
 import './appsco-account-notifications-dropdown.js';
 import '../notifications/appsco-notification-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoHeaderAccountActions extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: inline-block;
@@ -93,81 +65,81 @@ class AppscoHeaderAccountActions extends PolymerElement {
 
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-header-account-actions'; }
+    static get is() { return 'appsco-header-account-actions'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object
+            },
 
-          /** Indicates if chat exists or not. */
-          chat: {
-              type: Boolean,
-              value: false
-          },
+            /** Indicates if chat exists or not. */
+            chat: {
+                type: Boolean,
+                value: false
+            },
 
-          tutorialActionAvailable: {
-              type: Boolean,
-              value: false
-          },
+            tutorialActionAvailable: {
+                type: Boolean,
+                value: false
+            },
 
-          authorizationToken: {
-              type: String
-          },
+            authorizationToken: {
+                type: String
+            },
 
-          notificationsApi: {
-              type: String
-          },
+            notificationsApi: {
+                type: String
+            },
 
-          notificationsSize: {
-              type: Number,
-              value: 5
-          },
+            notificationsSize: {
+                type: Number,
+                value: 5
+            },
 
-          /**
-           * Indicates if there are new notifications.
-           */
-          _newNotifications: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            /**
+             * Indicates if there are new notifications.
+             */
+            _newNotifications: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  _onChatAction(event) {
-      this.dispatchEvent(new CustomEvent('account-chat', { bubbles: true, composed: true }));
-  }
+    _onChatAction(event) {
+        this.dispatchEvent(new CustomEvent('account-chat', { bubbles: true, composed: true }));
+    }
 
-  notifyNewNotifications(newNotificationsCount) {
-      this.$.newNotificationsIcon.setNotificationsCount(newNotificationsCount);
-      this._newNotifications = true;
-  }
+    notifyNewNotifications(newNotificationsCount) {
+        this.$.newNotificationsIcon.setNotificationsCount(newNotificationsCount);
+        this._newNotifications = true;
+    }
 
-  notifyNotificationsSeen() {
-      this.$.newNotificationsIcon.setNotificationsCount(0);
-      this._newNotifications = false;
-  }
+    notifyNotificationsSeen() {
+        this.$.newNotificationsIcon.setNotificationsCount(0);
+        this._newNotifications = false;
+    }
 
-  _onNotificationsAction(event) {
-      this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
-  }
+    _onNotificationsAction(event) {
+        this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
+    }
 
-  _onNewNotificationsAction(event) {
-      this._newNotifications = false;
-      this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
-  }
+    _onNewNotificationsAction(event) {
+        this._newNotifications = false;
+        this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
+    }
 
-  _onGetStartedIcon(event) {
-      this.dispatchEvent(new CustomEvent('get-started', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              account: this.account
-          }
-      }));
-  }
+    _onGetStartedIcon(event) {
+        this.dispatchEvent(new CustomEvent('get-started', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                account: this.account
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoHeaderAccountActions.is, AppscoHeaderAccountActions);

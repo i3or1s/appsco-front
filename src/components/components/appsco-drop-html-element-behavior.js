@@ -25,7 +25,7 @@ export const AppscoDropHTMLElementBehavior = {
     },
 
     drop: function(event) {
-        var dragItem = event.dataTransfer.getData('dragItem'),
+        const dragItem = event.dataTransfer.getData('dragItem'),
             dropElement = dom(this.root).querySelector('[data-drop-to-zone]');
 
         event.stopPropagation();
@@ -40,18 +40,16 @@ export const AppscoDropHTMLElementBehavior = {
                 }
             }));
         }
-        else {
-        }
     },
 
     initializeDropBehavior: function() {
-        var dropElements = dom(this.root).querySelectorAll('[data-drop-to-zone]');
+        const dropElements = dom(this.root).querySelectorAll('[data-drop-to-zone]');
 
         if (dropElements && 0 < dropElements.length) {
-            var length = dropElements.length;
+            const length = dropElements.length;
 
-            for (var i = 0; i < length; i++) {
-                var dropElement = dropElements[i];
+            for (let i = 0; i < length; i++) {
+                const dropElement = dropElements[i];
 
                 dropElement.addEventListener('dragenter', this.dragEnter, false);
                 dropElement.addEventListener('dragleave', this.dragLeave, false);

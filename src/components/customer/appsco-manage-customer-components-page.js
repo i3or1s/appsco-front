@@ -14,9 +14,10 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoManageCustomerComponentsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-layout-with-cards-styles">
             :host .subscription-paid-partner {
                 padding-bottom: 5px;
@@ -74,150 +75,150 @@ class AppscoManageCustomerComponentsPage extends mixinBehaviors([NeonSharedEleme
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-customer-components-page'; }
+    static get is() { return 'appsco-manage-customer-components-page'; }
 
-  static get properties() {
-      return {
-          customer: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            customer: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          customerPartnerAdminsApi: {
-              type: String
-          },
+            customerPartnerAdminsApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _isSubscriptionPaidExternally: {
-              type: Boolean,
-              computed: '_computeIsSubscriptionPaidExternally(customer)'
-          },
+            _isSubscriptionPaidExternally: {
+                type: Boolean,
+                computed: '_computeIsSubscriptionPaidExternally(customer)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(tabletScreen, mediumScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(tabletScreen, mediumScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: dom(this.root).querySelectorAll('paper-card'),
-              nodeDelay: 50,
-              timing: {
-                  delay: 200,
-                  duration: 100
-              }
-          }],
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }]
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: dom(this.root).querySelectorAll('paper-card'),
+                nodeDelay: 50,
+                timing: {
+                    delay: 200,
+                    duration: 100
+                }
+            }],
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }]
+        };
 
-      beforeNextRender(this, function() {
-          if (this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            if (this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  loadPage() {
-      this._loadRoles();
-  }
+    loadPage() {
+        this._loadRoles();
+    }
 
-  reloadCustomer(customer) {
-      this.set('customer', {});
-      this.set('customer', customer);
-  }
+    reloadCustomer(customer) {
+        this.set('customer', {});
+        this.set('customer', customer);
+    }
 
-  reloadPartnerAdmins() {
-      this.$.appscoCustomerPartnerAdmins.reloadPartnerAdmins();
-  }
+    reloadPartnerAdmins() {
+        this.$.appscoCustomerPartnerAdmins.reloadPartnerAdmins();
+    }
 
-  removePartnerAdmins(partnerAdmins) {
-      this.$.appscoCustomerPartnerAdmins.removePartnerAdmins(partnerAdmins);
-  }
+    removePartnerAdmins(partnerAdmins) {
+        this.$.appscoCustomerPartnerAdmins.removePartnerAdmins(partnerAdmins);
+    }
 
-  _loadRoles() {
-      this.$.appscoCustomerPartnerAdmins.loadRoles();
-  }
+    _loadRoles() {
+        this.$.appscoCustomerPartnerAdmins.loadRoles();
+    }
 
-  _updateScreen(tablet, medium) {
-      this.updateStyles();
-  }
+    _updateScreen(tablet, medium) {
+        this.updateStyles();
+    }
 
-  _setSharedElement(target) {
-      while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
-          target = target.parentNode;
-      }
+    _setSharedElement(target) {
+        while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+            target = target.parentNode;
+        }
 
-      this.sharedElements = {
-          'hero': target
-      };
-  }
+        this.sharedElements = {
+            'hero': target
+        };
+    }
 
-  _onManageCustomerRoles(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-customer-roles', { bubbles: true, composed: true }));
-  }
+    _onManageCustomerRoles(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-customer-roles', { bubbles: true, composed: true }));
+    }
 
-  _computeIsSubscriptionPaidExternally(customer) {
-      return customer && customer.subscription_paid_externally == true;
-  }
+    _computeIsSubscriptionPaidExternally(customer) {
+        return customer && customer.subscription_paid_externally == true;
+    }
 
-  _onManageCustomerSubscription() {
-      this.dispatchEvent(new CustomEvent('manage-customer-subscription', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              'customer' : this.customer
-          }
-      }));
-  }
+    _onManageCustomerSubscription() {
+        this.dispatchEvent(new CustomEvent('manage-customer-subscription', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                'customer' : this.customer
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoManageCustomerComponentsPage.is, AppscoManageCustomerComponentsPage);

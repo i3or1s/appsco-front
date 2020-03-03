@@ -1,34 +1,4 @@
-/**
-`appsco-account-notifications`
-Is used to present notifications.
-
-Example:
-
-    <body>
-        <appsco-account-notifications
-                    authorization-token=""
-                    notifications-api=""
-                    size="5">
-        </appsco-account-notifications>
-
- Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-account-notifications` | Mixin applied to root element | `{}`
-`--appsco-account-notifications-container` | Mixin applied to inner notifications container element | `{}`
-`--account-notifications-appsco-list-item` | Mixin applied to inner appsco-list-item element | `{}`
-`--account-notifications-appsco-list-item-first` | Mixin applied to first appsco-list-item element | `{}`
-`--appsco-account-notifications-paper-progress` | Mixin applied to notifications paper-progress | `{}`
-`--load-more-button` | Mixin applied to Load More button | `{}`
-
-@demo demo/appsco-account-notifications.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/iron-ajax/iron-ajax.js';
@@ -40,9 +10,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountNotifications extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -113,174 +84,174 @@ class AppscoAccountNotifications extends mixinBehaviors([Appsco.HeadersMixin], P
 
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-notifications'; }
+    static get is() { return 'appsco-account-notifications'; }
 
-  static get properties() {
-      return {
-          notificationsApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            notificationsApi: {
+                type: String
+            },
 
-          _nextPage: {
-              type: Number,
-              value: 1
-          },
+            _nextPage: {
+                type: Number,
+                value: 1
+            },
 
-          size: {
-              type: Number,
-              value: 5
-          },
+            size: {
+                type: Number,
+                value: 5
+            },
 
-          loadMore: {
-              type: Boolean,
-              value: false
-          },
+            loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          _computedUrl: {
-              type: String
-          },
+            _computedUrl: {
+                type: String
+            },
 
-          _notifications: {
-              type: Array,
-              value: function () {
-                  return [];
-              },
-              notify: true
-          },
+            _notifications: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                notify: true
+            },
 
-          _message: {
-              type: String
-          }
-      };
-  }
+            _message: {
+                type: String
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          this.$.loadMore.disabled = false;
-          this.dispatchEvent(new CustomEvent('notifications-attached', { bubbles: true, composed: true }));
-      });
-  }
+        afterNextRender(this, function() {
+            this.$.loadMore.disabled = false;
+            this.dispatchEvent(new CustomEvent('notifications-attached', { bubbles: true, composed: true }));
+        });
+    }
 
-  _computeUrl(notificationsApi) {
-      return notificationsApi + '?page=' + this._nextPage + '&limit=' + this.size;
-  }
+    _computeUrl(notificationsApi) {
+        return notificationsApi + '?page=' + this._nextPage + '&limit=' + this.size;
+    }
 
-  /**
-   * Maps notification object to list-item object.
-   *
-   * @param {Object} item
-   * @returns {{ item: object }}
-   * @private
-   */
-  _mapToListItem(item) {
-      let icon = item.imageUrl,
-          domain = window.location.protocol + '//' + window.location.hostname,
-          result = null;
+    /**
+     * Maps notification object to list-item object.
+     *
+     * @param {Object} item
+     * @returns {{ item: object }}
+     * @private
+     */
+    _mapToListItem(item) {
+        let icon = item.imageUrl,
+            domain = window.location.protocol + '//' + window.location.hostname,
+            result = null;
 
-      if (icon && icon.indexOf('/public/pic') > -1) {
-          icon = domain + icon;
-      }
-      if (item.type === 'message') {
-          result = {
-              account: item.sender,
-              date: item.createdAt,
-              message: this._getNotificationMessage(item.body)
-          };
-          if(item.sender && !item.sender.email) {
-              result.icon = '/images/message.png';
-              result.account = null;
-          }
-      } else {
-          result = {
-              icon: icon,
-              date: item.createdAt,
-              message: this._getNotificationMessage(item.body)
-          };
-      }
+        if (icon && icon.indexOf('/public/pic') > -1) {
+            icon = domain + icon;
+        }
+        if (item.type === 'message') {
+            result = {
+                account: item.sender,
+                date: item.createdAt,
+                message: this._getNotificationMessage(item.body)
+            };
+            if(item.sender && !item.sender.email) {
+                result.icon = '/images/message.png';
+                result.account = null;
+            }
+        } else {
+            result = {
+                icon: icon,
+                date: item.createdAt,
+                message: this._getNotificationMessage(item.body)
+            };
+        }
 
-      return result;
-  }
+        return result;
+    }
 
-  _getNotificationMessage(notification) {
-      const dom = document.createElement('div');
-      dom.innerHTML = notification;
+    _getNotificationMessage(notification) {
+        const dom = document.createElement('div');
+        dom.innerHTML = notification;
 
-      return dom.getElementsByClassName('notification-message')[0].textContent;
-  }
+        return dom.getElementsByClassName('notification-message')[0].textContent;
+    }
 
-  loadNotifications() {
-      this.$.progress.hidden = false;
-      this.set('_notifications', []);
-      this._message = '';
-      this._nextPage = 1;
+    loadNotifications() {
+        this.$.progress.hidden = false;
+        this.set('_notifications', []);
+        this._message = '';
+        this._nextPage = 1;
 
-      this.$.ironAjaxNotifications.url = this._computeUrl(this.notificationsApi);
-      this.$.ironAjaxNotifications.generateRequest();
-  }
+        this.$.ironAjaxNotifications.url = this._computeUrl(this.notificationsApi);
+        this.$.ironAjaxNotifications.generateRequest();
+    }
 
-  _loadMore() {
-      this.$.progress.hidden = false;
+    _loadMore() {
+        this.$.progress.hidden = false;
 
-      this.$.ironAjaxNotifications.url = this._computeUrl(this.notificationsApi);
-      this.$.ironAjaxNotifications.generateRequest();
-  }
+        this.$.ironAjaxNotifications.url = this._computeUrl(this.notificationsApi);
+        this.$.ironAjaxNotifications.generateRequest();
+    }
 
-  _handleError(event) {
-      this._message = 'We couldn\'t load notifications at the moment. Please try again in a minute. If error continues contact us.';
-      this._hideProgressBar();
-  }
+    _handleError(event) {
+        this._message = 'We couldn\'t load notifications at the moment. Please try again in a minute. If error continues contact us.';
+        this._hideProgressBar();
+    }
 
-  _handleResponse(event) {
-      const notifications = event.detail.response,
-          currentLength = this._notifications.length;
+    _handleResponse(event) {
+        const notifications = event.detail.response,
+            currentLength = this._notifications.length;
 
-      if (notifications && notifications.length > 0) {
-          this.$.loadMore.disabled = false;
-          this._nextPage += 1;
+        if (notifications && notifications.length > 0) {
+            this.$.loadMore.disabled = false;
+            this._nextPage += 1;
 
-          notifications.forEach(function(notification, i) {
-              setTimeout( function() {
-                  this.push('_notifications', notifications[i]);
+            notifications.forEach(function(notification, i) {
+                setTimeout( function() {
+                    this.push('_notifications', notifications[i]);
 
-                  if (i === (notifications.length - 1)) {
-                      this._hideProgressBar();
+                    if (i === (notifications.length - 1)) {
+                        this._hideProgressBar();
 
-                      if (notifications.length < this.size) {
-                          this.$.loadMore.disabled = true;
-                      }
-                      this.dispatchEvent(new CustomEvent('notifications-load', {
-                          bubbles: true,
-                          composed: true,
-                          detail: {
-                              notifications: notifications
-                          }
-                      }));
-                  }
-              }.bind(this));
-          }.bind(this));
-      }
-      else if (notifications && !notifications.length) {
-          if (!currentLength) {
-              this._message = 'There are no notifications.';
-          }
+                        if (notifications.length < this.size) {
+                            this.$.loadMore.disabled = true;
+                        }
+                        this.dispatchEvent(new CustomEvent('notifications-load', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                notifications: notifications
+                            }
+                        }));
+                    }
+                }.bind(this));
+            }.bind(this));
+        }
+        else if (notifications && !notifications.length) {
+            if (!currentLength) {
+                this._message = 'There are no notifications.';
+            }
 
-          this.$.loadMore.disabled = true;
-          this._hideProgressBar();
-      }
-      else if (!currentLength) {
-          this._message = 'We couldn\'t load notifications at the moment.';
-          this._hideProgressBar();
-      }
-  }
+            this.$.loadMore.disabled = true;
+            this._hideProgressBar();
+        }
+        else if (!currentLength) {
+            this._message = 'We couldn\'t load notifications at the moment.';
+            this._hideProgressBar();
+        }
+    }
 
-  _hideProgressBar() {
-      setTimeout(function() {
-          this.$.progress.hidden = true;
-      }.bind(this), 500);
-  }
+    _hideProgressBar() {
+        setTimeout(function() {
+            this.$.progress.hidden = true;
+        }.bind(this), 500);
+    }
 }
 window.customElements.define(AppscoAccountNotifications.is, AppscoAccountNotifications);

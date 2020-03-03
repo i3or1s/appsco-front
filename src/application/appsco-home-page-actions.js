@@ -13,9 +13,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoHomePageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 @apply --layout-horizontal;
@@ -158,162 +159,162 @@ class AppscoHomePageActions extends mixinBehaviors([NeonAnimatableBehavior], Pol
 
         <appsco-page-global id="appscoPageGlobal" info=""></appsco-page-global>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-home-page-actions'; }
+    static get is() { return 'appsco-home-page-actions'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          pageConfigApi: {
-              type: String
-          },
+            pageConfigApi: {
+                type: String
+            },
 
-          pageConfig: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            pageConfig: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          page: {
-              type: String,
-              value: ''
-          },
+            page: {
+                type: String,
+                value: ''
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          _searchActive: {
-              type: Boolean,
-              value: false
-          },
+            _searchActive: {
+                type: Boolean,
+                value: false
+            },
 
-          _isAddingResourceAllowed: {
-              type: Boolean,
-              computed: '_computeIsAddingResourceAllowed(account)'
-          },
+            _isAddingResourceAllowed: {
+                type: Boolean,
+                computed: '_computeIsAddingResourceAllowed(account)'
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  static get observers(){
-      return [
-          '_updateScreen(mobileScreen, tabletScreen)'
-      ];
-  }
+    static get observers(){
+        return [
+            '_updateScreen(mobileScreen, tabletScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 200,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 200,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.updateStyles();
-          if (this.mobileScreen || this.tabletScreen) {
-              this.updateStyles();
-          }
-      });
-  }
+        beforeNextRender(this, function() {
+            this.updateStyles();
+            if (this.mobileScreen || this.tabletScreen) {
+                this.updateStyles();
+            }
+        });
+    }
 
-  _updateScreen(mobile, tablet) {
-      this.updateStyles();
-  }
+    _updateScreen(mobile, tablet) {
+        this.updateStyles();
+    }
 
-  _showSearch() {
-      this.$.appscoApplicationActions.focusSearch();
+    _showSearch() {
+        this.$.appscoApplicationActions.focusSearch();
 
-      this.updateStyles({
-          '--input-search-max-width': '100%',
-          '--paper-input-search-container-tablet': 'width: 100%;'
-      });
-  }
+        this.updateStyles({
+            '--input-search-max-width': '100%',
+            '--paper-input-search-container-tablet': 'width: 100%;'
+        });
+    }
 
-  _closeSearch() {
-      this._searchActive = false;
+    _closeSearch() {
+        this._searchActive = false;
 
-      // Wait for animation to finish.
-      setTimeout(function() {
-          this.updateStyles({
-              '--input-search-max-width': '22px',
-              '--paper-input-search-container-tablet': 'width: auto'
-          });
-      }.bind(this), 200);
+        // Wait for animation to finish.
+        setTimeout(function() {
+            this.updateStyles({
+                '--input-search-max-width': '22px',
+                '--paper-input-search-container-tablet': 'width: auto'
+            });
+        }.bind(this), 200);
 
-      this.updateStyles();
-  }
+        this.updateStyles();
+    }
 
-  _onSearchIcon() {
-      this._searchActive = !this._searchActive;
-      this._searchActive ? this._showSearch() : this._closeSearch();
-  }
+    _onSearchIcon() {
+        this._searchActive = !this._searchActive;
+        this._searchActive ? this._showSearch() : this._closeSearch();
+    }
 
-  _computeIsAddingResourceAllowed(account) {
-      return !(account && account.native_company && !account.native_company.adding_resource_on_personal_allowed);
-  }
+    _computeIsAddingResourceAllowed(account) {
+        return !(account && account.native_company && !account.native_company.adding_resource_on_personal_allowed);
+    }
 
-  resetPage() {
-      this.$.appscoApplicationActions.reset();
-  }
+    resetPage() {
+        this.$.appscoApplicationActions.reset();
+    }
 
-  resetPageActions() {
-      this.$.appscoApplicationActions.reset();
-  }
+    resetPageActions() {
+        this.$.appscoApplicationActions.reset();
+    }
 
-  _onAddNewFolderAction() {
-      this.dispatchEvent(new CustomEvent('add-new-folder', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              'personal' : true
-          }
-      }));
-  }
+    _onAddNewFolderAction() {
+        this.dispatchEvent(new CustomEvent('add-new-folder', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                'personal' : true
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoHomePageActions.is, AppscoHomePageActions);

@@ -7,9 +7,10 @@ import '../page/appsco-page-global.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoReportsPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -29,38 +30,38 @@ class AppscoReportsPageActions extends mixinBehaviors([NeonAnimatableBehavior], 
             <appsco-page-global info=""></appsco-page-global>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-reports-page-actions'; }
+    static get is() { return 'appsco-reports-page-actions'; }
 
-  static get properties() {
-      return {
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+    static get properties() {
+        return {
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 200,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 200,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+    }
 }
 window.customElements.define(AppscoReportsPageActions.is, AppscoReportsPageActions);

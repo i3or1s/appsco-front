@@ -29,8 +29,8 @@ class AppscoResourcePage extends mixinBehaviors([
     Appsco.HeadersMixin,
     Appsco.PageMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 display: block;
@@ -201,300 +201,300 @@ class AppscoResourcePage extends mixinBehaviors([
         <appsco-application-subscriber-revoke id="appscoApplicationSubscriberRevoke" authorization-token="[[ authorizationToken ]]">
         </appsco-application-subscriber-revoke>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-resource-page'; }
+    static get is() { return 'appsco-resource-page'; }
 
-  static get properties() {
-      return {
-          route: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            route: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          iconsApi: {
-              type: String
-          },
+            iconsApi: {
+                type: String
+            },
 
-          company: {
-              type: Boolean,
-              value: false
-          },
+            company: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * Selected page.
-           * It has value of component's 'name' attribute.
-           */
-          _selected: {
-              type: String,
-              value: 'appsco-application-components-page',
-              notify: true
-          },
+            /**
+             * Selected page.
+             * It has value of component's 'name' attribute.
+             */
+            _selected: {
+                type: String,
+                value: 'appsco-application-components-page',
+                notify: true
+            },
 
-          accountsApi: {
-              type: String
-          },
+            accountsApi: {
+                type: String
+            },
 
-          applicationsApi: {
-              type: String,
-              notify: true,
-              observer: '_onApplicationsApiChanged'
-          },
+            applicationsApi: {
+                type: String,
+                notify: true,
+                observer: '_onApplicationsApiChanged'
+            },
 
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _subscribers: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _subscribers: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _resourceImageSettingsApi: {
-              type: String,
-              computed: '_computeResourceImageSettingsApi(application)'
-          },
+            _resourceImageSettingsApi: {
+                type: String,
+                computed: '_computeResourceImageSettingsApi(application)'
+            },
 
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          pageLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            pageLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_updateScreen(mediumScreen, tabletScreen, mobileScreen)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.pageLoaded = false;
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.pageLoaded = false;
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
-              this.updateStyles();
-          }
-      });
+        beforeNextRender(this, function() {
+            if (this.mobileScreen || this.tabletScreen || this.mediumScreen) {
+                this.updateStyles();
+            }
+        });
 
-      afterNextRender(this, function() {
-          this._getApplication();
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._getApplication();
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
-      this.toolbar.addEventListener('search-subscribers', this._onSearchSubscribers.bind(this));
-      this.toolbar.addEventListener('search-subscribers-clear', this._onSearchSubscribersClear.bind(this));
-  }
+    _addListeners() {
+        this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
+        this.toolbar.addEventListener('search-subscribers', this._onSearchSubscribers.bind(this));
+        this.toolbar.addEventListener('search-subscribers-clear', this._onSearchSubscribersClear.bind(this));
+    }
 
-  _onApplicationsApiChanged() {
-      this._getApplication();
-  }
+    _onApplicationsApiChanged() {
+        this._getApplication();
+    }
 
-  _updateScreen(medium, tablet, mobile) {
-      this.updateStyles();
+    _updateScreen(medium, tablet, mobile) {
+        this.updateStyles();
 
-      if (mobile) {
-          this.$.appscoContent.hideSection('resource');
-      }
-      else if(!this.$.appscoContent.resourceActive) {
-          this.$.appscoContent.showSection('resource');
-      }
-  }
+        if (mobile) {
+            this.$.appscoContent.hideSection('resource');
+        }
+        else if(!this.$.appscoContent.resourceActive) {
+            this.$.appscoContent.showSection('resource');
+        }
+    }
 
-  _computeResourceImageSettingsApi(resource) {
-      return resource.application && resource.application.meta ? resource.application.meta.change_application_image : null;
-  }
+    _computeResourceImageSettingsApi(resource) {
+        return resource.application && resource.application.meta ? resource.application.meta.change_application_image : null;
+    }
 
-  _pageLoaded() {
-      this.pageLoaded = true;
-      this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-  }
+    _pageLoaded() {
+        this.pageLoaded = true;
+        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
 
-  _getApplication() {
-      if (!this.application.self && this.applicationsApi && this._headers) {
-          this.$.ironAjaxGetApplication.url = this.iconsApi + this.route.path;
-          this.$.ironAjaxGetApplication.generateRequest();
-      }
+    _getApplication() {
+        if (!this.application.self && this.applicationsApi && this._headers) {
+            this.$.ironAjaxGetApplication.url = this.iconsApi + this.route.path;
+            this.$.ironAjaxGetApplication.generateRequest();
+        }
 
-  }
+    }
 
-  _onApplicationResponse(event) {
-      const icon = event.detail.response.icon;
+    _onApplicationResponse(event) {
+        const icon = event.detail.response.icon;
 
-      if (icon.owner) {
-          this.application = event.detail.response.icon;
-      }
-      else {
-          this._onApplicationError();
-      }
-  }
+        if (icon.owner) {
+            this.application = event.detail.response.icon;
+        }
+        else {
+            this._onApplicationError();
+        }
+    }
 
-  _onApplicationError() {
-      this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
-  }
+    _onApplicationError() {
+        this.dispatchEvent(new CustomEvent('page-error', { bubbles: true, composed: true }));
+    }
 
-  _onApplicationSettings() {
-      this._selected = 'appsco-application-settings-page';
-  }
+    _onApplicationSettings() {
+        this._selected = 'appsco-application-settings-page';
+    }
 
-  _onAllSubscribers() {
-      this._selected = 'appsco-application-subscribers-page';
-  }
+    _onAllSubscribers() {
+        this._selected = 'appsco-application-subscribers-page';
+    }
 
-  _onAllLog() {
-      this._selected = 'appsco-application-log-page';
-  }
+    _onAllLog() {
+        this._selected = 'appsco-application-log-page';
+    }
 
-  _onApplicationSettingsSaved() {
-      this._showApplicationComponentsPage();
-  }
+    _onApplicationSettingsSaved() {
+        this._showApplicationComponentsPage();
+    }
 
-  _onApplicationSettingsBack() {
-      this.$.appscoApplicationSettingsPage.resetPage();
-      this._showApplicationComponentsPage();
-  }
+    _onApplicationSettingsBack() {
+        this.$.appscoApplicationSettingsPage.resetPage();
+        this._showApplicationComponentsPage();
+    }
 
-  _onResourceBack() {
-      this._showApplicationComponentsPage();
-  }
+    _onResourceBack() {
+        this._showApplicationComponentsPage();
+    }
 
-  _showApplicationComponentsPage() {
-      this._selected = 'appsco-application-components-page';
-  }
+    _showApplicationComponentsPage() {
+        this._selected = 'appsco-application-components-page';
+    }
 
-  _onShareApplication() {
-      const dialog = this.shadowRoot.getElementById('appscoApplicationShare');
-      dialog.setApplication(this.application);
-      dialog.toggle();
-  }
+    _onShareApplication() {
+        const dialog = this.shadowRoot.getElementById('appscoApplicationShare');
+        dialog.setApplication(this.application);
+        dialog.toggle();
+    }
 
-  _onOpenApplication() {
-      window.open(this.application.meta.plugin_go, '_blank');
-  }
+    _onOpenApplication() {
+        window.open(this.application.meta.plugin_go, '_blank');
+    }
 
-  resetPage() {
-      this._showApplicationComponentsPage();
-  }
+    resetPage() {
+        this._showApplicationComponentsPage();
+    }
 
-  toggleResource() {
-      this.$.appscoContent.toggleSection('resource');
-  }
+    toggleResource() {
+        this.$.appscoContent.toggleSection('resource');
+    }
 
-  searchSubscribers(term) {
-      this.$.appscoApplicationSubscribersPage.searchSubscribers(term);
-  }
+    searchSubscribers(term) {
+        this.$.appscoApplicationSubscribersPage.searchSubscribers(term);
+    }
 
-  _onPageAnimationFinish(event) {
-      const fromPage = event.detail.fromPage,
-          toPage = event.detail.toPage;
+    _onPageAnimationFinish(event) {
+        const fromPage = event.detail.fromPage,
+            toPage = event.detail.toPage;
 
-      if('appsco-application-subscribers-page' === fromPage.getAttribute('name')) {
-          fromPage.resetPage();
-      }
+        if('appsco-application-subscribers-page' === fromPage.getAttribute('name')) {
+            fromPage.resetPage();
+        }
 
-      switch(toPage.getAttribute('name')) {
-          case 'appsco-application-settings-page':
-              toPage.setPage();
-              break;
-          case 'appsco-application-subscribers-page':
-              toPage.setupPage();
-              break;
-          default:
-              break;
-      }
-  }
+        switch(toPage.getAttribute('name')) {
+            case 'appsco-application-settings-page':
+                toPage.setPage();
+                break;
+            case 'appsco-application-subscribers-page':
+                toPage.setupPage();
+                break;
+            default:
+                break;
+        }
+    }
 
-  _searchSubscribers(term) {
-      this._showProgressBar();
-      this.searchSubscribers(term);
-  }
+    _searchSubscribers(term) {
+        this._showProgressBar();
+        this.searchSubscribers(term);
+    }
 
-  _onSearchSubscribers(event) {
-      this._searchSubscribers(event.detail.term);
-  }
+    _onSearchSubscribers(event) {
+        this._searchSubscribers(event.detail.term);
+    }
 
-  _onSearchSubscribersClear() {
-      this._searchSubscribers('');
-  }
+    _onSearchSubscribersClear() {
+        this._searchSubscribers('');
+    }
 
-  _onRemoveApplication() {
-      const dialog = this.shadowRoot.getElementById('appscoApplicationRemove');
-      dialog.setApplication(this.application);
-      dialog.open();
-  }
+    _onRemoveApplication() {
+        const dialog = this.shadowRoot.getElementById('appscoApplicationRemove');
+        dialog.setApplication(this.application);
+        dialog.open();
+    }
 
-  _onSubscriptionRevoke(event) {
-      const dialog = this.shadowRoot.getElementById('appscoApplicationSubscriberRevoke');
-      dialog.application =   event.detail.application;
-      dialog.revokeAccount = event.detail.account;
+    _onSubscriptionRevoke(event) {
+        const dialog = this.shadowRoot.getElementById('appscoApplicationSubscriberRevoke');
+        dialog.application =   event.detail.application;
+        dialog.revokeAccount = event.detail.account;
 
-      dialog.open();
-  }
+        dialog.open();
+    }
 
-  _onEnableSubscribersSearchAction() {
-      this.toolbar.enableSubscribersSearchAction();
-  }
+    _onEnableSubscribersSearchAction() {
+        this.toolbar.enableSubscribersSearchAction();
+    }
 
-  _onDisableSubscribersSearchAction() {
-      this.toolbar.disableSubscribersSearchAction();
-  }
+    _onDisableSubscribersSearchAction() {
+        this.toolbar.disableSubscribersSearchAction();
+    }
 }
 window.customElements.define(AppscoResourcePage.is, AppscoResourcePage);

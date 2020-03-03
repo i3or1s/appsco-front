@@ -17,9 +17,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationComponentsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -214,153 +215,153 @@ class AppscoApplicationComponentsPage extends mixinBehaviors([NeonSharedElementA
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-components-page'; }
+    static get is() { return 'appsco-application-components-page'; }
 
-  static get properties() {
-      return {
-          col2: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            col2: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          /**
-           * Indicates if it is medium screen size.
-           * It uses iron-media-query.
-           */
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            /**
+             * Indicates if it is medium screen size.
+             * It uses iron-media-query.
+             */
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          /**
-           * Selected application from search list.
-           */
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true,
-              observer: '_onApplicationChanged'
-          },
+            /**
+             * Selected application from search list.
+             */
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true,
+                observer: '_onApplicationChanged'
+            },
 
-          _isUnPwAuthType: {
-              type: Boolean,
-              computed: '_computeIsUnPwAuthType(application)'
-          },
+            _isUnPwAuthType: {
+                type: Boolean,
+                computed: '_computeIsUnPwAuthType(application)'
+            },
 
-          _autologinUnavailable: {
-              type: Boolean,
-              value: false
-          },
+            _autologinUnavailable: {
+                type: Boolean,
+                value: false
+            },
 
-          _autologinItem: {
-              type: Boolean,
-              value: false
-          },
+            _autologinItem: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: dom(this.root).querySelectorAll('paper-card'),
-              nodeDelay: 50,
-              timing: {
-                  delay: 200,
-                  duration: 100
-              }
-          },
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }]
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: dom(this.root).querySelectorAll('paper-card'),
+                nodeDelay: 50,
+                timing: {
+                    delay: 200,
+                    duration: 100
+                }
+            },
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }]
+        };
+    }
 
-  _computeIsUnPwAuthType(application) {
-      var isUnpw =
-          application.auth_type &&
-          (application.auth_type === 'unpw' || application.auth_type === 'item')
-      ;
-      this.col2 = !isUnpw;
-      return isUnpw;
-  }
+    _computeIsUnPwAuthType(application) {
+        var isUnpw =
+            application.auth_type &&
+            (application.auth_type === 'unpw' || application.auth_type === 'item')
+        ;
+        this.col2 = !isUnpw;
+        return isUnpw;
+    }
 
-  _setSharedElement(target) {
+    _setSharedElement(target) {
 
-      while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
-          target = target.parentNode;
-      }
+        while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+            target = target.parentNode;
+        }
 
-      /**
-       * Set hero animation element that is to be shared between pages.
-       *
-       * @type {{hero: *}}
-       */
-      this.sharedElements = {
-          'hero': target
-      };
-  }
+        /**
+         * Set hero animation element that is to be shared between pages.
+         *
+         * @type {{hero: *}}
+         */
+        this.sharedElements = {
+            'hero': target
+        };
+    }
 
-  _onApplicationChanged() {
-      this._autologinUnavailable = false;
-      this._autologinItem = this.application.auth_type == 'item';
-  }
+    _onApplicationChanged() {
+        this._autologinUnavailable = false;
+        this._autologinItem = this.application.auth_type == 'item';
+    }
 
-  _onManageApplicationSettings(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('application-settings', { bubbles: true, composed: true }));
-  }
+    _onManageApplicationSettings(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('application-settings', { bubbles: true, composed: true }));
+    }
 
-  _onAllSubscribers(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('all-subscribers', { bubbles: true, composed: true }));
-  }
+    _onAllSubscribers(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('all-subscribers', { bubbles: true, composed: true }));
+    }
 
-  _onAllLog(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('all-log', { bubbles: true, composed: true }));
-  }
+    _onAllLog(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('all-log', { bubbles: true, composed: true }));
+    }
 
-  _onAutologinUnavailable() {
-      this._autologinUnavailable = true;
-  }
+    _onAutologinUnavailable() {
+        this._autologinUnavailable = true;
+    }
 
-  _onAutologinChanged() {
-      this._autologinItem = !this._autologinItem;
+    _onAutologinChanged() {
+        this._autologinItem = !this._autologinItem;
 
-      this.$.appscoApplicationLog.load();
-  }
+        this.$.appscoApplicationLog.load();
+    }
 }
 window.customElements.define(AppscoApplicationComponentsPage.is, AppscoApplicationComponentsPage);

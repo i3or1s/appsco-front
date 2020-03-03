@@ -11,9 +11,10 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoBillingSendInvoice extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -64,91 +65,91 @@ class AppscoBillingSendInvoice extends mixinBehaviors([Appsco.HeadersMixin], Pol
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-billing-send-invoice'; }
+    static get is() { return 'appsco-billing-send-invoice'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          invoice: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            invoice: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          subscription: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            subscription: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          companyApi: {
-              type: String
-          },
+            companyApi: {
+                type: String
+            },
 
-          _sendInvoiceApi: {
-              type: String,
-              computed: '_computeSendInvoiceApi(companyApi, invoice, subscription)'
-          },
+            _sendInvoiceApi: {
+                type: String,
+                computed: '_computeSendInvoiceApi(companyApi, invoice, subscription)'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  _computeSendInvoiceApi(companyApi, invoice, subscription) {
-      return companyApi + '/billing/' + subscription.id + '/invoice/' + invoice.id + '/send';
-  }
+    _computeSendInvoiceApi(companyApi, invoice, subscription) {
+        return companyApi + '/billing/' + subscription.id + '/invoice/' + invoice.id + '/send';
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _onDialogClosed() {
-      this._loader = false;
-  }
+    _onDialogClosed() {
+        this._loader = false;
+    }
 
-  _onSend() {
-      const request = document.createElement('iron-request'),
-          options = {
-              url: this._sendInvoiceApi,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _onSend() {
+        const request = document.createElement('iron-request'),
+            options = {
+                url: this._sendInvoiceApi,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._loader = true;
+        this._loader = true;
 
-      request.send(options).then(function(request) {
-          this.$.dialog.close();
+        request.send(options).then(function(request) {
+            this.$.dialog.close();
 
-          this.dispatchEvent(new CustomEvent('invoice-sent', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  sentTo: this.company.billing_email
-              }
-          }));
-      }.bind(this));
-  }
+            this.dispatchEvent(new CustomEvent('invoice-sent', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    sentTo: this.company.billing_email
+                }
+            }));
+        }.bind(this));
+    }
 
-  setInvoice(invoice) {
-      this.set('invoice', invoice);
-  }
+    setInvoice(invoice) {
+        this.set('invoice', invoice);
+    }
 
-  setSubscription(subscription) {
-      this.set('subscription', subscription);
-  }
+    setSubscription(subscription) {
+        this.set('subscription', subscription);
+    }
 }
 window.customElements.define(AppscoBillingSendInvoice.is, AppscoBillingSendInvoice);

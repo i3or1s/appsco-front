@@ -1,19 +1,4 @@
-/**
-`appsco-directory-role-applications`
-Contains info about resources shared to company role.
-
-    <appsco-directory-role-applications application="{}">
-    </appsco-directory-role-applications>
-
-@demo demo/company/appsco-directory-role-applications.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-progress/paper-progress.js';
@@ -25,9 +10,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDirectoryRoleApplications extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -114,203 +100,203 @@ class AppscoDirectoryRoleApplications extends mixinBehaviors([Appsco.HeadersMixi
             </p>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-directory-role-applications'; }
+    static get is() { return 'appsco-directory-role-applications'; }
 
-  static get properties() {
-      return {
-          companyRole: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            companyRole: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Number of applications to load.
-           */
-          size: {
-              type: Number,
-              value: 5
-          },
+            /**
+             * Number of applications to load.
+             */
+            size: {
+                type: Number,
+                value: 5
+            },
 
-          /**
-           * Indicates if load more action should be available or not.
-           */
-          loadMore: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if load more action should be available or not.
+             */
+            loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * Indicates if applications should be in preview mode rather then full detailed view.
-           */
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            /**
+             * Indicates if applications should be in preview mode rather then full detailed view.
+             */
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          /**
-           * Next page of applications to load.
-           */
-          _nextPage: {
-              type: Number,
-              value: 1
-          },
+            /**
+             * Next page of applications to load.
+             */
+            _nextPage: {
+                type: Number,
+                value: 1
+            },
 
-          _moreApplications: {
-              type: Boolean,
-              value: true
-          },
+            _moreApplications: {
+                type: Boolean,
+                value: true
+            },
 
-          _computedAction: {
-              type: String
-          },
+            _computedAction: {
+                type: String
+            },
 
-          _applications: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _applications: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _totalApplications: {
-              type: Number
-          },
+            _totalApplications: {
+                type: Number
+            },
 
-          _loadMore: {
-              type: Boolean,
-              value: false
-          },
+            _loadMore: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * Message to display instead of subscribers.
-           */
-          _message: {
-              type: String
-          }
-      };
-  }
+            /**
+             * Message to display instead of subscribers.
+             */
+            _message: {
+                type: String
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_computeAction(companyRole, _nextPage, size)',
-          '_onCompanyRoleChanged(companyRole)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_computeAction(companyRole, _nextPage, size)',
+            '_onCompanyRoleChanged(companyRole)'
+        ];
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      beforeNextRender(this, function() {
-          this.load();
-      });
-  }
+        beforeNextRender(this, function() {
+            this.load();
+        });
+    }
 
-  _onCompanyRoleChanged() {
-      this.load();
-  }
+    _onCompanyRoleChanged() {
+        this.load();
+    }
 
-  _computeAction(companyRole, nextPage, size) {
-      this._computedAction = companyRole.meta ? companyRole.meta.applications + '?page=' + nextPage + '&limit=' + size + '&extended=1' : null;
-  }
+    _computeAction(companyRole, nextPage, size) {
+        this._computedAction = companyRole.meta ? companyRole.meta.applications + '?page=' + nextPage + '&limit=' + size + '&extended=1' : null;
+    }
 
-  /**
-   * Triggers ajax request in order to get notifications.
-   */
-  load() {
-      this.$.progress.hidden = false;
-      this._applications = [];
-      this._message = '';
-      this._nextPage = 1;
+    /**
+     * Triggers ajax request in order to get notifications.
+     */
+    load() {
+        this.$.progress.hidden = false;
+        this._applications = [];
+        this._message = '';
+        this._nextPage = 1;
 
-      this.$.getApplicationsCall.generateRequest();
-  }
+        this.$.getApplicationsCall.generateRequest();
+    }
 
-  _loadMore() {
-      this.$.progress.hidden = false;
+    _loadMore() {
+        this.$.progress.hidden = false;
 
-      this.$.getApplicationsCall.generateRequest();
-  }
+        this.$.getApplicationsCall.generateRequest();
+    }
 
-  /**
-   * Handles error on get applications API request.
-   * @param {Object} event Event from error response.
-   *
-   * @private
-   */
-  _handleError(event) {
-      this._message = 'We couldn\'t load resources at the moment. Please try again in a minute. If error continues contact us.';
-      this._handleEmpty();
-  }
+    /**
+     * Handles error on get applications API request.
+     * @param {Object} event Event from error response.
+     *
+     * @private
+     */
+    _handleError(event) {
+        this._message = 'We couldn\'t load resources at the moment. Please try again in a minute. If error continues contact us.';
+        this._handleEmpty();
+    }
 
-  /**
-   * Handles response on get log API request.
-   * @param {Object} event Event from response.
-   *
-   * @private
-   */
-  _handleResponse(event) {
-      const response = event.detail.response;
+    /**
+     * Handles response on get log API request.
+     * @param {Object} event Event from response.
+     *
+     * @private
+     */
+    _handleResponse(event) {
+        const response = event.detail.response;
 
-      if (!response) {
-          return false;
-      }
+        if (!response) {
+            return false;
+        }
 
-      const applications = response.applications,
-          currentLength = this._applications.length,
-          total = response.meta.total;
+        const applications = response.applications,
+            currentLength = this._applications.length,
+            total = response.meta.total;
 
-      this._totalApplications = total;
+        this._totalApplications = total;
 
-      if (applications && applications.length > 0) {
-          this._nextPage += 1;
+        if (applications && applications.length > 0) {
+            this._nextPage += 1;
 
-          applications.forEach(function(application, index) {
-              setTimeout( function() {
-                  this.push('_applications', applications[index]);
+            applications.forEach(function(application, index) {
+                setTimeout( function() {
+                    this.push('_applications', applications[index]);
 
-                  if (index === (applications.length - 1)) {
-                      this._moreApplications = this._applications.length !== total;
+                    if (index === (applications.length - 1)) {
+                        this._moreApplications = this._applications.length !== total;
 
-                      this._hideProgressBar();
-                      this.dispatchEvent(new CustomEvent('applications-loaded', { bubbles: true, composed: true }));
-                  }
-              }.bind(this), (index + 1) * 30 );
-          }.bind(this));
-      }
-      else if (applications && !applications.length) {
-          if (!currentLength) {
-              this._message = 'There are no company resources shared with this account.';
-          }
+                        this._hideProgressBar();
+                        this.dispatchEvent(new CustomEvent('applications-loaded', { bubbles: true, composed: true }));
+                    }
+                }.bind(this), (index + 1) * 30 );
+            }.bind(this));
+        }
+        else if (applications && !applications.length) {
+            if (!currentLength) {
+                this._message = 'There are no company resources shared with this account.';
+            }
 
-          this._moreApplications = false;
-          this._handleEmpty();
-      }
-      else if (!currentLength) {
-          this._message = 'We couldn\'t load resources at the moment.';
-          this._moreApplications = false;
-          this._handleEmpty();
-      }
-  }
+            this._moreApplications = false;
+            this._handleEmpty();
+        }
+        else if (!currentLength) {
+            this._message = 'We couldn\'t load resources at the moment.';
+            this._moreApplications = false;
+            this._handleEmpty();
+        }
+    }
 
-  _handleEmpty() {
-      this._hideProgressBar();
-      this.dispatchEvent(new CustomEvent('applications-empty', { bubbles: true, composed: true }));
-  }
+    _handleEmpty() {
+        this._hideProgressBar();
+        this.dispatchEvent(new CustomEvent('applications-empty', { bubbles: true, composed: true }));
+    }
 
-  _hideProgressBar() {
-      setTimeout(function() {
-          this.$.progress.hidden = true;
-      }.bind(this), 500);
-  }
+    _hideProgressBar() {
+        setTimeout(function() {
+            this.$.progress.hidden = true;
+        }.bind(this), 500);
+    }
 
-  reload() {
-      this.set('_applications', []);
-      this._nextPage = 1;
-      this.$.getApplicationsCall.generateRequest();
-  }
+    reload() {
+        this.set('_applications', []);
+        this._nextPage = 1;
+        this.$.getApplicationsCall.generateRequest();
+    }
 }
 window.customElements.define(AppscoDirectoryRoleApplications.is, AppscoDirectoryRoleApplications);

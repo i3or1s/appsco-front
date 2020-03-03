@@ -19,9 +19,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCreditCard extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             #stripe_cc_dialog {
                 width: 670px;
@@ -86,140 +87,140 @@ class AppscoCreditCard extends mixinBehaviors([Appsco.HeadersMixin], PolymerElem
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-credit-card'; }
+    static get is() { return 'appsco-credit-card'; }
 
-  static get properties() {
-      return {
-          companyApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            companyApi: {
+                type: String
+            },
 
-          _creditCardApi: {
-              type: String,
-              computed: '_computeCreditCardApi(companyApi)'
-          },
+            _creditCardApi: {
+                type: String,
+                computed: '_computeCreditCardApi(companyApi)'
+            },
 
-          _publicKeyApi: {
-              type: String,
-              computed: '_computePublicKeyApi(companyApi)'
-          },
+            _publicKeyApi: {
+                type: String,
+                computed: '_computePublicKeyApi(companyApi)'
+            },
 
-          _stripePublicKey: {
-              type: String,
-              value: ''
-          },
+            _stripePublicKey: {
+                type: String,
+                value: ''
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          }
-      };
-  }
+            _target: {
+                type: Object
+            }
+        };
+    }
 
-  /** Stripe controls do not work with shadow root so this hack is ugly but necessary */
-  ready() {
-      super.ready();
+    /** Stripe controls do not work with shadow root so this hack is ugly but necessary */
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          document.body.appendChild(this.root);
-          this._target = this.shadowRoot.getElementById('creditCardForm');
-      });
-  }
+        afterNextRender(this, function() {
+            document.body.appendChild(this.root);
+            this._target = this.shadowRoot.getElementById('creditCardForm');
+        });
+    }
 
-  _computeCreditCardApi(companyApi) {
-      return companyApi + '/billing/cc';
-  }
+    _computeCreditCardApi(companyApi) {
+        return companyApi + '/billing/cc';
+    }
 
-  _computePublicKeyApi(companyApi) {
-      return companyApi + '/billing/pk';
-  }
+    _computePublicKeyApi(companyApi) {
+        return companyApi + '/billing/pk';
+    }
 
-  toggle() {
-      this.$.stripe_cc_dialog.toggle();
-  }
+    toggle() {
+        this.$.stripe_cc_dialog.toggle();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onDialogOpened() {
-      this._showLoader();
-      this.$.getPublicKeyCall.generateRequest();
-  }
+    _onDialogOpened() {
+        this._showLoader();
+        this.$.getPublicKeyCall.generateRequest();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+    }
 
-  _handlePublicKeyResponse(event) {
-      this._stripePublicKey = event.detail.response.stripePublicKey;
-      this.stripe = new Stripe(this._stripePublicKey);
-      this.elements = this.stripe.elements();
-      this.cardNumber = this.elements.create('card', {
-          hidePostalCode: true
-      });
-      this.cardNumber.mount('#card_number');
-      this._hideLoader();
-  }
+    _handlePublicKeyResponse(event) {
+        this._stripePublicKey = event.detail.response.stripePublicKey;
+        this.stripe = new Stripe(this._stripePublicKey);
+        this.elements = this.stripe.elements();
+        this.cardNumber = this.elements.create('card', {
+            hidePostalCode: true
+        });
+        this.cardNumber.mount('#card_number');
+        this._hideLoader();
+    }
 
-  _stripeResponseHandler(result) {
-      if (result.error) {
-          this._errorMessage = result.error.message;
-          this._hideLoader();
-          return;
-      }
+    _stripeResponseHandler(result) {
+        if (result.error) {
+            this._errorMessage = result.error.message;
+            this._hideLoader();
+            return;
+        }
 
-      var request = document.createElement('iron-request'),
-          options = {
-              url: this._creditCardApi,
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers,
-              body: 'stripeToken=' + result.token.id
-          };
+        var request = document.createElement('iron-request'),
+            options = {
+                url: this._creditCardApi,
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers,
+                body: 'stripeToken=' + result.token.id
+            };
 
-      this._showLoader();
-      request.send(options).then(function() {
-          if (200 === request.status) {
-              this.$.stripe_cc_dialog.close();
-              this.dispatchEvent(new CustomEvent('credit-card-added', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      credit_card: request.response
-                  }
-              }));
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+        this._showLoader();
+        request.send(options).then(function() {
+            if (200 === request.status) {
+                this.$.stripe_cc_dialog.close();
+                this.dispatchEvent(new CustomEvent('credit-card-added', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        credit_card: request.response
+                    }
+                }));
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 
-  _onAddCreditCard() {
-      if (this.stripe) {
-          this.stripe.createToken(this.cardNumber).then(function(result) {
-              this._stripeResponseHandler(result);
-          }.bind(this));
-      }
-  }
+    _onAddCreditCard() {
+        if (this.stripe) {
+            this.stripe.createToken(this.cardNumber).then(function(result) {
+                this._stripeResponseHandler(result);
+            }.bind(this));
+        }
+    }
 
-  _onEnter() {
-      this._onAddCreditCard();
-  }
+    _onEnter() {
+        this._onAddCreditCard();
+    }
 }
 window.customElements.define(AppscoCreditCard.is, AppscoCreditCard);

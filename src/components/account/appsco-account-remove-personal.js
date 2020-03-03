@@ -8,9 +8,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountRemovePersonal extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -48,49 +49,49 @@ class AppscoAccountRemovePersonal extends mixinBehaviors([Appsco.HeadersMixin], 
 
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-remove-personal'; }
+    static get is() { return 'appsco-account-remove-personal'; }
 
-  static get properties() {
-      return {
-          removeAccountApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            removeAccountApi: {
+                type: String
+            },
 
-          logoutApi: {
-              type: String
-          },
+            logoutApi: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  open() {
-      this.$.removeDialog.open();
-  }
+    open() {
+        this.$.removeDialog.open();
+    }
 
-  _onDialogClosed() {
-      this._loader = false;
-  }
+    _onDialogClosed() {
+        this._loader = false;
+    }
 
-  _onAccountRemove() {
-      const appRequest = document.createElement('iron-request');
+    _onAccountRemove() {
+        const appRequest = document.createElement('iron-request');
 
-      this._loader = true;
+        this._loader = true;
 
-      appRequest.send({
-          url: this.removeAccountApi,
-          method: 'DELETE',
-          handleAs: 'json',
-          headers: this._headers
-      }).then(function() {
-          this.$.removeDialog.close();
-          window.location.href = this.logoutApi;
-      }.bind(this));
-  }
+        appRequest.send({
+            url: this.removeAccountApi,
+            method: 'DELETE',
+            handleAs: 'json',
+            headers: this._headers
+        }).then(function() {
+            this.$.removeDialog.close();
+            window.location.href = this.logoutApi;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoAccountRemovePersonal.is, AppscoAccountRemovePersonal);

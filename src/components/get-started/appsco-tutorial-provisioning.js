@@ -6,12 +6,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoTutorialProvisioning extends mixinBehaviors([
     AppscoTutorialBehaviour,
     AppscoCoverBehaviour
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
             }
@@ -134,190 +135,190 @@ class AppscoTutorialProvisioning extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-tutorial-provisioning'; }
+    static get is() { return 'appsco-tutorial-provisioning'; }
 
-  static get properties() {
-      return {
-          page: {
-              type: String
-          },
+    static get properties() {
+        return {
+            page: {
+                type: String
+            },
 
-          tutorialTitle: {
-              type: String,
-              notify: true
-          }
-      };
-  }
+            tutorialTitle: {
+                type: String,
+                notify: true
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.tutorialId = 'provisioning';
-      this.tutorialTitle = 'Provisioning';
-      this.description = 'Add integrations with other systems';
-      this.icon = 'icons:icons:compare-arrows';
-      this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
-  }
+        this.tutorialId = 'provisioning';
+        this.tutorialTitle = 'Provisioning';
+        this.description = 'Add integrations with other systems';
+        this.icon = 'icons:icons:compare-arrows';
+        this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
+    }
 
-  connectedCallback() {
-      super.connectedCallback();
+    connectedCallback() {
+        super.connectedCallback();
 
-      this.tutorialId = 'provisioning';
-      this.tutorialTitle = 'Provisioning';
-      this.description = 'Add integrations with other systems';
-      this.icon = 'icons:icons:compare-arrows';
-      this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
+        this.tutorialId = 'provisioning';
+        this.tutorialTitle = 'Provisioning';
+        this.description = 'Add integrations with other systems';
+        this.icon = 'icons:icons:compare-arrows';
+        this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
 
-      afterNextRender(this, function() {
-          this.init();
-      });
-  }
+        afterNextRender(this, function() {
+            this.init();
+        });
+    }
 
-  pageChanged() {
-      if(this.page !== 'provisioning' && this.step === 3) {
-          this.reset();
-      }
-  }
+    pageChanged() {
+        if(this.page !== 'provisioning' && this.step === 3) {
+            this.reset();
+        }
+    }
 
-  _readMore() {
-      window.open(this.readme, '_blank');
-  }
+    _readMore() {
+        window.open(this.readme, '_blank');
+    }
 
-  getPopperConfig() {
-      return {
-          step1: {
-              reference: 'body',
-              coverTarget: '* /deep/ appsco-tutorial-provisioning /deep/ #step-1',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step2: {
-              reference: '* /deep/ #menuBurger',
-              coverTarget: '* /deep/ #menuBurger',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step3: {
-              reference: '* /deep/ #menuProvisioningText',
-              coverTarget: '* /deep/ #menuContainer',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step4: {
-              reference: '* /deep/ appsco-provisioning-actions /deep/ paper-button.add-action',
-              coverTarget: '* /deep/ appsco-provisioning-actions /deep/ paper-button.add-action',
-              popperOptions: {
-                  placement: 'left-start'
-              }
-          },
-          step5: {
-              reference: '* /deep/ appsco-add-integration /deep/ appsco-available-integration-item /deep/ div.item',
-              coverTarget: '* /deep/ appsco-add-integration /deep/ appsco-available-integration-item  /deep/ div.item',
-              popperOptions: {
-                  placement: 'left-start'
-              }
-          },
-          step6: {
-              reference: '* /deep/ appsco-add-integration /deep/ paper-button#addAction',
-              coverTarget: '* /deep/ appsco-add-integration /deep/ paper-dialog',
-              popperOptions: {
-                  placement: 'left-start'
-              },
-              popperListenerBuilder: function(tutorial) {
-                  let dialog = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog'),
-                      cancelButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button[dialog-dismiss]'),
-                      addButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button#addAction'),
-                      cancelListener,
-                      addListener;
+    getPopperConfig() {
+        return {
+            step1: {
+                reference: 'body',
+                coverTarget: '* /deep/ appsco-tutorial-provisioning /deep/ #step-1',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step2: {
+                reference: '* /deep/ #menuBurger',
+                coverTarget: '* /deep/ #menuBurger',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step3: {
+                reference: '* /deep/ #menuProvisioningText',
+                coverTarget: '* /deep/ #menuContainer',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step4: {
+                reference: '* /deep/ appsco-provisioning-actions /deep/ paper-button.add-action',
+                coverTarget: '* /deep/ appsco-provisioning-actions /deep/ paper-button.add-action',
+                popperOptions: {
+                    placement: 'left-start'
+                }
+            },
+            step5: {
+                reference: '* /deep/ appsco-add-integration /deep/ appsco-available-integration-item /deep/ div.item',
+                coverTarget: '* /deep/ appsco-add-integration /deep/ appsco-available-integration-item  /deep/ div.item',
+                popperOptions: {
+                    placement: 'left-start'
+                }
+            },
+            step6: {
+                reference: '* /deep/ appsco-add-integration /deep/ paper-button#addAction',
+                coverTarget: '* /deep/ appsco-add-integration /deep/ paper-dialog',
+                popperOptions: {
+                    placement: 'left-start'
+                },
+                popperListenerBuilder: function(tutorial) {
+                    let dialog = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog'),
+                        cancelButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button[dialog-dismiss]'),
+                        addButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button#addAction'),
+                        cancelListener,
+                        addListener;
 
-                  cancelListener = function() {
-                      cancelButton.removeEventListener('click', cancelListener);
-                      addButton.removeEventListener('click', addListener);
-                      dialog.removeAttribute('no-cancel-on-outside-click');
-                      dialog.removeAttribute('no-cancel-on-esc-key');
-                      tutorial.reset();
-                  };
+                    cancelListener = function() {
+                        cancelButton.removeEventListener('click', cancelListener);
+                        addButton.removeEventListener('click', addListener);
+                        dialog.removeAttribute('no-cancel-on-outside-click');
+                        dialog.removeAttribute('no-cancel-on-esc-key');
+                        tutorial.reset();
+                    };
 
-                  addListener = function() {
-                      cancelButton.removeEventListener('click', cancelListener);
-                      addButton.removeEventListener('click', addListener);
-                      dialog.removeAttribute('no-cancel-on-outside-click');
-                      dialog.removeAttribute('no-cancel-on-esc-key');
+                    addListener = function() {
+                        cancelButton.removeEventListener('click', cancelListener);
+                        addButton.removeEventListener('click', addListener);
+                        dialog.removeAttribute('no-cancel-on-outside-click');
+                        dialog.removeAttribute('no-cancel-on-esc-key');
 
-                      dialog.close();
-                      tutorial.nextStep();
-                  };
+                        dialog.close();
+                        tutorial.nextStep();
+                    };
 
-                  cancelButton.addEventListener('click', cancelListener);
-                  addButton.addEventListener('click', addListener);
-              }
-          },
-          step7: {
-              reference: '* /deep/ #menuBurger',
-              coverTarget: '* /deep/ #menuBurger',
-              popperOptions: {
-                  placement: 'left-start'
-              }
-          }
-      };
-  }
+                    cancelButton.addEventListener('click', cancelListener);
+                    addButton.addEventListener('click', addListener);
+                }
+            },
+            step7: {
+                reference: '* /deep/ #menuBurger',
+                coverTarget: '* /deep/ #menuBurger',
+                popperOptions: {
+                    placement: 'left-start'
+                }
+            }
+        };
+    }
 
-  start() {
-      this.step = 0;
-      this.nextStep();
-  }
+    start() {
+        this.step = 0;
+        this.nextStep();
+    }
 
-  step2(index, item, doneBuildingPopperHandler) {
-      this.handleStep(index, item, doneBuildingPopperHandler);
-  }
+    step2(index, item, doneBuildingPopperHandler) {
+        this.handleStep(index, item, doneBuildingPopperHandler);
+    }
 
-  step3(index, item, doneBuildingPopperHandler) {
-      this.handleStep(index, item, doneBuildingPopperHandler);
-      setTimeout(function(){
-          // Is firefox
-          if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-              this.popperStep[index + 1].popper.popper.style.left = "200px";
-          }
-      }.bind(this), 300);
-  }
+    step3(index, item, doneBuildingPopperHandler) {
+        this.handleStep(index, item, doneBuildingPopperHandler);
+        setTimeout(function(){
+            // Is firefox
+            if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+                this.popperStep[index + 1].popper.popper.style.left = "200px";
+            }
+        }.bind(this), 300);
+    }
 
-  step4(index, item, doneBuildingPopperHandler) {
-      setTimeout(function() {
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this), 400);
-  }
+    step4(index, item, doneBuildingPopperHandler) {
+        setTimeout(function() {
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this), 400);
+    }
 
-  step5(index, item, doneBuildingPopperHandler) {
-      setTimeout(function() {
-          this
-              ._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
-              .setAttribute('no-cancel-on-outside-click', true);
-          this
-              ._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
-              .setAttribute('no-cancel-on-esc-key', true);
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this), 700);
-  }
+    step5(index, item, doneBuildingPopperHandler) {
+        setTimeout(function() {
+            this
+                ._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
+                .setAttribute('no-cancel-on-outside-click', true);
+            this
+                ._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
+                .setAttribute('no-cancel-on-esc-key', true);
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this), 700);
+    }
 
-  step6(index, item, doneBuildingPopperHandler) {
-      setTimeout(function() {
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this), 500);
-  }
+    step6(index, item, doneBuildingPopperHandler) {
+        setTimeout(function() {
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this), 500);
+    }
 
-  step7(index, item, doneBuildingPopperHandler) {
-      setTimeout(function() {
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this), 500);
-  }
+    step7(index, item, doneBuildingPopperHandler) {
+        setTimeout(function() {
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this), 500);
+    }
 
-  _nextStep() {
-      this.currentStep.reference.click();
-  }
+    _nextStep() {
+        this.currentStep.reference.click();
+    }
 }
 window.customElements.define(AppscoTutorialProvisioning.is, AppscoTutorialProvisioning);

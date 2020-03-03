@@ -5,9 +5,10 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import './appsco-company-idp-domains.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyIdpDomainsPage extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -64,53 +65,53 @@ class AppscoCompanyIdpDomainsPage extends PolymerElement {
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-idp-domains-page'; }
+    static get is() { return 'appsco-company-idp-domains-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          domainsApi: {
-              type: String
-          },
+            domainsApi: {
+                type: String
+            },
 
-          _showDomains: {
-              type: Boolean,
-              value: true
-          },
+            _showDomains: {
+                type: Boolean,
+                value: true
+            },
 
-          _showMessage: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _showMessage: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  reloadDomains() {
-      this.shadowRoot.getElementById('appscoCompanyIdPDomains').reloadDomains();
-  }
+    reloadDomains() {
+        this.shadowRoot.getElementById('appscoCompanyIdPDomains').reloadDomains();
+    }
 
-  modifyDomain(domain) {
-      this.shadowRoot.getElementById('appscoCompanyIdPDomains').modifyDomain(domain);
-  }
+    modifyDomain(domain) {
+        this.shadowRoot.getElementById('appscoCompanyIdPDomains').modifyDomain(domain);
+    }
 
-  _onCompanyIdPDomainsLoaded() {
-      this._showDomains = true;
-      this._showMessage = false;
-  }
+    _onCompanyIdPDomainsLoaded() {
+        this._showDomains = true;
+        this._showMessage = false;
+    }
 
-  _onCompanyIdPDomainsEmptyLoad() {
-      this._showDomains = false;
-      this._showMessage = true;
-  }
+    _onCompanyIdPDomainsEmptyLoad() {
+        this._showDomains = false;
+        this._showMessage = true;
+    }
 
-  _onClosePageAction() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onClosePageAction() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoCompanyIdpDomainsPage.is, AppscoCompanyIdpDomainsPage);

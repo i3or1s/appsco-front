@@ -1,19 +1,4 @@
-/**
-`appsco-company-application-share`
-Provides functionality of sharing resources to users.
-
-    <appsco-company-application-share applications="[]">
-    </appsco-company-application-share>
-
-@demo demo/company/appsco-company-application-share.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/paper-styles/shadow.js';
@@ -31,9 +16,10 @@ import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyApplicationShare extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -135,273 +121,273 @@ class AppscoCompanyApplicationShare extends mixinBehaviors([Appsco.HeadersMixin]
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-application-share'; }
+    static get is() { return 'appsco-company-application-share'; }
 
-  static get properties() {
-      return {
-          companyApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            companyApi: {
+                type: String
+            },
 
-          /**
-           * Applications to share.
-           */
-          applications: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Applications to share.
+             */
+            applications: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          /**
-           * Number of accounts to load show in search result.
-           */
-          size: {
-              type: Number,
-              value: 8
-          },
+            /**
+             * Number of accounts to load show in search result.
+             */
+            size: {
+                type: Number,
+                value: 8
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          /**
-           * Applications which are shared.
-           * This array is populated from sharing API response.
-           */
-          _responseApplications: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Applications which are shared.
+             * This array is populated from sharing API response.
+             */
+            _responseApplications: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          /**
-           * Application list from search.
-           */
-          _searchList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Application list from search.
+             */
+            _searchList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _message: {
-              type: String
-          },
+            _message: {
+                type: String
+            },
 
-          /**
-           * Selected accounts from search list.
-           */
-          _selectedAccounts: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Selected accounts from search list.
+             */
+            _selectedAccounts: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          /**
-           * Indicates if search loader should be displayed or not.
-           */
-          _searchLoader: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if search loader should be displayed or not.
+             */
+            _searchLoader: {
+                type: Boolean,
+                value: false
+            },
 
-          /**
-           * Indicates if share applications loader should be displayed or not.
-           */
-          _shareLoader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            /**
+             * Indicates if share applications loader should be displayed or not.
+             */
+            _shareLoader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _showLoader() {
-      this._shareLoader = true;
-  }
+    _showLoader() {
+        this._shareLoader = true;
+    }
 
-  _hideLoader() {
-      this._shareLoader = false;
-  }
+    _hideLoader() {
+        this._shareLoader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _onDialogOpened() {
-      this.$.appscoSearch.setup();
-  }
+    _onDialogOpened() {
+        this.$.appscoSearch.setup();
+    }
 
-  _onDialogClosed() {
-      this._reset();
-      this.set('_selectedAccounts', []);
-  }
+    _onDialogClosed() {
+        this._reset();
+        this.set('_selectedAccounts', []);
+    }
 
-  /**
-   * Gets accounts by term.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onSearch(event) {
-      const searchValue = event.detail.term,
-          searchLength = searchValue.length;
+    /**
+     * Gets accounts by term.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onSearch(event) {
+        const searchValue = event.detail.term,
+            searchLength = searchValue.length;
 
-      this._searchLoader = true;
-      this._message = '';
+        this._searchLoader = true;
+        this._message = '';
 
-      if (searchLength === 0) {
-          this._message = '';
-          this._searchLoader = false;
-          this.set('_searchList', []);
-          return false;
-      }
+        if (searchLength === 0) {
+            this._message = '';
+            this._searchLoader = false;
+            this.set('_searchList', []);
+            return false;
+        }
 
-      if (searchLength < 3) {
-          this._message = 'Please type three or more letters.';
-          this._searchLoader = false;
-          this.set('_searchList', []);
-          return false;
-      }
+        if (searchLength < 3) {
+            this._message = 'Please type three or more letters.';
+            this._searchLoader = false;
+            this.set('_searchList', []);
+            return false;
+        }
 
-      const request = document.createElement('iron-request'),
-          url = this.companyApi + '/directory/accounts/search?extended=1&limit=' + this.size + '&term=' + searchValue;
+        const request = document.createElement('iron-request'),
+            url = this.companyApi + '/directory/accounts/search?extended=1&limit=' + this.size + '&term=' + searchValue;
 
-      this._message = '';
+        this._message = '';
 
-      const options = {
-          url: url,
-          method: 'GET',
-          handleAs: 'json',
-          headers: this._headers
-      };
+        const options = {
+            url: url,
+            method: 'GET',
+            handleAs: 'json',
+            headers: this._headers
+        };
 
-      request.send(options).then(function() {
-          const accounts = request.response.accounts;
+        request.send(options).then(function() {
+            const accounts = request.response.accounts;
 
-          if (accounts && accounts.length > 0) {
-              this.set('_searchList', accounts);
-          }
-          else {
-              this.set('_searchList', []);
-              this._message = 'There are no accounts with asked name.';
-          }
+            if (accounts && accounts.length > 0) {
+                this.set('_searchList', accounts);
+            }
+            else {
+                this.set('_searchList', []);
+                this._message = 'There are no accounts with asked name.';
+            }
 
-          this._searchLoader = false;
-      }.bind(this));
-  }
+            this._searchLoader = false;
+        }.bind(this));
+    }
 
-  _onSearchClear() {
-      this._reset();
-  }
+    _onSearchClear() {
+        this._reset();
+    }
 
-  _reset() {
-      this.$.appscoSearch.reset();
-      this.set('_searchList', []);
-      this._searchLoader = false;
-      this._hideLoader();
-      this._hideError();
-      this._message = '';
-  }
+    _reset() {
+        this.$.appscoSearch.reset();
+        this.set('_searchList', []);
+        this._searchLoader = false;
+        this._hideLoader();
+        this._hideError();
+        this._message = '';
+    }
 
-  /**
-   * Called after account has been selected from search list.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onAccountSelect(event) {
-      this._hideError();
-      this.push('_selectedAccounts', event.model.item);
-      this.splice('_searchList', this._searchList.indexOf(event.model.item), 1);
-  }
+    /**
+     * Called after account has been selected from search list.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onAccountSelect(event) {
+        this._hideError();
+        this.push('_selectedAccounts', event.model.item);
+        this.splice('_searchList', this._searchList.indexOf(event.model.item), 1);
+    }
 
-  _onAccountRemove(event) {
-      this.push('_searchList', event.model.item);
-      this.splice('_selectedAccounts', this._selectedAccounts.indexOf(event.model.item), 1);
-  }
+    _onAccountRemove(event) {
+        this.push('_searchList', event.model.item);
+        this.splice('_selectedAccounts', this._selectedAccounts.indexOf(event.model.item), 1);
+    }
 
-  _applicationsShareFinished() {
-      this.$.dialog.close();
+    _applicationsShareFinished() {
+        this.$.dialog.close();
 
-      this.dispatchEvent(new CustomEvent('applications-shared', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              applications: this._responseApplications
-          }
-      }));
+        this.dispatchEvent(new CustomEvent('applications-shared', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                applications: this._responseApplications
+            }
+        }));
 
-      this.set('_selectedAccounts', []);
-      this.set('_responseApplications', []);
-      this._hideLoader();
-  }
+        this.set('_selectedAccounts', []);
+        this.set('_responseApplications', []);
+        this._hideLoader();
+    }
 
-  _shareToAccounts(application, last) {
-      let accounts = this._selectedAccounts,
-          length = accounts.length - 1,
-          request = document.createElement('iron-request'),
-          options = {
-              url: application.self + '/share',
-              method: 'POST',
-              handleAs: 'json',
-              headers: this._headers
-          },
-          body = '';
+    _shareToAccounts(application, last) {
+        let accounts = this._selectedAccounts,
+            length = accounts.length - 1,
+            request = document.createElement('iron-request'),
+            options = {
+                url: application.self + '/share',
+                method: 'POST',
+                handleAs: 'json',
+                headers: this._headers
+            },
+            body = '';
 
-      for (let i = 0; i <= length; i++) {
-          let next = (i === length) ? '' : '&';
-          body += 'accounts[]=' + encodeURIComponent(accounts[i].self) + next;
-      }
+        for (let i = 0; i <= length; i++) {
+            let next = (i === length) ? '' : '&';
+            body += 'accounts[]=' + encodeURIComponent(accounts[i].self) + next;
+        }
 
-      options.body = body;
+        options.body = body;
 
-      request.send(options).then(function() {
-          this.push('_responseApplications', request.response);
+        request.send(options).then(function() {
+            this.push('_responseApplications', request.response);
 
-          if (last) {
-              this._applicationsShareFinished();
-          }
-      }.bind(this), function() {
-          this._showError(this.apiErrors.getError(request.response.code));
-          this._hideLoader();
-      }.bind(this));
-  }
+            if (last) {
+                this._applicationsShareFinished();
+            }
+        }.bind(this), function() {
+            this._showError(this.apiErrors.getError(request.response.code));
+            this._hideLoader();
+        }.bind(this));
+    }
 
-  _onShareApplicationsAction() {
-      if (0 === this._selectedAccounts.length) {
-          this._showError('Please add at least one user to share resources to.');
-          return false;
-      }
+    _onShareApplicationsAction() {
+        if (0 === this._selectedAccounts.length) {
+            this._showError('Please add at least one user to share resources to.');
+            return false;
+        }
 
-      const applications = this.applications,
-          length = applications.length - 1;
+        const applications = this.applications,
+            length = applications.length - 1;
 
-      this._showLoader();
+        this._showLoader();
 
-      for (let i = 0; i <= length; i++) {
-          if (i === length) {
-              this._shareToAccounts(applications[i], true);
-              return false;
-          }
+        for (let i = 0; i <= length; i++) {
+            if (i === length) {
+                this._shareToAccounts(applications[i], true);
+                return false;
+            }
 
-          this._shareToAccounts(applications[i], false);
-      }
-  }
+            this._shareToAccounts(applications[i], false);
+        }
+    }
 }
 window.customElements.define(AppscoCompanyApplicationShare.is, AppscoCompanyApplicationShare);

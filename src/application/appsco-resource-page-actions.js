@@ -11,9 +11,10 @@ import '../components/components/appsco-search.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoResourcePageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
             @apply --layout-horizontal;
@@ -76,99 +77,99 @@ class AppscoResourcePageActions extends mixinBehaviors([NeonAnimatableBehavior],
             <paper-icon-button class="info-action" icon="info-outline" title="Resource section" on-tap="_onResourceAction"></paper-icon-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-resource-page-actions'; }
+    static get is() { return 'appsco-resource-page-actions'; }
 
-  static get properties() {
-      return {
-          _searchSubscribersActive: {
-              type: Boolean,
-              value: false
-          },
+    static get properties() {
+        return {
+            _searchSubscribersActive: {
+                type: Boolean,
+                value: false
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 300,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 300,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+    }
 
-  enableSubscribersSearchAction() {
-      this._searchSubscribersActive = true;
-  }
+    enableSubscribersSearchAction() {
+        this._searchSubscribersActive = true;
+    }
 
-  disableSubscribersSearchAction() {
-      this._onSearchClear();
-      this._searchSubscribersActive = false;
-  }
+    disableSubscribersSearchAction() {
+        this._onSearchClear();
+        this._searchSubscribersActive = false;
+    }
 
-  _backToApplications() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _backToApplications() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  _onResourceAction() {
-      this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
-  }
+    _onResourceAction() {
+        this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+    }
 
-  _onSearch(event) {
-      this.dispatchEvent(new CustomEvent('search-subscribers', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              term: event.detail.term
-          }
-      }));
-  }
+    _onSearch(event) {
+        this.dispatchEvent(new CustomEvent('search-subscribers', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                term: event.detail.term
+            }
+        }));
+    }
 
-  _onSearchClear() {
-      this._resetSubscribersSearch();
+    _onSearchClear() {
+        this._resetSubscribersSearch();
 
-      this.dispatchEvent(new CustomEvent('search-subscribers-clear', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              term: ''
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('search-subscribers-clear', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                term: ''
+            }
+        }));
+    }
 
-  _resetSubscribersSearch() {
+    _resetSubscribersSearch() {
 
-      if (this._searchSubscribersActive) {
-          this.shadowRoot.getElementById('appscoSearch').reset();
-      }
-  }
+        if (this._searchSubscribersActive) {
+            this.shadowRoot.getElementById('appscoSearch').reset();
+        }
+    }
 
-  resetApplicationSubscribersPageActions() {
-      this._resetSubscribersSearch();
-  }
+    resetApplicationSubscribersPageActions() {
+        this._resetSubscribersSearch();
+    }
 }
 window.customElements.define(AppscoResourcePageActions.is, AppscoResourcePageActions);

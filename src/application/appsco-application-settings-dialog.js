@@ -13,9 +13,10 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationSettingsDialog extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -70,82 +71,82 @@ class AppscoApplicationSettingsDialog extends mixinBehaviors([Appsco.HeadersMixi
         <iron-a11y-keys keys="enter" on-keys-pressed="_onEnter">
         </iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-settings-dialog'; }
+    static get is() { return 'appsco-application-settings-dialog'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _applicationSettings: {
-              type: Boolean,
-              value: false
-          },
+            _applicationSettings: {
+                type: Boolean,
+                value: false
+            },
 
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  setApplication(application) {
-      this.application = application;
-  }
+    setApplication(application) {
+        this.application = application;
+    }
 
-  /**
-   * Toggles add applications dialog.
-   */
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    /**
+     * Toggles add applications dialog.
+     */
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  /**
-   * Called after dialog has been closed.
-   *
-   * @private
-   */
-  _onDialogClosed() {
-      this._loader = false;
-  }
+    /**
+     * Called after dialog has been closed.
+     *
+     * @private
+     */
+    _onDialogClosed() {
+        this._loader = false;
+    }
 
-  _onEnter() {
-      this._onSave();
-  }
+    _onEnter() {
+        this._onSave();
+    }
 
-  _onSave() {
-      this._showLoader();
-      this.$.appscoApplicationSettings.save();
-  }
+    _onSave() {
+        this._showLoader();
+        this.$.appscoApplicationSettings.save();
+    }
 
-  _onApplicationsSettingsSaved() {
-      this._hideLoader();
-      this.toggle();
-  }
+    _onApplicationsSettingsSaved() {
+        this._hideLoader();
+        this.toggle();
+    }
 
-  _onFormError() {
-      this._hideLoader();
-  }
+    _onFormError() {
+        this._hideLoader();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 }
 window.customElements.define(AppscoApplicationSettingsDialog.is, AppscoApplicationSettingsDialog);

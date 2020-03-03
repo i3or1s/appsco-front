@@ -19,12 +19,13 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyBrandedLoginPage extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -176,194 +177,194 @@ class AppscoCompanyBrandedLoginPage extends mixinBehaviors([
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-branded-login-page'; }
+    static get is() { return 'appsco-company-branded-login-page'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          brandedLogin: {
-              type: Object,
-              value: function () {
-                  return {
-                      adminLoginLinkCaption: null,
-                      alias: "",
-                      backgroundColor: null,
-                      backgroundImage: null,
-                      createAccountDisabled: false,
-                      logo: "",
-                      oauthLoginDisabled: false,
-                      passwordDisabled: false,
-                      passwordFieldCaption: null,
-                      resetPasswordDisabled: false,
-                      title: "",
-                      usernameFieldCaption: null
-                  };
-              }
-          },
+            brandedLogin: {
+                type: Object,
+                value: function () {
+                    return {
+                        adminLoginLinkCaption: null,
+                        alias: "",
+                        backgroundColor: null,
+                        backgroundImage: null,
+                        createAccountDisabled: false,
+                        logo: "",
+                        oauthLoginDisabled: false,
+                        passwordDisabled: false,
+                        passwordFieldCaption: null,
+                        resetPasswordDisabled: false,
+                        title: "",
+                        usernameFieldCaption: null
+                    };
+                }
+            },
 
-          settingsApi: {
-              type: String
-          },
+            settingsApi: {
+                type: String
+            },
 
-          _companyLogoApi: {
-              type: String,
-              computed: '_computeCompanyLogoApi(company)'
-          },
+            _companyLogoApi: {
+                type: String,
+                computed: '_computeCompanyLogoApi(company)'
+            },
 
-          _companyBackgroundApi: {
-              type: String,
-              computed: '_computeCompanyBackgroundApi(company)'
-          },
+            _companyBackgroundApi: {
+                type: String,
+                computed: '_computeCompanyBackgroundApi(company)'
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-      this.sharedElements = {
-          'hero': this.$.brandedLoginCard
-      };
-  }
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+        this.sharedElements = {
+            'hero': this.$.brandedLoginCard
+        };
+    }
 
-  setupPage() {
-      this.$.appscoCompanySettings.setup();
-  }
+    setupPage() {
+        this.$.appscoCompanySettings.setup();
+    }
 
-  resetPage() {
-      this.$.appscoCompanySettings.reset();
-  }
+    resetPage() {
+        this.$.appscoCompanySettings.reset();
+    }
 
-  _computeCompanyLogoApi(company) {
-      return (company.meta && company.meta.branded_login) ? company.meta.branded_login + '/logo' : null;
-  }
+    _computeCompanyLogoApi(company) {
+        return (company.meta && company.meta.branded_login) ? company.meta.branded_login + '/logo' : null;
+    }
 
-  _computeCompanyBackgroundApi(company) {
-      return (company.meta && company.meta.branded_login) ? company.meta.branded_login + '/background' : null;
-  }
+    _computeCompanyBackgroundApi(company) {
+        return (company.meta && company.meta.branded_login) ? company.meta.branded_login + '/background' : null;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onBack() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onBack() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  _onResponse(event) {
-      this.brandedLogin = event.detail.response;
-  }
+    _onResponse(event) {
+        this.brandedLogin = event.detail.response;
+    }
 
-  _onEnter() {
-      this._submitForm();
-  }
+    _onEnter() {
+        this._submitForm();
+    }
 
-  _submitForm() {
-      this.$.form.submit();
-  }
+    _submitForm() {
+        this.$.form.submit();
+    }
 
-  _resetForm() {
-      var request = document.createElement('iron-request'),
-          options = {
-              url: this.company.meta.branded_login,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _resetForm() {
+        var request = document.createElement('iron-request'),
+            options = {
+                url: this.company.meta.branded_login,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      request.send(options).then(function() {
-          if (200 === parseInt(request.status)) {
-              this.brandedLogin = {
-                  adminLoginLinkCaption: null,
-                  alias: "",
-                  backgroundColor: null,
-                  backgroundImage: null,
-                  createAccountDisabled: false,
-                  logo: "",
-                  oauthLoginDisabled: false,
-                  passwordDisabled: false,
-                  passwordFieldCaption: null,
-                  resetPasswordDisabled: false,
-                  title: "",
-                  usernameFieldCaption: null
-              };
-          }
-      }.bind(this));
-  }
+        request.send(options).then(function() {
+            if (200 === parseInt(request.status)) {
+                this.brandedLogin = {
+                    adminLoginLinkCaption: null,
+                    alias: "",
+                    backgroundColor: null,
+                    backgroundImage: null,
+                    createAccountDisabled: false,
+                    logo: "",
+                    oauthLoginDisabled: false,
+                    passwordDisabled: false,
+                    passwordFieldCaption: null,
+                    resetPasswordDisabled: false,
+                    title: "",
+                    usernameFieldCaption: null
+                };
+            }
+        }.bind(this));
+    }
 
-  _onFormPresubmit() {
-      this._showLoader();
-      this.$.form.request.method = 'PUT';
-      var body = this.$.form.request.body;
-      body['branded_login[password_disabled]'] = body['branded_login[password_disabled]'] ? 1: 0;
-      body['branded_login[reset_password_disabled]'] = body['branded_login[reset_password_disabled]'] ? 1: 0;
-      body['branded_login[oauth_login_disabled]'] = body['branded_login[oauth_login_disabled]'] ? 1: 0;
-      body['branded_login[create_account_disabled]'] = body['branded_login[create_account_disabled]'] ? 1: 0;
-  }
+    _onFormPresubmit() {
+        this._showLoader();
+        this.$.form.request.method = 'PUT';
+        var body = this.$.form.request.body;
+        body['branded_login[password_disabled]'] = body['branded_login[password_disabled]'] ? 1: 0;
+        body['branded_login[reset_password_disabled]'] = body['branded_login[reset_password_disabled]'] ? 1: 0;
+        body['branded_login[oauth_login_disabled]'] = body['branded_login[oauth_login_disabled]'] ? 1: 0;
+        body['branded_login[create_account_disabled]'] = body['branded_login[create_account_disabled]'] ? 1: 0;
+    }
 
-  _onFormError(event) {
-      this._errorMessage = event.detail.error.message;
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._errorMessage = event.detail.error.message;
+        this._hideLoader();
+    }
 
-  _onFormResponse(event) {
-      this.set('brandedLogin', event.detail.response);
+    _onFormResponse(event) {
+        this.set('brandedLogin', event.detail.response);
 
-      this.dispatchEvent(new CustomEvent('company-branded-login-changed', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              brandedLogin: this.brandedLogin
-          }
-      }));
+        this.dispatchEvent(new CustomEvent('company-branded-login-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                brandedLogin: this.brandedLogin
+            }
+        }));
 
-      this._hideLoader();
-  }
+        this._hideLoader();
+    }
 
-  _onKeyUp() {
-      this._errorMessage = '';
-  }
+    _onKeyUp() {
+        this._errorMessage = '';
+    }
 }
 window.customElements.define(AppscoCompanyBrandedLoginPage.is, AppscoCompanyBrandedLoginPage);

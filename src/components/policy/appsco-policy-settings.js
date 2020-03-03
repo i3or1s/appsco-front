@@ -5,9 +5,10 @@ import './appsco-enforce-two-factor-policy-settings.js';
 import './appsco-login-time-restriction-policy-settings.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoPolicySettings extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -36,67 +37,67 @@ class AppscoPolicySettings extends PolymerElement {
             <appsco-login-time-restriction-policy-settings policy="[[ policy ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]"></appsco-login-time-restriction-policy-settings>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-policy-settings'; }
+    static get is() { return 'appsco-policy-settings'; }
 
-  static get properties() {
-      return {
-          policy: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            policy: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _ipWhitelistPolicyActive: {
-              type: Boolean,
-              computed: '_computeIpWhitelistPolicyActive(policy)'
-          },
+            _ipWhitelistPolicyActive: {
+                type: Boolean,
+                computed: '_computeIpWhitelistPolicyActive(policy)'
+            },
 
-          _enforceTwoFactoryPolicyActive: {
-              type: Boolean,
-              computed: '_computeEnforceTwoFactoryPolicyActive(policy)'
-          },
+            _enforceTwoFactoryPolicyActive: {
+                type: Boolean,
+                computed: '_computeEnforceTwoFactoryPolicyActive(policy)'
+            },
 
-          _loginTimeRestrictionPolicyActive: {
-              type: Boolean,
-              computed: '_computeLoginTimeRestrictionPolicyActive(policy)'
-          },
+            _loginTimeRestrictionPolicyActive: {
+                type: Boolean,
+                computed: '_computeLoginTimeRestrictionPolicyActive(policy)'
+            },
 
-          _customSettings: {
-              type: Boolean,
-              computed: '_computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive)'
-          }
-      };
-  }
+            _customSettings: {
+                type: Boolean,
+                computed: '_computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive)'
+            }
+        };
+    }
 
-  _computeIpWhitelistPolicyActive(policy) {
-      return (policy.name && 'ip whitelist' === policy.name.toLowerCase());
-  }
+    _computeIpWhitelistPolicyActive(policy) {
+        return (policy.name && 'ip whitelist' === policy.name.toLowerCase());
+    }
 
-  _computeEnforceTwoFactoryPolicyActive(policy) {
-      return (policy.name && 'enforce two-factor' === policy.name.toLowerCase());
-  }
+    _computeEnforceTwoFactoryPolicyActive(policy) {
+        return (policy.name && 'enforce two-factor' === policy.name.toLowerCase());
+    }
 
-  _computeLoginTimeRestrictionPolicyActive(policy) {
-      return (policy.name && 'login time restriction' === policy.name.toLowerCase());
-  }
+    _computeLoginTimeRestrictionPolicyActive(policy) {
+        return (policy.name && 'login time restriction' === policy.name.toLowerCase());
+    }
 
-  _computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive) {
-      return _ipWhitelistPolicyActive || _enforceTwoFactoryPolicyActive;
-  }
+    _computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive) {
+        return _ipWhitelistPolicyActive || _enforceTwoFactoryPolicyActive;
+    }
 }
 window.customElements.define(AppscoPolicySettings.is, AppscoPolicySettings);

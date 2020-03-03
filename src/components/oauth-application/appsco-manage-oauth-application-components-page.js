@@ -16,12 +16,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoManageOAuthApplicationComponentsPage extends mixinBehaviors([
     NeonSharedElementAnimatableBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-layout-with-cards-styles">
             :host {
                 --application-details-value: {
@@ -75,98 +76,98 @@ class AppscoManageOAuthApplicationComponentsPage extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-oauth-application-components-page'; }
+    static get is() { return 'appsco-manage-oauth-application-components-page'; }
 
-  static get properties() {
-      return {
-          application: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          certificatesApi: {
-              type: String
-          },
+            certificatesApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          mediumScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            mediumScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'cascaded-animation',
-              animation: 'fade-in-animation',
-              nodes: dom(this.root).querySelectorAll('paper-card'),
-              nodeDelay: 50,
-              timing: {
-                  delay: 200,
-                  duration: 100
-              }
-          },
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }]
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodes: dom(this.root).querySelectorAll('paper-card'),
+                nodeDelay: 50,
+                timing: {
+                    delay: 200,
+                    duration: 100
+                }
+            },
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }]
+        };
+    }
 
-  reloadCertificates() {
-      this.$.appscoOAuthApplicationCertificates.reloadItems();
-  }
+    reloadCertificates() {
+        this.$.appscoOAuthApplicationCertificates.reloadItems();
+    }
 
-  _setSharedElement(target) {
-      while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
-          target = target.parentNode;
-      }
+    _setSharedElement(target) {
+        while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
+            target = target.parentNode;
+        }
 
-      this.sharedElements = {
-          'hero': target
-      };
-  }
+        this.sharedElements = {
+            'hero': target
+        };
+    }
 
-  _onManageApplicationSettingsAction(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-application-settings', { bubbles: true, composed: true }));
-  }
+    _onManageApplicationSettingsAction(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-application-settings', { bubbles: true, composed: true }));
+    }
 
-  _onManageApplicationCertificatesAction(event) {
-      this._setSharedElement(event.target);
-      this.dispatchEvent(new CustomEvent('manage-application-certificates', { bubbles: true, composed: true }));
-  }
+    _onManageApplicationCertificatesAction(event) {
+        this._setSharedElement(event.target);
+        this.dispatchEvent(new CustomEvent('manage-application-certificates', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoManageOAuthApplicationComponentsPage.is, AppscoManageOAuthApplicationComponentsPage);

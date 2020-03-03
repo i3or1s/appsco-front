@@ -1,20 +1,4 @@
-/**
-`appsco-menu`
-
-It is represented as menu icon. On tap of the icon drawer is opened.
-Drawer contains menu.
-
-    <appsco-menu></appsco-menu>
-
-@demo demo/appsco-menu.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-item/paper-item.js';
@@ -23,9 +7,10 @@ import '@polymer/iron-icons/notification-icons.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoMenu extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <custom-style>
             <style>
                 :host {
@@ -104,103 +89,103 @@ class AppscoMenu extends PolymerElement {
             </paper-menu>
         </app-drawer>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-menu'; }
+    static get is() { return 'appsco-menu'; }
 
-  static get properties() {
-      return {
-          topOffset: {
-              type: Number,
-              value: 0,
-              notify: true,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            topOffset: {
+                type: Number,
+                value: 0,
+                notify: true,
+                reflectToAttribute: true
+            },
 
-          /**
-           * Right offset from the right side of the screen.
-           */
-          rightOffset: {
-              type: Number,
-              value: 0,
-              notify: true,
-              reflectToAttribute: true
-          },
+            /**
+             * Right offset from the right side of the screen.
+             */
+            rightOffset: {
+                type: Number,
+                value: 0,
+                notify: true,
+                reflectToAttribute: true
+            },
 
-          /**
-           * Bottom offset from the bottom side of the screen.
-           */
-          bottomOffset: {
-              type: Number,
-              value: 0,
-              notify: true,
-              reflectToAttribute: true
-          },
+            /**
+             * Bottom offset from the bottom side of the screen.
+             */
+            bottomOffset: {
+                type: Number,
+                value: 0,
+                notify: true,
+                reflectToAttribute: true
+            },
 
-          /**
-           * It shows administration menu
-           */
-          administration: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            /**
+             * It shows administration menu
+             */
+            administration: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          /**
-           * Current page
-           */
-          _page: {
-              type: String,
-              value: 'Applications'
-          }
-      };
-  }
+            /**
+             * Current page
+             */
+            _page: {
+                type: String,
+                value: 'Applications'
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      beforeNextRender(this, function() {
-          this._updateDrawer();
-      });
+        beforeNextRender(this, function() {
+            this._updateDrawer();
+        });
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('right-offset-changed', this._updateDrawer);
-      this.addEventListener('bottom-offset-changed', this._updateDrawer);
-      this.addEventListener('top-offset-changed', this._updateDrawer);
-      this.addEventListener('iron-select', this._updateDrawer);
-  }
+    _addListeners() {
+        this.addEventListener('right-offset-changed', this._updateDrawer);
+        this.addEventListener('bottom-offset-changed', this._updateDrawer);
+        this.addEventListener('top-offset-changed', this._updateDrawer);
+        this.addEventListener('iron-select', this._updateDrawer);
+    }
 
-  _updateDrawer() {
-      const menuPosition = this.$.menuicon.getBoundingClientRect();
-      this.updateStyles({
-          '--app-drawer-top': menuPosition.top + 40 + this.topOffset + 'px',
-          '--app-drawer-left': menuPosition.left + 'px',
-          '--app-drawer-right': this.rightOffset + 'px',
-          '--app-drawer-bottom': this.bottomOffset + 'px'
-      });
-  }
+    _updateDrawer() {
+        const menuPosition = this.$.menuicon.getBoundingClientRect();
+        this.updateStyles({
+            '--app-drawer-top': menuPosition.top + 40 + this.topOffset + 'px',
+            '--app-drawer-left': menuPosition.left + 'px',
+            '--app-drawer-right': this.rightOffset + 'px',
+            '--app-drawer-bottom': this.bottomOffset + 'px'
+        });
+    }
 
-  _toggleDrawer() {
-      this.$.menudrawer.toggle();
-  }
+    _toggleDrawer() {
+        this.$.menudrawer.toggle();
+    }
 
-  _pageChanged(e) {
-      const page = e.detail.item.getAttribute('page');
-      this._page = e.detail.item.querySelector('span').innerHTML;
-      this.$.menudrawer.close();
+    _pageChanged(e) {
+        const page = e.detail.item.getAttribute('page');
+        this._page = e.detail.item.querySelector('span').innerHTML;
+        this.$.menudrawer.close();
 
-      this.dispatchEvent(new CustomEvent('page-changed', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              page: page
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('page-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                page: page
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoMenu.is, AppscoMenu);

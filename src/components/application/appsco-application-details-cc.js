@@ -3,9 +3,10 @@ import '@polymer/paper-styles/typography.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationDetailsCC extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host div[label] {
                 color: var(--secondary-text-color);
@@ -103,20 +104,20 @@ class AppscoApplicationDetailsCC extends PolymerElement {
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-details-cc'; }
+    static get is() { return 'appsco-application-details-cc'; }
 
-  static get properties() {
-      return {
-          claims: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          }
-      };
-  }
+    static get properties() {
+        return {
+            claims: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            }
+        };
+    }
 }
 window.customElements.define(AppscoApplicationDetailsCC.is, AppscoApplicationDetailsCC);

@@ -11,9 +11,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountAuthorizedAppsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -53,80 +54,80 @@ class AppscoAccountAuthorizedAppsPage extends mixinBehaviors([NeonSharedElementA
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-authorized-apps-page'; }
+    static get is() { return 'appsco-account-authorized-apps-page'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          authorizationToken: {
-              type: String
-          },
+            authorizationToken: {
+                type: String
+            },
 
-          authorizedAppsApi: {
-              type: String
-          },
+            authorizedAppsApi: {
+                type: String
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
+        this.sharedElements = {
+            'hero': this.$.card
+        };
 
-      afterNextRender(this, function() {
-          this.$.appscoAccountAuthorizedApps.loadAuthorizedApps();
-      });
-  }
+        afterNextRender(this, function() {
+            this.$.appscoAccountAuthorizedApps.loadAuthorizedApps();
+        });
+    }
 
-  loadAuthorizedApps() {
-      this.$.appscoAccountAuthorizedApps.loadAuthorizedApps();
-  }
+    loadAuthorizedApps() {
+        this.$.appscoAccountAuthorizedApps.loadAuthorizedApps();
+    }
 
-  _back() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _back() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 }
 window.customElements.define(AppscoAccountAuthorizedAppsPage.is, AppscoAccountAuthorizedAppsPage);

@@ -13,9 +13,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIdpResourceAdd extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -82,193 +83,193 @@ class AppscoIdpResourceAdd extends mixinBehaviors([Appsco.HeadersMixin], Polymer
 
         <iron-a11y-keys target="[[ _target ]]" keys="enter" on-keys-pressed="_onEnter"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-idp-resource-add'; }
+    static get is() { return 'appsco-idp-resource-add'; }
 
-  static get properties() {
-      return {
-          addResourceApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            addResourceApi: {
+                type: String
+            },
 
-          resource: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            resource: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          link: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            link: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _target: {
-              type: Object
-          }
-      };
-  }
+            _target: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this._target = this.$.addResourceForm;
-  }
+        this._target = this.$.addResourceForm;
+    }
 
-  open() {
-      this._openDialog();
-  }
+    open() {
+        this._openDialog();
+    }
 
-  setResource(resource) {
-      this.set('resource', resource);
-  }
+    setResource(resource) {
+        this.set('resource', resource);
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = message;
-  }
+    _showError(message) {
+        this._errorMessage = message;
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _openDialog() {
-      this.$.addResourceDialog.open();
-  }
+    _openDialog() {
+        this.$.addResourceDialog.open();
+    }
 
-  _closeDialog() {
-      this.$.addResourceDialog.close();
-  }
+    _closeDialog() {
+        this.$.addResourceDialog.close();
+    }
 
-  _onDialogOpened() {
-      this.$.title.focus();
-  }
+    _onDialogOpened() {
+        this.$.title.focus();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this._hideError();
-      this.set('resource', {});
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this._hideError();
+        this.set('resource', {});
+    }
 
-  _onEnter() {
-      this._onAddResourceAction();
-  }
+    _onEnter() {
+        this._onAddResourceAction();
+    }
 
-  _onAddResourceAction() {
-      this._hideError();
-      if (this.shadowRoot.getElementById('saveResourceForm').validate()) {
-          this._showLoader();
-          this._target.submit();
-      }
-  }
+    _onAddResourceAction() {
+        this._hideError();
+        if (this.shadowRoot.getElementById('saveResourceForm').validate()) {
+            this._showLoader();
+            this._target.submit();
+        }
+    }
 
-  _onFormError(event) {
-      this._showError(this.apiErrors.getError(event.detail.request.response.code));
-      this._hideLoader();
-  }
+    _onFormError(event) {
+        this._showError(this.apiErrors.getError(event.detail.request.response.code));
+        this._hideLoader();
+    }
 
-  /**
-   * Called after resource is added as icon.
-   * It calls resource configure method.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onFormResponse(event) {
-      const resources = event.detail.response.applications;
+    /**
+     * Called after resource is added as icon.
+     * It calls resource configure method.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onFormResponse(event) {
+        const resources = event.detail.response.applications;
 
-      if (resources && 0 < resources.length) {
-          this._updateResourceSettings(resources[0]);
-      }
-      else {
-          this._showError(this.apiErrors.getError(404));
-          this._hideLoader();
-      }
-  }
+        if (resources && 0 < resources.length) {
+            this._updateResourceSettings(resources[0]);
+        }
+        else {
+            this._showError(this.apiErrors.getError(404));
+            this._hideLoader();
+        }
+    }
 
-  _updateResourceSettings(resource) {
-      const title = this.$.title.value,
-          url = this.$.url.value;
+    _updateResourceSettings(resource) {
+        const title = this.$.title.value,
+            url = this.$.url.value;
 
-      if (resource.title !== title || resource.url !== url) {
-          this._submitResourceConfigure(resource).then(function(resource) {
-              this._onResourceAdded(resource);
-          }.bind(this), function(message) {
-              this._showError(message);
-              this._hideLoader();
-          }.bind(this));
-      }
-      else {
-          this._onResourceAdded(resource);
-      }
-  }
+        if (resource.title !== title || resource.url !== url) {
+            this._submitResourceConfigure(resource).then(function(resource) {
+                this._onResourceAdded(resource);
+            }.bind(this), function(message) {
+                this._showError(message);
+                this._hideLoader();
+            }.bind(this));
+        }
+        else {
+            this._onResourceAdded(resource);
+        }
+    }
 
-  _submitResourceConfigure(resource) {
-      const titleInput = this.$.title,
-          urlInput = this.$.url;
+    _submitResourceConfigure(resource) {
+        const titleInput = this.$.title,
+            urlInput = this.$.url;
 
-      return new Promise(function(resolve, reject) {
-          const request = document.createElement('iron-request'),
-              options = {
-                  url: resource.self,
-                  method: 'PATCH',
-                  handleAs: 'json',
-                  headers: this._headers
-              };
+        return new Promise(function(resolve, reject) {
+            const request = document.createElement('iron-request'),
+                options = {
+                    url: resource.self,
+                    method: 'PATCH',
+                    handleAs: 'json',
+                    headers: this._headers
+                };
 
-          let body = encodeURIComponent(titleInput.name) + '=' + encodeURIComponent(titleInput.value);
-          body += '&';
-          body += encodeURIComponent(urlInput.name) + '=' + encodeURIComponent(urlInput.value);
+            let body = encodeURIComponent(titleInput.name) + '=' + encodeURIComponent(titleInput.value);
+            body += '&';
+            body += encodeURIComponent(urlInput.name) + '=' + encodeURIComponent(urlInput.value);
 
-          options.body = body;
+            options.body = body;
 
-          request.send(options).then(function() {
-              if (request.succeeded) {
-                  resolve(request.response);
-              }
-          }, function() {
-              reject(this.apiErrors.getError(request.response.code));
-          });
-      }.bind(this));
-  }
+            request.send(options).then(function() {
+                if (request.succeeded) {
+                    resolve(request.response);
+                }
+            }, function() {
+                reject(this.apiErrors.getError(request.response.code));
+            });
+        }.bind(this));
+    }
 
-  _onResourceAdded(resource) {
-      this.dispatchEvent(new CustomEvent('resource-added', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              template: this.resource,
-              resource: resource
-          }
-      }));
+    _onResourceAdded(resource) {
+        this.dispatchEvent(new CustomEvent('resource-added', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                template: this.resource,
+                resource: resource
+            }
+        }));
 
-      this._closeDialog();
-  }
+        this._closeDialog();
+    }
 }
 window.customElements.define(AppscoIdpResourceAdd.is, AppscoIdpResourceAdd);

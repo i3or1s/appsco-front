@@ -4,7 +4,6 @@ import '@polymer/polymer/polymer-legacy.js';
  * @polymerBehavior
  */
 export const AppscoListObserverBehavior = {
-
     properties: {
 
         _observableItems: {
@@ -26,7 +25,7 @@ export const AppscoListObserverBehavior = {
     },
 
     _itemsChanged: function () {
-        var event = this._observableItems.length === 0 ? 'observable-list-empty' : 'observable-list-filled';
+        const event = this._observableItems.length === 0 ? 'observable-list-empty' : 'observable-list-filled';
         this.dispatchEvent(new CustomEvent(event, {
             bubbles: true,
             composed: true,

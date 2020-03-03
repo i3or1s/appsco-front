@@ -6,12 +6,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoTutorialIdentityProvider extends mixinBehaviors([
     AppscoTutorialBehaviour,
     AppscoCoverBehaviour
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
             }
@@ -121,176 +122,176 @@ class AppscoTutorialIdentityProvider extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-tutorial-identity-provider'; }
+    static get is() { return 'appsco-tutorial-identity-provider'; }
 
-  static get properties() {
-      return {
-          page: {
-              type: String
-          },
+    static get properties() {
+        return {
+            page: {
+                type: String
+            },
 
-          companyDomainsLoaded: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            companyDomainsLoaded: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.tutorialId = 'identity_provider';
-      this.tutorialTitle = 'Identity provider';
-      this.description = 'Set up an external identity provider';
-      this.icon = 'icons:settings';
-      this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
-  }
+        this.tutorialId = 'identity_provider';
+        this.tutorialTitle = 'Identity provider';
+        this.description = 'Set up an external identity provider';
+        this.icon = 'icons:settings';
+        this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
+    }
 
-  connectedCallback() {
-      super.connectedCallback();
+    connectedCallback() {
+        super.connectedCallback();
 
-      this.tutorialId = 'identity_provider';
-      this.tutorialTitle = 'Identity provider';
-      this.description = 'Set up an external identity provider';
-      this.icon = 'icons:settings';
-      this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
+        this.tutorialId = 'identity_provider';
+        this.tutorialTitle = 'Identity provider';
+        this.description = 'Set up an external identity provider';
+        this.icon = 'icons:settings';
+        this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
 
-      afterNextRender(this, function() {
-          this.init();
-      });
-  }
+        afterNextRender(this, function() {
+            this.init();
+        });
+    }
 
-  _readMore() {
-      window.open(this.readme, '_blank');
-  }
+    _readMore() {
+        window.open(this.readme, '_blank');
+    }
 
-  pageChanged() {
-      if(this.page !== 'company' && this.step === 2) {
-          this.reset();
-      }
-  }
+    pageChanged() {
+        if(this.page !== 'company' && this.step === 2) {
+            this.reset();
+        }
+    }
 
-  getPopperConfig() {
-      return {
-          step1: {
-              reference: '* /deep/ #menuBurger',
-              coverTarget: '* /deep/ #menuBurger',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step2: {
-              reference: '* /deep/ #menuCompanySettingsText',
-              coverTarget: '* /deep/ #menuContainer',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step3: {
-              reference: '* /deep/ #companySettingsManageIdpCardBtn',
-              coverTarget: '* /deep/ #companySettingsManageIdpCard',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          },
-          step4: {
-              reference: '* /deep/ * /deep/ paper-button.manage-domain-action',
-              coverTarget: '* /deep/ * /deep/ paper-button.manage-domain-action',
-              popperOptions: {
-                  placement: 'left-start'
-              }
-          },
-          step5: {
-              reference: '* /deep/ appsco-company-idp-settings /deep/ paper-button.submit-button',
-              coverTarget: '* /deep/ appsco-company-idp-settings-page',
-              popperOptions: {
-                  placement: 'left'
-              }
-          },
-          step6: {
-              reference: '* /deep/ #menuBurger',
-              coverTarget: '* /deep/ #menuBurger',
-              popperOptions: {
-                  placement: 'right-start'
-              }
-          }
-      };
-  }
+    getPopperConfig() {
+        return {
+            step1: {
+                reference: '* /deep/ #menuBurger',
+                coverTarget: '* /deep/ #menuBurger',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step2: {
+                reference: '* /deep/ #menuCompanySettingsText',
+                coverTarget: '* /deep/ #menuContainer',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step3: {
+                reference: '* /deep/ #companySettingsManageIdpCardBtn',
+                coverTarget: '* /deep/ #companySettingsManageIdpCard',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            },
+            step4: {
+                reference: '* /deep/ * /deep/ paper-button.manage-domain-action',
+                coverTarget: '* /deep/ * /deep/ paper-button.manage-domain-action',
+                popperOptions: {
+                    placement: 'left-start'
+                }
+            },
+            step5: {
+                reference: '* /deep/ appsco-company-idp-settings /deep/ paper-button.submit-button',
+                coverTarget: '* /deep/ appsco-company-idp-settings-page',
+                popperOptions: {
+                    placement: 'left'
+                }
+            },
+            step6: {
+                reference: '* /deep/ #menuBurger',
+                coverTarget: '* /deep/ #menuBurger',
+                popperOptions: {
+                    placement: 'right-start'
+                }
+            }
+        };
+    }
 
-  step3(index, item, doneBuildingPopperHandler) {
-      const handleFunction = function () {
-          const element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
-          if (this.page !== 'company') {
-              return;
-          }
-          if (!element || this.page !== 'company' || !this.companyDomainsLoaded) {
-              setTimeout(handleFunction, 200);
-              return;
-          }
-          element.scrollTop = 0;
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this);
-      setTimeout(handleFunction, 300);
-  }
+    step3(index, item, doneBuildingPopperHandler) {
+        const handleFunction = function () {
+            const element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
+            if (this.page !== 'company') {
+                return;
+            }
+            if (!element || this.page !== 'company' || !this.companyDomainsLoaded) {
+                setTimeout(handleFunction, 200);
+                return;
+            }
+            element.scrollTop = 0;
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this);
+        setTimeout(handleFunction, 300);
+    }
 
-  step4(index, item, doneBuildingPopperHandler) {
-      const closeElement = this._querySelector('* /deep/ appsco-company-idp-settings-page /deep/ paper-icon-button.page-close-action');
-      if (closeElement) {
-          closeElement.click();
-      }
-      const handleFunction = function () {
-          const element = this._querySelector('* /deep/ * /deep/ paper-button.manage-domain-action');
-          if (this.page !== 'company') {
-              return;
-          }
+    step4(index, item, doneBuildingPopperHandler) {
+        const closeElement = this._querySelector('* /deep/ appsco-company-idp-settings-page /deep/ paper-icon-button.page-close-action');
+        if (closeElement) {
+            closeElement.click();
+        }
+        const handleFunction = function () {
+            const element = this._querySelector('* /deep/ * /deep/ paper-button.manage-domain-action');
+            if (this.page !== 'company') {
+                return;
+            }
 
-          if (this.companyDomainsLoaded && !element) {
-              const cover = this.buildCover(this._querySelector('* /deep/ div[content] /deep/ appsco-company-idp-domains-page')),
-                  failElement = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'),
-                  closeButton = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial paper-button'),
-                  popper = new Popper(this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'), failElement, {
-                      placement: 'top-start'
-                  }),
-                  closeListener = function () {
-                      cover.destroy();
-                      popper.destroy();
-                      failElement.hidden = true;
-                      closeButton.removeEventListener('click', closeListener);
-                      this.reset();
-                  }.bind(this);
-              closeButton.addEventListener('click', closeListener);
+            if (this.companyDomainsLoaded && !element) {
+                const cover = this.buildCover(this._querySelector('* /deep/ div[content] /deep/ appsco-company-idp-domains-page')),
+                    failElement = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'),
+                    closeButton = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial paper-button'),
+                    popper = new Popper(this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'), failElement, {
+                        placement: 'top-start'
+                    }),
+                    closeListener = function () {
+                        cover.destroy();
+                        popper.destroy();
+                        failElement.hidden = true;
+                        closeButton.removeEventListener('click', closeListener);
+                        this.reset();
+                    }.bind(this);
+                closeButton.addEventListener('click', closeListener);
 
-              cover.show();
-              failElement.hidden = false;
+                cover.show();
+                failElement.hidden = false;
 
-              return;
-          }
+                return;
+            }
 
-          if (!element || this.page !== 'company' || !this.companyDomainsLoaded) {
-              setTimeout(handleFunction, 500);
-              return;
-          }
-          element.scrollTop = 0;
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this);
-      setTimeout(handleFunction, 500);
-  }
+            if (!element || this.page !== 'company' || !this.companyDomainsLoaded) {
+                setTimeout(handleFunction, 500);
+                return;
+            }
+            element.scrollTop = 0;
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this);
+        setTimeout(handleFunction, 500);
+    }
 
-  step5(index, item, doneBuildingPopperHandler) {
-      setTimeout(function() {
-          this.handleStep(index, item, doneBuildingPopperHandler);
-      }.bind(this), 400);
-  }
+    step5(index, item, doneBuildingPopperHandler) {
+        setTimeout(function() {
+            this.handleStep(index, item, doneBuildingPopperHandler);
+        }.bind(this), 400);
+    }
 
-  start() {
-      this.step = 0;
-      this.nextStep();
-  }
+    start() {
+        this.step = 0;
+        this.nextStep();
+    }
 
-  _nextStep() {
-      this.currentStep.reference.click();
-  }
+    _nextStep() {
+        this.currentStep.reference.click();
+    }
 }
 window.customElements.define(AppscoTutorialIdentityProvider.is, AppscoTutorialIdentityProvider);

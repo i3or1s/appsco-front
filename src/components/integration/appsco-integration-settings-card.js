@@ -6,9 +6,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationSettingsCard extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -31,46 +32,46 @@ class AppscoIntegrationSettingsCard extends mixinBehaviors([NeonAnimationRunnerB
             </p>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-settings-card'; }
+    static get is() { return 'appsco-integration-settings-card'; }
 
-  static get properties() {
-      return {
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+    static get properties() {
+        return {
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      afterNextRender(this, function() {
-          this._showIntegrationDetails();
-      });
-  }
+        afterNextRender(this, function() {
+            this._showIntegrationDetails();
+        });
+    }
 
-  _showIntegrationDetails() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showIntegrationDetails() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 }
 window.customElements.define(AppscoIntegrationSettingsCard.is, AppscoIntegrationSettingsCard);

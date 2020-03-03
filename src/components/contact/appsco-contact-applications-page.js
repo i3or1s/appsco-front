@@ -10,9 +10,10 @@ import './appsco-contact-applications.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoContactApplicationsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -56,81 +57,81 @@ class AppscoContactApplicationsPage extends mixinBehaviors([NeonSharedElementAni
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-contact-applications-page'; }
+    static get is() { return 'appsco-contact-applications-page'; }
 
-  static get properties() {
-      return {
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+    static get properties() {
+        return {
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          contact: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            contact: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _applicationsEmpty: {
-              type: Boolean,
-              value: false
-          },
+            _applicationsEmpty: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 600
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 600
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _onApplicationsEmpty() {
-      this._applicationsEmpty = true;
-  }
+    _onApplicationsEmpty() {
+        this._applicationsEmpty = true;
+    }
 
-  _onApplicationsLoaded() {
-      this._applicationsEmpty = false;
-  }
+    _onApplicationsLoaded() {
+        this._applicationsEmpty = false;
+    }
 
-  _back() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _back() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  reloadApplications() {
-      this.$.appscoContactApplications.reload();
-  }
+    reloadApplications() {
+        this.$.appscoContactApplications.reload();
+    }
 }
 window.customElements.define(AppscoContactApplicationsPage.is, AppscoContactApplicationsPage);

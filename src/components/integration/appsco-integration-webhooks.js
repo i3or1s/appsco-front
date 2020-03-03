@@ -10,12 +10,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationWebhooks extends mixinBehaviors([
     AppscoListBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host appsco-integration-webhook-item {
                 width: 100%;
@@ -53,143 +54,143 @@ class AppscoIntegrationWebhooks extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-webhooks'; }
+    static get is() { return 'appsco-integration-webhooks'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _watcherListApi: {
-              type: String,
-              computed: '_computeWatcherListApi(integration)'
-          },
+            _watcherListApi: {
+                type: String,
+                computed: '_computeWatcherListApi(integration)'
+            },
 
-          _watcherList: {
-              type: Array,
-              value: function () {
-                  return [];
-              },
-              observer: '_onWatcherListChanged'
-          }
-      };
-  }
+            _watcherList: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                observer: '_onWatcherListChanged'
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('list-loaded', this._getWatcherList);
-  }
+    _addListeners() {
+        this.addEventListener('list-loaded', this._getWatcherList);
+    }
 
-  _computeWatcherListApi(integration) {
-      return integration.meta ? (integration.meta.watchers + '?extended=1') : null;
-  }
+    _computeWatcherListApi(integration) {
+        return integration.meta ? (integration.meta.watchers + '?extended=1') : null;
+    }
 
-  _getWatcherList() {
-      this._removeUnActiveWebhooks();
-      this.$.getWatcherListApiRequest.generateRequest();
-  }
+    _getWatcherList() {
+        this._removeUnActiveWebhooks();
+        this.$.getWatcherListApiRequest.generateRequest();
+    }
 
-  _onWatcherListChanged() {
-      this._setWebhooksState();
-  }
+    _onWatcherListChanged() {
+        this._setWebhooksState();
+    }
 
-  addIntegrationWatcher(watcher) {
-      let watchers = JSON.parse(JSON.stringify(this._watcherList));
+    addIntegrationWatcher(watcher) {
+        let watchers = JSON.parse(JSON.stringify(this._watcherList));
 
-      watchers.push(watcher);
+        watchers.push(watcher);
 
-      this.set('_watcherList', []);
-      this.set('_watcherList', watchers);
-  }
+        this.set('_watcherList', []);
+        this.set('_watcherList', watchers);
+    }
 
-  removeIntegrationWatcher(watcher) {
-      const watchers = JSON.parse(JSON.stringify(this._watcherList)),
-          length = watchers.length;
+    removeIntegrationWatcher(watcher) {
+        const watchers = JSON.parse(JSON.stringify(this._watcherList)),
+            length = watchers.length;
 
-      for (let i = 0; i < length; i++) {
-          if (watcher.alias === watchers[i].alias) {
-              watchers.splice(i, 1);
-              break;
-          }
-      }
+        for (let i = 0; i < length; i++) {
+            if (watcher.alias === watchers[i].alias) {
+                watchers.splice(i, 1);
+                break;
+            }
+        }
 
-      this.set('_watcherList', []);
-      this.set('_watcherList', watchers);
-  }
+        this.set('_watcherList', []);
+        this.set('_watcherList', watchers);
+    }
 
-  _removeUnActiveWebhooks() {
-      const webhooks = JSON.parse(JSON.stringify(this._allListItems)),
-          webhooksLength = webhooks.length,
-          removeWebhooks = [];
-      for (let j = 0; j < webhooksLength; j++) {
-          let webhook = webhooks[j];
+    _removeUnActiveWebhooks() {
+        const webhooks = JSON.parse(JSON.stringify(this._allListItems)),
+            webhooksLength = webhooks.length,
+            removeWebhooks = [];
+        for (let j = 0; j < webhooksLength; j++) {
+            let webhook = webhooks[j];
 
-          if (false === this._isVisible(webhook)) {
-              removeWebhooks.push(webhook);
-          }
-      }
+            if (false === this._isVisible(webhook)) {
+                removeWebhooks.push(webhook);
+            }
+        }
 
-      if (0 < removeWebhooks.length) {
-          this.removeItems(removeWebhooks);
-      }
-  }
+        if (0 < removeWebhooks.length) {
+            this.removeItems(removeWebhooks);
+        }
+    }
 
-  _setWebhooksState() {
-      let webhooks = JSON.parse(JSON.stringify(this._allListItems)),
-          webhooksLength = webhooks.length,
-          modifyWebhooks = [],
-          watchers = this._watcherList;
+    _setWebhooksState() {
+        let webhooks = JSON.parse(JSON.stringify(this._allListItems)),
+            webhooksLength = webhooks.length,
+            modifyWebhooks = [],
+            watchers = this._watcherList;
 
-      if (watchers && 0 < watchers.length) {
-          let watchersLength = watchers.length;
+        if (watchers && 0 < watchers.length) {
+            let watchersLength = watchers.length;
 
-          for (let j = 0; j < webhooksLength; j++) {
-              let webhook = webhooks[j];
+            for (let j = 0; j < webhooksLength; j++) {
+                let webhook = webhooks[j];
 
-              for (let i = 0; i < watchersLength; i++) {
-                  if (webhook.self === watchers[i].meta.webhook) {
-                      webhook.removeWatcherApi = watchers[i].self;
-                      this.shadowRoot.getElementById('appscoListItem_' + j).register(watchers[i].url);
-                      modifyWebhooks.push(webhook);
-                      break;
-                  }
-                  else {
-                      delete webhook.removeWatcherApi;
-                      this.shadowRoot.getElementById('appscoListItem_' + j).unregister();
+                for (let i = 0; i < watchersLength; i++) {
+                    if (webhook.self === watchers[i].meta.webhook) {
+                        webhook.removeWatcherApi = watchers[i].self;
+                        this.shadowRoot.getElementById('appscoListItem_' + j).register(watchers[i].url);
+                        modifyWebhooks.push(webhook);
+                        break;
+                    }
+                    else {
+                        delete webhook.removeWatcherApi;
+                        this.shadowRoot.getElementById('appscoListItem_' + j).unregister();
 
-                      if (i === watchersLength - 1) {
-                          modifyWebhooks.push(webhook);
-                      }
-                  }
-              }
-          }
-      }
+                        if (i === watchersLength - 1) {
+                            modifyWebhooks.push(webhook);
+                        }
+                    }
+                }
+            }
+        }
 
-      if (0 < modifyWebhooks.length) {
-          this.modifyItems(modifyWebhooks);
-      }
-  }
+        if (0 < modifyWebhooks.length) {
+            this.modifyItems(modifyWebhooks);
+        }
+    }
 
-  _isVisible(webhook) {
-      // If From Method is set to null then it is not visible webhook
-      return null !== webhook.fromMethod;
-  }
+    _isVisible(webhook) {
+        // If From Method is set to null then it is not visible webhook
+        return null !== webhook.fromMethod;
+    }
 
-  _onGetWatcherListResponse(event) {
-      this.set('_watcherList', (event.detail.response && event.detail.response.watchers) ? event.detail.response.watchers : []);
-  }
+    _onGetWatcherListResponse(event) {
+        this.set('_watcherList', (event.detail.response && event.detail.response.watchers) ? event.detail.response.watchers : []);
+    }
 }
 window.customElements.define(AppscoIntegrationWebhooks.is, AppscoIntegrationWebhooks);

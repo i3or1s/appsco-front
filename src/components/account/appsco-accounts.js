@@ -1,34 +1,4 @@
-/**
-`appsco-accounts`
-Contains account list and Load More action (if there are more accounts then presented).
-Accounts are loaded inside component through iron-ajax.
-Component listens for events which have influence on result and changes query in order to retrieve appropriate accounts.
-
-    <appsco-accounts>
-    </appsco-accounts>
-
-### Styling
-
-`<appsco-accounts>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-list` | Mixin for the root element | `{}`
-`--appsco-account-item` | Mixin for item style | `{}`
-`--list` | Mixin for the accounts container | `{}`
-`--appsco-list-progress-bar` | Mixin applied to paper-progress for account list | `{}`
-`--load-more-button` | Mixin applied to load more action button | `{}`
-`--info-message` | Mixin applied to info message | `{}`
-
-@demo demo/appsco-accounts.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-progress/paper-progress.js';
@@ -39,12 +9,13 @@ import '../components/appsco-list-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccounts extends mixinBehaviors([
     AppscoListBehavior,
     AppscoListObserverBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-styles">
             :host appsco-account-item {
                 width: 100%;
@@ -85,113 +56,113 @@ class AppscoAccounts extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-accounts'; }
+    static get is() { return 'appsco-accounts'; }
 
-  static get observers() {
-      return [
-          '_observeItems(_listItems)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_observeItems(_listItems)'
+        ];
+    }
 
-  updateAccount(account) {
-      const currentItems = JSON.parse(JSON.stringify(this._listItems)),
-          length = currentItems.length,
-          allListItems = JSON.parse(JSON.stringify(this._allListItems)),
-          allLength = allListItems.length;
+    updateAccount(account) {
+        const currentItems = JSON.parse(JSON.stringify(this._listItems)),
+            length = currentItems.length,
+            allListItems = JSON.parse(JSON.stringify(this._allListItems)),
+            allLength = allListItems.length;
 
-      for (let j = 0; j < length; j++) {
-          if (account.self === currentItems[j].account.self) {
-              currentItems[j].account = account;
-              break;
-          }
-      }
+        for (let j = 0; j < length; j++) {
+            if (account.self === currentItems[j].account.self) {
+                currentItems[j].account = account;
+                break;
+            }
+        }
 
-      for (let k = 0; k < allLength; k++) {
-          if (account.self === allListItems[k].account.self) {
-              allListItems[k].account = account;
-              break;
-          }
-      }
+        for (let k = 0; k < allLength; k++) {
+            if (account.self === allListItems[k].account.self) {
+                allListItems[k].account = account;
+                break;
+            }
+        }
 
-      this.set('_listItems', []);
-      this.set('_listItems', currentItems);
+        this.set('_listItems', []);
+        this.set('_listItems', currentItems);
 
-      this.set('_allListItems', []);
-      this.set('_allListItems', allListItems);
-  }
+        this.set('_allListItems', []);
+        this.set('_allListItems', allListItems);
+    }
 
-  _observeItems(items) {
-      this.setObservableType('accounts');
-      this.populateItems(items);
-  }
+    _observeItems(items) {
+        this.setObservableType('accounts');
+        this.populateItems(items);
+    }
 
-  filterByType(filter) {
-      this._filterType = filter;
-      this._filterByType();
-  }
+    filterByType(filter) {
+        this._filterType = filter;
+        this._filterByType();
+    }
 
-  _filterByType() {
-      let filterApi = this.listApi + '?page=1&limit=100&extended=1',
-          filterTerm = this._filterTerm,
-          filterTermPresent = (filterTerm && 3 <= filterTerm.length),
-          filterType = this._filterType;
+    _filterByType() {
+        let filterApi = this.listApi + '?page=1&limit=100&extended=1',
+            filterTerm = this._filterTerm,
+            filterTermPresent = (filterTerm && 3 <= filterTerm.length),
+            filterType = this._filterType;
 
-      this._hideMessage();
-      this._showProgressBar();
-      this._hideLoadMoreAction();
-      this._clearListLoaders();
-      this.set('_listItems', []);
+        this._hideMessage();
+        this._showProgressBar();
+        this._hideLoadMoreAction();
+        this._clearListLoaders();
+        this.set('_listItems', []);
 
-      if ('all' !== filterType) {
-          filterApi += '&filter=' + filterType;
-      }
+        if ('all' !== filterType) {
+            filterApi += '&filter=' + filterType;
+        }
 
-      if (filterTermPresent) {
-          filterApi += '&term=' + filterTerm;
-      }
+        if (filterTermPresent) {
+            filterApi += '&term=' + filterTerm;
+        }
 
-      this._getItems(filterApi).then(function(items) {
-          const itemsLength = items.length,
-              allListItems = JSON.parse(JSON.stringify(this._allListItems)),
-              allLength = allListItems.length;
+        this._getItems(filterApi).then(function(items) {
+            const itemsLength = items.length,
+                allListItems = JSON.parse(JSON.stringify(this._allListItems)),
+                allLength = allListItems.length;
 
-          if (0 === itemsLength) {
-              const termMessage = filterTermPresent ? 'with asked term' : '';
+            if (0 === itemsLength) {
+                const termMessage = filterTermPresent ? 'with asked term' : '';
 
-              filterType = ('all' === filterType) ? '' : filterType;
-              this._showMessage('There are no ' + filterType + ' ' + this.type + 's ' + termMessage + '.');
-              this._handleEmptyLoad();
-              this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
-              return false;
-          }
+                filterType = ('all' === filterType) ? '' : filterType;
+                this._showMessage('There are no ' + filterType + ' ' + this.type + 's ' + termMessage + '.');
+                this._handleEmptyLoad();
+                this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
+                return false;
+            }
 
-          this._listEmpty = false;
+            this._listEmpty = false;
 
-          items.forEach(function(elem, index) {
-              for (let i = 0; i < allLength; i++) {
-                  const currentListItem = allListItems[i];
+            items.forEach(function(elem, index) {
+                for (let i = 0; i < allLength; i++) {
+                    const currentListItem = allListItems[i];
 
-                  if (elem.self === currentListItem.self) {
-                      this.push('_listItems', currentListItem);
-                      this._listItems = JSON.parse(JSON.stringify(this._listItems));
-                      break;
-                  }
-                  else {
-                      if (i === allLength - 1) {
-                          this.push('_listItems', elem);
-                          this._listItems = JSON.parse(JSON.stringify(this._listItems));
-                      }
-                  }
-              }
+                    if (elem.self === currentListItem.self) {
+                        this.push('_listItems', currentListItem);
+                        this._listItems = JSON.parse(JSON.stringify(this._listItems));
+                        break;
+                    }
+                    else {
+                        if (i === allLength - 1) {
+                            this.push('_listItems', elem);
+                            this._listItems = JSON.parse(JSON.stringify(this._listItems));
+                        }
+                    }
+                }
 
-              if (index === itemsLength - 1) {
-                  this._hideProgressBar();
-                  this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
-              }
-          }.bind(this));
-      }.bind(this));
-  }
+                if (index === itemsLength - 1) {
+                    this._hideProgressBar();
+                    this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
+                }
+            }.bind(this));
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoAccounts.is, AppscoAccounts);

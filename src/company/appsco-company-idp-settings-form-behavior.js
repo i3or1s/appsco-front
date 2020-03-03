@@ -22,7 +22,7 @@ export const AppscoCompanyIdpSettingsFormBehavior = {
     },
 
     getEncodedBodyValues: function() {
-        var body = '';
+        let body = '';
 
         dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
             if (item.value) {
@@ -35,7 +35,7 @@ export const AppscoCompanyIdpSettingsFormBehavior = {
     },
 
     validate: function() {
-        var valid = true;
+        let valid = true;
 
         dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
             item.validate();
@@ -47,7 +47,7 @@ export const AppscoCompanyIdpSettingsFormBehavior = {
 
     reset: function() {
         dom(this.root).querySelectorAll('[data-field]').forEach(function(item) {
-            var inputContainer = item.$$('#container');
+            const inputContainer = item.shadowRoot.getElementById('container');
 
             item.value = '';
             item.invalid = false;

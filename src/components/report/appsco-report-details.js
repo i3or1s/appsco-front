@@ -1,30 +1,4 @@
-/*
-`appsco-report-details`
-Component holds details about report.
-
-Example:
-    <body>
-        <appsco-report-details report-api="">
-        </appsco-report-details>
-
-### Styling
-
-`<appsco-report-details>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--details-container` | Mixin for the inner element that holds label and value. | `{}`
-`--details-label` | Mixin applied to detail label. | `{}`
-`--details-value` | Mixin applied to detail value. | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/iron-ajax/iron-ajax.js';
@@ -35,12 +9,13 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoReportDetails extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     Appsco.HeadersMixin
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -122,209 +97,209 @@ class AppscoReportDetails extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-report-details'; }
+    static get is() { return 'appsco-report-details'; }
 
-  static get properties() {
-      return {
-          report: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            report: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          reportApi: {
-              type: String
-          },
+            reportApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          showAuthTypes: {
-              type: Boolean,
-              value: function () {
-                  return {};
-              }
-          },
+            showAuthTypes: {
+                type: Boolean,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _accessOrComplianceReport: {
-              type: Boolean,
-              computed: '_computeAccessOrComplianceReport(report)'
-          },
+            _accessOrComplianceReport: {
+                type: Boolean,
+                computed: '_computeAccessOrComplianceReport(report)'
+            },
 
-          _policiesReport: {
-              type: Boolean,
-              computed: '_computePoliciesReport(report)'
-          },
+            _policiesReport: {
+                type: Boolean,
+                computed: '_computePoliciesReport(report)'
+            },
 
-          _report: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            _report: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _message: {
-              type: String,
-              value: ''
-          },
+            _message: {
+                type: String,
+                value: ''
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+    }
 
-  static get observers() {
-      return [
-          '_onApiReadyForLoad(reportApi, _headers)'
-      ];
-  }
+    static get observers() {
+        return [
+            '_onApiReadyForLoad(reportApi, _headers)'
+        ];
+    }
 
-  reload() {
-      this._generateNewRequest();
-  }
+    reload() {
+        this._generateNewRequest();
+    }
 
-  setReportApi(api) {
-      this.set('reportApi', api);
-  }
+    setReportApi(api) {
+        this.set('reportApi', api);
+    }
 
-  _computeAccessOrComplianceReport(report) {
-      return (-1 !== ['access-report', 'compliance-report'].indexOf(report.type));
-  }
+    _computeAccessOrComplianceReport(report) {
+        return (-1 !== ['access-report', 'compliance-report'].indexOf(report.type));
+    }
 
-  _computePoliciesReport(report) {
-      return (report.type === 'policies-report');
-  }
+    _computePoliciesReport(report) {
+        return (report.type === 'policies-report');
+    }
 
-  _showMessage(message) {
-      this._message = message;
-  }
+    _showMessage(message) {
+        this._message = message;
+    }
 
-  _hideMessage() {
-      this._message = '';
-  }
+    _hideMessage() {
+        this._message = '';
+    }
 
-  _abortPreviousRequest() {
-      const getReportApiRequest = this.$.getReportApiRequest;
+    _abortPreviousRequest() {
+        const getReportApiRequest = this.$.getReportApiRequest;
 
-      if (getReportApiRequest.lastRequest) {
-          getReportApiRequest.lastRequest.abort();
-      }
-  }
+        if (getReportApiRequest.lastRequest) {
+            getReportApiRequest.lastRequest.abort();
+        }
+    }
 
-  _generateNewRequest() {
-      this.set('_report', {});
-      this._abortPreviousRequest();
-      this.$.getReportApiRequest.generateRequest();
-  }
+    _generateNewRequest() {
+        this.set('_report', {});
+        this._abortPreviousRequest();
+        this.$.getReportApiRequest.generateRequest();
+    }
 
-  _onApiReadyForLoad(api, headers) {
-      if (api && headers) {
-          this._generateNewRequest();
-      }
-  }
+    _onApiReadyForLoad(api, headers) {
+        if (api && headers) {
+            this._generateNewRequest();
+        }
+    }
 
-  _showDetails() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showDetails() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 
-  _fireAfterLoadEvent() {
-      this.dispatchEvent(new CustomEvent('loaded', { bubbles: true, composed: true }));
-  }
+    _fireAfterLoadEvent() {
+        this.dispatchEvent(new CustomEvent('loaded', { bubbles: true, composed: true }));
+    }
 
-  _onGetReportError(event) {
-      if (!event.detail.request.aborted) {
-          this._showMessage(this.apiErrors.getError(event.detail.request.response.code));
-      }
+    _onGetReportError(event) {
+        if (!event.detail.request.aborted) {
+            this._showMessage(this.apiErrors.getError(event.detail.request.response.code));
+        }
 
-      this._fireAfterLoadEvent();
-  }
+        this._fireAfterLoadEvent();
+    }
 
-  _onGetReportResponse(event) {
-      const response = event.detail.response;
+    _onGetReportResponse(event) {
+        const response = event.detail.response;
 
-      if (response) {
-          if (this._accessOrComplianceReport) {
-              const authenticationTypes = response.auth_types;
+        if (response) {
+            if (this._accessOrComplianceReport) {
+                const authenticationTypes = response.auth_types;
 
-              response.authTypes = [
-                  {
-                      type: 'SAML',
-                      value: authenticationTypes['SAML']
-                  },
-                  {
-                      type: 'Dropbox SAML',
-                      value: authenticationTypes['Dropbox SAML']
-                  },
-                  {
-                      type: 'Office365 SAML',
-                      value: authenticationTypes['Office 365 SAML']
-                  },
-                  {
-                      type: 'JWT',
-                      value: authenticationTypes['JWT']
-                  },
-                  {
-                      type: 'Auto Login',
-                      value: authenticationTypes['Auto Login']
-                  },
-                  {
-                      type: 'Form Fill',
-                      value: authenticationTypes['Form Fill']
-                  },
-                  {
-                      type: 'No Credentials',
-                      value: authenticationTypes['No Credentials']
-                  }
-              ];
+                response.authTypes = [
+                    {
+                        type: 'SAML',
+                        value: authenticationTypes['SAML']
+                    },
+                    {
+                        type: 'Dropbox SAML',
+                        value: authenticationTypes['Dropbox SAML']
+                    },
+                    {
+                        type: 'Office365 SAML',
+                        value: authenticationTypes['Office 365 SAML']
+                    },
+                    {
+                        type: 'JWT',
+                        value: authenticationTypes['JWT']
+                    },
+                    {
+                        type: 'Auto Login',
+                        value: authenticationTypes['Auto Login']
+                    },
+                    {
+                        type: 'Form Fill',
+                        value: authenticationTypes['Form Fill']
+                    },
+                    {
+                        type: 'No Credentials',
+                        value: authenticationTypes['No Credentials']
+                    }
+                ];
 
-              this.set('_report', response);
-          } else if (this._policiesReport) {
-              const report = {
-                  numberOfEnabled: 0
-              };
+                this.set('_report', response);
+            } else if (this._policiesReport) {
+                const report = {
+                    numberOfEnabled: 0
+                };
 
-              response.policies.forEach(function(policy) {
-                  if ('active' === policy.status) {
-                      report.numberOfEnabled++;
-                  }
-              });
+                response.policies.forEach(function(policy) {
+                    if ('active' === policy.status) {
+                        report.numberOfEnabled++;
+                    }
+                });
 
-              this.set('_report', report);
-          }
+                this.set('_report', report);
+            }
 
-          this._showDetails();
-          this._fireAfterLoadEvent();
-      }
-  }
+            this._showDetails();
+            this._fireAfterLoadEvent();
+        }
+    }
 }
 window.customElements.define(AppscoReportDetails.is, AppscoReportDetails);

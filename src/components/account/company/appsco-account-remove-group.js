@@ -11,9 +11,10 @@ import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoAccountRemoveGroup extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -61,83 +62,83 @@ class AppscoAccountRemoveGroup extends mixinBehaviors([Appsco.HeadersMixin], Pol
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-account-remove-group'; }
+    static get is() { return 'appsco-account-remove-group'; }
 
-  static get properties() {
-      return {
-          account: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            account: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          group: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            group: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  toggle() {
-      this.$.dialog.open();
-  }
+    toggle() {
+        this.$.dialog.open();
+    }
 
-  setGroup(group) {
-      this.group = group;
-  }
+    setGroup(group) {
+        this.group = group;
+    }
 
-  setAccount(account) {
-      this.account = account;
-  }
+    setAccount(account) {
+        this.account = account;
+    }
 
-  _onDialogClosed() {
-      this._errorMessage = '';
-      this._loader = false;
-  }
+    _onDialogClosed() {
+        this._errorMessage = '';
+        this._loader = false;
+    }
 
-  _remove() {
-      const appRequest = document.createElement('iron-request'),
-          options = {
-              url: this.group.meta.self + '/company-roles/' + this.account.alias,
-              method: 'DELETE',
-              handleAs: 'json',
-              headers: this._headers
-          };
+    _remove() {
+        const appRequest = document.createElement('iron-request'),
+            options = {
+                url: this.group.meta.self + '/company-roles/' + this.account.alias,
+                method: 'DELETE',
+                handleAs: 'json',
+                headers: this._headers
+            };
 
-      this._loader = true;
+        this._loader = true;
 
-      appRequest.send(options).then(function(request) {
-          this.$.dialog.close();
+        appRequest.send(options).then(function(request) {
+            this.$.dialog.close();
 
-          this.dispatchEvent(new CustomEvent('account-removed-from-group', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                  account: request.response,
-                  group: this.group
-              }
-          }));
-      }.bind(this), function() {
-          if (appRequest.status !== 200) {
-              this._errorMessage = this.apiErrors.getError(request.response.code);
-          }
+            this.dispatchEvent(new CustomEvent('account-removed-from-group', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    account: request.response,
+                    group: this.group
+                }
+            }));
+        }.bind(this), function() {
+            if (appRequest.status !== 200) {
+                this._errorMessage = this.apiErrors.getError(request.response.code);
+            }
 
-          this._loader = false;
-      }.bind(this));
-  }
+            this._loader = false;
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoAccountRemoveGroup.is, AppscoAccountRemoveGroup);

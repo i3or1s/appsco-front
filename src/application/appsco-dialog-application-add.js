@@ -13,9 +13,10 @@ import '../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoDialogApplicationAdd extends PolymerElement {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -67,75 +68,75 @@ class AppscoDialogApplicationAdd extends PolymerElement {
 
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-dialog-application-add'; }
+    static get is() { return 'appsco-dialog-application-add'; }
 
-  static get properties() {
-      return {
-          applicationTemplate: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            applicationTemplate: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          dashboardApi: {
-              type: String
-          },
+            dashboardApi: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          }
-      };
-  }
+            _loader: {
+                type: Boolean,
+                value: false
+            }
+        };
+    }
 
-  ready(){
-      super.ready();
+    ready(){
+        super.ready();
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('application-added', this.toggle);
-      this.addEventListener('form-error', this._hideLoader);
-  }
+    _addListeners() {
+        this.addEventListener('application-added', this.toggle);
+        this.addEventListener('form-error', this._hideLoader);
+    }
 
-  setApplicationTemplate(applicationTpl) {
-      this.applicationTemplate = applicationTpl;
-  }
+    setApplicationTemplate(applicationTpl) {
+        this.applicationTemplate = applicationTpl;
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  _onDialogClosed() {
-      this._hideLoader();
-      this.reset();
-  }
+    _onDialogClosed() {
+        this._hideLoader();
+        this.reset();
+    }
 
-  _onSave() {
-      this._showLoader();
-      this.$.appscoApplicationAddSettings.addApplication();
-  }
+    _onSave() {
+        this._showLoader();
+        this.$.appscoApplicationAddSettings.addApplication();
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _onFormError() {
-      this._hideLoader();
-  }
+    _onFormError() {
+        this._hideLoader();
+    }
 
-  reset() {
-      this.$.appscoApplicationAddSettings.reset();
-  }
+    reset() {
+        this.$.appscoApplicationAddSettings.reset();
+    }
 }
 window.customElements.define(AppscoDialogApplicationAdd.is, AppscoDialogApplicationAdd);

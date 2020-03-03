@@ -1,35 +1,4 @@
-/**
- `appsco-product`
- This component displays AppsCo product. If there is only one product it is displayed as text.
- Otherwise, it is displayed as dropdown from which user can choose AppsCo Product: AppsCo or AppsCo Partner.
-
- Example:
-
- <body>
- <appsco-product partner></appsco-product>
-
-
- ### Styling
-
- `<appsco-product>` provides the following custom mixins for styling:
-
- Custom property | Description | Default
- ----------------|-------------|----------
- `--appsco-light-background-color` | Background color used for SEE ALL action | `#f5f8fa`
- `--border-color` | Border for products. | Based on border-color from theme.
- `--appsco-product` | Mixin applied to root appsco-product element. | `{}`
- `--appsco-product-dropdown` | Mixin applied to inner appsco-dropdown element. | `{}`
- `--appsco-product-search-input` | Mixin applied to search input field. | `{}`
-
- @demo demo/appsco-product.html
- */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
@@ -47,6 +16,7 @@ import * as gestures from '@polymer/polymer/lib/utils/gestures.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoProduct extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
     static get template() {
         return html`

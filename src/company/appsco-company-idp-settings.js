@@ -19,9 +19,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyIdpSettings extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -73,337 +74,337 @@ class AppscoCompanyIdpSettings extends mixinBehaviors([Appsco.HeadersMixin], Pol
 
         <iron-a11y-keys keys="enter" on-keys-pressed="_onEnter"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-idp-settings'; }
+    static get is() { return 'appsco-company-idp-settings'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          domain: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onDomainChanged'
-          },
+            domain: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onDomainChanged'
+            },
 
-          idPIntegrationsApi: {
-              type: String
-          },
+            idPIntegrationsApi: {
+                type: String
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _settingsApi: {
-              type: String
-          },
+            _settingsApi: {
+                type: String
+            },
 
-          _idPConfig: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            _idPConfig: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _integrations: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            _integrations: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _selectedIntegration: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onSelectedIntegrationChanged'
-          },
+            _selectedIntegration: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onSelectedIntegrationChanged'
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          },
+            _errorMessage: {
+                type: String
+            },
 
-          _activeForm: {
-              type: String,
-              value: ''
-          },
+            _activeForm: {
+                type: String,
+                value: ''
+            },
 
-          _formPrefix: {
-              type: String,
-              computed: '_computeFormPrefix(_activeForm)'
-          }
-      };
-  }
+            _formPrefix: {
+                type: String,
+                computed: '_computeFormPrefix(_activeForm)'
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      beforeNextRender(this, function() {
-          this._clearForm();
-      });
+        beforeNextRender(this, function() {
+            this._clearForm();
+        });
 
-      afterNextRender(this, function() {
-          this._addListeners();
-      });
-  }
+        afterNextRender(this, function() {
+            this._addListeners();
+        });
+    }
 
-  _addListeners() {
-      this.addEventListener('show-error', this._showError.bind(this));
-      this.addEventListener('hide-error', this._hideError.bind(this));
-  }
+    _addListeners() {
+        this.addEventListener('show-error', this._showError.bind(this));
+        this.addEventListener('hide-error', this._hideError.bind(this));
+    }
 
-  setup() {
-      this.$.title.focus();
-  }
+    setup() {
+        this.$.title.focus();
+    }
 
-  reset() {
-      this._clearForm();
-      this._hideError();
-      this._hideLoader();
-      this.shadowRoot.querySelector('[data-form]').reset();
-      this.set('_idPConfig', {});
-      this.set('domain', {});
-      this.set('_selectedIntegration', {});
-      this._activeForm = '';
-  }
+    reset() {
+        this._clearForm();
+        this._hideError();
+        this._hideLoader();
+        this.shadowRoot.querySelector('[data-form]').reset();
+        this.set('_idPConfig', {});
+        this.set('domain', {});
+        this.set('_selectedIntegration', {});
+        this._activeForm = '';
+    }
 
-  setDomain(domain) {
-      this.set('domain', domain);
-  }
+    setDomain(domain) {
+        this.set('domain', domain);
+    }
 
-  _computeIdPIntegrationsApi(settingsApi) {
-      return settingsApi ? (settingsApi + '/integrations') : null;
-  }
+    _computeIdPIntegrationsApi(settingsApi) {
+        return settingsApi ? (settingsApi + '/integrations') : null;
+    }
 
-  _computeFormPrefix(activeForm) {
-      return 'openid' === activeForm ?
-          'open_id_config' :
-          'saml_idp_config'
-       ;
-  }
+    _computeFormPrefix(activeForm) {
+        return 'openid' === activeForm ?
+            'open_id_config' :
+            'saml_idp_config'
+            ;
+    }
 
-  _showLoader() {
-      this._loader = true;
-  }
+    _showLoader() {
+        this._loader = true;
+    }
 
-  _hideLoader() {
-      this._loader = false;
-  }
+    _hideLoader() {
+        this._loader = false;
+    }
 
-  _showError(message) {
-      this._errorMessage = ('string' === typeof message) ?
-          message :
-          ((message.detail && message.detail.message) ?
-              message.detail.message :
-              this.apiErrors.getError(404));
-  }
+    _showError(message) {
+        this._errorMessage = ('string' === typeof message) ?
+            message :
+            ((message.detail && message.detail.message) ?
+                message.detail.message :
+                this.apiErrors.getError(404));
+    }
 
-  _hideError() {
-      this._errorMessage = '';
-  }
+    _hideError() {
+        this._errorMessage = '';
+    }
 
-  _clearForm() {
-      this.shadowRoot.querySelectorAll('[data-field]').forEach(function(item) {
-          const inputContainer = item.querySelector('#container');
+    _clearForm() {
+        this.shadowRoot.querySelectorAll('[data-field]').forEach(function(item) {
+            const inputContainer = item.querySelector('#container');
 
-          item.value = '';
-          item.invalid = false;
+            item.value = '';
+            item.invalid = false;
 
-          // Used because gold-cc-input doesn't send 'invalid' property down to children elements
-          if (inputContainer) {
-              inputContainer.invalid = false;
-          }
-      }.bind(this));
-  }
+            // Used because gold-cc-input doesn't send 'invalid' property down to children elements
+            if (inputContainer) {
+                inputContainer.invalid = false;
+            }
+        }.bind(this));
+    }
 
-  _onDomainChanged(domain) {
-      if (domain && domain.meta && domain.meta.idpConfig) {
-          this.$.getDomainIdPConfig.generateRequest();
-      }
-  }
+    _onDomainChanged(domain) {
+        if (domain && domain.meta && domain.meta.idpConfig) {
+            this.$.getDomainIdPConfig.generateRequest();
+        }
+    }
 
-  _onKeyUp(event) {
-      if (13 !== event.keyCode) {
-          this._hideError();
-          event.target.invalid = false;
-      }
-  }
+    _onKeyUp(event) {
+        if (13 !== event.keyCode) {
+            this._hideError();
+            event.target.invalid = false;
+        }
+    }
 
-  _onSelectedIntegrationChanged(integration) {
-      for (const key in integration) {
-          this._activeForm = integration.kind.toLowerCase();
-          this._settingsApi = integration.meta.create;
-          return false;
-      }
-      this._activeForm = '';
-  }
+    _onSelectedIntegrationChanged(integration) {
+        for (const key in integration) {
+            this._activeForm = integration.kind.toLowerCase();
+            this._settingsApi = integration.meta.create;
+            return false;
+        }
+        this._activeForm = '';
+    }
 
-  _onIntegrationTypeSelect(event) {
-      const currentTarget = event.currentTarget;
+    _onIntegrationTypeSelect(event) {
+        const currentTarget = event.currentTarget;
 
-      this._hideError();
-      this.$.integrationType.invalid = false;
+        this._hideError();
+        this.$.integrationType.invalid = false;
 
-      setTimeout(function() {
-          const integrationID = currentTarget.selectedItem ? currentTarget.selectedItem.integrationId : '',
-              integrations = this._integrations;
+        setTimeout(function() {
+            const integrationID = currentTarget.selectedItem ? currentTarget.selectedItem.integrationId : '',
+                integrations = this._integrations;
 
-          integrations.forEach(function(item) {
-              if (integrationID === item.id) {
-                  this.set('_selectedIntegration', item);
-                  return false;
-              }
-          }.bind(this));
-      }.bind(this), 30);
-  }
+            integrations.forEach(function(item) {
+                if (integrationID === item.id) {
+                    this.set('_selectedIntegration', item);
+                    return false;
+                }
+            }.bind(this));
+        }.bind(this), 30);
+    }
 
-  _onIdPIntegrationsError() {
-      this.set('_integrations', []);
-  }
+    _onIdPIntegrationsError() {
+        this.set('_integrations', []);
+    }
 
-  _onIdPIntegrationsResponse(event) {
-      const response = event.detail.response;
+    _onIdPIntegrationsResponse(event) {
+        const response = event.detail.response;
 
-      if (response && response.integrations) {
-          this.set('_integrations', response.integrations);
-      }
-  }
+        if (response && response.integrations) {
+            this.set('_integrations', response.integrations);
+        }
+    }
 
-  _onIdPConfigResponse(event) {
-      const response = event.detail.response;
+    _onIdPConfigResponse(event) {
+        const response = event.detail.response;
 
-      if (response) {
-          this.set('_idPConfig', {});
-          this.set('_idPConfig', response[0]);
-      }
-  }
+        if (response) {
+            this.set('_idPConfig', {});
+            this.set('_idPConfig', response[0]);
+        }
+    }
 
-  _onPageAnimationFinish(event) {
-      const fromPage = event.detail.fromPage;
+    _onPageAnimationFinish(event) {
+        const fromPage = event.detail.fromPage;
 
-      if (!this.domain.hasIdp && fromPage.$ && ('undefined' !== typeof fromPage.reset)) {
-          fromPage.reset();
-      }
-  }
+        if (!this.domain.hasIdp && fromPage.$ && ('undefined' !== typeof fromPage.reset)) {
+            fromPage.reset();
+        }
+    }
 
-  _onEnter() {
-      this._submitForm();
-  }
+    _onEnter() {
+        this._submitForm();
+    }
 
-  _validateForm() {
-      let valid = true;
+    _validateForm() {
+        let valid = true;
 
-      this.shadowRoot.querySelectorAll('[data-field]').forEach(function(item) {
-          item.validate();
-          valid = valid && !item.invalid;
-      }.bind());
+        this.shadowRoot.querySelectorAll('[data-field]').forEach(function(item) {
+            item.validate();
+            valid = valid && !item.invalid;
+        }.bind());
 
-      return valid;
-  }
+        return valid;
+    }
 
-  _getEncodedBodyValues(form) {
-      let body = '';
+    _getEncodedBodyValues(form) {
+        let body = '';
 
-      this.shadowRoot.querySelectorAll('[data-field]').forEach(function(item) {
-          if (item.value) {
-              body += ('' === body) ? '' : '&';
-              body += encodeURIComponent(item.name) + '=' + encodeURIComponent(item.value);
-          }
-      }.bind(this));
+        this.shadowRoot.querySelectorAll('[data-field]').forEach(function(item) {
+            if (item.value) {
+                body += ('' === body) ? '' : '&';
+                body += encodeURIComponent(item.name) + '=' + encodeURIComponent(item.value);
+            }
+        }.bind(this));
 
-      body += ('' === body) ? '' : '&';
-      body += form.getEncodedBodyValues();
+        body += ('' === body) ? '' : '&';
+        body += form.getEncodedBodyValues();
 
-      return body;
-  }
+        return body;
+    }
 
-  _submitForm() {
-      if (!this._activeForm) {
-          this.$.integrationType.invalid = true;
-          return false;
-      }
+    _submitForm() {
+        if (!this._activeForm) {
+            this.$.integrationType.invalid = true;
+            return false;
+        }
 
-      const form = this.shadowRoot.querySelector('[name="' + this._activeForm + '"]');
+        const form = this.shadowRoot.querySelector('[name="' + this._activeForm + '"]');
 
-      if (this._validateForm() && form.validate()) {
-          if (form.getCertificates) {
-              const certificates = form.getCertificates();
+        if (this._validateForm() && form.validate()) {
+            if (form.getCertificates) {
+                const certificates = form.getCertificates();
 
-              if (!certificates || 0 === certificates.length) {
-                  this._showError('Please add at least one certificate.');
-                  return;
-              }
-          }
+                if (!certificates || 0 === certificates.length) {
+                    this._showError('Please add at least one certificate.');
+                    return;
+                }
+            }
 
-          this._showLoader();
+            this._showLoader();
 
-          this._save(form).then(function(response) {
-              const config = response[0];
+            this._save(form).then(function(response) {
+                const config = response[0];
 
-              this.domain.hasIdp = true;
-              this.domain.meta.idpConfig = config.self;
+                this.domain.hasIdp = true;
+                this.domain.meta.idpConfig = config.self;
 
-              this.dispatchEvent(new CustomEvent('idp-settings-saved', {
-                  bubbles: true,
-                  composed: true,
-                  detail: {
-                      domain: this.domain,
-                      idPConfig: config
-                  }
-              }));
+                this.dispatchEvent(new CustomEvent('idp-settings-saved', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        domain: this.domain,
+                        idPConfig: config
+                    }
+                }));
 
-              this._hideLoader();
-          }.bind(this), function(code) {
-              this._showError(this.apiErrors.getError(code));
-              this._hideLoader();
-          }.bind(this));
-      }
-  }
+                this._hideLoader();
+            }.bind(this), function(code) {
+                this._showError(this.apiErrors.getError(code));
+                this._hideLoader();
+            }.bind(this));
+        }
+    }
 
-  _save(form) {
-      return new Promise(function(resolve, reject) {
-          const request = document.createElement('iron-request'),
-              options = {
-                  url: this._settingsApi,
-                  method: 'POST',
-                  handleAs: 'json',
-                  headers: this._headers,
-                  body: this._getEncodedBodyValues(form)
-              };
+    _save(form) {
+        return new Promise(function(resolve, reject) {
+            const request = document.createElement('iron-request'),
+                options = {
+                    url: this._settingsApi,
+                    method: 'POST',
+                    handleAs: 'json',
+                    headers: this._headers,
+                    body: this._getEncodedBodyValues(form)
+                };
 
-          if (this.domain.hasIdp) {
-              options.url = this.domain.meta.idpConfig;
-              options.method = 'PUT';
-          }
-          else {
-              options.body += ('&' + this._formPrefix +'[integrationId]=' + encodeURIComponent(this.$.integrationList.selectedItem.value));
-          }
+            if (this.domain.hasIdp) {
+                options.url = this.domain.meta.idpConfig;
+                options.method = 'PUT';
+            }
+            else {
+                options.body += ('&' + this._formPrefix +'[integrationId]=' + encodeURIComponent(this.$.integrationList.selectedItem.value));
+            }
 
-          request.send(options).then(function() {
-              if (200 === request.status) {
-                  resolve(request.response);
-              }
-          }.bind(this), function() {
-              reject(request.response.code);
-          }.bind(this));
-      }.bind(this));
-  }
+            request.send(options).then(function() {
+                if (200 === request.status) {
+                    resolve(request.response);
+                }
+            }.bind(this), function() {
+                reject(request.response.code);
+            }.bind(this));
+        }.bind(this));
+    }
 }
 window.customElements.define(AppscoCompanyIdpSettings.is, AppscoCompanyIdpSettings);

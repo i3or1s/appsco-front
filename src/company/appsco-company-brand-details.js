@@ -1,30 +1,3 @@
-/*
-`appsco-company-brand-details`
-Component holds details about appsco company.
-
-Example:
-    <body>
-        <appsco-company-brand-details company={}>
-        </appsco-company-brand-details>
-
-### Styling
-
-`<appsco-company-brand-details>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--appsco-company-brand-details` | Mixin for the root element. | `{}`
-`--company-brand-details-container` | Mixin for the inner element that holds label and value. | `{}`
-`--company-brand-details-label` | Mixin applied to detail label. | `{}`
-`--company-brand-details-value` | Mixin applied to detail value. | `{}`
-`--company-logo` | Mixin applied to logo image. | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
 
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
@@ -35,9 +8,10 @@ import '@polymer/neon-animation/animations/fade-out-animation.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyBrandDetails extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -117,68 +91,68 @@ class AppscoCompanyBrandDetails extends mixinBehaviors([NeonAnimationRunnerBehav
             </template>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-brand-details'; }
+    static get is() { return 'appsco-company-brand-details'; }
 
-  static get properties() {
-      return {
-          company: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              observer: '_onCompanyChanged'
-          },
+    static get properties() {
+        return {
+            company: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: '_onCompanyChanged'
+            },
 
-          brandLogo: {
-              type: String,
-              value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAgCAYAAAB+ZAqzAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAVZJREFUeNrsmOENgjAQhcE4AG5QN2AERnCEjsAIdQJG6AiO0BEcATdwhLONxJR6V1u8Ij98ycXkrL3HR+8gVlWCAEDa0EjuaqP1csLGkPJ7FtlNR3hKIzknNeV0uC5YqzhNSc/AiORgKiyCnCbWSm5ar02DHEzFhyB3J9aCf/tL02qckSCvbHSAy60Va9BSSGFn1gAt1zjNlmj5Mr+gdYE0aXZahFmFdOgnSW5aEikivHmWo1NJWnoBLf8ItFujNWumErSwDs3V+xjJoNURtBTwSC6lZQrRmtXhoNXa6IFPIwctE3lYf3crv6TVER26Ki29RVpiNVoJkz+FlmGnlTD5Y7ROia82q9Iat0ALG5xyml3laUXMqkSKZWgRpiha4k+LMPYzWvuYsbquDxhFxn8fzmTt3DNnP9xVNgymbvbCj9SXu8zNeiZTUVocZ27pe/3HA/8QYABzJAP50CmRFwAAAABJRU5ErkJggg=='
-          },
+            brandLogo: {
+                type: String,
+                value: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAgCAYAAAB+ZAqzAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAVZJREFUeNrsmOENgjAQhcE4AG5QN2AERnCEjsAIdQJG6AiO0BEcATdwhLONxJR6V1u8Ij98ycXkrL3HR+8gVlWCAEDa0EjuaqP1csLGkPJ7FtlNR3hKIzknNeV0uC5YqzhNSc/AiORgKiyCnCbWSm5ar02DHEzFhyB3J9aCf/tL02qckSCvbHSAy60Va9BSSGFn1gAt1zjNlmj5Mr+gdYE0aXZahFmFdOgnSW5aEikivHmWo1NJWnoBLf8ItFujNWumErSwDs3V+xjJoNURtBTwSC6lZQrRmtXhoNXa6IFPIwctE3lYf3crv6TVER26Ki29RVpiNVoJkz+FlmGnlTD5Y7ROia82q9Iat0ALG5xyml3laUXMqkSKZWgRpiha4k+LMPYzWvuYsbquDxhFxn8fzmTt3DNnP9xVNgymbvbCj9SXu8zNeiZTUVocZ27pe/3HA/8QYABzJAP50CmRFwAAAABJRU5ErkJggg=='
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
+    }
 
-  _onCompanyChanged(company) {
-      var brandColor = company.primary_color,
-          brandTextColor = company.secondary_color;
+    _onCompanyChanged(company) {
+        var brandColor = company.primary_color,
+            brandTextColor = company.secondary_color;
 
-      this.updateStyles({
-          '--preview-brand-color': (company && brandColor) ? brandColor : 'var(--brand-color)',
-          '--preview-brand-border': (!brandColor || '#fff' === brandColor || '#ffffff' === brandColor) ? 'var(--border-color)' : 'transparent',
-          '--preview-brand-text-color': (company && brandTextColor) ? brandTextColor : 'var(--brand-text-color)',
-          '--preview-brand-text-border': (!brandTextColor || '#fff' === brandTextColor || '#ffffff' === brandTextColor) ? 'var(--border-color)' : 'transparent'
-      });
-      this._showDetails();
-  }
+        this.updateStyles({
+            '--preview-brand-color': (company && brandColor) ? brandColor : 'var(--brand-color)',
+            '--preview-brand-border': (!brandColor || '#fff' === brandColor || '#ffffff' === brandColor) ? 'var(--border-color)' : 'transparent',
+            '--preview-brand-text-color': (company && brandTextColor) ? brandTextColor : 'var(--brand-text-color)',
+            '--preview-brand-text-border': (!brandTextColor || '#fff' === brandTextColor || '#ffffff' === brandTextColor) ? 'var(--border-color)' : 'transparent'
+        });
+        this._showDetails();
+    }
 
-  _showDetails() {
-      this.style.display = 'block';
-      this.playAnimation('entry');
-  }
+    _showDetails() {
+        this.style.display = 'block';
+        this.playAnimation('entry');
+    }
 }
 window.customElements.define(AppscoCompanyBrandDetails.is, AppscoCompanyBrandDetails);

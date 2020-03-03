@@ -9,9 +9,10 @@ import '@polymer/iron-media-query/iron-media-query.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoManageAccountPageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="shared-styles">
             :host {
                 @apply --layout-horizontal;
@@ -68,84 +69,84 @@ class AppscoManageAccountPageActions extends mixinBehaviors([NeonAnimatableBehav
             <paper-icon-button class="info-action" icon="info-outline" title="Filters" on-tap="_onResourceAction"></paper-icon-button>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-manage-account-page-actions'; }
+    static get is() { return 'appsco-manage-account-page-actions'; }
 
-  static get properties() {
-      return {
-          tabletScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            tabletScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          /**
-           * Indicates if advanced action(s) should be visible or not.
-           */
-          advanced: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if advanced action(s) should be visible or not.
+             */
+            advanced: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  delay: 300,
-                  duration: 300
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
-  }
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    delay: 300,
+                    duration: 300
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
+    }
 
-  resetPageActions() {}
+    resetPageActions() {}
 
-  _backToDirectory() {
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _backToDirectory() {
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  _onResourceAction() {
-      this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
-  }
+    _onResourceAction() {
+        this.dispatchEvent(new CustomEvent('resource-section', { bubbles: true, composed: true }));
+    }
 
-  _onAdvancedSettingsAction() {
-      this.dispatchEvent(new CustomEvent('advanced-settings', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              showAdvanced: this.shadowRoot.getElementById('advancedSettingsAction').active
-          }
-      }));
-  }
+    _onAdvancedSettingsAction() {
+        this.dispatchEvent(new CustomEvent('advanced-settings', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                showAdvanced: this.shadowRoot.getElementById('advancedSettingsAction').active
+            }
+        }));
+    }
 
-  disableAdvancedSettings() {
-      this.shadowRoot.getElementById('advancedSettingsAction').disabled = true;
-  }
+    disableAdvancedSettings() {
+        this.shadowRoot.getElementById('advancedSettingsAction').disabled = true;
+    }
 
-  enableAdvancedSettings() {
-      this.shadowRoot.getElementById('advancedSettingsAction').disabled = false;
-  }
+    enableAdvancedSettings() {
+        this.shadowRoot.getElementById('advancedSettingsAction').disabled = false;
+    }
 
-  resetAdvancedSettingsAction() {
-      this.shadowRoot.getElementById('advancedSettingsAction').active = false;
-  }
+    resetAdvancedSettingsAction() {
+        this.shadowRoot.getElementById('advancedSettingsAction').active = false;
+    }
 }
 window.customElements.define(AppscoManageAccountPageActions.is, AppscoManageAccountPageActions);

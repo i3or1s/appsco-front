@@ -5,7 +5,6 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
  * @polymerBehavior
  */
 export const AppscoListItemBehavior = {
-
     properties: {
 
         item: {

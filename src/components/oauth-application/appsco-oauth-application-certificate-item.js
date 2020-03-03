@@ -13,12 +13,13 @@ import '../components/appsco-date-format.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoOAuthApplicationCertificateItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host .item-icon-container {
                 width: 52px;
@@ -102,36 +103,36 @@ class AppscoOAuthApplicationCertificateItem extends mixinBehaviors([
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-oauth-application-certificate-item'; }
+    static get is() { return 'appsco-oauth-application-certificate-item'; }
 
-  static get properties() {
-      return {
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+    static get properties() {
+        return {
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          mobileScreen: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          }
-      };
-  }
+            mobileScreen: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        };
+    }
 
-  _onRemoveItemAction(event) {
-      event.stopPropagation();
+    _onRemoveItemAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('remove-item', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              item: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('remove-item', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                item: this.item
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoOAuthApplicationCertificateItem.is, AppscoOAuthApplicationCertificateItem);

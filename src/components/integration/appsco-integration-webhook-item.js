@@ -13,12 +13,13 @@ import '../components/appsco-copy.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoIntegrationWebhookItem extends mixinBehaviors([
     NeonAnimationRunnerBehavior,
     AppscoListItemBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="appsco-list-item-styles">
             :host .item {
                 cursor: default;
@@ -90,62 +91,62 @@ class AppscoIntegrationWebhookItem extends mixinBehaviors([
             </div>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-integration-webhook-item'; }
+    static get is() { return 'appsco-integration-webhook-item'; }
 
-  static get properties() {
-      return {
-          integration: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            integration: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          _registered: {
-              type: Boolean,
-              value: false
-          },
+            _registered: {
+                type: Boolean,
+                value: false
+            },
 
-          _url: {
-              type: String
-          }
-      };
-  }
+            _url: {
+                type: String
+            }
+        };
+    }
 
-  register(url) {
-      this._registered = true;
-      this._url = url;
-  }
+    register(url) {
+        this._registered = true;
+        this._url = url;
+    }
 
-  unregister() {
-      this._registered = false;
-      this._url = null;
-  }
+    unregister() {
+        this._registered = false;
+        this._url = null;
+    }
 
-  _onRegisterItemAction(event) {
-      event.stopPropagation();
+    _onRegisterItemAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('register-item', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              item: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('register-item', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                item: this.item
+            }
+        }));
+    }
 
-  _onUnregisterItemAction(event) {
-      event.stopPropagation();
+    _onUnregisterItemAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('unregister-item', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              item: this.item
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('unregister-item', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                item: this.item
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoIntegrationWebhookItem.is, AppscoIntegrationWebhookItem);

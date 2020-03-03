@@ -9,9 +9,10 @@ import '../components/application/company/appsco-company-resource-settings.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyResourceSettingsPage extends mixinBehaviors([NeonSharedElementAnimatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style include="webkit-scrollbar-style">
             :host {
                 @apply --full-page;
@@ -43,92 +44,92 @@ class AppscoCompanyResourceSettingsPage extends mixinBehaviors([NeonSharedElemen
             </div>
         </paper-card>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-resource-settings-page'; }
+    static get is() { return 'appsco-company-resource-settings-page'; }
 
-  static get properties() {
-      return {
-          resource: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+    static get properties() {
+        return {
+            resource: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          authorizationToken: {
-              type: String,
-              value: ''
-          },
+            authorizationToken: {
+                type: String,
+                value: ''
+            },
 
-          apiErrors: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            apiErrors: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          domain: {
-              type: String
-          },
+            domain: {
+                type: String
+            },
 
-          /**
-           * Animation config with hero animation.
-           */
-          animationConfig: {
-              type: Object
-          },
+            /**
+             * Animation config with hero animation.
+             */
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': [{
-              name: 'hero-animation',
-              id: 'hero',
-              toPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 500
-              }
-          }],
-          'exit': {
-              name: 'slide-right-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': [{
+                name: 'hero-animation',
+                id: 'hero',
+                toPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 500
+                }
+            }],
+            'exit': {
+                name: 'slide-right-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            }
+        };
 
-      this.sharedElements = {
-          'hero': this.$.card
-      };
-  }
+        this.sharedElements = {
+            'hero': this.$.card
+        };
+    }
 
-  _onClosePageAction() {
-      this.resetPage();
-      this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
-  }
+    _onClosePageAction() {
+        this.resetPage();
+        this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+    }
 
-  setPage() {
-      this.$.appscoResourceSettings.setup();
-  }
+    setPage() {
+        this.$.appscoResourceSettings.setup();
+    }
 
-  resetPage() {
-      this.$.appscoResourceSettings.reset();
-  }
+    resetPage() {
+        this.$.appscoResourceSettings.reset();
+    }
 }
 window.customElements.define(AppscoCompanyResourceSettingsPage.is, AppscoCompanyResourceSettingsPage);

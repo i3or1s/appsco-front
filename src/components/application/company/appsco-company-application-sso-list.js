@@ -13,12 +13,13 @@ import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyApplicationSSOList extends mixinBehaviors([
     Appsco.HeadersMixin,
     NeonSharedElementAnimatableBehavior
 ], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -87,238 +88,238 @@ class AppscoCompanyApplicationSSOList extends mixinBehaviors([
             </template>
         </div>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-application-sso-list'; }
+    static get is() { return 'appsco-company-application-sso-list'; }
 
-  static get properties() {
-      return {
-          applicationsTemplateApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            applicationsTemplateApi: {
+                type: String
+            },
 
-          /**
-           * Selected application from search list.
-           */
-          selectedApplication: {
-              type: Object,
-              value: function () {
-                  return {};
-              },
-              notify: true
-          },
+            /**
+             * Selected application from search list.
+             */
+            selectedApplication: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
 
-          _getResourcesApi: {
-              type: String,
-              computed: '_computeGetResourceApi(applicationsTemplateApi)'
-          },
+            _getResourcesApi: {
+                type: String,
+                computed: '_computeGetResourceApi(applicationsTemplateApi)'
+            },
 
-          /**
-           * Application list from search.
-           */
-          _searchList: {
-              type: Array,
-              value: function () {
-                  return [];
-              }
-          },
+            /**
+             * Application list from search.
+             */
+            _searchList: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
 
-          _message: {
-              type: String,
-              value: ''
-          },
+            _message: {
+                type: String,
+                value: ''
+            },
 
-          /**
-           * Indicates if appsco loader should be displayed.
-           */
-          _searchLoader: {
-              type: Boolean,
-              value: false
-          },
+            /**
+             * Indicates if appsco loader should be displayed.
+             */
+            _searchLoader: {
+                type: Boolean,
+                value: false
+            },
 
-          animationConfig: {
-              type: Object
-          },
+            animationConfig: {
+                type: Object
+            },
 
-          sharedElements: {
-              type: Object
-          }
-      };
-  }
+            sharedElements: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'scale-up-animation',
-              node: this
-          },
-          'exit': [{
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this,
-              timing: {
-                  duration: 300
-              }
-          }, {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }]
-      };
-      this.sharedElements = {
-          'hero': {}
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'scale-up-animation',
+                node: this
+            },
+            'exit': [{
+                name: 'hero-animation',
+                id: 'hero',
+                fromPage: this,
+                timing: {
+                    duration: 300
+                }
+            }, {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }]
+        };
+        this.sharedElements = {
+            'hero': {}
+        };
 
-      beforeNextRender(this, function() {
-          this._populateTopSSOApps();
-      });
-  }
+        beforeNextRender(this, function() {
+            this._populateTopSSOApps();
+        });
+    }
 
-  _computeGetResourceApi(applicationsTemplateApi) {
-      return applicationsTemplateApi ? (applicationsTemplateApi + '?status=3&extended=1') : null;
-  }
+    _computeGetResourceApi(applicationsTemplateApi) {
+        return applicationsTemplateApi ? (applicationsTemplateApi + '?status=3&extended=1') : null;
+    }
 
-  _showLoader() {
-      this._searchLoader = true;
-  }
+    _showLoader() {
+        this._searchLoader = true;
+    }
 
-  _hideLoader() {
-      this._searchLoader = false;
-  }
+    _hideLoader() {
+        this._searchLoader = false;
+    }
 
-  _showMessage(message) {
-      this._message = message;
-  }
+    _showMessage(message) {
+        this._message = message;
+    }
 
-  _hideMessage() {
-      this._message = '';
-  }
+    _hideMessage() {
+        this._message = '';
+    }
 
-  _setSearchList(applications) {
-      this.set('_searchList', applications.sort(function(app1, app2) {
-          const app1Title = app1.title.toLowerCase(),
-              app2Title = app2.title.toLowerCase();
+    _setSearchList(applications) {
+        this.set('_searchList', applications.sort(function(app1, app2) {
+            const app1Title = app1.title.toLowerCase(),
+                app2Title = app2.title.toLowerCase();
 
-          if (app1Title < app2Title) {
-              return -1;
-          }
+            if (app1Title < app2Title) {
+                return -1;
+            }
 
-          if (app1Title > app2Title) {
-              return 1;
-          }
+            if (app1Title > app2Title) {
+                return 1;
+            }
 
-          return 0;
-      }));
-  }
+            return 0;
+        }));
+    }
 
-  _populateTopSSOApps() {
-      if (!this._getResourcesApi) {
-          this._showMessage('There are no applications to display.');
-          return false;
-      }
+    _populateTopSSOApps() {
+        if (!this._getResourcesApi) {
+            this._showMessage('There are no applications to display.');
+            return false;
+        }
 
-      const request = document.createElement('iron-request'),
-          url = this._getResourcesApi;
+        const request = document.createElement('iron-request'),
+            url = this._getResourcesApi;
 
-      this._hideMessage();
+        this._hideMessage();
 
-      const options = {
-          url: url,
-          method: 'GET',
-          handleAs: 'json',
-          headers: this._headers
-      };
+        const options = {
+            url: url,
+            method: 'GET',
+            handleAs: 'json',
+            headers: this._headers
+        };
 
-      request.send(options).then(function() {
-          const applications = request.response.applications;
+        request.send(options).then(function() {
+            const applications = request.response.applications;
 
-          if (applications && applications.length > 0) {
-              this._setSearchList(applications);
-          }
+            if (applications && applications.length > 0) {
+                this._setSearchList(applications);
+            }
 
-          this._hideLoader();
-      }.bind(this));
-  }
+            this._hideLoader();
+        }.bind(this));
+    }
 
-  filterResourcesByTerm(term) {
-      let termLength = term.length;
+    filterResourcesByTerm(term) {
+        let termLength = term.length;
 
-      this._showLoader();
-      this._hideMessage();
+        this._showLoader();
+        this._hideMessage();
 
-      if (0 === termLength) {
-          this._populateTopSSOApps();
+        if (0 === termLength) {
+            this._populateTopSSOApps();
 
-          return false;
-      }
+            return false;
+        }
 
-      if (termLength < 2) {
-          this._showMessage('Please type two or more letters.');
-          this._hideLoader();
-          this.set('_searchList', []);
+        if (termLength < 2) {
+            this._showMessage('Please type two or more letters.');
+            this._hideLoader();
+            this.set('_searchList', []);
 
-          return false;
-      }
+            return false;
+        }
 
-      const request = document.createElement('iron-request'),
-          url = this._getResourcesApi + '&term=' + term;
+        const request = document.createElement('iron-request'),
+            url = this._getResourcesApi + '&term=' + term;
 
-      this._hideMessage();
+        this._hideMessage();
 
-      const options = {
-          url: url,
-          method: 'GET',
-          handleAs: 'json',
-          headers: this._headers
-      };
+        const options = {
+            url: url,
+            method: 'GET',
+            handleAs: 'json',
+            headers: this._headers
+        };
 
-      request.send(options).then(function() {
-          const applications = request.response.applications;
+        request.send(options).then(function() {
+            const applications = request.response.applications;
 
-          if (applications && applications.length > 0) {
-              this._setSearchList(applications);
-          }
-          else {
-              this.set('_searchList', []);
-              this._showMessage('There are no applications with asked title. Please check your input.');
-          }
+            if (applications && applications.length > 0) {
+                this._setSearchList(applications);
+            }
+            else {
+                this.set('_searchList', []);
+                this._showMessage('There are no applications with asked title. Please check your input.');
+            }
 
-          this._hideLoader();
-      }.bind(this));
-  }
+            this._hideLoader();
+        }.bind(this));
+    }
 
-  /**
-   * Called after application has been selected from search list.
-   * Sets selected application.
-   * Fires an event.
-   *
-   * @param {Object} event
-   * @private
-   */
-  _onApplicationSelect(event) {
-      this.sharedElements.hero = this.shadowRoot.getElementById('appscoListItem_' + event.model.index);
-      this.selectedApplication = event.detail.item;
+    /**
+     * Called after application has been selected from search list.
+     * Sets selected application.
+     * Fires an event.
+     *
+     * @param {Object} event
+     * @private
+     */
+    _onApplicationSelect(event) {
+        this.sharedElements.hero = this.shadowRoot.getElementById('appscoListItem_' + event.model.index);
+        this.selectedApplication = event.detail.item;
 
-      this.dispatchEvent(new CustomEvent('application-select', { bubbles: true, composed: true }));
-  }
+        this.dispatchEvent(new CustomEvent('application-select', { bubbles: true, composed: true }));
+    }
 
-  _onAddSSOApplication(event) {
-      this.sharedElements.hero = dom(event).rootTarget;
+    _onAddSSOApplication(event) {
+        this.sharedElements.hero = dom(event).rootTarget;
 
-      this.dispatchEvent(new CustomEvent('add-custom-sso', { bubbles: true, composed: true }));
-  }
+        this.dispatchEvent(new CustomEvent('add-custom-sso', { bubbles: true, composed: true }));
+    }
 
-  setup() {}
+    setup() {}
 
-  reset() {
-      this.set('_searchList', []);
-      this._populateTopSSOApps();
-      this._hideMessage();
-      this._hideLoader();
-  }
+    reset() {
+        this.set('_searchList', []);
+        this._populateTopSSOApps();
+        this._hideMessage();
+        this._hideLoader();
+    }
 }
 window.customElements.define(AppscoCompanyApplicationSSOList.is, AppscoCompanyApplicationSSOList);

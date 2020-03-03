@@ -13,9 +13,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoImportResource extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
@@ -77,79 +78,79 @@ class AppscoImportResource extends mixinBehaviors([Appsco.HeadersMixin], Polymer
             </div>
         </paper-dialog>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-import-resource'; }
+    static get is() { return 'appsco-import-resource'; }
 
-  static get properties() {
-      return {
-          importApi: {
-              type: String
-          },
+    static get properties() {
+        return {
+            importApi: {
+                type: String
+            },
 
-          _loader: {
-              type: Boolean,
-              value: false
-          },
+            _loader: {
+                type: Boolean,
+                value: false
+            },
 
-          _errorMessage: {
-              type: String
-          }
-      };
-  }
+            _errorMessage: {
+                type: String
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.$.uploadCsv.set('i18n.addFiles.many', 'Upload file');
-  }
+        this.$.uploadCsv.set('i18n.addFiles.many', 'Upload file');
+    }
 
-  toggle() {
-      this.$.dialog.toggle();
-  }
+    toggle() {
+        this.$.dialog.toggle();
+    }
 
-  open() {
-      this.$.dialog.open();
-  }
+    open() {
+        this.$.dialog.open();
+    }
 
-  close() {
-      this.$.dialog.close();
-  }
+    close() {
+        this.$.dialog.close();
+    }
 
-  _onDialogOpened() {
-      this._loader = false;
-      this._errorMessage = '';
-      this.$.uploadCsv.files = [];
-  }
+    _onDialogOpened() {
+        this._loader = false;
+        this._errorMessage = '';
+        this.$.uploadCsv.files = [];
+    }
 
-  _onDialogClosed() {
-      this._loader = false;
-      this._errorMessage = '';
-      this.$.uploadCsv.files = [];
-  }
+    _onDialogClosed() {
+        this._loader = false;
+        this._errorMessage = '';
+        this.$.uploadCsv.files = [];
+    }
 
-  _uploadStarted(e) {}
+    _uploadStarted(e) {}
 
-  _fileRejected(e) {
-      this._errorMessage = e.detail.error;
-  }
+    _fileRejected(e) {
+        this._errorMessage = e.detail.error;
+    }
 
-  _uploadErrorResponse(e) {
-      if (e.detail.xhr.status === 402) {
-          e.detail.file.error = "Maximum subscription reached. Please upgrade before import.";
-      }
-  }
+    _uploadErrorResponse(e) {
+        if (e.detail.xhr.status === 402) {
+            e.detail.file.error = "Maximum subscription reached. Please upgrade before import.";
+        }
+    }
 
-  _uploadSuccess(event) {
-      this.close();
+    _uploadSuccess(event) {
+        this.close();
 
-      this.dispatchEvent(new CustomEvent('import-finished', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              response: JSON.parse(event.detail.xhr.response)
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('import-finished', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                response: JSON.parse(event.detail.xhr.response)
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoImportResource.is, AppscoImportResource);

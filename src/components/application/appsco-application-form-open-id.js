@@ -9,20 +9,21 @@ import '@polymer/iron-a11y-keys/iron-a11y-keys.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoApplicationFormOpenId extends mixinBehaviors([AppscoApplicationFormBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
-          paper-dropdown-menu {
+            paper-dropdown-menu {
               display: block;
-          }
-          paper-toggle-button {
+            }
+            paper-toggle-button {
               margin-top: 20px;
-          }
-          paper-toggle-button[disabled] {
+            }
+            paper-toggle-button[disabled] {
               --paper-toggle-button-label-color: var(--secondary-text-color);
-          }
-      </style>
+            }
+        </style>
         <paper-input id="issuer" data-field="" label="Issuer" value="[[ claims.issuer ]]" name\$="[[ claimsNamePrefix ]][issuer]" error-message="Please enter issuer"></paper-input>
 
         <paper-input id="redirectUri" data-field="" label="Redirect URI" value="[[ claims.redirectUri ]]" name\$="[[ claimsNamePrefix ]][redirectUri]" error-message="Please enter redirect URI"></paper-input>
@@ -31,24 +32,24 @@ class AppscoApplicationFormOpenId extends mixinBehaviors([AppscoApplicationFormB
 
         <iron-a11y-keys keys="enter"></iron-a11y-keys>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-application-form-open-id'; }
+    static get is() { return 'appsco-application-form-open-id'; }
 
-  static get properties() {
-      return {
-          claims: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            claims: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          claimsNamePrefix: {
-              type: String,
-              value: "claims_open_id"
-          }
-      };
-  }
+            claimsNamePrefix: {
+                type: String,
+                value: "claims_open_id"
+            }
+        };
+    }
 }
 window.customElements.define(AppscoApplicationFormOpenId.is, AppscoApplicationFormOpenId);

@@ -1,28 +1,4 @@
-/*
-`appsco-company-partner-admin-item`
-Account item is used to present account in form of an item.
-
-    <appsco-company-partner-admin-item>
-    </appsco-company-partner-admin-item>
-
-### Styling
-
-`<appsco-company-partner-admin-item>` provides the following custom properties and mixins for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--item-background-color` | Background color applied to the root element | `#fff`
-`--color` | Color applied to all the text | `#33`
-`--appsco-company-partner-admin-item` | Mixin applied to role item | `{}`
-
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
@@ -36,9 +12,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyPartnerAdminItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
-  static get template() {
-    return html`
+    static get template() {
+        return html`
         <style>
             :host {
                 display: none;
@@ -162,78 +139,78 @@ class AppscoCompanyPartnerAdminItem extends mixinBehaviors([NeonAnimationRunnerB
             </div>
         </template>
 `;
-  }
+    }
 
-  static get is() { return 'appsco-company-partner-admin-item'; }
+    static get is() { return 'appsco-company-partner-admin-item'; }
 
-  static get properties() {
-      return {
-          customer: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+    static get properties() {
+        return {
+            customer: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          partnerAdmin: {
-              type: Object,
-              value: function () {
-                  return {};
-              }
-          },
+            partnerAdmin: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
 
-          preview: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
+            preview: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
 
-          animationConfig: {
-              type: Object
-          }
-      };
-  }
+            animationConfig: {
+                type: Object
+            }
+        };
+    }
 
-  ready() {
-      super.ready();
+    ready() {
+        super.ready();
 
-      this.animationConfig = {
-          'entry': {
-              name: 'fade-in-animation',
-              node: this,
-              timing: {
-                  duration: 200
-              }
-          },
-          'exit': {
-              name: 'fade-out-animation',
-              node: this,
-              timing: {
-                  duration: 100
-              }
-          }
-      };
+        this.animationConfig = {
+            'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {
+                    duration: 200
+                }
+            },
+            'exit': {
+                name: 'fade-out-animation',
+                node: this,
+                timing: {
+                    duration: 100
+                }
+            }
+        };
 
-      beforeNextRender(this, function() {
-          this.style.display = 'inline-block';
-      });
+        beforeNextRender(this, function() {
+            this.style.display = 'inline-block';
+        });
 
-      afterNextRender(this, function() {
-          this.playAnimation('entry');
-      });
-  }
+        afterNextRender(this, function() {
+            this.playAnimation('entry');
+        });
+    }
 
-  _onRevokeAction(event) {
-      event.stopPropagation();
+    _onRevokeAction(event) {
+        event.stopPropagation();
 
-      this.dispatchEvent(new CustomEvent('remove-partner-admin-from-customer', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              customer: this.customer,
-              partnerAdmin: this.partnerAdmin
-          }
-      }));
-  }
+        this.dispatchEvent(new CustomEvent('remove-partner-admin-from-customer', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                customer: this.customer,
+                partnerAdmin: this.partnerAdmin
+            }
+        }));
+    }
 }
 window.customElements.define(AppscoCompanyPartnerAdminItem.is, AppscoCompanyPartnerAdminItem);
