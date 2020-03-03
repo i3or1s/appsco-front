@@ -30,13 +30,15 @@
     <link rel="apple-touch-icon" sizes="96x96" href="/images/manifest/icon-96x96.png">
     <link rel="apple-touch-icon" sizes="144x144" href="/images/manifest/icon-144x144.png">
     <link rel="apple-touch-icon" sizes="192x192" href="/images/manifest/icon-192x192.png">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,300,300italic,400italic,500,500italic,700,700italic" crossorigin="anonymous">
 
     <!-- Tile icon for Windows 8 (144x144 + tile color) -->
     <meta name="msapplication-TileImage" content="/images/manifest/icon-144x144.png">
     <meta name="msapplication-TileColor" content="#3f51b5">
     <meta name="msapplication-tap-highlight" content="no">
 
-    <script>
+    <script type="module">
+        import '/src/appsco-app.js';
         // Load pre-caching Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
@@ -44,14 +46,9 @@
             });
         }
     </script>
-    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="/bower_components/web-animations-js/web-animations-next-lite.min.js"></script>
-    <script src="/bower_components/popper.js/dist/umd/popper.js" defer></script>
-    <script src="/bower_components/popper.js/dist/umd/popper-utils.js" defer></script>
-
-    <link rel="import" href="/src/appsco-app.html">
+    <script src="/node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
+    <script src="/node_modules/clientjs/dist/client.min.js" defer></script>
     <script type="text/javascript" src="https://js.stripe.com/v3/" defer></script>
-
     <style>
         body {
             margin: 0;
