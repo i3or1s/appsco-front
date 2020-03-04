@@ -67,6 +67,22 @@ $_documentContainer.innerHTML = `<dom-module id="appsco-list-styles">
                 @apply --layout-start;
                 margin-right: -20px;
             }
+            .popup-menu-item-list {
+                padding: 0;
+            }
+            .popup-menu-item {
+                align-items: center;                    
+                cursor:pointer;
+                font-size: 14px;
+                height: 40px;
+                line-height: 24px;
+                min-height: 40px;
+                padding: 0 16px;
+                position: relative;
+                user-select: none;
+                width: 168px;
+                -webkit-font-smoothing: antialiased;
+            }
         </style>
     </template>
 </dom-module>`;

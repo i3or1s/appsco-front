@@ -7,7 +7,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-icon-item.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-icons/iron-icons.js';
-import '../vaadin-context-menu/vaadin-context-menu-override.js';
+import '@vaadin/vaadin-context-menu/vaadin-context-menu.js';
 import './appsco-application-item.js';
 import { AppscoDragHTMLElementBehavior } from '../components/appsco-drag-html-element-behavior.js';
 import '../components/appsco-list-styles.js';
@@ -53,11 +53,11 @@ class AppscoApplications extends mixinBehaviors([
 
             <template is="dom-if" if="[[ !_applicationsEmpty ]]">
 
-                <vaadin-context-menu-override selector="appsco-application-item">
+                <vaadin-context-menu selector="appsco-application-item">
 
                     <template>
-                        <paper-listbox>
-                            <paper-icon-item list-item="[[ target ]]" on-click="_openMoveToDialog">
+                        <paper-listbox class="popup-menu-item-list">
+                            <paper-icon-item class="popup-menu-item" list-item="[[ target ]]" on-click="_openMoveToDialog">
                                 <iron-icon icon="folder" list-item="[[ target ]]" item-icon="" slot="item-icon"></iron-icon>
                                 Move to
                             </paper-icon-item>
@@ -70,7 +70,7 @@ class AppscoApplications extends mixinBehaviors([
                         </template>
                     </div>
 
-                </vaadin-context-menu-override>
+                </vaadin-context-menu>
 
             </template>
         </div>
