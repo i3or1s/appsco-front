@@ -81,7 +81,18 @@ class AppscoRoleSaveClientData extends mixinBehaviors([NeonAnimationRunnerBehavi
             unavailable = 'unavailable'
         ;
 
-        let fingerprint = client.getFingerprint();
+        let fingerprint = client.getCustomFingerprint([
+            client.getUserAgent(),
+            client.getScreenPrint(),
+            client.getPlugins(),
+            client.isLocalStorage(),
+            client.isSessionStorage(),
+            client.getTimeZone(),
+            client.getLanguage(),
+            client.getSystemLanguage(),
+            client.isCookie(),
+            client.getCanvasPrint()
+        ]);
 
         options.body = ('byod[name]=' + encodeURIComponent(fingerprint ?
             (accountName + ' ' + fingerprint) : accountName)) +
@@ -95,7 +106,7 @@ class AppscoRoleSaveClientData extends mixinBehaviors([NeonAnimationRunnerBehavi
             '&byod[operating_system]=' + (client.getOS() ? encodeURIComponent(client.getOS()) : unavailable) +
             '&byod[operating_system_version]=' + (client.getOSVersion() ? encodeURIComponent(client.getOSVersion()) : unavailable);
 
-        request.send(options).then(function() {
+        request.send(options).then(function () {
             if (200 === request.status) {
                 this.set('_device', request.response);
             }
