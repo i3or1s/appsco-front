@@ -260,6 +260,7 @@ class AppscoCompanyBrandedLoginPage extends mixinBehaviors([
                 }
             }
         };
+
         this.sharedElements = {
             'hero': this.$.brandedLoginCard
         };
@@ -306,7 +307,7 @@ class AppscoCompanyBrandedLoginPage extends mixinBehaviors([
     }
 
     _resetForm() {
-        var request = document.createElement('iron-request'),
+        const request = document.createElement('iron-request'),
             options = {
                 url: this.company.meta.branded_login,
                 method: 'DELETE',
@@ -337,7 +338,7 @@ class AppscoCompanyBrandedLoginPage extends mixinBehaviors([
     _onFormPresubmit() {
         this._showLoader();
         this.$.form.request.method = 'PUT';
-        var body = this.$.form.request.body;
+        const body = this.$.form.request.body;
         body['branded_login[password_disabled]'] = body['branded_login[password_disabled]'] ? 1: 0;
         body['branded_login[reset_password_disabled]'] = body['branded_login[reset_password_disabled]'] ? 1: 0;
         body['branded_login[oauth_login_disabled]'] = body['branded_login[oauth_login_disabled]'] ? 1: 0;

@@ -6,6 +6,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import Popper from "popper.js";
 
 class AppscoTutorialShareResources extends mixinBehaviors([
     AppscoTutorialBehaviour,
@@ -129,13 +130,11 @@ class AppscoTutorialShareResources extends mixinBehaviors([
 
             resourcesPageLoaded: {
                 type: Boolean,
-                value: false,
-                notify: true
+                value: false
             },
 
             resourceShareAccountsLoaded: {
                 type: Boolean,
-                notify: true,
                 value: false
             }
         };
@@ -178,50 +177,50 @@ class AppscoTutorialShareResources extends mixinBehaviors([
     getPopperConfig() {
         return {
             step1: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step2: {
-                reference: '* /deep/ #menuCompanyResourcesText',
-                coverTarget: '* /deep/ #menuContainer',
+                reference: [ '#menuCompanyResourcesText' ],
+                coverTarget: [ '#menuContainer' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step3: {
-                reference: '* /deep/ appsco-company-resource-item /deep/ div.select-action',
-                coverTarget: '* /deep/ appsco-company-resource-item /deep/ div.select-action',
+                reference: [ '#appscoResourcesPage', '#appscoResources', 'appsco-company-resource-item', 'div.select-action' ],
+                coverTarget: [ '#appscoResourcesPage', '#appscoResources', 'appsco-company-resource-item', 'div.select-action' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step4: {
-                reference: '* /deep/ appsco-application-actions /deep/ #shareAction',
-                coverTarget: '* /deep/ appsco-application-actions /deep/ #shareAction',
+                reference: [ '#appscoResourcesPageActions', '#appscoApplicationsActions', '#shareAction' ],
+                coverTarget: [ '#appscoResourcesPageActions', '#appscoApplicationsActions', '#shareAction' ],
                 popperOptions: {
                     placement: 'left-start'
                 }
             },
             step5: {
-                reference: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog appsco-account-list-item  /deep/ div.select-action',
-                coverTarget: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog appsco-account-list-item',
+                reference: [ '#appscoResourcesPage', '#appscoShareResource', 'paper-dialog-scrollable appsco-account-list-item', 'div.select-action' ],
+                coverTarget: [ '#appscoResourcesPage', '#appscoShareResource', 'paper-dialog-scrollable appsco-account-list-item' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step6: {
-                reference: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog #shareResourceConfirmShareButton',
-                coverTarget: '* /deep/ appsco-share-resource /deep/ paper-dialog#dialog #shareResourceConfirmShareButton',
+                reference: [ '#appscoResourcesPage', '#appscoShareResource', '#shareResourceConfirmShareButton' ],
+                coverTarget: [ '#appscoResourcesPage', '#appscoShareResource', '#shareResourceConfirmShareButton' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step7: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
@@ -231,14 +230,14 @@ class AppscoTutorialShareResources extends mixinBehaviors([
 
     step3(index, item, doneBuildingPopperHandler) {
         const handleFunction = function () {
-            const firstApplication = this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources /deep/ appsco-company-resource-item'),
-                firstApplicationSelector = this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources /deep/ appsco-company-resource-item /deep/ div.select-action');
+            const firstApplication = this._querySelector([ '#appscoResourcesPage', '#appscoResources', 'appsco-company-resource-item' ]),
+                firstApplicationSelector = this._querySelector( [ '#appscoResourcesPage', '#appscoResources', 'appsco-company-resource-item', 'div.select-action' ]);
 
             if (this.resourcesPageLoaded && !firstApplication) {
-                const cover = this.buildCover(this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources /deep/ div.load-more-box')),
-                    failElement = this._querySelector('* /deep/ #popper-fail-share-resource-tutorial'),
-                    closeButton = this._querySelector('* /deep/ #popper-fail-share-resource-tutorial paper-button'),
-                    popper = new Popper(this._querySelector('* /deep/ div[content] /deep/ appsco-company-resources'), failElement, {
+                const cover = this.buildCover(this._querySelector( [ '#appscoResourcesPage', '#appscoResources', 'div.load-more-box' ])),
+                    failElement = this._querySelector([ '#appscoTutorial', '#shareResource', '#popper-fail-share-resource-tutorial' ]),
+                    closeButton = this._querySelector([ '#appscoTutorial', '#shareResource', '#popper-fail-share-resource-tutorial paper-button' ]),
+                    popper = new Popper(this._querySelector(['#appscoResourcesPage', '#appscoResources' ]), failElement, {
                         placement: 'right-start'
                     }),
                     closeListener = function () {
@@ -275,15 +274,15 @@ class AppscoTutorialShareResources extends mixinBehaviors([
     step5(index, item, doneBuildingPopperHandler) {
         setTimeout(function() {
             let checkerFunction;
-            this._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog').setAttribute(
+            this._querySelector([ '#appscoResourcesPage', '#appscoShareResource', 'paper-dialog#dialog' ]).setAttribute(
                 'no-cancel-on-outside-click', true
             );
-            this._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog').setAttribute(
+            this._querySelector([ '#appscoResourcesPage', '#appscoShareResource',  'paper-dialog#dialog' ]).setAttribute(
                 'no-cancel-on-esc-key', true
             );
 
             checkerFunction = function() {
-                const dialog = this._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog appsco-account-list-item');
+                const dialog = this._querySelector([ '#appscoResourcesPage', '#appscoShareResource', 'paper-dialog-scrollable appsco-account-list-item' ]);
                 if (!dialog || !this.resourcesPageLoaded || !this.resourceShareAccountsLoaded) {
                     setTimeout(checkerFunction, 200);
                     return;
@@ -306,10 +305,10 @@ class AppscoTutorialShareResources extends mixinBehaviors([
 
     afterTutorialDone() {
         this
-            ._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog')
+            ._querySelector([ '#appscoResourcesPage', '#appscoShareResource', 'paper-dialog#dialog' ])
             .removeAttribute('no-cancel-on-outside-click');
         this
-            ._querySelector('* /deep/ appsco-share-resource /deep/ paper-dialog#dialog')
+            ._querySelector([ '#appscoResourcesPage', '#appscoShareResource', 'paper-dialog#dialog' ])
             .removeAttribute('no-cancel-on-esc-key');
     }
 }

@@ -145,36 +145,36 @@ class AppscoTutorialCompanySettings extends mixinBehaviors([
     getPopperConfig() {
         return {
             step1: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step2: {
-                reference: '* /deep/ #menuCompanySettingsText',
-                coverTarget: '* /deep/ #menuContainer',
+                reference: [ '#menuCompanySettingsText' ],
+                coverTarget: [ '#menuContainer' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step3: {
-                reference: '* /deep/ #companySettingsCardBtn',
-                coverTarget: '* /deep/ #companySettingsCard',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyComponentsPage', '#companySettingsCardBtn' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyComponentsPage', '#companySettingsCard' ],
                 popperOptions: {
                     placement: 'bottom'
                 }
             },
             step4: {
-                reference: '* /deep/ #companySettingsSaveBtn',
-                coverTarget: '* /deep/ #companySettingsSettings',
+                reference: [ '#appscoCompanyPage', '#appscoCompanySettingsPage', '#appscoCompanySettings', '#companySettingsSaveBtn' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanySettingsPage', '#companySettingsSettings' ],
                 popperOptions: {
                     placement: 'left-start'
                 }
             },
             step5: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
@@ -185,7 +185,7 @@ class AppscoTutorialCompanySettings extends mixinBehaviors([
     step3(index, item, doneBuildingPopperHandler) {
         const me = this;
         const handleFunction = function () {
-            const element = me._querySelector('* /deep/ #appscoCompanyComponentsPage');
+            const element = me._querySelector([ '#appscoCompanyPage', '#appscoCompanyComponentsPage' ]);
             if (!element || this.page !== 'company') {
                 setTimeout(handleFunction, 200);
                 return;

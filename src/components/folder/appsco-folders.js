@@ -10,7 +10,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-icon-item.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-icons/iron-icons.js';
-import '../vaadin-context-menu/vaadin-context-menu-override.js';
+import '@vaadin/vaadin-context-menu/vaadin-context-menu.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -67,15 +67,15 @@ class AppscoFolders extends mixinBehaviors([
 
             <template is="dom-if" if="[[ !_listEmpty ]]">
 
-                <vaadin-context-menu-override selector="appsco-folders-item">
+                <vaadin-context-menu selector="appsco-folders-item">
 
                     <template>
-                        <paper-listbox>
+                        <paper-listbox class="popup-menu-item-list">
                             <paper-icon-item class="popup-menu-item" list-item="[[ target ]]" on-click="_openRenameDialog">
                                 <iron-icon icon="create" list-item="[[ target ]]" item-icon="" slot="item-icon"></iron-icon> Rename
                             </paper-icon-item>
 
-                            <paper-icon-item list-item="[[ target ]]" on-click="_openRemoveDialog">
+                            <paper-icon-item class="popup-menu-item" list-item="[[ target ]]" on-click="_openRemoveDialog">
                                 <iron-icon icon="delete" list-item="[[ target ]]" item-icon="" slot="item-icon"></iron-icon> Remove
                             </paper-icon-item>
                         </paper-listbox>
@@ -89,7 +89,7 @@ class AppscoFolders extends mixinBehaviors([
                         </template>
                     </div>
 
-                </vaadin-context-menu-override>
+                </vaadin-context-menu>
             </template>
         </div>
 

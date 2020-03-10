@@ -193,50 +193,50 @@ class AppscoTutorialCompanyDomain extends mixinBehaviors([
     getPopperConfig() {
         return {
             step1: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step2: {
-                reference: '* /deep/ #menuCompanySettingsText',
-                coverTarget: '* /deep/ #menuContainer',
+                reference: [ '#menuCompanySettingsText' ],
+                coverTarget: [ '#menuContainer' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step3: {
-                reference: '* /deep/ #companySettingsDomainsCardButton',
-                coverTarget: '* /deep/ #companySettingsDomainsCard',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyComponentsPage', '#companySettingsDomainsCardButton' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyComponentsPage', '#companySettingsDomainsCard' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step4: {
-                reference: '* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain',
-                coverTarget: '* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain',
+                reference: [ '#appscoCompanyPageActions', '#companySettingsAddDomain' ],
+                coverTarget: [ '#appscoCompanyPageActions', '#companySettingsAddDomain' ],
                 popperOptions: {
                     placement: 'left-start'
                 }
             },
             step5: {
-                reference: '* /deep/ #companyDomainDialogAddButton',
-                coverTarget: '* /deep/ #addCompanyDomainDialog',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyAddDomain', '#companyDomainDialogAddButton' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyAddDomain', '#addCompanyDomainDialog' ],
                 popperOptions: {
                     placement: 'bottom'
                 },
                 popperListenerBuilder: function(tutorial) {
-                    const cancelButton = tutorial._querySelector('* /deep/ #companyDomainDialogCancelButton'),
-                        addButton = tutorial._querySelector('* /deep/ #companyDomainDialogAddButton'),
+                    const cancelButton = tutorial._querySelector([ '#appscoCompanyPage', '#appscoCompanyAddDomain',  '#companyDomainDialogCancelButton' ]),
+                        addButton = tutorial._querySelector([ '#appscoCompanyPage', '#appscoCompanyAddDomain',  '#companyDomainDialogAddButton' ]),
                         cancelListener = function () {
                             cancelButton.removeEventListener('click', cancelListener);
 
                             tutorial
-                                ._querySelector('* /deep/ #addCompanyDomainDialog')
+                                ._querySelector([ '#appscoCompanyPage', '#appscoCompanyAddDomain',  '#addCompanyDomainDialog' ])
                                 .removeAttribute('no-cancel-on-outside-click');
                             tutorial
-                                ._querySelector('* /deep/ #addCompanyDomainDialog')
+                                ._querySelector([ '#appscoCompanyPage', '#appscoCompanyAddDomain',  '#addCompanyDomainDialog' ])
                                 .removeAttribute('no-cancel-on-esc-key');
 
                             tutorial.reset();
@@ -251,24 +251,24 @@ class AppscoTutorialCompanyDomain extends mixinBehaviors([
                 }
             },
             step6: {
-                reference: '* /deep/ #appscoCompanyDomains /deep/ appsco-company-domain-item /deep/ paper-button.appsco-company-domain-item-get-token',
-                coverTarget: '* /deep/ #appscoCompanyDomains /deep/ appsco-company-domain-item /deep/ paper-button.appsco-company-domain-item-get-token',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyDomainsPage', '#appscoCompanyDomains', 'appsco-company-domain-item', 'paper-button.appsco-company-domain-item-get-token' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyDomainsPage', '#appscoCompanyDomains', 'appsco-company-domain-item', 'paper-button.appsco-company-domain-item-get-token' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step7: {
-                reference: '* /deep/ #companyTokenCopyButton',
-                coverTarget: '* /deep/ #companyTokenCopyButton',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyDomainToken', '#companyTokenCopyButton' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyDomainToken', '#companyTokenCopyButton' ],
                 popperOptions: {
                     placement: 'right-start'
                 },
                 popperListenerBuilder: function(tutorial) {
-                    const copyButton = tutorial._querySelector('* /deep/ #companyTokenCopyButton'),
-                        closeButton = tutorial._querySelector('* /deep/ #companyTokenCloseButton'),
+                    const copyButton = tutorial._querySelector([ '#appscoCompanyPage', '#appscoCompanyDomainToken', '#companyTokenCopyButton' ]),
+                        closeButton = tutorial._querySelector([ '#appscoCompanyPage', '#appscoCompanyDomainToken', '#companyTokenCloseButton' ]),
                         closeListener = function () {
                             tutorial
-                                ._querySelector('* /deep/ #companyTokenCloseButton')
+                                ._querySelector([ '#appscoCompanyPage', '#appscoCompanyDomainToken', '#companyTokenCloseButton' ])
                                 .removeEventListener('click', closeListener);
                             tutorial.reset();
                         },
@@ -286,15 +286,15 @@ class AppscoTutorialCompanyDomain extends mixinBehaviors([
                 }
             },
             step8: {
-                reference: '* /deep/ #appscoCompanyDomains /deep/ appsco-company-domain-item /deep/ paper-button.appsco-company-domain-item-verify-token',
-                coverTarget: '* /deep/ #appscoCompanyDomains /deep/ appsco-company-domain-item /deep/ paper-button.appsco-company-domain-item-verify-token',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyDomainsPage', '#appscoCompanyDomains', 'appsco-company-domain-item', 'paper-button.appsco-company-domain-item-verify-token' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyDomainsPage', '#appscoCompanyDomains', 'appsco-company-domain-item', 'paper-button.appsco-company-domain-item-verify-token' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step9: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
@@ -304,7 +304,7 @@ class AppscoTutorialCompanyDomain extends mixinBehaviors([
 
     step3(index, item, doneBuildingPopperHandler) {
         const handleFunction = function () {
-            const element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
+            const element = this._querySelector([ '#appscoCompanyPage', '#appscoCompanyComponentsPage' ]);
             if (this.page !== 'company') {
                 return;
             }
@@ -320,7 +320,7 @@ class AppscoTutorialCompanyDomain extends mixinBehaviors([
 
     step4(index, item, doneBuildingPopperHandler) {
         const handleFunction = function () {
-            const element = this._querySelector('* /deep/ appsco-company-page-actions /deep/ #companySettingsAddDomain');
+            const element = this._querySelector([ '#appscoCompanyPageActions', '#companySettingsAddDomain' ]);
             if (this.page !== 'company') {
                 return;
             }
@@ -335,10 +335,10 @@ class AppscoTutorialCompanyDomain extends mixinBehaviors([
 
     step5(index, item, doneBuildingPopperHandler) {
         setTimeout(function() {
-            let dialog = this._querySelector('* /deep/ #addCompanyDomainDialog'),
+            let dialog = this._querySelector([ '#appscoCompanyPage', '#appscoCompanyAddDomain', '#addCompanyDomainDialog' ]),
                 initialHeight = dialog.clientHeight,
                 sizer = function () {
-                    const dialog = this._querySelector('* /deep/ #addCompanyDomainDialog');
+                    const dialog = this._querySelector([ '#appscoCompanyPage', '#appscoCompanyAddDomain', '#addCompanyDomainDialog' ]);
                     if (!dialog || this.page !== 'company' || this.step !== 5 || dialog.style.display === 'none') {
                         return;
                     }
@@ -376,11 +376,11 @@ class AppscoTutorialCompanyDomain extends mixinBehaviors([
 
     domainAdded(domain) {
         this
-            ._querySelector('* /deep/ #addCompanyDomainDialog')
+            ._querySelector([ '#appscoCompanyPage', '#appscoCompanyAddDomain', '#addCompanyDomainDialog' ])
             .removeAttribute('no-cancel-on-outside-click');
 
         this
-            ._querySelector('* /deep/ #addCompanyDomainDialog')
+            ._querySelector([ '#appscoCompanyPage', '#appscoCompanyAddDomain', '#addCompanyDomainDialog' ])
             .removeAttribute('no-cancel-on-esc-key');
 
         if (this.step !== 5) {

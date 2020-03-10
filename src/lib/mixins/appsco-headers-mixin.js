@@ -3,6 +3,9 @@ if (!window.Appsco) {
     window.Appsco = {};
 }
 
+/**
+ * @polymerBehavior
+ */
 Appsco.HeadersMixin = {
     properties: {
         /**

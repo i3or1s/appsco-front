@@ -51,7 +51,19 @@ class AppscoApp extends mixinBehaviors([
 
         <appsco-header id="appscoHeader" account="[[ account ]]" brand-logo="[[ _brandLogo ]]" brand-logo-clickable="[[ _brandLogoClickable ]]" brand-logo-width="38" brand-logo-height="32" brand-title="[[ _brandTitle ]]" authorization-token="[[ authorizationToken ]]" notifications-api="[[ api.notifications ]]" logout-api="[[ api.logout ]]" notifications-size="5" product-business="[[ _companiesAccountHasPermissionTo ]]" product-partner="[[ account.partner ]]" domain="{{ domain }}" tutorial-action-available="[[ _tutorialsPageVisible ]]" on-brand-action="_onBrandAction" on-appsco-product-changed="_onAppscoProductChangeAction" on-account-chat="_onAccountChat" on-account-settings="_onAccountSettingsAction" on-all-notifications="_onAllNotifications" on-account-logout="_onAccountLogout" on-get-started="_onGetStarted"></appsco-header>
 
-        <appsco-tutorial id="appscoTutorial" tutorials-api="[[ api.tutorialsApi ]]" authorization-token="[[ authorizationToken ]]" tutorials="{{ _tutorials }}" directory-page-loaded="[[ _directoryPageLoaded ]]" resources-page-loaded="[[ _resourcesPageLoaded ]]" company-domains-loaded="[[ _companyDomainsLoaded ]]" resource-share-accounts-loaded="[[ shareResourceDialogAccountsLoaded ]]" current-page="[[ page ]]" is-tutorial-active="{{ isTutorialActive }}" disable-upgrade\$="[[!_applicationsApi]]"></appsco-tutorial>
+        <appsco-tutorial 
+            id="appscoTutorial" 
+            tutorials-api="[[ api.tutorialsApi ]]" 
+            authorization-token="[[ authorizationToken ]]" 
+            tutorials="{{ _tutorials }}" 
+            directory-page-loaded="[[ _directoryPageLoaded ]]" 
+            resources-page-loaded="[[ _resourcesPageLoaded ]]" 
+            company-domains-loaded="[[ _companyDomainsLoaded ]]" 
+            resource-share-accounts-loaded="[[ shareResourceDialogAccountsLoaded ]]" 
+            current-page="[[ page ]]" 
+            tutorial-response="[[ tutorialResponse ]]"
+            is-tutorial-active="{{ isTutorialActive }}">            
+        </appsco-tutorial>
 
         <appsco-tutorial-progress id="appscoTutorialProgress" tutorials="[[ _tutorials ]]" show="true" is-tutorial-active="[[ isTutorialActive ]]" progress="{{ _progress }}" disable-upgrade\$="[[!_applicationsApi]]"></appsco-tutorial-progress>
 
@@ -312,8 +324,40 @@ class AppscoApp extends mixinBehaviors([
                     <appsco-contact-home-page name="contact-home" page="" company-page="" id="appscoContactHomePage" authorization-token="[[ authorizationToken ]]" applications-api="[[ _contactIconsApi ]]" page-config="[[ _pageConfig ]]" account="[[ account ]]" toolbar="[[ \$.appscoContactHomePageActions ]]" on-loaded="_onLoadedPage" on-application-shared="_onApplicationShared">
                     </appsco-contact-home-page>
 
-                    <appsco-resources-page name="resources" page="" company-page="" id="appscoResourcesPage" resource="{{ _companyApplication }}" account="[[ account ]]" application-log="[[ _companyApplication.meta.log ]]" authorization-token="[[ authorizationToken ]]" company-resources-api="[[ _companyApplicationsApi ]]" company-applications-api="[[ _companyApplicationsApi ]]" company-roles-api="[[ _companyRolesApi ]]" company-contacts-api="[[ _companyContactsApi ]]" company-import-resources-api="[[ _companyImportResourcesApi ]]" groups-api="[[ _companyGroupsApi ]]" company-api="[[ _companyApi ]]" applications-template-api="[[ api.applicationTemplates ]]" item="[[ _copyObject(item) ]]" link="[[ _copyObject(link) ]]" domain="[[ domain ]]" api-errors="[[ _apiErrors ]]" resource-admin="[[ _resourceAdmin ]]" page-config="[[ _pageConfig ]]" get-company-idp-config-list-api="[[ _getCompanyIdpConfigListApi ]]" toolbar="[[ \$.appscoResourcesPageActions ]]" on-applications-removed="_onApplicationsRemoved" on-resources-shared="_onResourcesShared" on-import-finished="_onImportCompanyResourcesFinished" on-application-settings-saved="_onApplicationSettingsSaved" on-list-loaded="_onLoadedPage" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled" on-page-loaded="_onResourcesPageLoaded" on-load-forbidden="_onResourcesLoadForbidden" on-edit-additional-options="_onEditAdditionalOptionsAction">
-                    </appsco-resources-page>
+                     <appsco-resources-page name="resources" page="" company-page=""
+                         id="appscoResourcesPage"
+                         resource="{{ _companyApplication }}"
+                         account="[[ account ]]"
+                         application-log="[[ _companyApplication.meta.log ]]"
+                         authorization-token="[[ authorizationToken ]]"
+                         company-resources-api="[[ _companyApplicationsApi ]]"
+                         company-applications-api="[[ _companyApplicationsApi ]]"
+                         company-roles-api="[[ _companyRolesApi ]]"
+                         company-contacts-api="[[ _companyContactsApi ]]"
+                         company-import-resources-api="[[ _companyImportResourcesApi ]]"
+                         groups-api="[[ _companyGroupsApi ]]"
+                         company-api="[[ _companyApi ]]"
+                         applications-template-api="[[ api.applicationTemplates ]]"
+                         item="[[ _copyObject(item) ]]"
+                         link="[[ _copyObject(link) ]]"
+                         domain="[[ domain ]]"
+                         api-errors="[[ _apiErrors ]]"
+                         resource-admin="[[ _resourceAdmin ]]"
+                         page-config="[[ _pageConfig ]]"
+                         get-company-idp-config-list-api="[[ _getCompanyIdpConfigListApi ]]"
+                         toolbar="[[ \$.appscoResourcesPageActions ]]"
+                         on-applications-removed="_onApplicationsRemoved"
+                         on-resources-shared="_onResourcesShared"
+                         on-import-finished="_onImportCompanyResourcesFinished"
+                         on-application-settings-saved="_onApplicationSettingsSaved"
+                         on-list-loaded="_onLoadedPage"
+                         on-observable-list-empty="_onObservableListEmpty"
+                         on-observable-list-filled="_onObservableListFilled"
+                         on-page-loaded="_onResourcesPageLoaded"
+                         on-load-forbidden="_onResourcesLoadForbidden"
+                         on-edit-additional-options="_onEditAdditionalOptionsAction"
+                         on-share-items-loaded-changed="onShareResourceDialogAccountsLoadedChanged">
+                     </appsco-resources-page>
 
                     <appsco-manage-resource-page name="manage-resource" page="" company-page="" id="appscoManageApplicationPage" route="[[ subroute ]]" application="{{ _companyApplication }}" company-api="[[ _companyApi ]]" company-idp-saml-metadata-api="[[ _companySamlMetadataApi ]]" company-contacts-api="[[ _companyContactsApi ]]" company-roles-api="[[ _companyRolesApi ]]" company-groups-api="[[ _companyGroupsApi ]]" domain="[[ domain ]]" application-log="[[ _companyApplication.meta.log ]]" authorization-token="[[ authorizationToken ]]" accounts-api="[[ api.accounts ]]" account="{{ account }}" api-errors="[[ _apiErrors ]]" resource-admin="[[ _resourceAdmin ]]" toolbar="[[ \$.appscoManageApplicationPageActions ]]" on-applications-removed="_onApplicationsRemoved" on-resources-shared="_onResourcesShared" on-access-revoked="_onAssigneeAccessRevoked" on-application-removed-from-group="_onApplicationRemovedFromGroup" on-resource-admin-added="_onResourceAdminAdded" on-resource-admin-revoked="_onResourceAdminRevoked" on-application-settings-saved="_onApplicationSettingsSaved" on-page-error="_onError" on-resource-image-changed="_onResourceImageChanged" on-image-upload-error="_onImageUploadError">
                     </appsco-manage-resource-page>
@@ -365,13 +409,14 @@ class AppscoApp extends mixinBehaviors([
                     <appsco-access-on-boarding-page name="access-on-boarding" page="" company-page="" id="appscoAccessOnBoardingPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" access-on-boarding-users-api="[[ _accessOnBoardingUsersApi ]]" export-access-on-boarding-api="[[ _exportAccessAccessOnBoardingApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoAccessOnBoardingPageActions ]]">
                     </appsco-access-on-boarding-page>
 
-                    <appsco-get-started-page name="get-started" page="" company-page="" id="appscoGetStartedPage" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" tutorials="[[ _tutorials ]]" on-tutorial-start="_onTutorialStart" disable-upgrade\$="[[!_applicationsApi]]">
+                    <appsco-get-started-page name="get-started" page="" company-page="" id="appscoGetStartedPage" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" tutorials="[[ _tutorials ]]" on-tutorial-start="_onTutorialStart">
                     </appsco-get-started-page>
 
                     <appsco-oauth-applications-page name="oauth-applications" page="" company-page="" id="appscoOAuthApplicationsPage" authorization-token="[[ authorizationToken ]]" o-auth-applications-api="[[ _companyOAuthApplicationsApi ]]" current-company="[[ currentCompany.company ]]" toolbar="[[ \$.appscoOAuthApplicationsPageActions ]]" on-edit-oauth-application="_onEditOAuthApplicationAction" on-oauth-application-removed="_onOAuthApplicationRemoved">
                     </appsco-oauth-applications-page>
 
-                    <appsco-statistics-page name="statistics" page="" company-page="" id="appscoStatisticsPage" company-api="[[ _companyApi ]]" authorization-token="[[ authorizationToken ]]" disable-upgrade\$="[[!_applicationsApi]]"></appsco-statistics-page>
+                    <appsco-statistics-page name="statistics" page="" company-page="" id="appscoStatisticsPage" company-api="[[ _companyApi ]]" authorization-token="[[ authorizationToken ]]">
+                    </appsco-statistics-page>
 
                     <appsco-reports-page name="reports" page="" company-page="" id="appscoReportsPage" get-access-report-api="[[ _getAccessReportApi ]]" get-policies-api="[[ _companyPoliciesApi ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoReportsPageActions ]]" on-open-access-report="_showAccessReportPage" on-open-compliance-report="_showComplianceReportPage" on-open-policies-report="_showPoliciesReportPage">
                     </appsco-reports-page>
@@ -938,6 +983,10 @@ class AppscoApp extends mixinBehaviors([
                 type: Boolean,
                 notify: true,
                 value: false
+            },
+
+            tutorialResponse: {
+                type: Object
             }
         }
     }
@@ -1052,6 +1101,13 @@ class AppscoApp extends mixinBehaviors([
         }
 
         return '';
+    }
+
+    onShareResourceDialogAccountsLoadedChanged(event) {
+        this.shareResourceDialogAccountsLoaded = event.detail.loaded;
+        if (event.detail.loaded) {
+            this._hideProgressBar();
+        }
     }
 
     _onAccountChanged() {

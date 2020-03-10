@@ -141,36 +141,36 @@ class AppscoTutorialAddCompanyUser extends mixinBehaviors([
     getPopperConfig() {
         return {
             step1: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step2: {
-                reference: '* /deep/ #menuCompanyDirectoryText',
-                coverTarget: '* /deep/ #menuContainer',
+                reference: [ '#menuCompanyDirectoryText' ],
+                coverTarget: [ '#menuContainer' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step3: {
-                reference: '* /deep/ #addAccountAction',
-                coverTarget: '* /deep/ #addAccountAction',
+                reference: [ '#appscoDirectoryPageActions', '#appscoDirectoryActions', '#addAccountAction' ],
+                coverTarget: [ '#appscoDirectoryPageActions', '#appscoDirectoryActions', '#addAccountAction' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step4: {
-                reference: '* /deep/ #addAccountDialogButton',
-                coverTarget: '* /deep/ #addAccountDialog',
+                reference: [ '#appscoDirectoryPage', '#appscoDirectoryAccountAdd', '#addAccountDialog #addAccountDialogButton' ],
+                coverTarget: [ '#appscoDirectoryPage', '#appscoDirectoryAccountAdd', '#addAccountDialog' ],
                 popperOptions: {
                     placement: 'bottom'
                 }
             },
             step5: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
@@ -185,7 +185,7 @@ class AppscoTutorialAddCompanyUser extends mixinBehaviors([
                 if (attempts > 100) {
                     return;
                 }
-                const element = this._querySelector('* /deep/ #addAccountAction');
+                const element = this._querySelector([ '#appscoDirectoryPageActions', '#appscoDirectoryActions', '#addAccountAction' ]);
                 if (!element || this.page !== 'directory' || !this.directoryPageLoaded) {
                     setTimeout(handleFunction, 200);
                     return;

@@ -166,7 +166,13 @@ class AppscoDirectoryPageActions extends mixinBehaviors([NeonAnimatableBehavior]
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <div class="page-actions" hidden\$="[[ !_displayActions ]]">
-            <appsco-directory-actions id="appscoDirectoryActions" authorization-token="[[ authorizationToken ]]" filter-api="[[ filterApi ]]" business="" on-search-icon="_onSearchIcon" on-close-search="_closeSearch"></appsco-directory-actions>
+            <appsco-directory-actions business=""
+                id="appscoDirectoryActions"
+                authorization-token="[[ authorizationToken ]]"
+                filter-api="[[ filterApi ]]"
+                on-search-icon="_onSearchIcon"
+                on-close-search="_closeSearch">
+            </appsco-directory-actions>
 
             <appsco-page-global id="appscoPageGlobal" info="" filters=""></appsco-page-global>
         </div>
