@@ -242,7 +242,13 @@ class AppscoResourcesPage extends mixinBehaviors([
         <appsco-company-sso-application-add id="appscoCompanySSOApplicationsAdd" authorization-token="[[ authorizationToken ]]" applications-template-api="[[ applicationsTemplateApi ]]" add-application-api="[[ companyApplicationsApi ]]" link="[[ link ]]" item="[[ item ]]" on-application-added="_onCompanyApplicationAdded" on-application-claims-updated="_onCompanyApplicationClaimsUpdated">
         </appsco-company-sso-application-add>
 
-        <appsco-share-resource id="appscoShareResource" authorization-token="[[ authorizationToken ]]" get-roles-api="[[ companyRolesApi ]]" get-contacts-api="[[ companyContactsApi ]]" get-groups-api="[[ groupsApi ]]" api-errors="[[ apiErrors ]]">
+        <appsco-share-resource 
+            id="appscoShareResource"
+            authorization-token="[[ authorizationToken ]]"
+            get-roles-api="[[ companyRolesApi ]]"
+            get-contacts-api="[[ companyContactsApi ]]"
+            get-groups-api="[[ groupsApi ]]"
+            api-errors="[[ apiErrors ]]">
         </appsco-share-resource>
 
         <appsco-import-resources id="appscoImportResources" authorization-token="[[ authorizationToken ]]" import-api="[[ companyImportResourcesApi ]]" on-import-finished="_onImportCompanyResourcesFinished">

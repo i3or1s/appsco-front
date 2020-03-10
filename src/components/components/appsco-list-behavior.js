@@ -1,20 +1,18 @@
 import '@polymer/polymer/polymer-legacy.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
+import '../../lib/mixins/appsco-headers-mixin.js';
 import '@polymer/neon-animation/animations/cascaded-animation.js';
 import '@polymer/neon-animation/animations/slide-from-left-animation.js';
 
 /**
  * @polymerBehavior
  */
-export const AppscoListBehavior = {
+export const AppscoListBehavior = [
+    NeonAnimationRunnerBehavior,
+    Appsco.HeadersMixin, {
     properties: {
 
         type: {
-            type: String,
-            value: ''
-        },
-
-        authorizationToken: {
             type: String,
             value: ''
         },
@@ -50,11 +48,6 @@ export const AppscoListBehavior = {
             value: function() {
                 return {};
             }
-        },
-
-        _headers: {
-            type: Object,
-            computed: '_computeHeaders(authorizationToken)'
         },
 
         _listApi: {
@@ -182,12 +175,7 @@ export const AppscoListBehavior = {
         }
     },
 
-    behaviors: [
-        NeonAnimationRunnerBehavior
-    ],
-
     reset: function() {
-
         if (0 < this._allListItems.length) {
             this._hideMessage();
             this.set('_listItems', JSON.parse(JSON.stringify(this._allListItems)));
@@ -216,10 +204,10 @@ export const AppscoListBehavior = {
     },
 
     getFirstSelectedItem: function() {
-        var items = JSON.parse(JSON.stringify(this._listItems)),
-            length = items.length;_filterType = ''
+        const items = JSON.parse(JSON.stringify(this._listItems)),
+            length = items.length;
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             if (items[i].selected) {
                 return items[i];
             }
@@ -229,19 +217,19 @@ export const AppscoListBehavior = {
     },
 
     getSelectedItems: function() {
-        var listItems = JSON.parse(JSON.stringify(this._listItems)),
+        const listItems = JSON.parse(JSON.stringify(this._listItems)),
             length = listItems.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length,
             selectedItems = [];
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             if (listItems[i].selected) {
                 selectedItems.push(listItems[i]);
             }
         }
 
-        for (var j = 0; j < allLength; j++) {
+        for (let j = 0; j < allLength; j++) {
             if (allListItems[j].selected) {
                 selectedItems.push(allListItems[j]);
             }
@@ -259,7 +247,7 @@ export const AppscoListBehavior = {
     },
 
     addItems: function(items) {
-        var length = items.length,
+        const length = items.length,
             currentItems = JSON.parse(JSON.stringify(this._listItems)),
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length;
@@ -268,8 +256,8 @@ export const AppscoListBehavior = {
         this._renderedIndex = length - 1;
         this._hideMessage();
 
-        for (var i = 0; i < length; i++) {
-            var item = items[i];
+        for (let i = 0; i < length; i++) {
+            const item = items[i];
 
             if (0 === allLength) {
                 item.activated = false;
@@ -279,9 +267,7 @@ export const AppscoListBehavior = {
                 this._totalListItems++;
             }
             else {
-
-                for (var j = 0; j < allLength; j++) {
-
+                for (let j = 0; j < allLength; j++) {
                     if (allListItems[j].self === item.self) {
                         break;
                     }
@@ -292,7 +278,6 @@ export const AppscoListBehavior = {
                         allListItems.unshift(item);
                         this._totalListItems++;
                     }
-
                 }
             }
         }
@@ -305,23 +290,23 @@ export const AppscoListBehavior = {
     },
 
     modifyItems: function(items) {
-        var currentItems = JSON.parse(JSON.stringify(this._listItems)),
+        const currentItems = JSON.parse(JSON.stringify(this._listItems)),
             length = currentItems.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length,
             lengthModify = items.length;
 
-        for (var i = 0; i < lengthModify; i++) {
-            var item = items[i];
+        for (let i = 0; i < lengthModify; i++) {
+            const item = items[i];
 
-            for (var j = 0; j < length; j++) {
+            for (let j = 0; j < length; j++) {
                 if (item.self === currentItems[j].self) {
                     currentItems[j] = item;
                     break;
                 }
             }
 
-            for (var k = 0; k < allLength; k++) {
+            for (let k = 0; k < allLength; k++) {
                 if (item.self === allListItems[k].self) {
                     item.activated = allListItems[k].activated;
                     item.selected = allListItems[k].selected;
@@ -329,7 +314,6 @@ export const AppscoListBehavior = {
                     break;
                 }
             }
-
         }
 
         this.set('_listItems', []);
@@ -340,16 +324,16 @@ export const AppscoListBehavior = {
     },
 
     removeItems: function(items) {
-        var currentItems = JSON.parse(JSON.stringify(this._listItems)),
+        const currentItems = JSON.parse(JSON.stringify(this._listItems)),
             length = currentItems.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length,
             lengthModify = items.length;
 
-        for (var i = 0; i < lengthModify; i++) {
-            var item = items[i];
+        for (let i = 0; i < lengthModify; i++) {
+            const item = items[i];
 
-            for (var j = 0; j < length; j++) {
+            for (let j = 0; j < length; j++) {
                 if (item.self === currentItems[j].self) {
                     currentItems.splice(j, 1);
                     j--;
@@ -357,7 +341,7 @@ export const AppscoListBehavior = {
                 }
             }
 
-            for (var k = 0; k < allLength; k++) {
+            for (let k = 0; k < allLength; k++) {
                 if (item.self === allListItems[k].self) {
                     allListItems.splice(k, 1);
                     k--;
@@ -366,7 +350,6 @@ export const AppscoListBehavior = {
             }
 
             this._totalListItems--;
-
         }
 
 
@@ -391,19 +374,19 @@ export const AppscoListBehavior = {
     },
 
     deactivateItem: function(item) {
-        var items = JSON.parse(JSON.stringify(this._listItems)),
+        const items = JSON.parse(JSON.stringify(this._listItems)),
             length = items.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length;
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             if (item.self === items[i].self) {
                 items[i].activated = false;
                 break;
             }
         }
 
-        for (var j = 0; j < allLength; j++) {
+        for (let j = 0; j < allLength; j++) {
             if (item.self === allListItems[j].self) {
                 allListItems[j].activated = false;
                 break;
@@ -418,16 +401,16 @@ export const AppscoListBehavior = {
     },
 
     selectAllItems: function() {
-        var items = JSON.parse(JSON.stringify(this._listItems)),
+        const items = JSON.parse(JSON.stringify(this._listItems)),
             length = items.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length;
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             items[i].selected = true;
         }
 
-        for (var j = 0; j < allLength; j++) {
+        for (let j = 0; j < allLength; j++) {
             allListItems[j].selected = true;
         }
 
@@ -439,16 +422,16 @@ export const AppscoListBehavior = {
     },
 
     deselectAllItems: function() {
-        var items = JSON.parse(JSON.stringify(this._listItems)),
+        const items = JSON.parse(JSON.stringify(this._listItems)),
             length = items.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length;
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             items[i].selected = false;
         }
 
-        for (var j = 0; j < allLength; j++) {
+        for (let j = 0; j < allLength; j++) {
             allListItems[j].selected = false;
         }
 
@@ -460,17 +443,17 @@ export const AppscoListBehavior = {
     },
 
     resetAllItems: function() {
-        var items = JSON.parse(JSON.stringify(this._listItems)),
+        const items = JSON.parse(JSON.stringify(this._listItems)),
             length = items.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length;
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             items[i].activated = false;
             items[i].selected = false;
         }
 
-        for (var j = 0; j < allLength; j++) {
+        for (let j = 0; j < allLength; j++) {
             allListItems[j].activated = false;
             allListItems[j].selected = false;
         }
@@ -487,16 +470,16 @@ export const AppscoListBehavior = {
     },
 
     setOrgunit: function(orgunit) {
-        var items = JSON.parse(JSON.stringify(this._listItems)),
+        const items = JSON.parse(JSON.stringify(this._listItems)),
             length = items.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length;
 
-        for (var i = 0; i < length; i++) {
-            var orgunits = items[i].org_units,
+        for (let i = 0; i < length; i++) {
+            const orgunits = items[i].org_units,
                 length = orgunits.length;
 
-            for (var j = 0; j < length; j++) {
+            for (let j = 0; j < length; j++) {
 
                 if (orgunit.alias === orgunits[j].alias) {
                     items[i].org_units[j].name = orgunit.name;
@@ -505,11 +488,11 @@ export const AppscoListBehavior = {
             }
         }
 
-        for (var j = 0; j < allLength; j++) {
-            var orgunits = allListItems[j].org_units,
+        for (let j = 0; j < allLength; j++) {
+            const orgunits = allListItems[j].org_units,
                 length = orgunits.length;
 
-            for (var k = 0; k < length; k++) {
+            for (let k = 0; k < length; k++) {
                 if (orgunit.alias === orgunits[k].alias) {
                     allListItems[j].org_units[k].name = orgunit.name;
                     break;
@@ -540,19 +523,11 @@ export const AppscoListBehavior = {
     },
 
     setSort: function(sort) {
-
-        for (var key in sort) {
-
+        for (const key in sort) {
             if (sort[key] !== this._sort[key]) {
                 this.set('_sort', sort);
                 break;
             }
-        }
-    },
-
-    _computeHeaders: function (authorizationToken) {
-        return {
-            'Authorization': 'token ' + authorizationToken
         }
     },
 
@@ -584,26 +559,19 @@ export const AppscoListBehavior = {
     },
 
     _computeTypeDisplay: function(type) {
-
         switch (type) {
             case 'integration-rule':
                 return 'integration rule';
-
             case 'integration-webhook':
                 return 'integration web hook';
-
             case 'integration-template':
                 return 'integration template';
-
             case 'policy':
                 return 'policie';
-
             case 'access-on-boarding-user':
                 return 'unresolved access on-boarding event';
-
             case 'policy-report':
                 return 'broken policie';
-
             default:
                 return type;
         }
@@ -660,7 +628,7 @@ export const AppscoListBehavior = {
     },
 
     _abortPreviousRequest: function() {
-        var getListApiRequest = this.$.getListApiRequest;
+        const getListApiRequest = this.$.getListApiRequest;
 
         if (getListApiRequest.lastRequest) {
             getListApiRequest.lastRequest.abort();
@@ -679,8 +647,7 @@ export const AppscoListBehavior = {
     },
 
     _clearListLoaders: function() {
-        
-        for (var idx in this._listLoaders) {
+        for (const idx in this._listLoaders) {
             clearTimeout(this._listLoaders[idx]);
         }
 
@@ -703,17 +670,17 @@ export const AppscoListBehavior = {
     },
 
     _removeDuplicatesFromArray: function(arr, prop) {
-        var length = arr.length,
+        const length = arr.length,
             obj = {},
             resultArray = [];
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             if (!obj[arr[i][prop]]) {
                 obj[arr[i][prop]] = arr[i];
             }
         }
 
-        for (var key in obj) {
+        for (const key in obj) {
             resultArray.push(obj[key]);
         }
 
@@ -721,7 +688,6 @@ export const AppscoListBehavior = {
     },
 
     _onListApiChanged: function(listApi) {
-
         if (listApi && !this.noAutoLoad) {
             this._loadItems();
         }
@@ -734,7 +700,6 @@ export const AppscoListBehavior = {
     },
 
     _onGetListError: function(event) {
-
         if (!event.detail.request.aborted) {
             this._showMessage(this.apiErrors.getError(404));
         }
@@ -744,68 +709,55 @@ export const AppscoListBehavior = {
     },
 
     _onGetListResponse: function(event) {
-        var response = event.detail.response,
-            meta = response && response.meta ? response.meta : {},
-            itemList;
+        const response = event.detail.response,
+            meta = response && response.meta ? response.meta : {};
+
+        let itemList;
 
         switch (this.type) {
             case 'resource':
                 itemList = response.applications ? response.applications : [];
                 break;
-
             case 'account':
             case 'policy-report':
                 itemList = response.company_roles ? response.company_roles : [];
                 break;
-
             case 'contact':
                 itemList = response.contacts ? response.contacts : [];
                 break;
-
             case 'group':
                 itemList = response.company_groups ? response.company_groups : [];
                 break;
-
             case 'customer':
                 itemList = response.customers ? response.customers : [];
                 break;
-
             case 'integration':
                 itemList = response.active_integrations ? response.active_integrations : [];
                 break;
-
             case 'integration-rule':
                 itemList = response.integration_recipes ? response.integration_recipes : [];
                 break;
-
             case 'oauth-applications':
                 itemList = response.applications ? response.applications : [];
                 break;
-
             case 'integration-webhook':
                 itemList = response.web_hooks ? response.web_hooks : [];
                 break;
-
             case 'integration-template':
                 itemList = response.templates ? response.templates : [];
                 break;
-
             case 'certificate':
                 itemList = response.certificates ? response.certificates : [];
                 break;
-
             case 'folder':
                 itemList = response.groups ? response.groups : [];
                 break;
-
             case 'policy':
                 itemList = response.policies ? response.policies : [];
                 break;
-
             case 'access-on-boarding-user':
                 itemList = response.items ? response.items : [];
                 break;
-
             default:
                 itemList = [];
         }
@@ -873,19 +825,19 @@ export const AppscoListBehavior = {
     },
 
     _onListItemAction: function(event) {
-        var items = JSON.parse(JSON.stringify(this._listItems)),
+        const items = JSON.parse(JSON.stringify(this._listItems)),
             length = items.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length,
             selectedListItem = event.detail.item;
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             items[i].activated =
                 (selectedListItem.self === items[i].self) ?
                     selectedListItem.activated : false;
         }
 
-        for (var j = 0; j < allLength; j++) {
+        for (let j = 0; j < allLength; j++) {
             allListItems[j].activated =
                 (selectedListItem.self === allListItems[j].self) ?
                     selectedListItem.activated : false;
@@ -899,20 +851,20 @@ export const AppscoListBehavior = {
     },
 
     _onSelectListItemAction: function(event) {
-        var items = JSON.parse(JSON.stringify(this._listItems)),
+        const items = JSON.parse(JSON.stringify(this._listItems)),
             length = items.length,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length,
             selectedListItem = event.detail.item;
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             if (selectedListItem.self === items[i].self) {
                 items[i].selected = selectedListItem.selected;
                 break;
             }
         }
 
-        for (var j = 0; j < allLength; j++) {
+        for (let j = 0; j < allLength; j++) {
             if (selectedListItem.self === allListItems[j].self) {
                 allListItems[j].selected = selectedListItem.selected;
                 break;
@@ -940,9 +892,8 @@ export const AppscoListBehavior = {
     },
 
     _getItems: function(url) {
-
         return new Promise(function(resolve, reject) {
-            var request = document.createElement('iron-request'),
+            const request = document.createElement('iron-request'),
                 options = {
                     url: url,
                     method: 'GET',
@@ -951,63 +902,48 @@ export const AppscoListBehavior = {
                 };
 
             request.send(options).then(function() {
-
                 if (request.response) {
-
                     switch (this.type) {
                         case 'resource':
                             resolve(request.response.applications);
                             break;
-
                         case 'account':
                         case 'policy-report':
                             resolve(request.response.company_roles);
                             break;
-
                         case 'contact':
                             resolve(request.response.contacts);
                             break;
-
                         case 'group':
                             resolve(request.response.company_groups);
                             break;
-
                         case 'customer':
                             resolve(request.response.customers);
                             break;
-
                         case 'integration':
                             resolve(request.response.active_integrations);
                             break;
-
                         case 'integration-rule':
                             resolve(request.response.integration_recipes);
                             break;
-
                         case 'integration-webhook':
                             resolve(request.response.web_hooks);
                             break;
-
                         case 'integration-template':
                             resolve(request.response.templates);
                             break;
-
                         case 'certificate':
                             resolve(request.response.certificates);
                             break;
-
                         case 'folder':
                             resolve(request.response.groups);
                             break;
-
                         case 'policy':
                             resolve(request.response.policies);
                             break;
-
                         case 'access-on-boarding-user':
                             resolve(request.response.items);
                             break;
-
                         default:
                             reject('Something went wrong. Please contact AppsCo support.');
                     }
@@ -1020,29 +956,24 @@ export const AppscoListBehavior = {
     },
 
     _getFilterItemsByGroupApi: function(group) {
-        var url = '';
+        let url = '';
 
         switch (this.type) {
             case 'resource':
                 url = group.meta.applications;
                 break;
-
             case 'account':
                 url = group.meta.company_roles;
                 break;
-
             case 'contact':
                 url = group.meta.contacts;
                 break;
-
             case 'group':
                 url = group.meta.company_groups;
                 break;
-
             case 'customer':
                 url = group.meta.customers;
                 break;
-
             default:
                 return null;
         }
@@ -1051,7 +982,7 @@ export const AppscoListBehavior = {
     },
 
     _filterByGroup: function() {
-        var group = this._filterGroup,
+        const group = this._filterGroup,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
             allLength = allListItems.length,
             filterTermLength = this._filterTerm.length;
@@ -1066,14 +997,14 @@ export const AppscoListBehavior = {
             this._listEmpty = false;
 
             if (this._filterTerm && filterTermLength >= this.minSearchTermLength) {
-                var searchedListItems = this._searchedListItems,
+                const searchedListItems = this._searchedListItems,
                     searchedListItemsLength = searchedListItems.length;
 
-                for (var i = 0; i < searchedListItemsLength; i++) {
-                    var searchedListItem = searchedListItems[i];
+                for (let i = 0; i < searchedListItemsLength; i++) {
+                    const searchedListItem = searchedListItems[i];
 
-                    for (var j = 0; j < allLength; j++) {
-                        var item = allListItems[j];
+                    for (let j = 0; j < allLength; j++) {
+                        const item = allListItems[j];
 
                         if (searchedListItem.self === item.self) {
                             this.push('_listItems', item);
@@ -1099,11 +1030,10 @@ export const AppscoListBehavior = {
         }
 
         this._getItems(this._getFilterItemsByGroupApi(group)).then(function(items) {
-            var itemsLength = items.length,
+            const itemsLength = items.length,
                 searchedListItems = this._searchedListItems,
                 searchedListItemsLength = searchedListItems.length,
-                responseListItems = [],
-                responseListItemsLength;
+                responseListItems = [];
 
             if (0 === itemsLength) {
                 this._showMessage('There are no ' + this._typeDisplay + 's in ' + group.name + ' group.');
@@ -1114,14 +1044,12 @@ export const AppscoListBehavior = {
             this._listEmpty = false;
 
             if (this._filterTerm && filterTermLength >= this.minSearchTermLength) {
-
                 items.forEach(function(item, index) {
+                    for (let i = 0; i < searchedListItemsLength; i++) {
+                        const searchedListItem = searchedListItems[i];
 
-                    for (var i = 0; i < searchedListItemsLength; i++) {
-                        var searchedListItem = searchedListItems[i];
-
-                        for (var j = 0; j < allLength; j++) {
-                            var aItem = allListItems[j];
+                        for (let j = 0; j < allLength; j++) {
+                            const aItem = allListItems[j];
 
                             if (searchedListItem.self === item.self && searchedListItem.self === aItem.self) {
                                 responseListItems.push(aItem);
@@ -1136,7 +1064,7 @@ export const AppscoListBehavior = {
 
                 }.bind(this));
 
-                responseListItemsLength = responseListItems.length;
+                const responseListItemsLength = responseListItems.length;
 
                 if (0 === responseListItemsLength) {
                     this._showMessage('There are no ' + this._typeDisplay + 's with asked term in ' + group.name + ' group.');
@@ -1144,19 +1072,17 @@ export const AppscoListBehavior = {
                     return false;
                 }
 
-                for (var k = 0; k < responseListItemsLength; k++) {
-                    var responseListItem = responseListItems[k],
+                for (let k = 0; k < responseListItemsLength; k++) {
+                    const responseListItem = responseListItems[k],
                         groups = responseListItem.groups,
                         groupsLength = groups.length;
 
-                    for (var j = 0; j < groupsLength; j++) {
-
+                    for (let j = 0; j < groupsLength; j++) {
                         if (groups[j].alias === group.alias) {
                             this.push('_listItems', responseListItem);
                             this._listItems = JSON.parse(JSON.stringify(this._listItems));
                             break;
                         }
-
                     }
 
                     if (k === responseListItemsLength - 1) {
@@ -1165,11 +1091,9 @@ export const AppscoListBehavior = {
                 }
             }
             else {
-
                 items.forEach(function(item, index) {
-
-                    for (var i = 0; i < allLength; i++) {
-                        var currentListItem = allListItems[i];
+                    for (let i = 0; i < allLength; i++) {
+                        const currentListItem = allListItems[i];
 
                         if (item.self === currentListItem.self) {
                             this.push('_listItems', currentListItem);
@@ -1177,7 +1101,6 @@ export const AppscoListBehavior = {
                             break;
                         }
                         else {
-
                             if (i === allLength - 1) {
                                 this.push('_listItems', item);
                                 this._listItems = JSON.parse(JSON.stringify(this._listItems));
@@ -1188,16 +1111,14 @@ export const AppscoListBehavior = {
                     if (index === itemsLength - 1) {
                         this._hideProgressBar();
                     }
-
                 }.bind(this));
             }
-
             this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
         }.bind(this));
     },
 
     _filterByTerm: function() {
-        var term = this._filterTerm,
+        const term = this._filterTerm,
             length = this._allListItems.length,
             filterOrgunit = this._filterOrgunit,
             filterGroup = this._filterGroup,
@@ -1230,7 +1151,7 @@ export const AppscoListBehavior = {
         this._hideLoadMoreAction();
 
         this._getItems(this._searchListApi).then(function(items) {
-            var itemsLength = items.length;
+            const itemsLength = items.length;
 
             this.set('_searchedListItems', items);
             this._setSearchListItemsResult();
@@ -1256,8 +1177,8 @@ export const AppscoListBehavior = {
 
                 items.forEach(function(elem, index) {
 
-                    for (var i = 0; i < length; i++) {
-                        var item = this._allListItems[i];
+                    for (let i = 0; i < length; i++) {
+                        const item = this._allListItems[i];
 
                         if (elem.self === item.self) {
                             this.push('_listItems', item);
@@ -1265,7 +1186,6 @@ export const AppscoListBehavior = {
                             break;
                         }
                         else {
-
                             if (i === length - 1) {
                                 this.push('_listItems', elem);
                                 this._listItems = JSON.parse(JSON.stringify(this._listItems));
@@ -1279,13 +1199,12 @@ export const AppscoListBehavior = {
 
                 }.bind(this));
             }
-
             this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
         }.bind(this));
     },
 
     _filterByOrgunit: function() {
-        var filterOrgunit = this._filterOrgunit,
+        const filterOrgunit = this._filterOrgunit,
             orgunit = filterOrgunit.orgUnit,
             selected = filterOrgunit.selected,
             allListItems = JSON.parse(JSON.stringify(this._allListItems)),
@@ -1301,14 +1220,14 @@ export const AppscoListBehavior = {
             this._setLoadMoreAction();
 
             if (this._filterTerm && filterTermLength >= this.minSearchTermLength) {
-                var searchedListItems = this._searchedListItems,
+                let searchedListItems = this._searchedListItems,
                     searchedListItemsLength = searchedListItems.length;
 
-                for (var i = 0; i < searchedListItemsLength; i++) {
-                    var searchedListItem = searchedListItems[i];
+                for (let i = 0; i < searchedListItemsLength; i++) {
+                    const searchedListItem = searchedListItems[i];
 
-                    for (var j = 0; j < allLength; j++) {
-                        var res = allListItems[j];
+                    for (let j = 0; j < allLength; j++) {
+                        const res = allListItems[j];
 
                         if (searchedListItem.self === res.self) {
                             this.push('_listItems', allListItems[j]);
@@ -1331,47 +1250,42 @@ export const AppscoListBehavior = {
             this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
         }
         else {
-            var searchedListItemsLength = this._searchedListItems.length,
+            const searchedListItemsLength = this._searchedListItems.length,
                 listItemsWithSelectedOrgunit = [];
 
             this._hideLoadMoreAction();
 
-            for (var i = 0; i < allLength; i++) {
-                var item = this._allListItems[i],
+            for (let i = 0; i < allLength; i++) {
+                const item = this._allListItems[i],
                     orgunits = item.org_units,
                     orgunitsLength = orgunits.length;
 
-                for (var j = 0; j < orgunitsLength; j++) {
-
+                for (let j = 0; j < orgunitsLength; j++) {
                     if (orgunits[j].alias === orgunit.alias) {
                         listItemsWithSelectedOrgunit.push(item);
                         break;
                     }
-
                 }
-
                 if (i === allLength -1) {
                     this._hideProgressBar();
                 }
             }
 
             if (this._filterTerm && filterTermLength >= this.minSearchTermLength) {
-                var searchedListItems = this._searchedListItems,
-                    responseListItems = [],
-                    responseListItemsLength;
+                const searchedListItems = this._searchedListItems,
+                    responseListItems = [];
 
-                for (var i = 0; i < searchedListItemsLength; i++) {
-                    var item = searchedListItems[i];
+                for (let i = 0; i < searchedListItemsLength; i++) {
+                    const item = searchedListItems[i];
 
-                    for (var j = 0; j < allLength; j++) {
-                        var res = allListItems[j];
+                    for (let j = 0; j < allLength; j++) {
+                        const res = allListItems[j];
 
                         if (item.self === res.self) {
                             responseListItems.push(res);
                             break;
                         }
                         else {
-
                             if (j === allLength - 1) {
                                 responseListItems.push(item);
                             }
@@ -1379,15 +1293,14 @@ export const AppscoListBehavior = {
                     }
                 }
 
-                responseListItemsLength = responseListItems.length;
+                const responseListItemsLength = responseListItems.length;
 
-                for (var k = 0; k < responseListItemsLength; k++) {
-                    var item = responseListItems[k],
+                for (let k = 0; k < responseListItemsLength; k++) {
+                    const item = responseListItems[k],
                         orgunits = item.org_units,
                         orgunitsLength = orgunits.length;
 
-                    for (var j = 0; j < orgunitsLength; j++) {
-
+                    for (let j = 0; j < orgunitsLength; j++) {
                         if (orgunits[j].alias === orgunit.alias) {
                             this.push('_listItems', item);
                             this._listItems = JSON.parse(JSON.stringify(this._listItems));
@@ -1406,7 +1319,6 @@ export const AppscoListBehavior = {
             }
 
             if (0 === this._listItems.length) {
-
                 (0 < listItemsWithSelectedOrgunit.length) ?
                     this._showMessage('There are no ' + this._typeDisplay + 's with asked term in ' + orgunit.name +' organization unit.') :
                     this._showMessage('There are no ' + this._typeDisplay + 's in ' + orgunit.name +' organization unit.');
@@ -1419,14 +1331,13 @@ export const AppscoListBehavior = {
     },
 
     _onItemsDomChange: function() {
-        var index = this._renderedIndex;
+        const index = this._renderedIndex;
 
-        if (-1 != index && this.company) {
-
+        if (-1 !== index && this.company) {
             this.animationConfig.entry.nodes = [];
 
-            for (var i = 0; i <= index; i++) {
-                var addedItem = this.shadowRoot.getElementById('appscoListItem_' + i);
+            for (let i = 0; i <= index; i++) {
+                const addedItem = this.shadowRoot.getElementById('appscoListItem_' + i);
                 this.animationConfig.entry.nodes.push(addedItem);
             }
 
@@ -1434,6 +1345,5 @@ export const AppscoListBehavior = {
 
             this._renderedIndex = -1;
         }
-
     }
-};
+}];

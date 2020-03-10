@@ -2,6 +2,8 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/paper-styles/shadow.js';
 import '@polymer/iron-ajax/iron-request.js';
 import './components/get-started/appsco-tutorial-card.js';
+import './components/page/appsco-page-styles';
+import './components/page/appsco-content.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
@@ -12,6 +14,11 @@ class AppscoGetStartedPage extends mixinBehaviors([NeonAnimatableBehavior], Poly
     static get template() {
         return html`
         <style include="appsco-page-styles">
+            :host {
+                --item-basic-info: {
+                    padding: 0 10px;
+                };
+            }
             :host .tutorials-holder {
                 margin-left: 12%;
                 margin-right: 12%;
@@ -31,12 +38,10 @@ class AppscoGetStartedPage extends mixinBehaviors([NeonAnimatableBehavior], Poly
                 padding: 2px;
             }
         </style>
-
+        
         <appsco-content id="appscoContent">
-
-            <div content="">
+            <div content="" slot="content">
                 <div class="content-container">
-
                     <div class="get-started-header">
                         <h1>Welcome to AppsCo Business!</h1>
                         <p>Let's guide you through the company setup.</p>
@@ -45,14 +50,16 @@ class AppscoGetStartedPage extends mixinBehaviors([NeonAnimatableBehavior], Poly
 
                     <div class="tutorials-holder">
                         <template is="dom-repeat" items="[[ tutorialsArray ]]">
-                            <appsco-tutorial-card tutorial="[[ item ]]" index="[[ index ]]" first-unfinished-index="[[ firstUnfinishedIndex ]]" on-start="_onTutorialStart"></appsco-tutorial-card>
+                            <appsco-tutorial-card 
+                                tutorial="[[ item ]]" 
+                                index="[[ index ]]" 
+                                first-unfinished-index="[[ firstUnfinishedIndex ]]">
+                            </appsco-tutorial-card>
                         </template>
                     </div>
                 </div>
             </div>
-
-        </appsco-content>
-`;
+        </appsco-content>`;
     }
 
     static get is() { return 'appsco-get-started-page'; }
@@ -131,8 +138,8 @@ class AppscoGetStartedPage extends mixinBehaviors([NeonAnimatableBehavior], Poly
     }
 
     _computeTutorialsArray(tutorials) {
-        var tutsArray = [];
-        for(var idx in tutorials) {
+        const tutsArray = [];
+        for(const idx in tutorials) {
             if (tutorials.hasOwnProperty(idx)) {
                 tutsArray.push({
                     id: tutorials[idx].getId(),
@@ -154,8 +161,8 @@ class AppscoGetStartedPage extends mixinBehaviors([NeonAnimatableBehavior], Poly
     }
 
     _computeFirstUnfinishedIndex(tutorials) {
-        var index = 0;
-        for (var idx in this.tutorials) {
+        let index = 0;
+        for (const idx in this.tutorials) {
             if (this.tutorials.hasOwnProperty(idx) && !(tutorials[idx].isDone())) {
                 return index;
             }

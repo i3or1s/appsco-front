@@ -40,7 +40,6 @@ class AppscoCustomersPage extends mixinBehaviors([
         return html`
         <style include="appsco-page-styles">
             :host {
-
                 --details-label: {
                     font-size: 12px;
                 };

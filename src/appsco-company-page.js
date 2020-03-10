@@ -77,16 +77,54 @@ class AppscoCompanyPage extends mixinBehaviors([
                 <div class="content-container">
                     <neon-animated-pages class="flex" selected="[[ _selected ]]" attr-for-selected="name" on-neon-animation-finish="_onPageAnimationFinish">
 
-                        <appsco-company-components-page id="appscoCompanyComponentsPage" name="appsco-company-components-page" company="[[ company ]]" brand-logo="[[ brandLogo ]]" authorization-token="[[ authorizationToken ]]" domains-api="[[ _domainsApi ]]" on-loaded="_onPageLoaded" on-empty-load="_onPageLoaded" on-manage-company-settings="_onManageCompanySettings" on-manage-company-brand-settings="_onManageCompanyBrandSettings" on-manage-company-branded-login="_onManageCompanyBrandedLogin" on-manage-company-domains="_onManageCompanyDomains" on-manage-company-transfer-token="_onManageCompanyTransferToken" on-manage-company-idp-settings="_onManageCompanyIdPSettings">
+                        <appsco-company-components-page
+                            id="appscoCompanyComponentsPage"
+                            name="appsco-company-components-page"
+                            company="[[ company ]]"
+                            brand-logo="[[ brandLogo ]]"
+                            authorization-token="[[ authorizationToken ]]"
+                            domains-api="[[ _domainsApi ]]"
+                            on-loaded="_onPageLoaded"
+                            on-empty-load="_onPageLoaded"
+                            on-manage-company-settings="_onManageCompanySettings"
+                            on-manage-company-brand-settings="_onManageCompanyBrandSettings"
+                            on-manage-company-branded-login="_onManageCompanyBrandedLogin"
+                            on-manage-company-domains="_onManageCompanyDomains"
+                            on-manage-company-transfer-token="_onManageCompanyTransferToken"
+                            on-manage-company-idp-settings="_onManageCompanyIdPSettings">
                         </appsco-company-components-page>
 
-                        <appsco-company-settings-page name="appsco-company-settings-page" company="[[ company ]]" authorization-token="[[ authorizationToken ]]" settings-api="[[ _settingsApi ]]" save-ip-white-list-api="[[ saveIpWhiteListApi ]]" api-errors="[[ apiErrors ]]" on-company-settings-changed="_onSettingsChanged" on-back="_onResourceBack">
+                        <appsco-company-settings-page
+                            id="appscoCompanySettingsPage"
+                            name="appsco-company-settings-page"
+                            company="[[ company ]]"
+                            authorization-token="[[ authorizationToken ]]"
+                            settings-api="[[ _settingsApi ]]"
+                            save-ip-white-list-api="[[ saveIpWhiteListApi ]]"
+                            api-errors="[[ apiErrors ]]"
+                            on-company-settings-changed="_onSettingsChanged"
+                            on-back="_onResourceBack">
                         </appsco-company-settings-page>
 
-                        <appsco-company-brand-settings-page name="appsco-company-brand-settings-page" company="[[ company ]]" authorization-token="[[ authorizationToken ]]" settings-api="[[ _brandSettingsApi ]]" image-settings-api="[[ _imageSettingsApi ]]" dashboard-image-settings-api="[[ _dashboardImageSettingsApi ]]" on-company-brand-settings-changed="_onCompanyBrandSettingsChanged" on-back="_onResourceBack">
+                        <appsco-company-brand-settings-page
+                            id="appscoCompanyBrandSettingsPage"
+                            name="appsco-company-brand-settings-page"
+                            company="[[ company ]]"
+                            authorization-token="[[ authorizationToken ]]"
+                            settings-api="[[ _brandSettingsApi ]]"
+                            image-settings-api="[[ _imageSettingsApi ]]"
+                            dashboard-image-settings-api="[[ _dashboardImageSettingsApi ]]"
+                            on-company-brand-settings-changed="_onCompanyBrandSettingsChanged"
+                            on-back="_onResourceBack">
                         </appsco-company-brand-settings-page>
 
-                        <appsco-company-branded-login-page name="appsco-company-branded-login-page" company="[[ company ]]" authorization-token="[[ authorizationToken ]]" on-company-branded-login-changed="_showCompanyComponentsPage" on-back="_onResourceBack">
+                        <appsco-company-branded-login-page
+                            id="appscoCompanyBrandedLoginPage"
+                            name="appsco-company-branded-login-page"
+                            company="[[ company ]]"
+                            authorization-token="[[ authorizationToken ]]"
+                            on-company-branded-login-changed="_showCompanyComponentsPage"
+                            on-back="_onResourceBack">
                         </appsco-company-branded-login-page>
 
                         <appsco-company-manage-idp-settings-page id="appscoCompanyManageIdPSettingsPage" name="appsco-company-manage-idp-settings-page" company="[[ company ]]" authorization-token="[[ authorizationToken ]]" id-p-integrations-api="[[ _idPIntegrationsApi ]]" domains-api="[[ _domainsApi ]]" api-errors="[[ apiErrors ]]" on-company-settings-changed="_onSettingsChanged" on-deactivate-domain-idp-settings="_onDeactivateDomainIdPSettings" on-idp-certificate-add="_onAddIdpCertificate" on-idp-settings-saved="_onIdPSettingsSaved" on-back="_onResourceBack">
@@ -103,19 +141,28 @@ class AppscoCompanyPage extends mixinBehaviors([
             </div>
         </appsco-content>
 
-        <appsco-company-add-domain id="appscoCompanyAddDomain" authorization-token="[[ authorizationToken ]]" add-domain-api="[[ _domainsApi ]]" api-errors="[[ apiErrors ]]">
+        <appsco-company-add-domain
+            id="appscoCompanyAddDomain"
+            authorization-token="[[ authorizationToken ]]"
+            add-domain-api="[[ _domainsApi ]]"
+            api-errors="[[ apiErrors ]]">
         </appsco-company-add-domain>
 
         <appsco-company-add-certificate id="appscoCompanyAddCertificate"></appsco-company-add-certificate>
 
-        <appsco-company-remove-domain id="appscoCompanyRemoveDomain" authorization-token="[[ authorizationToken ]]">
+        <appsco-company-remove-domain
+            id="appscoCompanyRemoveDomain"
+            authorization-token="[[ authorizationToken ]]">
         </appsco-company-remove-domain>
 
         <appsco-company-domain-token id="appscoCompanyDomainToken"></appsco-company-domain-token>
 
-        <appsco-deactivate-idp-settings id="appscoDeactivateIdPSettings" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-idp-settings-deactivated="_onIdPSettingsDeactivated">
-        </appsco-deactivate-idp-settings>
-`;
+        <appsco-deactivate-idp-settings
+            id="appscoDeactivateIdPSettings"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]"
+            on-idp-settings-deactivated="_onIdPSettingsDeactivated">
+        </appsco-deactivate-idp-settings>`;
     }
 
     static get is() { return 'appsco-company-page'; }

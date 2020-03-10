@@ -6,6 +6,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import Popper from "popper.js";
 
 class AppscoTutorialIdentityProvider extends mixinBehaviors([
     AppscoTutorialBehaviour,
@@ -176,43 +177,43 @@ class AppscoTutorialIdentityProvider extends mixinBehaviors([
     getPopperConfig() {
         return {
             step1: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step2: {
-                reference: '* /deep/ #menuCompanySettingsText',
-                coverTarget: '* /deep/ #menuContainer',
+                reference: [ '#menuCompanySettingsText' ],
+                coverTarget: [ '#menuContainer' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step3: {
-                reference: '* /deep/ #companySettingsManageIdpCardBtn',
-                coverTarget: '* /deep/ #companySettingsManageIdpCard',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyComponentsPage', '#companySettingsManageIdpCardBtn' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyComponentsPage', '#companySettingsManageIdpCard' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step4: {
-                reference: '* /deep/ * /deep/ paper-button.manage-domain-action',
-                coverTarget: '* /deep/ * /deep/ paper-button.manage-domain-action',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyManageIdPSettingsPage', '#appscoCompanyIdPDomainsPage', '#appscoCompanyIdPDomains', 'appsco-company-idp-domain-item', 'paper-button.manage-domain-action' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyManageIdPSettingsPage', '#appscoCompanyIdPDomainsPage', '#appscoCompanyIdPDomains', 'appsco-company-idp-domain-item', 'paper-button.manage-domain-action' ],
                 popperOptions: {
                     placement: 'left-start'
                 }
             },
             step5: {
-                reference: '* /deep/ appsco-company-idp-settings /deep/ paper-button.submit-button',
-                coverTarget: '* /deep/ appsco-company-idp-settings-page',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyManageIdPSettingsPage', '#appscoCompanyIdPSettingsPage', '#appscoCompanyIdPSettings', 'paper-button.submit-button' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyManageIdPSettingsPage', '#appscoCompanyIdPSettingsPage' ],
                 popperOptions: {
                     placement: 'left'
                 }
             },
             step6: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
@@ -222,7 +223,7 @@ class AppscoTutorialIdentityProvider extends mixinBehaviors([
 
     step3(index, item, doneBuildingPopperHandler) {
         const handleFunction = function () {
-            const element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
+            const element = this._querySelector([ '#appscoCompanyPage', '#appscoCompanyComponentsPage' ]);
             if (this.page !== 'company') {
                 return;
             }
@@ -237,21 +238,21 @@ class AppscoTutorialIdentityProvider extends mixinBehaviors([
     }
 
     step4(index, item, doneBuildingPopperHandler) {
-        const closeElement = this._querySelector('* /deep/ appsco-company-idp-settings-page /deep/ paper-icon-button.page-close-action');
+        const closeElement = this._querySelector([ '#appscoCompanyPage', '#appscoCompanyManageIdPSettingsPage', '#appscoCompanyIdPSettingsPage', 'paper-icon-button.page-close-action' ]);
         if (closeElement) {
             closeElement.click();
         }
         const handleFunction = function () {
-            const element = this._querySelector('* /deep/ * /deep/ paper-button.manage-domain-action');
+            const element = this._querySelector([ '#appscoCompanyPage', '#appscoCompanyManageIdPSettingsPage', '#appscoCompanyIdPDomainsPage', '#appscoCompanyIdPDomains', 'appsco-company-idp-domain-item', 'paper-button.manage-domain-action' ]);
             if (this.page !== 'company') {
                 return;
             }
 
             if (this.companyDomainsLoaded && !element) {
-                const cover = this.buildCover(this._querySelector('* /deep/ div[content] /deep/ appsco-company-idp-domains-page')),
-                    failElement = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'),
-                    closeButton = this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial paper-button'),
-                    popper = new Popper(this._querySelector('* /deep/ #popper-fail-identity-provider-tutorial'), failElement, {
+                const cover = this.buildCover(this._querySelector([ '#appscoCompanyPage', '#appscoCompanyManageIdPSettingsPage',  '#appscoCompanyIdPDomainsPage' ])),
+                    failElement = this._querySelector([ '#appscoTutorial', '#identityProvider', '#popper-fail-identity-provider-tutorial' ]),
+                    closeButton = this._querySelector([ '#appscoTutorial', '#identityProvider', '#popper-fail-identity-provider-tutorial paper-button' ]),
+                    popper = new Popper(this._querySelector( [ '#appscoTutorial', '#identityProvider', '#popper-fail-identity-provider-tutorial' ]), failElement, {
                         placement: 'top-start'
                     }),
                     closeListener = function () {

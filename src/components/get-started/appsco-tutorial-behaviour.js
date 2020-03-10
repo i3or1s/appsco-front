@@ -1,5 +1,6 @@
 import '@polymer/polymer/polymer-legacy.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import Popper from "popper.js";
 
 /**
  * @polymerBehavior Polymer.AppscoTutorialBehaviour
@@ -65,7 +66,6 @@ export const AppscoTutorialBehaviour = {
             if(this.step !== index+1) return;
 
             if(typeof this['step'+(index+1)] === "function") {
-
                 this['step'+(index+1)](index, item, doneBuildingPopperHandler);
                 doneBuildingPopperHandler();
                 // Post step fire
@@ -79,19 +79,19 @@ export const AppscoTutorialBehaviour = {
     },
 
     handleStep: function(index, item, doneBuildingPopperHandler) {
-        var popperConfig = this.getPopperConfig();
-        var options = popperConfig['step'+(index+1)];
+        const popperConfig = this.getPopperConfig();
+        const options = popperConfig['step' + (index + 1)];
         if(options) {
-            var interval = setInterval(function(){
-                if(this._querySelector(options.coverTarget) &&
+            const interval = setInterval(function () {
+                if (this._querySelector(options.coverTarget) &&
                     this._querySelector(options.reference)
                 ) {
                     clearInterval(interval);
-                    this._createPopper(index+1, item, options);
+                    this._createPopper(index + 1, item, options);
                     doneBuildingPopperHandler();
                     // Post step fire
-                    if(typeof this['postStep'+(index+1)] === "function") {
-                        this['postStep'+(index+1)]();
+                    if (typeof this['postStep' + (index + 1)] === "function") {
+                        this['postStep' + (index + 1)]();
                     }
                 }
             }.bind(this), 200);
@@ -110,7 +110,7 @@ export const AppscoTutorialBehaviour = {
 
 
     _createPopper: function(index, elem, options) {
-        var cover = this.buildCover(this._querySelector(options.coverTarget), function(){
+        const cover = this.buildCover(this._querySelector(options.coverTarget), function () {
             this.reset();
         }.bind(this));
         Popper.Defaults.modifiers.computeStyle.gpuAcceleration = false;
@@ -125,8 +125,8 @@ export const AppscoTutorialBehaviour = {
             options.popperListenerBuilder(this);
             return;
         }
-        var me = this,
-            listener = function() {
+        const me = this,
+            listener = function () {
                 me.nextStep();
                 me._querySelector(options.reference).removeEventListener('click', listener);
             };
@@ -215,7 +215,7 @@ export const AppscoTutorialBehaviour = {
     },
 
     reset: function(){
-        for(var index in this.popperStep) {
+        for(const index in this.popperStep) {
             if(this.popperStep.hasOwnProperty(index)) {
                 this.popperStep[index].elem.hidden = true;
                 this.popperStep[index].cover.destroy();
@@ -250,15 +250,20 @@ export const AppscoTutorialBehaviour = {
         });
     },
 
-    _querySelector: function(selector) {
-        var elem = document.querySelector(selector.replace(/\/deep\//g, ''));
-        if(null === elem) {
-            try {
-                elem = document.querySelector(selector);
-            } catch(e) {
-                elem = null;
+    _querySelector: function(selectors) {
+        if (!Array.isArray(selectors)) {
+            return document.querySelector(selectors);
+        }
+        let element = document.querySelector('appsco-app');
+        for (let x = 0; x < selectors.length; x++) {
+            if (!element.shadowRoot) {
+                return null;
+            }
+            element = element.shadowRoot.querySelector(selectors[x]);
+            if (null === element) {
+                return null;
             }
         }
-        return elem;
+        return element;
     }
 };

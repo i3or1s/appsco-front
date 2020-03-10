@@ -29,9 +29,24 @@ class AppscoCompanyManageIdpSettingsPage extends mixinBehaviors([
 
         <neon-animated-pages class="flex" selected="[[ _selectedPage ]]" attr-for-selected="name" on-neon-animation-finish="_onPageAnimationFinish">
 
-            <appsco-company-idp-domains-page id="appscoCompanyIdPDomainsPage" name="appsco-company-idp-domains-page" domains-api="[[ domainsApi ]]" authorization-token="[[ authorizationToken ]]" on-manage="_onManageDomain"></appsco-company-idp-domains-page>
+            <appsco-company-idp-domains-page
+                id="appscoCompanyIdPDomainsPage"
+                name="appsco-company-idp-domains-page"
+                domains-api="[[ domainsApi ]]"
+                authorization-token="[[ authorizationToken ]]"
+                on-manage="_onManageDomain">
+            </appsco-company-idp-domains-page>
 
-            <appsco-company-idp-settings-page id="appscoCompanyIdPSettingsPage" name="appsco-company-idp-settings-page" company="[[ company ]]" id-p-integrations-api="[[ idPIntegrationsApi ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-idp-settings-saved="_onIdPSettingsSaved" on-back="_onBackIdPSettingsPage"></appsco-company-idp-settings-page>
+            <appsco-company-idp-settings-page
+                id="appscoCompanyIdPSettingsPage"
+                name="appsco-company-idp-settings-page"
+                company="[[ company ]]"
+                id-p-integrations-api="[[ idPIntegrationsApi ]]"
+                authorization-token="[[ authorizationToken ]]"
+                api-errors="[[ apiErrors ]]"
+                on-idp-settings-saved="_onIdPSettingsSaved"
+                on-back="_onBackIdPSettingsPage">
+            </appsco-company-idp-settings-page>
 
         </neon-animated-pages>
 `;

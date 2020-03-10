@@ -32,7 +32,10 @@ class AppscoProvisioningPage extends mixinBehaviors([
                     color: var(--primary-text-color);
                     width: 22px;
                     height: 22px;
-                };
+                };               
+                --item-basic-info: {
+                    padding: 0 10px;
+                }
             }
             :host .item-info {
                 padding: 0 10px;

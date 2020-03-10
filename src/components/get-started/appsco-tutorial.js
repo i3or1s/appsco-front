@@ -15,6 +15,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import Popper from "popper.js";
 
 class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.HeadersMixin], PolymerElement) {
     static get template() {
@@ -32,16 +33,74 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             }
         </style>
 
-        <appsco-tutorial-company-settings id="companyProfile" page="[[ currentPage ]]" on-tutorial-done="_onTutorialDone" on-tutorial-step-changed="_onStepChanged"></appsco-tutorial-company-settings>
-        <appsco-tutorial-company-branding id="companyBranding" page="[[ currentPage ]]" on-tutorial-done="_onTutorialDone" on-tutorial-step-changed="_onStepChanged"></appsco-tutorial-company-branding>
-        <appsco-tutorial-branded-login id="brandedLogin" page="[[ currentPage ]]" on-tutorial-done="_onTutorialDone" on-tutorial-step-changed="_onStepChanged"></appsco-tutorial-branded-login>
-        <appsco-tutorial-add-company-user id="addCompanyUser" page="[[ currentPage ]]" on-tutorial-done="_onTutorialDone" directory-page-loaded="[[ directoryPageLoaded ]]" on-tutorial-step-changed="_onStepChanged"></appsco-tutorial-add-company-user>
-        <appsco-tutorial-resources id="addResource" page="[[ currentPage ]]" on-tutorial-done="_onTutorialDone" resources-page-loaded="[[ resourcesPageLoaded ]]" on-tutorial-step-changed="_onStepChanged"></appsco-tutorial-resources>
+        <appsco-tutorial-company-settings
+            id="companyProfile"
+            page="[[ currentPage ]]"
+            on-tutorial-done="_onTutorialDone"
+            on-tutorial-step-changed="_onStepChanged">
+        </appsco-tutorial-company-settings>
 
-        <appsco-tutorial-share-resources id="shareResource" page="[[ currentPage ]]" on-tutorial-done="_onTutorialDone" resources-page-loaded="[[ resourcesPageLoaded ]]" resource-share-accounts-loaded="[[ resourceShareAccountsLoaded ]]" on-tutorial-step-changed="_onStepChanged"></appsco-tutorial-share-resources>
-        <appsco-tutorial-company-domain id="companyDomain" page="[[ currentPage ]]" on-tutorial-done="_onTutorialDone" company-domains-loaded="[[ companyDomainsLoaded ]]" on-tutorial-step-changed="_onStepChanged"></appsco-tutorial-company-domain>
-        <appsco-tutorial-identity-provider id="identityProvider" page="[[ currentPage ]]" on-tutorial-done="_onTutorialDone" on-tutorial-step-changed="_onStepChanged" company-domains-loaded="[[ companyDomainsLoaded ]]"></appsco-tutorial-identity-provider>
-        <appsco-tutorial-provisioning id="companyProvisioning" page="[[ currentPage ]]" on-tutorial-done="_onTutorialDone" on-tutorial-step-changed="_onStepChanged"></appsco-tutorial-provisioning>
+        <appsco-tutorial-company-branding
+            id="companyBranding"
+            page="[[ currentPage ]]"
+            on-tutorial-done="_onTutorialDone"
+            on-tutorial-step-changed="_onStepChanged">
+        </appsco-tutorial-company-branding>
+
+        <appsco-tutorial-branded-login
+            id="brandedLogin"
+            page="[[ currentPage ]]"
+            on-tutorial-done="_onTutorialDone"
+            on-tutorial-step-changed="_onStepChanged">
+        </appsco-tutorial-branded-login>
+
+        <appsco-tutorial-add-company-user
+            id="addCompanyUser"
+            page="[[ currentPage ]]"
+            directory-page-loaded="[[ directoryPageLoaded ]]"
+            on-tutorial-done="_onTutorialDone"
+            on-tutorial-step-changed="_onStepChanged">
+        </appsco-tutorial-add-company-user>
+
+        <appsco-tutorial-resources
+            id="addResource"
+            page="[[ currentPage ]]"
+            resources-page-loaded="[[ resourcesPageLoaded ]]"
+            on-tutorial-done="_onTutorialDone"
+            on-tutorial-step-changed="_onStepChanged">
+        </appsco-tutorial-resources>
+
+        <appsco-tutorial-share-resources 
+            id="shareResource"
+            page="[[ currentPage ]]"
+            on-tutorial-done="_onTutorialDone"
+            resources-page-loaded="[[ resourcesPageLoaded ]]"
+            resource-share-accounts-loaded="[[ resourceShareAccountsLoaded ]]"
+            on-tutorial-step-changed="_onStepChanged">
+        </appsco-tutorial-share-resources>
+
+        <appsco-tutorial-company-domain
+            id="companyDomain"
+            page="[[ currentPage ]]"
+            company-domains-loaded="[[ companyDomainsLoaded ]]"
+            on-tutorial-done="_onTutorialDone"
+            on-tutorial-step-changed="_onStepChanged">
+        </appsco-tutorial-company-domain>
+
+        <appsco-tutorial-identity-provider
+            id="identityProvider"
+            page="[[ currentPage ]]"
+            company-domains-loaded="[[ companyDomainsLoaded ]]"
+            on-tutorial-done="_onTutorialDone"
+            on-tutorial-step-changed="_onStepChanged">
+        </appsco-tutorial-identity-provider>
+
+        <appsco-tutorial-provisioning
+            id="companyProvisioning"
+            page="[[ currentPage ]]"
+            on-tutorial-done="_onTutorialDone"
+            on-tutorial-step-changed="_onStepChanged">
+        </appsco-tutorial-provisioning>
 
         <div id="done-all-tutorials" class="done-step" hidden="">
             <p>You have completed all Get started steps. <br>
@@ -89,6 +148,10 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
                 }
             },
 
+            tutorialResponse: {
+                type: Object
+            },
+
             tutorials: {
                 type: Object,
                 notify: true,
@@ -96,6 +159,11 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
                 value: function () {
                     return {}
                 }
+            },
+
+            _tutorialsInitialized: {
+                type: Boolean,
+                value: false
             },
 
             directoryPageLoaded: {
@@ -111,14 +179,12 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             },
 
             companyDomainsLoaded: {
-                type: Boolean,
-                notify: true
+                type: Boolean
             },
 
             resourceShareAccountsLoaded: {
                 type: Boolean,
-                value: false,
-                notify: true
+                value: false
             },
 
             currentSteps: {
@@ -136,18 +202,27 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
         };
     }
 
+    static get observers() {
+        return [
+            '_applyTutorialStatus(tutorialResponse, _tutorialsInitialized)'
+        ];
+    }
+
     ready() {
         super.ready();
 
+        this.initTutorials();
+
         afterNextRender(this, function() {
-            this.initTutorials();
-            this.getCurrentState();
+            if (undefined === this.tutorialResponse) {
+                this.getCurrentState();
+            }
         });
     }
 
     _pageChanged(){
         this.tuts.forEach(function(item, key){
-            var tutorial = this.shadowRoot.getElementById(item);
+            const tutorial = this.shadowRoot.getElementById(item);
             if(tutorial) {
                 tutorial.pageChanged(this.currentPage);
             }
@@ -169,6 +244,8 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
                 this.tutorials[tutorial.getId()] = tutorial;
             }
         }.bind(this));
+
+        this._tutorialsInitialized = true;
     }
 
     _onTutorialDone(event) {
@@ -184,7 +261,7 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
                 + '&tutorial_info[status]=DONE'
                 + '&tutorial_info[step]=' + tutorial.maxSteps
         }).then(function(request) {
-            this._applyTutorialStatus(request.response);
+            this.set('tutorialResponse', request.response)
         }.bind(this));
 
         for (const idx in this.tutorials) {
@@ -199,20 +276,16 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
     }
 
     showAllTutorialsDoneInfo() {
-        let targetElement = document.querySelector('* paper-icon-button.appsco-get-started-icon');
-        if(null === targetElement) {
-            targetElement = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
-        }
+        const appscoApp = document.querySelector('appsco-app');
+        let targetElement = appscoApp
+            .shadowRoot.querySelector('appsco-header')
+            .shadowRoot.getElementById('appscoHeaderAccountActions')
+            .shadowRoot.querySelector('paper-icon-button.appsco-get-started-icon')
+        ;
 
         const cover = this.buildCover(targetElement);
-        let doneElement = document.querySelector('* #done-all-tutorials');
-        if(null === doneElement) {
-            doneElement = document.querySelector('* /deep/ #done-all-tutorials');
-        }
-        let closeButton = document.querySelector('* #done-all-tutorials paper-button');
-        if(null === closeButton) {
-            closeButton = document.querySelector('* /deep/ #done-all-tutorials paper-button');
-        }
+        let doneElement = this.shadowRoot.getElementById('done-all-tutorials');
+        let closeButton = this.shadowRoot.querySelector('#done-all-tutorials paper-button');
 
         const closeListener = function () {
             cover.destroy();
@@ -222,12 +295,8 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             targetElement.removeEventListener('click', closeListener);
             closeButton.removeEventListener('click', closeListener);
         };
-        let popperGetStartedIcon = document.querySelector('* paper-icon-button.appsco-get-started-icon');
-        if(null === popperGetStartedIcon) {
-            popperGetStartedIcon = document.querySelector('* /deep/ paper-icon-button.appsco-get-started-icon');
-        }
         const popper = new Popper(
-            popperGetStartedIcon,
+            targetElement,
             doneElement,
             { placement: 'right-start' }
         );
@@ -239,11 +308,14 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
         doneElement.hidden = false;
     }
 
-    _applyTutorialStatus(tutorialsInfo) {
+    _applyTutorialStatus(tutorialsInfo, tutorialsInitialized) {
+        if (undefined === tutorialsInfo || !tutorialsInitialized) {
+            return;
+        }
         for (const idx in tutorialsInfo) {
             if (tutorialsInfo.hasOwnProperty(idx)) {
                 this.tuts.forEach(function(tut) {
-                    var tutorial = this.shadowRoot.getElementById(tut);
+                    const tutorial = this.shadowRoot.getElementById(tut);
                     if (!tutorial) { return; }
                     if (tutorial.getId() === idx) {
                         tutorial.status = tutorialsInfo[idx]['status'];
@@ -252,9 +324,9 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             }
         }
 
-        const tutorials = this.tutorials;
+        const currentTutorials = this.tutorials;
         this.set('tutorials', {});
-        this.set('tutorials', tutorials);
+        this.set('tutorials', currentTutorials);
     }
 
     getCurrentState() {
@@ -266,7 +338,7 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             handleAs: 'json',
             headers: this._headers
         }).then(function(request) {
-            this._applyTutorialStatus(request.response);
+            this.set('tutorialResponse', request.response);
         }.bind(this));
     }
 

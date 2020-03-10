@@ -116,19 +116,6 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
     ready() {
         super.ready();
 
-        this.animationConfig = {
-            entry: {
-                timing: {
-                    "duration": 200
-                }
-            },
-            exit: {
-                timing: {
-                    "duration": 100
-                }
-            }
-        };
-
         afterNextRender(this, function () {
             this._addListeners();
         });
@@ -140,10 +127,22 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
 
     _onResourceActiveChanged(active) {
         beforeNextRender(this, function () {
-            this.animationConfig.entry.node = this.$.resource;
-            this.animationConfig.exit.node = this.$.resource;
-            this.animationConfig.entry.name = 'slide-from-left-animation';
-            this.animationConfig.exit.name = 'slide-left-animation';
+            this.animationConfig = {
+                'entry': {
+                    name: 'slide-from-left-animation',
+                    node: this.$.resource,
+                    timing: {
+                        duration: 200
+                    }
+                },
+                'exit': {
+                    name: 'slide-left-animation',
+                    node: this.$.resource,
+                    timing: {
+                        duration: 100
+                    }
+                }
+            };
         });
 
         active ? this.showSection('resource') : this.hideSection('resource');
@@ -151,10 +150,22 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
 
     _onInfoActiveChanged(active) {
         beforeNextRender(this, function () {
-            this.animationConfig.entry.node = this.$.info;
-            this.animationConfig.exit.node = this.$.info;
-            this.animationConfig.entry.name = 'slide-from-right-animation';
-            this.animationConfig.exit.name = 'slide-right-animation';
+            this.animationConfig = {
+                'entry': {
+                    name: 'slide-from-right-animation',
+                    node: this.$.info,
+                    timing: {
+                        duration: 200
+                    }
+                },
+                'exit': {
+                    name: 'slide-right-animation',
+                    node: this.$.info,
+                    timing: {
+                        duration: 100
+                    }
+                }
+            };
         });
 
         active ? this.showSection('info') : this.hideSection('info');

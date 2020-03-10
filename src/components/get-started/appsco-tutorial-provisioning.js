@@ -190,49 +190,49 @@ class AppscoTutorialProvisioning extends mixinBehaviors([
         return {
             step1: {
                 reference: 'body',
-                coverTarget: '* /deep/ appsco-tutorial-provisioning /deep/ #step-1',
+                coverTarget: [ '#appscoTutorial', '#companyProvisioning', '#step-1' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step2: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step3: {
-                reference: '* /deep/ #menuProvisioningText',
-                coverTarget: '* /deep/ #menuContainer',
+                reference: [ '#menuProvisioningText' ],
+                coverTarget: [ '#menuContainer' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step4: {
-                reference: '* /deep/ appsco-provisioning-actions /deep/ paper-button.add-action',
-                coverTarget: '* /deep/ appsco-provisioning-actions /deep/ paper-button.add-action',
+                reference: [ '#appscoProvisioningPageActions', 'appsco-provisioning-actions', 'paper-button.add-action' ],
+                coverTarget: [ '#appscoProvisioningPageActions', 'appsco-provisioning-actions', 'paper-button.add-action' ],
                 popperOptions: {
                     placement: 'left-start'
                 }
             },
             step5: {
-                reference: '* /deep/ appsco-add-integration /deep/ appsco-available-integration-item /deep/ div.item',
-                coverTarget: '* /deep/ appsco-add-integration /deep/ appsco-available-integration-item  /deep/ div.item',
+                reference: [ '#appscoProvisioningPage', '#appscoAddIntegration', '#appscoAddIntegrationSearch', 'appsco-available-integration-item', 'div.item' ],
+                coverTarget: [ '#appscoProvisioningPage', '#appscoAddIntegration', '#appscoAddIntegrationSearch', 'appsco-available-integration-item', 'div.item' ],
                 popperOptions: {
                     placement: 'left-start'
                 }
             },
             step6: {
-                reference: '* /deep/ appsco-add-integration /deep/ paper-button#addAction',
-                coverTarget: '* /deep/ appsco-add-integration /deep/ paper-dialog',
+                reference: [ '#appscoProvisioningPage', '#appscoAddIntegration', 'paper-button#addAction' ],
+                coverTarget: [ '#appscoProvisioningPage', '#appscoAddIntegration', 'paper-dialog' ],
                 popperOptions: {
                     placement: 'left-start'
                 },
                 popperListenerBuilder: function(tutorial) {
-                    let dialog = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog'),
-                        cancelButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button[dialog-dismiss]'),
-                        addButton = tutorial._querySelector('* /deep/ appsco-add-integration /deep/ paper-button#addAction'),
+                    let dialog = tutorial._querySelector([ '#appscoProvisioningPage', '#appscoAddIntegration', 'paper-dialog' ]),
+                        cancelButton = tutorial._querySelector([ '#appscoProvisioningPage', '#appscoAddIntegration', 'paper-dialog paper-button[dialog-dismiss]' ]),
+                        addButton = tutorial._querySelector([ '#appscoProvisioningPage', '#appscoAddIntegration', 'paper-dialog paper-button#addAction' ]),
                         cancelListener,
                         addListener;
 
@@ -259,8 +259,8 @@ class AppscoTutorialProvisioning extends mixinBehaviors([
                 }
             },
             step7: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'left-start'
                 }
@@ -296,10 +296,10 @@ class AppscoTutorialProvisioning extends mixinBehaviors([
     step5(index, item, doneBuildingPopperHandler) {
         setTimeout(function() {
             this
-                ._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
+                ._querySelector([ '#appscoProvisioningPage', '#appscoAddIntegration', 'paper-dialog' ])
                 .setAttribute('no-cancel-on-outside-click', true);
             this
-                ._querySelector('* /deep/ appsco-add-integration /deep/ paper-dialog')
+                ._querySelector([ '#appscoProvisioningPage', '#appscoAddIntegration', 'paper-dialog' ])
                 .setAttribute('no-cancel-on-esc-key', true);
             this.handleStep(index, item, doneBuildingPopperHandler);
         }.bind(this), 700);

@@ -141,36 +141,36 @@ class AppscoTutorialBrandedLogin extends mixinBehaviors([
     getPopperConfig() {
         return {
             step1: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step2: {
-                reference: '* /deep/ #menuCompanySettingsText',
-                coverTarget: '* /deep/ #menuContainer',
+                reference: [ '#menuCompanySettingsText' ],
+                coverTarget: [ '#menuContainer' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step3: {
-                reference: '* /deep/ #companySettingsBrandedLoginCardBtn',
-                coverTarget: '* /deep/ #companySettingsBrandedLoginCard',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyComponentsPage', '#companySettingsBrandedLoginCardBtn' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyComponentsPage', '#companySettingsBrandedLoginCard' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
             },
             step4: {
-                reference: '* /deep/ #submitBrandedLoginForm',
-                coverTarget: '* /deep/ #brandedLoginCard',
+                reference: [ '#appscoCompanyPage', '#appscoCompanyBrandedLoginPage', '#submitBrandedLoginForm' ],
+                coverTarget: [ '#appscoCompanyPage', '#appscoCompanyBrandedLoginPage', '#brandedLoginCard' ],
                 popperOptions: {
                     placement: 'left'
                 }
             },
             step5: {
-                reference: '* /deep/ #menuBurger',
-                coverTarget: '* /deep/ #menuBurger',
+                reference: [ '#menuBurger' ],
+                coverTarget: [ '#menuBurger' ],
                 popperOptions: {
                     placement: 'right-start'
                 }
@@ -180,7 +180,7 @@ class AppscoTutorialBrandedLogin extends mixinBehaviors([
 
     step3(index, item, doneBuildingPopperHandler) {
         const handleFunction = function () {
-            const element = this._querySelector('* /deep/ #appscoCompanyComponentsPage');
+            const element = this._querySelector([ '#appscoCompanyPage', '#appscoCompanyComponentsPage' ]);
             if (!element || this.page !== 'company') {
                 setTimeout(handleFunction, 200);
                 return;

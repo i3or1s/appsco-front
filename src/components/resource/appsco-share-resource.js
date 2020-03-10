@@ -532,18 +532,13 @@ class AppscoShareResource extends mixinBehaviors([Appsco.HeadersMixin, NeonAnima
             _filterType: {
                 type: String,
                 value: 'all'
-            },
-
-            itemsLoaded: {
-                type: Boolean,
-                notify: true,
-                computed: '_computeItemsLoaded(_contactsLoaded, _rolesLoaded)'
             }
         };
     }
 
     static get observers() {
         return [
+            '_computeItemsLoaded(_contactsLoaded, _rolesLoaded)',
             '_setAccountList(_rolesLoaded, _contactsLoaded)',
             '_onSSOResourceExistsChanged(_ssoResourceExists, _accountList)'
         ];
@@ -558,7 +553,13 @@ class AppscoShareResource extends mixinBehaviors([Appsco.HeadersMixin, NeonAnima
     }
 
     _computeItemsLoaded(contactsLoaded, rolesLoaded) {
-        return contactsLoaded && rolesLoaded;
+        this.dispatchEvent(new CustomEvent('share-items-loaded-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                loaded: contactsLoaded && rolesLoaded
+            }
+        }));
     }
 
     setResources(resources) {
