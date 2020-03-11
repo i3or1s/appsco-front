@@ -33,6 +33,11 @@ class AppscoManageApplicationComponentsPage extends mixinBehaviors([
                 --application-details-value: {
                         font-size: 14px;
                  };
+                 
+                 --paper-card-content: {
+                    padding-top: 16px;
+                    padding-bottom: 16px;
+                 }
             }
             :host .info-item {
                 margin-bottom: 10px;
