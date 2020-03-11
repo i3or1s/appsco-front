@@ -32,11 +32,11 @@ class AppscoApplicationCompliancePage extends mixinBehaviors([
 
                 --item-background-color: var(--body-background-color);
             }
-            paper-card {
+            :host paper-card {
                 @apply --full-page-paper-card;
 
                 --paper-card-header-text: {
-                    color: var(--primary-text-color);
+                    @apply --full-page-paper-card-header-text;
                 };
             }
             .page-close-action {
