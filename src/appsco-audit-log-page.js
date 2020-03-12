@@ -213,6 +213,10 @@ class AppscoAuditLogPage extends mixinBehaviors([
                 }
             },
 
+            _eventTypeListResponse: {
+                type: Array
+            },
+
             _accountList: {
                 type: Array,
                 value: function () {
@@ -299,6 +303,18 @@ class AppscoAuditLogPage extends mixinBehaviors([
                 value: false
             },
 
+            _eventTypesUrl: {
+                type: String,
+                value: function() {
+                    return this.resolveUrl('./components/components/data/event-types.json');
+                }
+            },
+
+            _appLocalizeEventTypesLoaded: {
+                type: Boolean,
+                value: false
+            },
+
             language: {
                 value: 'en',
                 type: String
@@ -309,7 +325,8 @@ class AppscoAuditLogPage extends mixinBehaviors([
     static get observers() {
         return [
             '_updateScreen(mobileScreen, tabletScreen, tabletScreen900)',
-            '_hideFilters(mobileScreen)'
+            '_hideFilters(mobileScreen)',
+            '_processEventTypes(_eventTypeListResponse, _appLocalizeEventTypesLoaded)'
         ];
     }
 
@@ -340,6 +357,7 @@ class AppscoAuditLogPage extends mixinBehaviors([
         };
 
         beforeNextRender(this, function() {
+            this.loadResources(this._eventTypesUrl);
             if (this.mobileScreen || this.tabletScreen || this.tabletScreen900) {
                 this.updateStyles();
             }
@@ -347,15 +365,21 @@ class AppscoAuditLogPage extends mixinBehaviors([
 
         afterNextRender(this, function() {
             this._setupDatePicker();
-            gestures.add(document, 'tap', this._handleDocumentClick.bind(this));
-            this.loadResources(this.resolveUrl('./components/components/data/event-types.json'));
+            gestures.addListener(document.documentElement, 'tap', this._handleDocumentClick.bind(this));
             this._addListeners();
         });
     }
 
     _addListeners() {
+        this.addEventListener('app-localize-resources-loaded', this.onAppLocalizeResourcesLoaded.bind(this));
         this.toolbar.addEventListener('resource-section', this.toggleResource.bind(this));
         this.toolbar.addEventListener('export-audit-log', this._onExportAuditLogAction.bind(this));
+    }
+
+    onAppLocalizeResourcesLoaded(event) {
+        if (event.detail.url.toString().indexOf(this._eventTypesUrl) > -1) {
+            this._appLocalizeEventTypesLoaded = true;
+        }
     }
 
     _updateScreen() {
@@ -554,20 +578,27 @@ class AppscoAuditLogPage extends mixinBehaviors([
         const response = event.detail.response;
 
         if (response && response.length > 0) {
-            this.set('_eventTypeList', []);
-            response.forEach(function(item, index) {
-                const eventType = this._formatEventType(item);
-                if (eventType) {
-                    this.push('_eventTypeList', eventType);
-                }
-            }.bind(this));
-
-            const listSorted = this._eventTypeList.sort(this._sortEventTypesByText);
-
-            listSorted.unshift(this._defaultEventType);
-            this.set('_eventTypeListDisplay', listSorted);
-            this._setDefaultEventType();
+            this.set('_eventTypeListResponse', response);
         }
+    }
+
+    _processEventTypes(_eventTypeListResponse, _appLocalizeEventTypesLoaded) {
+        if (!_eventTypeListResponse || !_appLocalizeEventTypesLoaded) {
+            return;
+        }
+        this.set('_eventTypeList', []);
+        _eventTypeListResponse.forEach(function(item, index) {
+            const eventType = this._formatEventType(item);
+            if (eventType) {
+                this.push('_eventTypeList', eventType);
+            }
+        }.bind(this));
+
+        const listSorted = this._eventTypeList.sort(this._sortEventTypesByText);
+
+        listSorted.unshift(this._defaultEventType);
+        this.set('_eventTypeListDisplay', listSorted);
+        this._setDefaultEventType();
     }
 
     _sortEventTypesByText(typeA, typeB) {

@@ -29,6 +29,9 @@ class AppscoAccountLogPage extends mixinBehaviors([NeonSharedElementAnimatableBe
                 --appsco-account-log-item-first: {
                      border-top: none;
                  };
+                 --appsco-account-log-item: {
+                    padding: 20px 16px 10px 6px;
+                 }
             }
             :host paper-card {
                 @apply --full-page-paper-card;

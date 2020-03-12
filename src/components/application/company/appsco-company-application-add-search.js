@@ -249,7 +249,13 @@ class AppscoCompanyApplicationAddSearch extends mixinBehaviors([
     _onAddItem(event) {
         this.sharedElements.hero = dom(event).rootTarget;
 
-        this.dispatchEvent(new CustomEvent('add-item', { bubbles: true, composed: true }));
+        this.dispatchEvent(new CustomEvent('add-item', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                searchTerm: this.$.appscoSearch.getValue()
+            }
+        }));
     }
 
     _onAddLink(event) {

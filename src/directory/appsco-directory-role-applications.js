@@ -108,9 +108,7 @@ class AppscoDirectoryRoleApplications extends mixinBehaviors([Appsco.HeadersMixi
         return {
             companyRole: {
                 type: Object,
-                value: function () {
-                    return {};
-                }
+                observer: '_onCompanyRoleChanged'
             },
 
             /**
@@ -166,11 +164,6 @@ class AppscoDirectoryRoleApplications extends mixinBehaviors([Appsco.HeadersMixi
                 type: Number
             },
 
-            _loadMore: {
-                type: Boolean,
-                value: false
-            },
-
             /**
              * Message to display instead of subscribers.
              */
@@ -182,25 +175,18 @@ class AppscoDirectoryRoleApplications extends mixinBehaviors([Appsco.HeadersMixi
 
     static get observers() {
         return [
-            '_computeAction(companyRole, _nextPage, size)',
-            '_onCompanyRoleChanged(companyRole)'
+            '_computeAction(companyRole, _nextPage, size)'
         ];
     }
 
-    ready() {
-        super.ready();
-
-        beforeNextRender(this, function() {
+    _onCompanyRoleChanged(newValue, oldValue) {
+        if (Object.keys(newValue).length > 0 && JSON.stringify(newValue) === JSON.stringify(oldValue)) {
             this.load();
-        });
-    }
-
-    _onCompanyRoleChanged() {
-        this.load();
+        }
     }
 
     _computeAction(companyRole, nextPage, size) {
-        this._computedAction = companyRole.meta ? companyRole.meta.applications + '?page=' + nextPage + '&limit=' + size + '&extended=1' : null;
+        this._computedAction = companyRole.meta ? companyRole.meta.applications + '?page=' + nextPage + '&limit=' + 2 + '&extended=1' : null;
     }
 
     /**

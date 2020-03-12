@@ -19,6 +19,16 @@ class AppscoPageGlobal extends PolymerElement {
                     --paper-icon-button-ink-color: var(--appsco-page-global-action-color);
 
                     @apply --appsco-page-global;
+                    
+                    --paper-icon-button: {
+                        margin-right: 10px;
+                        padding: 0;
+                        height: 24px;
+                        width: 24px;
+                    }                   
+                    
+                    padding-right: 14px;
+                    margin-right: -20px; 
                 }
                 :host *[hidden] {
                     display: none;
