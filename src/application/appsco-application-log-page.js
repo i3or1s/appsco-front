@@ -20,12 +20,15 @@ class AppscoApplicationLogPage extends mixinBehaviors([NeonSharedElementAnimatab
                 @apply --full-page;
 
                 --paper-card-header: {
-                     border-bottom: 1px solid var(--divider-color);
-                 };
+                    border-bottom: 1px solid var(--divider-color);
+                };
 
                 --application-log-item-first: {
-                     border-top: none;
-                 };
+                    border-top: none;
+                };
+                --application-log-item: {
+                    padding: 20px 16px 10px 6px;
+                }
             }
             :host paper-card {
                 @apply --full-page-paper-card;
