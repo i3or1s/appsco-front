@@ -480,10 +480,18 @@ class AppscoAccountLog extends mixinBehaviors([AppLocalizeBehavior, Appsco.Heade
     _formatLogRoleAddedToOrgunit(item) {
         const logItem = {
                 date: item.created_at.date,
-                message: this.localize('account_log_role_added_to_orgunit', 'account', item.data.role.account.display_name, 'orgunit', item.data.orgunit.name, 'company', item.data.company.name),
+                message: this.localize(
+                    'account_log_role_added_to_orgunit',
+                    'account',
+                    item.data.role && item.data.role.account ? item.data.role.account.display_name : 'Unknown',
+                    'orgunit',
+                    item.data.orgunit.name,
+                    'company',
+                    item.data.company.name
+                ),
                 address: item.ip
             },
-            picture = item.data.role.account.picture_url;
+            picture = item.data.role && item.data.role.account ? item.data.role.account.picture_url : null;
 
 
         if (picture) {
