@@ -43,6 +43,11 @@ class AppscoManageAccountComponentsPage extends mixinBehaviors([
                 --iron-icon: {
                      margin-top: -3px;
                  };
+                 
+                --paper-card-content: {
+                    padding-top: 16px;
+                    padding-bottom: 16px;
+                }
             }
             appsco-account-details {
                 --account-detail-container: {
