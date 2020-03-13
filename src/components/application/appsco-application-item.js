@@ -2,7 +2,6 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-button/paper-button.js';
-import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/neon-animation/animations/fade-in-animation.js';
 import '@polymer/neon-animation/animations/fade-out-animation.js';
 import '@polymer/paper-styles/shadow.js';
@@ -11,10 +10,9 @@ import '@polymer/iron-media-query/iron-media-query.js';
 import '../components/appsco-list-item-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-class AppscoApplicationItem extends mixinBehaviors([NeonAnimationRunnerBehavior], PolymerElement) {
+class AppscoApplicationItem extends PolymerElement {
     static get template() {
         return html`
         <style include="appsco-list-item-styles">
@@ -145,32 +143,11 @@ class AppscoApplicationItem extends mixinBehaviors([NeonAnimationRunnerBehavior]
                 type: Boolean,
                 computed: '_computeApplicationEditable(_shared, application)'
             },
-
-            animationConfig: {
-                type: Object
-            }
         };
     }
 
     ready() {
         super.ready();
-
-        this.animationConfig = {
-            'entry': {
-                name: 'fade-in-animation',
-                node: this,
-                timing: {
-                    duration: 200
-                }
-            },
-            'exit': {
-                name: 'fade-out-animation',
-                node: this,
-                timing: {
-                    duration: 100
-                }
-            }
-        };
 
         beforeNextRender(this, function() {
             this.style.display = 'inline-block';

@@ -180,13 +180,13 @@ class AppscoDirectoryRoleApplications extends mixinBehaviors([Appsco.HeadersMixi
     }
 
     _onCompanyRoleChanged(newValue, oldValue) {
-        if (Object.keys(newValue).length > 0 && JSON.stringify(newValue) === JSON.stringify(oldValue)) {
+        if (Object.keys(newValue).length > 0 && JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
             this.load();
         }
     }
 
     _computeAction(companyRole, nextPage, size) {
-        this._computedAction = companyRole.meta ? companyRole.meta.applications + '?page=' + nextPage + '&limit=' + 2 + '&extended=1' : null;
+        this._computedAction = companyRole.meta ? companyRole.meta.applications + '?page=' + nextPage + '&limit=' + size + '&extended=1' : null;
     }
 
     /**
@@ -197,14 +197,13 @@ class AppscoDirectoryRoleApplications extends mixinBehaviors([Appsco.HeadersMixi
         this._applications = [];
         this._message = '';
         this._nextPage = 1;
-
-        this.$.getApplicationsCall.generateRequest();
+        this._sendRequest();
     }
 
     _loadMore() {
         this.$.progress.hidden = false;
 
-        this.$.getApplicationsCall.generateRequest();
+        this._sendRequest();
     }
 
     /**
@@ -276,13 +275,19 @@ class AppscoDirectoryRoleApplications extends mixinBehaviors([Appsco.HeadersMixi
     _hideProgressBar() {
         setTimeout(function() {
             this.$.progress.hidden = true;
-        }.bind(this), 500);
+        }.bind(this), 200);
+    }
+
+    _sendRequest() {
+        setTimeout(function() {
+            this.$.getApplicationsCall.generateRequest();
+        }.bind(this), 0);
     }
 
     reload() {
         this.set('_applications', []);
         this._nextPage = 1;
-        this.$.getApplicationsCall.generateRequest();
+        this._sendRequest();
     }
 }
 window.customElements.define(AppscoDirectoryRoleApplications.is, AppscoDirectoryRoleApplications);

@@ -106,9 +106,7 @@ class AppscoDirectoryRoleResourceAdminApplications extends mixinBehaviors([Appsc
         return {
             companyRole: {
                 type: Object,
-                value: function () {
-                    return {};
-                }
+                observer: '_onCompanyRoleChanged'
             },
 
             /**
@@ -167,11 +165,6 @@ class AppscoDirectoryRoleResourceAdminApplications extends mixinBehaviors([Appsc
                 type: Number
             },
 
-            _loadMore: {
-                type: Boolean,
-                value: false
-            },
-
             /**
              * Message to display instead of subscribers.
              */
@@ -190,21 +183,14 @@ class AppscoDirectoryRoleResourceAdminApplications extends mixinBehaviors([Appsc
 
     static get observers() {
         return [
-            '_computeAction(companyRole, _nextPage, size)',
-            '_onCompanyRoleChanged(companyRole)'
+            '_computeAction(companyRole, _nextPage, size)'
         ];
     }
 
-    ready() {
-        super.ready();
-
-        afterNextRender(this, function() {
+    _onCompanyRoleChanged(newValue, oldValue) {
+        if (Object.keys(newValue).length > 0 && JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
             this.load();
-        });
-    }
-
-    _onCompanyRoleChanged() {
-        this.load();
+        }
     }
 
     _computeAction (companyRole, nextPage, size) {
@@ -221,13 +207,19 @@ class AppscoDirectoryRoleResourceAdminApplications extends mixinBehaviors([Appsc
         this._message = '';
         this._nextPage = 1;
 
-        this.$.getResourceAdminApplicationsCall.generateRequest();
+        this._sendRequest();
+    }
+
+    _sendRequest() {
+        setTimeout(function() {
+            this.$.getResourceAdminApplicationsCall.generateRequest();
+        }.bind(this), 0);
     }
 
     _loadMore() {
         this.$.progress.hidden = false;
 
-        this.$.getResourceAdminApplicationsCall.generateRequest();
+        this._sendRequest();
     }
 
     /**
@@ -248,15 +240,15 @@ class AppscoDirectoryRoleResourceAdminApplications extends mixinBehaviors([Appsc
      * @private
      */
     _handleResponse(event) {
-        var response = event.detail.response;
+        const response = event.detail.response;
         if (!response) {
             return false;
         }
 
-        var applications = response.resources,
+        let applications = response.resources,
             currentLength = this._applications.length,
             total = response.meta.total,
-            page = event.detail.url ? (event.detail.url + "").split('page=')[1] : '';
+            page = parseInt(event.detail.url ? (event.detail.url + "").split('page=')[1] : '');
 
         page = page ? page : 1;
         this._totalApplications = total;
@@ -308,14 +300,13 @@ class AppscoDirectoryRoleResourceAdminApplications extends mixinBehaviors([Appsc
     _hideProgressBar() {
         setTimeout(function() {
             this.$.progress.hidden = true;
-        }.bind(this), 500);
-
+        }.bind(this), 200);
     }
 
     reload() {
         this.set('_applications', []);
         this._nextPage = 1;
-        this.$.getResourceAdminApplicationsCall.generateRequest();
+        this._sendRequest();
     }
 
     _onResourceAdminRevoked() {
