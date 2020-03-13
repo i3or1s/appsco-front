@@ -374,8 +374,6 @@ class AppscoApplications extends mixinBehaviors([
                     }
                     this.push('_allApplications', icon);
                     this.push('_applications', icon);
-
-                    this._loadMore = (this._applications.length < meta.total);
                 }.bind(this);
             }.bind(this);
 
@@ -383,6 +381,7 @@ class AppscoApplications extends mixinBehaviors([
             this._clearApplications();
         }
 
+        this._loadMore = this._applications.length + icons.length < meta.total;
         this._totalApplications = meta.total;
         this._next = this._computeNextPageListApi(meta.next, this.size, this._sort);
         if (meta.total === 0) {
@@ -399,7 +398,7 @@ class AppscoApplications extends mixinBehaviors([
                 continue;
             }
             icon = icons[idx];
-            this._loaders.push(setTimeout(createAdderFunction(icon), (iconTimeout + 30)));
+            this._loaders.push(setTimeout(createAdderFunction(icon), 0));
         }
         this.dispatchEvent(new CustomEvent('loaded', {
             bubbles: true,
