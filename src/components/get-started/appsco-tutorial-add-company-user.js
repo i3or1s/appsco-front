@@ -6,11 +6,12 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 
 class AppscoTutorialAddCompanyUser extends mixinBehaviors([
     AppscoTutorialBehaviour,
     AppscoCoverBehaviour
-], PolymerElement) {
+], DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
         <style>
@@ -105,8 +106,8 @@ class AppscoTutorialAddCompanyUser extends mixinBehaviors([
         };
     }
 
-    ready() {
-        super.ready();
+    constructor() {
+        super();
 
         this.tutorialId = 'directory';
         this.tutorialTitle = 'Directory';
@@ -115,8 +116,8 @@ class AppscoTutorialAddCompanyUser extends mixinBehaviors([
         this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084191-Users-and-licences-';
     }
 
-    connectedCallback() {
-        super.connectedCallback();
+    ready() {
+        super.ready();
 
         this.tutorialId = 'directory';
         this.tutorialTitle = 'Directory';

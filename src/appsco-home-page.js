@@ -166,12 +166,38 @@ class AppscoHomePage extends mixinBehaviors([
 
                 <div class="content-container folders-container" hidden\$="[[ _foldersEmpty ]]">
                     <h4 class="subtitle">Folders</h4>
-                    <appsco-folders id="appscoFolders" size="100" type="folder" load-more="" authorization-token="[[ authorizationToken ]]" list-api="[[ foldersApi ]]" on-list-loaded="_showFolders" on-open-rename-folder-dialog="_onOpenRenameFolderDialog" on-open-remove-folder-dialog="_onOpenRemoveFolderDialog" on-item="_onFolderAction"></appsco-folders>
+                    <appsco-folders
+                        id="appscoFolders"
+                        size="100"
+                        type="folder"
+                        load-more=""
+                        authorization-token="[[ authorizationToken ]]"
+                        list-api="[[ foldersApi ]]"
+                        on-list-loaded="_showFolders"
+                        on-open-rename-folder-dialog="_onOpenRenameFolderDialog"
+                        on-open-remove-folder-dialog="_onOpenRemoveFolderDialog"
+                        on-item="_onFolderAction">
+                    </appsco-folders>
                 </div>
 
                 <div class="content-container resources-container">
                     <h4 class="subtitle" hidden\$="[[ _foldersEmpty ]]">Resources</h4>
-                    <appsco-applications id="appscoApplications" size="100" load-more="" authorization-token="[[ authorizationToken ]]" applications-api="[[ applicationsApi ]]" account="[[ account ]]" on-info="_onViewApplicationInfo" on-edit="_onApplicationEdit" on-application="_onApplication" on-application-removed="_onApplicationRemoved" on-loaded="_pageLoaded" on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog" on-edit-shared-application="_onEditSharedApplication" on-empty-load="_pageLoaded"></appsco-applications>
+                    <appsco-applications
+                        id="appscoApplications"
+                        size="100"
+                        load-more=""
+                        authorization-token="[[ authorizationToken ]]"
+                        applications-api="[[ applicationsApi ]]"
+                        account="[[ account ]]"
+                        on-info="_onViewApplicationInfo"
+                        on-edit="_onApplicationEdit"
+                        on-application="_onApplication"
+                        on-application-removed="_onApplicationRemoved"
+                        on-loaded="_pageLoaded"
+                        on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
+                        on-edit-shared-application="_onEditSharedApplication"
+                        on-empty-load="_pageLoaded">
+                    </appsco-applications>
                 </div>
             </div>
 
@@ -258,35 +284,90 @@ class AppscoHomePage extends mixinBehaviors([
 
         </appsco-content>
 
-        <appsco-application-add id="appscoApplicationAdd" authorization-token="[[ authorizationToken ]]" applications-template-api="[[ applicationsTemplateApi ]]" dashboard-api="[[ dashboardApi ]]" item="[[ item ]]" on-application-added="_onApplicationAdded">
+        <appsco-application-add
+            id="appscoApplicationAdd"
+            authorization-token="[[ authorizationToken ]]"
+            applications-template-api="[[ applicationsTemplateApi ]]"
+            dashboard-api="[[ dashboardApi ]]"
+            item="[[ item ]]"
+            on-application-added="_onApplicationAdded"
+            disable-upgrade>
         </appsco-application-add>
 
-        <appsco-dialog-application-add id="appscoDialogApplicationAdd" authorization-token="[[ authorizationToken ]]" dashboard-api="[[ dashboardApi ]]" on-application-added="_onApplicationAdded">
+        <appsco-dialog-application-add
+            id="appscoDialogApplicationAdd"
+            authorization-token="[[ authorizationToken ]]"
+            dashboard-api="[[ dashboardApi ]]"
+            on-application-added="_onApplicationAdded"
+            disable-upgrade>
         </appsco-dialog-application-add>
 
-        <appsco-folders-application-add id="appscoFoldersApplicationAdd" authorization-token="[[ authorizationToken ]]" folders-api="[[ foldersApi ]]" api-errors="[[ apiErrors ]]">
+        <appsco-folders-application-add
+            id="appscoFoldersApplicationAdd"
+            authorization-token="[[ authorizationToken ]]"
+            folders-api="[[ foldersApi ]]"
+            api-errors="[[ apiErrors ]]"
+            disable-upgrade>
         </appsco-folders-application-add>
 
-        <appsco-add-folder id="appscoAddFolder" authorization-token="[[ authorizationToken ]]" folders-api="[[ foldersApi ]]" api-errors="[[ apiErrors ]]" on-folder-added="_onFolderAdded">
+        <appsco-add-folder
+            id="appscoAddFolder"
+            authorization-token="[[ authorizationToken ]]"
+            folders-api="[[ foldersApi ]]"
+            api-errors="[[ apiErrors ]]"
+            on-folder-added="_onFolderAdded"
+            disable-upgrade>
         </appsco-add-folder>
 
-
-        <appsco-folders-rename id="appscoFoldersRename" authorization-token="[[ authorizationToken ]]" folders-api="[[ foldersApi ]]" api-errors="[[ apiErrors ]]" on-folder-renamed="_onFolderRenamed">
+        <appsco-folders-rename
+            id="appscoFoldersRename"
+            authorization-token="[[ authorizationToken ]]"
+            folders-api="[[ foldersApi ]]"
+            api-errors="[[ apiErrors ]]"
+            on-folder-renamed="_onFolderRenamed"
+            disable-upgrade>
         </appsco-folders-rename>
 
-        <appsco-folders-remove id="appscoFoldersRemove" authorization-token="[[ authorizationToken ]]" folders-api="[[ foldersApi ]]" api-errors="[[ apiErrors ]]" on-folder-removed="_onFolderRemoved">
+        <appsco-folders-remove
+            id="appscoFoldersRemove"
+            authorization-token="[[ authorizationToken ]]"
+            folders-api="[[ foldersApi ]]"
+            api-errors="[[ apiErrors ]]"
+            on-folder-removed="_onFolderRemoved"
+            disable-upgrade>
         </appsco-folders-remove>
 
-        <appsco-application-settings-dialog id="appscoApplicationSettingsDialog" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" application="[[ application ]]" on-application-settings-saved="_onApplicationCredentialsChanged">
+        <appsco-application-settings-dialog
+            id="appscoApplicationSettingsDialog"
+            account="[[ account ]]"
+            authorization-token="[[ authorizationToken ]]"
+            application="[[ application ]]"
+            on-application-settings-saved="_onApplicationCredentialsChanged"
+            disable-upgrade>
         </appsco-application-settings-dialog>
 
-        <appsco-application-share id="appscoApplicationShare" application="[[ application ]]" authorization-token="[[ authorizationToken ]]" accounts-api="[[ accountsApi ]]">
+        <appsco-application-share
+            id="appscoApplicationShare"
+            application="[[ application ]]"
+            authorization-token="[[ authorizationToken ]]"
+            accounts-api="[[ accountsApi ]]"
+            disable-upgrade>
         </appsco-application-share>
 
-        <appsco-application-revoke id="appscoApplicationRevoke" application="[[ application ]]" authorization-token="[[ authorizationToken ]]" on-application-instance-removed="_onApplicationInstanceRevoked">
+        <appsco-application-revoke
+            id="appscoApplicationRevoke"
+            application="[[ application ]]"
+            authorization-token="[[ authorizationToken ]]"
+            on-application-instance-removed="_onApplicationInstanceRevoked"
+            disable-upgrade>
         </appsco-application-revoke>
 
-        <appsco-company-resource-settings-dialog id="appscoCompanyResourceSettingsDialog" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" domain="[[ domain ]]">
+        <appsco-company-resource-settings-dialog
+            id="appscoCompanyResourceSettingsDialog"
+            account="[[ account ]]"
+            authorization-token="[[ authorizationToken ]]"
+            domain="[[ domain ]]"
+            disable-upgrade>
         </appsco-company-resource-settings-dialog>
 `;
     }
@@ -497,7 +578,12 @@ class AppscoHomePage extends mixinBehaviors([
 
     _onAddItemAction(event) {
         if ('catalogue-application' === event.detail.action) {
-            this.shadowRoot.getElementById('appscoApplicationAdd').toggle();
+            const dialog = this.shadowRoot.getElementById('appscoApplicationAdd');
+            dialog.removeAttribute('disable-upgrade');
+
+            setTimeout(function() {
+                dialog.toggle();
+            }, 0);
             return;
         }
 
@@ -513,8 +599,12 @@ class AppscoHomePage extends mixinBehaviors([
         request.send(options).then(function() {
             if (200 === request.status) {
                 const dialog = this.shadowRoot.getElementById('appscoDialogApplicationAdd');
-                dialog.setApplicationTemplate(request.response.application);
-                dialog.toggle();
+                dialog.removeAttribute('disable-upgrade');
+
+                setTimeout(function() {
+                    dialog.setApplicationTemplate(request.response.application);
+                    dialog.toggle();
+                }, 0);
             }
 
         }.bind(this));
@@ -538,11 +628,12 @@ class AppscoHomePage extends mixinBehaviors([
 
     _onAddNewFolderAction(event) {
         const dialog = this.shadowRoot.getElementById('appscoAddFolder');
+        dialog.removeAttribute('disable-upgrade');
 
-        if (dialog.$) {
+        setTimeout(function(){
             dialog.setOnPersonal();
             dialog.open();
-        }
+        }, 0);
     }
 
     _onFolderAdded(event) {
@@ -646,8 +737,12 @@ class AppscoHomePage extends mixinBehaviors([
 
     _onApplicationEditCredentials() {
         const dialog = this.shadowRoot.getElementById('appscoApplicationSettingsDialog');
-        dialog.setApplication(this.application);
-        dialog.toggle();
+        dialog.removeAttribute('disable-upgrade');
+
+        setTimeout(function() {
+            dialog.setApplication(this.application);
+            dialog.toggle();
+        }, 0);
     }
 
     _onApplication(event) {
@@ -659,13 +754,22 @@ class AppscoHomePage extends mixinBehaviors([
     }
 
     _onShareApplication(event) {
-        this.shadowRoot.getElementById('appscoApplicationShare').toggle();
+        const dialog = this.shadowRoot.getElementById('appscoApplicationShare');
+        dialog.removeAttribute('disable-upgrade');
+
+        setTimeout(function() {
+            dialog.toggle();
+        }, 0);
     }
 
     _onRevokeApplication() {
         const dialog = this.shadowRoot.getElementById('appscoApplicationRevoke');
-        dialog.applicationInstance = this.application;
-        dialog.open();
+        dialog.removeAttribute('disable-upgrade');
+
+        setTimeout(function() {
+            dialog.applicationInstance = this.application;
+            dialog.open();
+        }, 0);
     }
 
     _onPageConfigChanged(newValue) {
@@ -792,27 +896,39 @@ class AppscoHomePage extends mixinBehaviors([
             currentFolder = event.detail.currentFolder;
 
         const dialog = this.shadowRoot.getElementById('appscoFoldersApplicationAdd');
-        dialog.setApplicationIcon(applicationIcon);
-        dialog.setCurrentFolder(currentFolder);
-        dialog.setCompany(null);
-        dialog.toggle();
+        dialog.removeAttribute('disable-upgrade');
+
+        setTimeout(function() {
+            dialog.setApplicationIcon(applicationIcon);
+            dialog.setCurrentFolder(currentFolder);
+            dialog.setCompany(null);
+            dialog.toggle();
+        }, 0);
     }
 
     _onOpenRenameFolderDialog(event) {
         const folderItem = event.detail.folderItem,
             dialog = this.shadowRoot.getElementById('appscoFoldersRename');
 
-        dialog.setFolderItem(folderItem);
-        dialog.setCompany(null);
-        dialog.toggle();
+        dialog.removeAttribute('disable-upgrade');
+
+        setTimeout(function() {
+            dialog.setFolderItem(folderItem);
+            dialog.setCompany(null);
+            dialog.toggle();
+        }, 0);
     }
 
     _onOpenRemoveFolderDialog(event) {
         const folderItem = event.detail.folderItem,
             dialog = this.shadowRoot.getElementById('appscoFoldersRemove');
-        dialog.setFolderItem(folderItem);
-        dialog.setCompany(null);
-        dialog.toggle();
+        dialog.removeAttribute('disable-upgrade');
+
+        setTimeout(function() {
+            dialog.setFolderItem(folderItem);
+            dialog.setCompany(null);
+            dialog.toggle();
+        }, 0);
     }
 
     _onFolderRenamed(event) {
@@ -833,8 +949,12 @@ class AppscoHomePage extends mixinBehaviors([
 
     _onEditSharedApplication(event) {
         const dialog = this.shadowRoot.getElementById('appscoCompanyResourceSettingsDialog');
-        dialog.setApplication(event.detail.application);
-        dialog.toggle();
+        dialog.removeAttribute('disable-upgrade');
+
+        setTimeout(function() {
+            dialog.setApplication(event.detail.application);
+            dialog.toggle();
+        }, 0);
     }
 }
 window.customElements.define(AppscoHomePage.is, AppscoHomePage);

@@ -106,10 +106,14 @@ class AppscoTutorialCard extends mixinBehaviors([
     }
 
     _onStartAction(evt) {
-        let scrollElement = document.querySelector('* app-header-layout #contentContainer');
-        if(null === scrollElement) {
-            scrollElement = document.querySelector('* /deep/ app-header-layout /deep/ #contentContainer');
+        const page = document.querySelector('appsco-app').shadowRoot.querySelector('app-header-layout [page].iron-selected');
+
+        let scrollElement;
+
+        if (page) {
+            scrollElement = page.shadowRoot.querySelector('.content-container');
         }
+
         if (scrollElement) {
             scrollElement.scrollTop = 0;
         }

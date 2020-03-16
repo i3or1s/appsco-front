@@ -44,7 +44,7 @@ class AppscoBrand extends PolymerElement {
             </div>
 
             <div class="brand-info">
-                <slot name="brand-info" old-content-selector="[brand-info]"></slot>
+                <slot name="brand-info"></slot>
             </div>
 
         </div>

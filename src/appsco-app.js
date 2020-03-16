@@ -49,7 +49,30 @@ class AppscoApp extends mixinBehaviors([
             </template>
         </paper-toast>
 
-        <appsco-header id="appscoHeader" account="[[ account ]]" brand-logo="[[ _brandLogo ]]" brand-logo-clickable="[[ _brandLogoClickable ]]" brand-logo-width="38" brand-logo-height="32" brand-title="[[ _brandTitle ]]" authorization-token="[[ authorizationToken ]]" notifications-api="[[ api.notifications ]]" logout-api="[[ api.logout ]]" notifications-size="5" product-business="[[ _companiesAccountHasPermissionTo ]]" product-partner="[[ account.partner ]]" domain="{{ domain }}" tutorial-action-available="[[ _tutorialsPageVisible ]]" on-brand-action="_onBrandAction" on-appsco-product-changed="_onAppscoProductChangeAction" on-account-chat="_onAccountChat" on-account-settings="_onAccountSettingsAction" on-all-notifications="_onAllNotifications" on-account-logout="_onAccountLogout" on-get-started="_onGetStarted"></appsco-header>
+        <appsco-header
+            id="appscoHeader"
+            account="[[ account ]]"
+            brand-logo="[[ _brandLogo ]]"
+            brand-logo-clickable="[[ _brandLogoClickable ]]"
+            brand-logo-width="38"
+            brand-logo-height="32"
+            brand-title="[[ _brandTitle ]]"
+            authorization-token="[[ authorizationToken ]]"
+            notifications-api="[[ api.notifications ]]"
+            logout-api="[[ api.logout ]]"
+            notifications-size="5"
+            product-business="[[ _companiesAccountHasPermissionTo ]]"
+            product-partner="[[ account.partner ]]"
+            domain="{{ domain }}"
+            tutorial-action-available="[[ _tutorialsPageVisible ]]"
+            on-brand-action="_onBrandAction"
+            on-appsco-product-changed="_onAppscoProductChangeAction"
+            on-account-chat="_onAccountChat"
+            on-account-settings="_onAccountSettingsAction"
+            on-all-notifications="_onAllNotifications"
+            on-account-logout="_onAccountLogout"
+            on-get-started="_onGetStarted">            
+        </appsco-header>
 
         <appsco-tutorial 
             id="appscoTutorial" 
@@ -64,8 +87,6 @@ class AppscoApp extends mixinBehaviors([
             tutorial-response="[[ tutorialResponse ]]"
             is-tutorial-active="{{ isTutorialActive }}">            
         </appsco-tutorial>
-
-        <appsco-tutorial-progress id="appscoTutorialProgress" tutorials="[[ _tutorials ]]" show="true" is-tutorial-active="[[ isTutorialActive ]]" progress="{{ _progress }}" disable-upgrade\$="[[!_applicationsApi]]"></appsco-tutorial-progress>
 
         <app-drawer-layout fullbleed="" force-narrow="">
 
@@ -215,7 +236,11 @@ class AppscoApp extends mixinBehaviors([
                             <appsco-company-account-page-actions id="appscoCompanyAccountPageActions" name="company-account" on-back="_onBackFromAccountAction">
                             </appsco-company-account-page-actions>
 
-                            <appsco-upgrade-page-actions name="upgrade" authorization-token="[[ authorizationToken ]]" on-toggle-pricing="_onUpgradeTogglePricing" disable-upgrade\$="[[!api.me]]"></appsco-upgrade-page-actions>
+                            <appsco-upgrade-page-actions
+                                name="upgrade"
+                                authorization-token="[[ authorizationToken ]]"
+                                on-toggle-pricing="_onUpgradeTogglePricing">
+                            </appsco-upgrade-page-actions>
 
                             <appsco-company-home-page-actions id="appscoCompanyHomePageActions" name="company-home" authorization-token="[[ authorizationToken ]]" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]">
                             </appsco-company-home-page-actions>
@@ -274,7 +299,10 @@ class AppscoApp extends mixinBehaviors([
                             <appsco-compliance-report-page-actions id="appscoComplianceReportPageActions" name="compliance-report" on-back="_showReportsPage">
                             </appsco-compliance-report-page-actions>
 
-                            <appsco-billing-report-page-actions id="appscoBillingReportPageActions" name="billing-report" disable-upgrade\$="[[!api.me]]"></appsco-billing-report-page-actions>
+                            <appsco-billing-report-page-actions
+                                id="appscoBillingReportPageActions"
+                                name="billing-report">
+                            </appsco-billing-report-page-actions>
 
                             <appsco-provisioning-page-actions id="appscoProvisioningPageActions" name="provisioning">
                             </appsco-provisioning-page-actions>
@@ -305,7 +333,7 @@ class AppscoApp extends mixinBehaviors([
                 <neon-animated-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main" on-neon-animation-finish="_onPageAnimationFinish">
 
                     <appsco-home-page name="home" page="" id="appscoHomePage" application="{{ application }}" account="[[ account ]]" application-log="[[ application.meta.log ]]" authorization-token="[[ authorizationToken ]]" applications-api="[[ _applicationsApi ]]" folders-api="[[ api.foldersApi ]]" dashboard-api="[[ _addAppApi ]]" page-config="[[ _pageConfig ]]" api-errors="[[ _apiErrors ]]" accounts-api="[[ api.accounts ]]" domain="[[ domain ]]" item="[[ _copyObject(item) ]]" toolbar="[[ \$.appscoHomePageActions ]]" applications-template-api="[[ api.applicationTemplates ]]" icons-api="[[ api.icons ]]" personal-items-api="[[ api.personalItems ]]" shared-with-me-items-api="[[ api.sharedWithMeItems ]]" on-loaded="_onLoadedPage" on-folder-tapped="_onFolderTapped" on-application-shared="_onApplicationShared" on-application-settings-saved="_onApplicationSettingsSaved" on-applications-removed="_onApplicationsRemovedFromHomePage">
-                            </appsco-home-page>
+                    </appsco-home-page>
 
                     <appsco-resource-page name="resource" page="" id="appscoApplicationPage" route="[[ subroute ]]" company="[[ _companyPage ]]" application="{{ application }}" applications-api="[[ _applicationsApi ]]" icons-api="[[ api.icons ]]" application-log="[[ application.meta.log ]]" authorization-token="[[ authorizationToken ]]" accounts-api="[[ api.accounts ]]" account="{{ account }}" toolbar="[[ \$.appscoApplicationPageActions ]]" on-application-shared="_onApplicationShared" on-application-removed="_onApplicationRemoved" on-subscription-revoked="_onSubscriptionRevoked" on-application-settings-saved="_onApplicationSettingsSaved" on-application-settings-no-changes="_onApplicationSettingsNoChanges" on-autologin-changed="_onAutologinChanged" on-resource-image-changed="_onResourceImageChanged" on-page-error="_onError" on-image-upload-error="_onImageUploadError">
                     </appsco-resource-page>
@@ -316,7 +344,13 @@ class AppscoApp extends mixinBehaviors([
                     <appsco-company-account-page name="company-account" page="" company-page="" id="appscoCompanyAccountPage" account="{{ account }}" authorization-token="[[ authorizationToken ]]" notifications-api="[[ api.notifications ]]" authorized-apps-api="[[ api.authorizedApps ]]" log-api="[[ api.accountLog ]]" two-fa-enforced="[[ currentCompany.company.enforced_2fa ]]" two-fa-api="[[ api.twoFA ]]" two-fa-qr-api="[[ api.twoFAQr ]]" two-fa-codes-api="[[ api.twoFACodes ]]" settings-api="[[ api.me ]]" image-settings-api="[[ api.profileImage ]]" change-password-api="[[ api.changePassword ]]" application-template-api="[[ api.applicationTemplates ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoCompanyAccountPageActions ]]" on-import-finished="_onImportPersonalResourcesFinished" on-twofa-disabled="_onTwoFaDisabled" on-application-revoked="_onAuthorizedApplicationRevoked" on-settings-saved="_onAccountSettingsSaved" on-password-changed="_onAccountPasswordChanged" on-image-upload-error="_onImageUploadError">
                     </appsco-company-account-page>
 
-                    <appsco-trybusiness-page name="trybusiness" page="" id="appscoUpgradePage" authorization-token="[[ authorizationToken ]]" company-upgrade-api="[[ api.upgradeToBusiness ]]" on-upgraded="_upgradedToBusiness" on-upgrade-failed="_onUpgradeToCompanyFailed" disable-upgrade\$="[[!_applicationsApi]]"></appsco-trybusiness-page>
+                    <appsco-trybusiness-page name="trybusiness" page=""
+                        id="appscoUpgradePage"
+                        authorization-token="[[ authorizationToken ]]"
+                        company-upgrade-api="[[ api.upgradeToBusiness ]]"
+                        on-upgraded="_upgradedToBusiness"
+                        on-upgrade-failed="_onUpgradeToCompanyFailed">
+                        </appsco-trybusiness-page>
 
                     <appsco-company-home-page name="company-home" page="" company-page="" id="appscoCompanyHomePage" authorization-token="[[ authorizationToken ]]" applications-api="[[ _companyIconsWithoutFolderApi ]]" folders-api="[[ api.foldersApi ]]" company-folders-api="[[ _companyFoldersApi ]]" netscaler-api="[[ _companyNetscalerFeatureApi ]]" accounts-api="[[ api.accounts ]]" account="[[ account ]]" domain="[[ domain ]]" api-errors="[[ _apiErrors ]]" page-config="[[ _pageConfig ]]" company="{{ currentCompany.company }}" toolbar="[[ \$.appscoCompanyHomePageActions ]]" on-loaded="_onLoadedPage" on-folder-tapped="_onFolderTapped" on-application-shared="_onApplicationShared" on-application-settings-saved="_onApplicationSettingsSaved">
                     </appsco-company-home-page>
@@ -439,12 +473,20 @@ class AppscoApp extends mixinBehaviors([
                     <appsco-customer-billing-page name="customer-billing" page="" company-page="" id="appscoCustomerBillingPage" company-api="[[ _companyApi ]]" account="[[ account ]]" current-company="[[ currentCompany.company ]]" authorization-token="[[ authorizationToken ]]" on-credit-card-added="_onCreditCardAdded" on-subscription-canceled="_onSubscriptionCanceled" on-subscription-changed="_onSubscriptionChanged" on-subscription-updated="_onSubscriptionUpdated">
                     </appsco-customer-billing-page>
 
-                    <appsco-billing-report-page name="billing-report" page="" company-page="" id="appscoBillingReportPage" billing-report-api="[[ _billingReportApi ]]" customers-api="[[ _companyCustomersApi ]]" authorization-token="[[ authorizationToken ]]" disable-upgrade\$="[[!_applicationsApi]]"></appsco-billing-report-page>
+                    <appsco-billing-report-page name="billing-report" page="" company-page=""
+                        id="appscoBillingReportPage"
+                        billing-report-api="[[ _billingReportApi ]]"
+                        customers-api="[[ _companyCustomersApi ]]"
+                        authorization-token="[[ authorizationToken ]]">
+                    </appsco-billing-report-page>
 
                     <appsco-dashboard-folder-page name="dashboard-folder" page="" company-page="" id="appscoDashboardFolderPage" route="[[ subroute ]]" folder="{{ _activeFolder }}" is-on-personal="[[ _personalFolderPage ]]" authorization-token="[[ authorizationToken ]]" folders-api="[[ api.foldersApi ]]" company-folders-api="[[ _companyFoldersApi ]]" company="[[ currentCompany ]]" netscaler-api="[[ _companyNetscalerFeatureApi ]]" account="[[ account ]]" domain="[[ domain ]]" accounts-api="[[ api.accounts ]]" api-errors="[[ _apiErrors ]]" page-config="[[ _pageConfig ]]" toolbar="[[ \$.appscoDashboardFolderPageActions ]]" on-loaded="_onLoadedPage" on-application-shared="_onApplicationShared" on-application-instance-removed="_onApplicationInstanceRevoked" on-show-page="_onShowPage">
                     </appsco-dashboard-folder-page>
 
-                    <appsco-saml-authn-request-invalid-page name="saml-authn-request-invalid" page="" company-page="" id="appscoSamlAuthnRequestInvalidPage" on-back-to-dashboard="_showCompanyHomePage" disable-upgrade\$="[[!_applicationsApi]]"></appsco-saml-authn-request-invalid-page>
+                    <appsco-saml-authn-request-invalid-page name="saml-authn-request-invalid" page="" company-page=""
+                        id="appscoSamlAuthnRequestInvalidPage"
+                        on-back-to-dashboard="_showCompanyHomePage">
+                    </appsco-saml-authn-request-invalid-page>
 
                     <appsco-policies-page name="policies" page="" company-page="" id="appscoPoliciesPage" authorization-token="[[ authorizationToken ]]" company-policies-api="[[ _companyPoliciesApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoPoliciesPageActions ]]" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
                     </appsco-policies-page>
@@ -523,8 +565,7 @@ class AppscoApp extends mixinBehaviors([
 
             api: {
                 type: Object,
-                value: function () { return {}; },
-                notify: true
+                value: function () { return {}; }
             },
 
             _apiErrors: {
@@ -539,7 +580,6 @@ class AppscoApp extends mixinBehaviors([
                 value: function() {
                     return {};
                 },
-                notify: true,
                 observer: '_onAccountChanged'
             },
 
@@ -605,7 +645,6 @@ class AppscoApp extends mixinBehaviors([
                 value: function() {
                     return {};
                 },
-                notify: true,
                 observer: '_onCurrentCompanyChanged'
             },
 
@@ -922,8 +961,7 @@ class AppscoApp extends mixinBehaviors([
 
             _tutorials: {
                 type: Object,
-                value: function(){ return {}; },
-                notify: true
+                value: function(){ return {}; }
             },
 
             _tutorialsPageVisible: {
@@ -933,26 +971,22 @@ class AppscoApp extends mixinBehaviors([
 
             _directoryPageLoaded: {
                 type: Boolean,
-                value: false,
-                notify: true
+                value: false
             },
 
             _resourcesPageLoaded : {
                 type: Boolean,
-                value: false,
-                notify: true
+                value: false
             },
 
             shareResourceDialogAccountsLoaded: {
                 type: Boolean,
-                value: false,
-                notify: true
+                value: false
             },
 
             _companyDomainsLoaded: {
                 type: Boolean,
-                value: false,
-                notify: true
+                value: false
             },
 
             pageConfigResponse: {
@@ -981,7 +1015,6 @@ class AppscoApp extends mixinBehaviors([
 
             isTutorialActive: {
                 type: Boolean,
-                notify: true,
                 value: false
             },
 
@@ -1277,10 +1310,12 @@ class AppscoApp extends mixinBehaviors([
         this.page = page || 'home';
     }
 
-    _pageChanged(page) {
-        this._setProgressBar(page);
-        this._closeToastMessage();
-        this.$.appDrawer.close();
+    _pageChanged(page, oldPage) {
+        if (undefined !== oldPage) {
+            this._setProgressBar(page);
+            this._closeToastMessage();
+            this.$.appDrawer.close();
+        }
 
         // Load page import on demand. Show 404 page if fails
         import(`./appsco-${page}-page.js`).then(null, this._showPage404.bind(this));

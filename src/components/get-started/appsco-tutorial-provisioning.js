@@ -6,11 +6,12 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 
 class AppscoTutorialProvisioning extends mixinBehaviors([
     AppscoTutorialBehaviour,
     AppscoCoverBehaviour
-], PolymerElement) {
+], DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
         <style>
@@ -152,8 +153,8 @@ class AppscoTutorialProvisioning extends mixinBehaviors([
         };
     }
 
-    ready() {
-        super.ready();
+    constructor() {
+        super();
 
         this.tutorialId = 'provisioning';
         this.tutorialTitle = 'Provisioning';
@@ -162,8 +163,8 @@ class AppscoTutorialProvisioning extends mixinBehaviors([
         this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084391-Provisioning';
     }
 
-    connectedCallback() {
-        super.connectedCallback();
+    ready() {
+        super.ready();
 
         this.tutorialId = 'provisioning';
         this.tutorialTitle = 'Provisioning';

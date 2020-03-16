@@ -7,11 +7,12 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import Popper from "popper.js";
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 
 class AppscoTutorialIdentityProvider extends mixinBehaviors([
     AppscoTutorialBehaviour,
     AppscoCoverBehaviour
-], PolymerElement) {
+], DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
         <style>
@@ -140,8 +141,8 @@ class AppscoTutorialIdentityProvider extends mixinBehaviors([
         };
     }
 
-    ready() {
-        super.ready();
+    constructor() {
+        super();
 
         this.tutorialId = 'identity_provider';
         this.tutorialTitle = 'Identity provider';
@@ -150,8 +151,8 @@ class AppscoTutorialIdentityProvider extends mixinBehaviors([
         this.readme = 'https://support.appsco.com/hc/en-gb/sections/360002084471-Identity-Provider-Settings';
     }
 
-    connectedCallback() {
-        super.connectedCallback();
+    ready() {
+        super.ready();
 
         this.tutorialId = 'identity_provider';
         this.tutorialTitle = 'Identity provider';

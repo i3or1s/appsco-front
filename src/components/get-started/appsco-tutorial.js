@@ -16,8 +16,12 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import Popper from "popper.js";
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 
-class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.HeadersMixin], PolymerElement) {
+class AppscoTutorial extends mixinBehaviors([
+    AppscoCoverBehaviour,
+    Appsco.HeadersMixin
+], DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
         <style>
@@ -37,21 +41,24 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             id="companyProfile"
             page="[[ currentPage ]]"
             on-tutorial-done="_onTutorialDone"
-            on-tutorial-step-changed="_onStepChanged">
+            on-tutorial-step-changed="_onStepChanged"
+            disable-upgrade\$="[[ !_tutorialsUpgraded ]]">
         </appsco-tutorial-company-settings>
 
         <appsco-tutorial-company-branding
             id="companyBranding"
             page="[[ currentPage ]]"
             on-tutorial-done="_onTutorialDone"
-            on-tutorial-step-changed="_onStepChanged">
+            on-tutorial-step-changed="_onStepChanged"
+            disable-upgrade\$="[[ !_tutorialsUpgraded ]]">
         </appsco-tutorial-company-branding>
 
         <appsco-tutorial-branded-login
             id="brandedLogin"
             page="[[ currentPage ]]"
             on-tutorial-done="_onTutorialDone"
-            on-tutorial-step-changed="_onStepChanged">
+            on-tutorial-step-changed="_onStepChanged"
+            disable-upgrade\$="[[ !_tutorialsUpgraded ]]">
         </appsco-tutorial-branded-login>
 
         <appsco-tutorial-add-company-user
@@ -59,7 +66,8 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             page="[[ currentPage ]]"
             directory-page-loaded="[[ directoryPageLoaded ]]"
             on-tutorial-done="_onTutorialDone"
-            on-tutorial-step-changed="_onStepChanged">
+            on-tutorial-step-changed="_onStepChanged"
+            disable-upgrade\$="[[ !_tutorialsUpgraded ]]">
         </appsco-tutorial-add-company-user>
 
         <appsco-tutorial-resources
@@ -67,7 +75,8 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             page="[[ currentPage ]]"
             resources-page-loaded="[[ resourcesPageLoaded ]]"
             on-tutorial-done="_onTutorialDone"
-            on-tutorial-step-changed="_onStepChanged">
+            on-tutorial-step-changed="_onStepChanged"
+            disable-upgrade\$="[[ !_tutorialsUpgraded ]]">
         </appsco-tutorial-resources>
 
         <appsco-tutorial-share-resources 
@@ -76,7 +85,8 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             on-tutorial-done="_onTutorialDone"
             resources-page-loaded="[[ resourcesPageLoaded ]]"
             resource-share-accounts-loaded="[[ resourceShareAccountsLoaded ]]"
-            on-tutorial-step-changed="_onStepChanged">
+            on-tutorial-step-changed="_onStepChanged"
+            disable-upgrade\$="[[ !_tutorialsUpgraded ]]">
         </appsco-tutorial-share-resources>
 
         <appsco-tutorial-company-domain
@@ -84,7 +94,8 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             page="[[ currentPage ]]"
             company-domains-loaded="[[ companyDomainsLoaded ]]"
             on-tutorial-done="_onTutorialDone"
-            on-tutorial-step-changed="_onStepChanged">
+            on-tutorial-step-changed="_onStepChanged"
+            disable-upgrade\$="[[ !_tutorialsUpgraded ]]">
         </appsco-tutorial-company-domain>
 
         <appsco-tutorial-identity-provider
@@ -92,14 +103,16 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
             page="[[ currentPage ]]"
             company-domains-loaded="[[ companyDomainsLoaded ]]"
             on-tutorial-done="_onTutorialDone"
-            on-tutorial-step-changed="_onStepChanged">
+            on-tutorial-step-changed="_onStepChanged"
+            disable-upgrade\$="[[ !_tutorialsUpgraded ]]">
         </appsco-tutorial-identity-provider>
 
         <appsco-tutorial-provisioning
             id="companyProvisioning"
             page="[[ currentPage ]]"
             on-tutorial-done="_onTutorialDone"
-            on-tutorial-step-changed="_onStepChanged">
+            on-tutorial-step-changed="_onStepChanged"
+            disable-upgrade\$="[[ !_tutorialsUpgraded ]]">
         </appsco-tutorial-provisioning>
 
         <div id="done-all-tutorials" class="done-step" hidden="">
@@ -198,6 +211,11 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
                 type: Boolean,
                 value: false,
                 notify: true
+            },
+
+            _tutorialsUpgraded: {
+                type: Boolean,
+                value: false
             }
         };
     }
@@ -220,13 +238,18 @@ class AppscoTutorial extends mixinBehaviors([AppscoCoverBehaviour, Appsco.Header
         });
     }
 
-    _pageChanged(){
-        this.tuts.forEach(function(item, key){
-            const tutorial = this.shadowRoot.getElementById(item);
-            if(tutorial) {
-                tutorial.pageChanged(this.currentPage);
-            }
-        }.bind(this));
+    _pageChanged(page){
+        if ('get-started' === page) {
+            this._tutorialsUpgraded = true;
+        }
+        setTimeout(function() {
+            this.tuts.forEach(function (item, key) {
+                const tutorial = this.shadowRoot.getElementById(item);
+                if (tutorial) {
+                    tutorial.pageChanged(this.currentPage);
+                }
+            }.bind(this));
+        }.bind(this), 0);
     }
 
     getTutorials() {

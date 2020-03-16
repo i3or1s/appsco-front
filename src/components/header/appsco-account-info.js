@@ -2,11 +2,9 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-button/paper-button.js';
-import '@polymer/iron-localstorage/iron-localstorage.js';
 import '@polymer/iron-media-query/iron-media-query.js';
 import '@polymer/iron-image/iron-image.js';
 import './appsco-dropdown.js';
-import './appsco-account-info-account.js';
 import '../account/appsco-account-image.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
@@ -196,16 +194,6 @@ class AppscoAccountInfo extends PolymerElement {
                     </div>
                 </div>
 
-                <div class="account-holder layout vertical">
-
-                    <template is="dom-repeat" items="{{ accounts }}">
-
-                        <appsco-account-info-account account="{{ item }}">
-                        </appsco-account-info-account>
-
-                    </template>
-
-                </div>
                 <div class="actions layout horizontal">
                     <div class="flex">
                         <paper-button class="gray-button add-account-button" on-tap="_onAddAccountAction" disabled="">
@@ -223,9 +211,6 @@ class AppscoAccountInfo extends PolymerElement {
                 </div>
             </appsco-dropdown>
         </div>
-
-        <iron-localstorage id="localStorageAccounts" name="appsco-login-accounts" value="{{ accounts }}">
-        </iron-localstorage>
 `;
     }
 
@@ -250,14 +235,6 @@ class AppscoAccountInfo extends PolymerElement {
             _accountExists: {
                 type: Boolean,
                 value: false
-            },
-
-            /**
-             * Additional accounts from AppsCo dashboard - currently inactive.
-             */
-            accounts: {
-                type: Array,
-                value: []
             },
 
             /**
@@ -311,8 +288,7 @@ class AppscoAccountInfo extends PolymerElement {
         const accountInfoDropdown = this.$.accountInfoDropdown;
 
         if (this.info && this.info.trim() !== '') {
-            accountInfoDropdown.customStyle['--dropdown-caret-background-color'] = 'var(--info-background-color, #edf9ff)';
-            accountInfoDropdown.updateStyles();
+            accountInfoDropdown.updateStyles({'--dropdown-caret-background-color': 'var(--info-background-color, #edf9ff);'});
         }
     }
 

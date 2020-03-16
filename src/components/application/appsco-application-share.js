@@ -17,8 +17,12 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 
-class AppscoApplicationShare extends mixinBehaviors([Appsco.HeadersMixin, NeonAnimationRunnerBehavior], PolymerElement) {
+class AppscoApplicationShare extends mixinBehaviors([
+    Appsco.HeadersMixin,
+    NeonAnimationRunnerBehavior],
+    DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
         <style>

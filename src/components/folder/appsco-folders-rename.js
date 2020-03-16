@@ -14,8 +14,9 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 
-class AppscoFoldersRename extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
+class AppscoFoldersRename extends mixinBehaviors([Appsco.HeadersMixin], DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
         <style>
