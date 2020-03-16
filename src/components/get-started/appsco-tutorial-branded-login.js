@@ -6,11 +6,12 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 
 class AppscoTutorialBrandedLogin extends mixinBehaviors([
     AppscoTutorialBehaviour,
     AppscoCoverBehaviour
-], PolymerElement) {
+], DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
         <style>
@@ -99,8 +100,8 @@ class AppscoTutorialBrandedLogin extends mixinBehaviors([
         };
     }
 
-    ready() {
-        super.ready();
+    constructor() {
+        super();
 
         this.tutorialId = 'branded_login';
         this.tutorialTitle = 'Branded login';
@@ -109,8 +110,8 @@ class AppscoTutorialBrandedLogin extends mixinBehaviors([
         this.readme = 'https://support.appsco.com/hc/en-gb/articles/360014981992-Branded-login';
     }
 
-    connectedCallback() {
-        super.connectedCallback();
+    ready() {
+        super.ready();
 
         this.tutorialId = 'branded_login';
         this.tutorialTitle = 'Branded login';

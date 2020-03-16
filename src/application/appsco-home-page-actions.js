@@ -14,7 +14,7 @@ import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-class AppscoHomePageActions extends mixinBehaviors([NeonAnimatableBehavior], PolymerElement) {
+class AppscoHomePageActions extends mixinBehaviors([ NeonAnimatableBehavior ], PolymerElement) {
     static get template() {
         return html`
         <style>
@@ -256,7 +256,6 @@ class AppscoHomePageActions extends mixinBehaviors([NeonAnimatableBehavior], Pol
         };
 
         beforeNextRender(this, function() {
-            this.updateStyles();
             if (this.mobileScreen || this.tabletScreen) {
                 this.updateStyles();
             }

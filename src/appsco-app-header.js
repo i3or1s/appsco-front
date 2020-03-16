@@ -14,9 +14,6 @@ import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/iron-media-query/iron-media-query.js';
 import '@polymer/neon-animation/neon-animated-pages.js';
-import '@polymer/neon-animation/animations/fade-in-animation.js';
-import '@polymer/neon-animation/animations/fade-out-animation.js';
-import '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/iron-icons/iron-icons.js';
@@ -36,10 +33,9 @@ import './components/company/appsco-company-notice.js';
 import './shared-styles.js';
 import './webkit-scrollbar-style.js';
 import './components/get-started/appsco-tutorial.js';
-import './components/get-started/appsco-tutorial-progress.js';
 import './components/components/appsco-behavior-export-report.js';
-import '@polymer/polymer/lib/mixins/disable-upgrade-mixin.js';
 import '@polymer/polymer/lib/utils/render-status.js';
+
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="appsco-app-header">

@@ -43,7 +43,7 @@ class AppscoApplications extends mixinBehaviors([
         </style>
 
         <div class="list-container">
-            <iron-ajax auto="" id="applicationsApiRequest" url="[[ _currentUrl ]]" on-error="_onError" on-response="_onResponse" headers="{{ _headers }}" debounce-duration="300"></iron-ajax>
+            <iron-ajax auto="" id="applicationsApiRequest" url="[[ _currentUrl ]]" on-error="_onError" on-response="_onResponse" headers="[[ _headers ]]"></iron-ajax>
 
             <paper-progress id="paperProgress" class="list-progress-bar" indeterminate=""></paper-progress>
 
