@@ -26,6 +26,9 @@ class AppscoFoldersRemove extends mixinBehaviors([Appsco.HeadersMixin], DisableU
                 top: 20vh;
                 @apply --appsco-paper-dialog;
             }
+            :host paper-dialog h2 {
+                font-weight: normal;
+            }
             :host paper-dialog-scrollable > * {
                 @apply --paper-dialog-scrollable-child;
             }
