@@ -29,7 +29,9 @@ class AppscoFoldersRename extends mixinBehaviors([Appsco.HeadersMixin], DisableU
                 top: 120px;
                 @apply --appsco-paper-dialog;
             }
-
+            :host paper-dialog h2 {
+                font-weight: normal;
+            }
             :host .buttons paper-button {
                 @apply --paper-dialog-button;
             }

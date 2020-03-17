@@ -173,7 +173,8 @@ class AppscoHomePage extends mixinBehaviors([
                         load-more=""
                         authorization-token="[[ authorizationToken ]]"
                         list-api="[[ foldersApi ]]"
-                        on-list-loaded="_showFolders"
+                        on-list-loaded="_onFoldersLoaded"
+                        on-list-empty="_onFoldersEmptyLoaded"
                         on-open-rename-folder-dialog="_onOpenRenameFolderDialog"
                         on-open-remove-folder-dialog="_onOpenRemoveFolderDialog"
                         on-item="_onFolderAction">
@@ -193,10 +194,10 @@ class AppscoHomePage extends mixinBehaviors([
                         on-edit="_onApplicationEdit"
                         on-application="_onApplication"
                         on-application-removed="_onApplicationRemoved"
-                        on-loaded="_pageLoaded"
                         on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
                         on-edit-shared-application="_onEditSharedApplication"
-                        on-empty-load="_pageLoaded">
+                        on-loaded="_onApplicationsLoaded"
+                        on-empty-load="_onApplicationsLoaded">
                     </appsco-applications>
                 </div>
             </div>
@@ -291,6 +292,7 @@ class AppscoHomePage extends mixinBehaviors([
             dashboard-api="[[ dashboardApi ]]"
             item="[[ item ]]"
             on-application-added="_onApplicationAdded"
+            on-application-settings-saved="_stopPropagation"
             disable-upgrade>
         </appsco-application-add>
 
@@ -299,6 +301,7 @@ class AppscoHomePage extends mixinBehaviors([
             authorization-token="[[ authorizationToken ]]"
             dashboard-api="[[ dashboardApi ]]"
             on-application-added="_onApplicationAdded"
+            on-application-settings-saved="_stopPropagation"
             disable-upgrade>
         </appsco-dialog-application-add>
 
@@ -516,6 +519,17 @@ class AppscoHomePage extends mixinBehaviors([
 
             pageLoaded: {
                 type: Boolean,
+                computed: '_computePageLoaded(_applicationsLoaded, _foldersLoaded)',
+                observer: '_pageLoadedChanged'
+            },
+
+            _applicationsLoaded: {
+                type: Boolean,
+                value: false
+            },
+
+            _foldersLoaded: {
+                type: Boolean,
                 value: false
             },
 
@@ -534,7 +548,6 @@ class AppscoHomePage extends mixinBehaviors([
     ready() {
         super.ready();
 
-        this.pageLoaded = false;
         this.animationConfig = {
             'entry': {
                 name: 'fade-in-animation',
@@ -604,7 +617,7 @@ class AppscoHomePage extends mixinBehaviors([
                 setTimeout(function() {
                     dialog.setApplicationTemplate(request.response.application);
                     dialog.toggle();
-                }, 0);
+                }.bind(this), 0);
             }
 
         }.bind(this));
@@ -634,6 +647,10 @@ class AppscoHomePage extends mixinBehaviors([
             dialog.setOnPersonal();
             dialog.open();
         }, 0);
+    }
+
+    _stopPropagation(e) {
+        e.stopPropagation();
     }
 
     _onFolderAdded(event) {
@@ -669,10 +686,28 @@ class AppscoHomePage extends mixinBehaviors([
         return application.permisions && application.permisions.edit_claims;
     }
 
-    _pageLoaded() {
-        this.pageLoaded = true;
-        this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
-        this._initializeResourcesDragBehavior();
+    _onFoldersLoaded() {
+        this._foldersLoaded = true;
+        this._showFolders();
+    }
+
+    _onFoldersEmptyLoaded() {
+        this._foldersLoaded = true;
+    }
+
+    _onApplicationsLoaded() {
+        this._applicationsLoaded = true;
+    }
+
+    _computePageLoaded(applicationsLoaded, foldersLoaded) {
+        return applicationsLoaded && foldersLoaded;
+    }
+
+    _pageLoadedChanged(pageLoaded) {
+        if (pageLoaded) {
+            this.dispatchEvent(new CustomEvent('page-loaded', {bubbles: true, composed: true}));
+            this._initializeResourcesDragBehavior();
+        }
     }
 
     initializePage() {
@@ -794,6 +829,7 @@ class AppscoHomePage extends mixinBehaviors([
     }
 
     reloadApplications() {
+        this._applicationsLoaded = false;
         this.$.appscoApplications.reloadApplications();
     }
 

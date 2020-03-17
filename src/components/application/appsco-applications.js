@@ -748,6 +748,7 @@ class AppscoApplications extends mixinBehaviors([
                     }
                 }.bind(this), (index + 1) * 30 ));
             }.bind(this));
+            this.dispatchEvent(new CustomEvent('filter-done', { bubbles: true, composed: true }));
         }.bind(this));
     }
 
