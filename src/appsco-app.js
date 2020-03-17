@@ -332,8 +332,31 @@ class AppscoApp extends mixinBehaviors([
 
                 <neon-animated-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main" on-neon-animation-finish="_onPageAnimationFinish">
 
-                    <appsco-home-page name="home" page="" id="appscoHomePage" application="{{ application }}" account="[[ account ]]" application-log="[[ application.meta.log ]]" authorization-token="[[ authorizationToken ]]" applications-api="[[ _applicationsApi ]]" folders-api="[[ api.foldersApi ]]" dashboard-api="[[ _addAppApi ]]" page-config="[[ _pageConfig ]]" api-errors="[[ _apiErrors ]]" accounts-api="[[ api.accounts ]]" domain="[[ domain ]]" item="[[ _copyObject(item) ]]" toolbar="[[ \$.appscoHomePageActions ]]" applications-template-api="[[ api.applicationTemplates ]]" icons-api="[[ api.icons ]]" personal-items-api="[[ api.personalItems ]]" shared-with-me-items-api="[[ api.sharedWithMeItems ]]" on-loaded="_onLoadedPage" on-folder-tapped="_onFolderTapped" on-application-shared="_onApplicationShared" on-application-settings-saved="_onApplicationSettingsSaved" on-applications-removed="_onApplicationsRemovedFromHomePage">
-                    </appsco-home-page>
+                     <appsco-home-page name="home" page=""
+                         id="appscoHomePage"
+                         application="{{ application }}"
+                         account="[[ account ]]"
+                         application-log="[[ application.meta.log ]]"
+                         authorization-token="[[ authorizationToken ]]"
+                         applications-api="[[ _applicationsApi ]]"
+                         folders-api="[[ api.foldersApi ]]"
+                         dashboard-api="[[ _addAppApi ]]"
+                         page-config="[[ _pageConfig ]]"
+                         api-errors="[[ _apiErrors ]]"
+                         accounts-api="[[ api.accounts ]]"
+                         domain="[[ domain ]]"
+                         item="[[ _copyObject(item) ]]"
+                         toolbar="[[ \$.appscoHomePageActions ]]"
+                         applications-template-api="[[ api.applicationTemplates ]]"
+                         icons-api="[[ api.icons ]]"
+                         personal-items-api="[[ api.personalItems ]]"
+                         shared-with-me-items-api="[[ api.sharedWithMeItems ]]"
+                         on-loaded="_onLoadedPage"
+                         on-folder-tapped="_onFolderTapped"
+                         on-application-shared="_onApplicationShared"
+                         on-application-settings-saved="_onApplicationSettingsSaved"
+                         on-applications-removed="_onApplicationsRemovedFromHomePage">
+                     </appsco-home-page>
 
                     <appsco-resource-page name="resource" page="" id="appscoApplicationPage" route="[[ subroute ]]" company="[[ _companyPage ]]" application="{{ application }}" applications-api="[[ _applicationsApi ]]" icons-api="[[ api.icons ]]" application-log="[[ application.meta.log ]]" authorization-token="[[ authorizationToken ]]" accounts-api="[[ api.accounts ]]" account="{{ account }}" toolbar="[[ \$.appscoApplicationPageActions ]]" on-application-shared="_onApplicationShared" on-application-removed="_onApplicationRemoved" on-subscription-revoked="_onSubscriptionRevoked" on-application-settings-saved="_onApplicationSettingsSaved" on-application-settings-no-changes="_onApplicationSettingsNoChanges" on-autologin-changed="_onAutologinChanged" on-resource-image-changed="_onResourceImageChanged" on-page-error="_onError" on-image-upload-error="_onImageUploadError">
                     </appsco-resource-page>
@@ -350,7 +373,7 @@ class AppscoApp extends mixinBehaviors([
                         company-upgrade-api="[[ api.upgradeToBusiness ]]"
                         on-upgraded="_upgradedToBusiness"
                         on-upgrade-failed="_onUpgradeToCompanyFailed">
-                        </appsco-trybusiness-page>
+                    </appsco-trybusiness-page>
 
                     <appsco-company-home-page name="company-home" page="" company-page="" id="appscoCompanyHomePage" authorization-token="[[ authorizationToken ]]" applications-api="[[ _companyIconsWithoutFolderApi ]]" folders-api="[[ api.foldersApi ]]" company-folders-api="[[ _companyFoldersApi ]]" netscaler-api="[[ _companyNetscalerFeatureApi ]]" accounts-api="[[ api.accounts ]]" account="[[ account ]]" domain="[[ domain ]]" api-errors="[[ _apiErrors ]]" page-config="[[ _pageConfig ]]" company="{{ currentCompany.company }}" toolbar="[[ \$.appscoCompanyHomePageActions ]]" on-loaded="_onLoadedPage" on-folder-tapped="_onFolderTapped" on-application-shared="_onApplicationShared" on-application-settings-saved="_onApplicationSettingsSaved">
                     </appsco-company-home-page>
