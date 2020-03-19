@@ -47,6 +47,9 @@ class AppscoIntegrationRuleItem extends mixinBehaviors([
 
                 --iron-icon-fill-color: var(--primary-text-color, #ffffff);
             }
+            :host .item-info {
+                padding: 0 10px;
+            }
             :host([tablet-screen]) .item-basic-info, :host([tablet-screen]) .item-basic-info .info-label, :host([tablet-screen]) .item-basic-info .info-value {
                 width: 40%;;
             }

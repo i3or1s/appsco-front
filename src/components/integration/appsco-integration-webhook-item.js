@@ -24,6 +24,9 @@ class AppscoIntegrationWebhookItem extends mixinBehaviors([
             :host .item {
                 cursor: default;
             }
+            :host .item-info {
+                padding: 0 10px;
+            }
             :host .icon-container {
                 width: 52px;
                 height: 52px;

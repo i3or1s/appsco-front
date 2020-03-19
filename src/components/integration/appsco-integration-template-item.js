@@ -37,6 +37,7 @@ class AppscoIntegrationTemplateItem extends mixinBehaviors([
             }
             :host .item {
                 cursor: default;
+                padding: 10px;
             }
             :host .icon-container {
                 width: 24px;
@@ -57,8 +58,8 @@ class AppscoIntegrationTemplateItem extends mixinBehaviors([
 
                 --iron-icon-fill-color: var(--primary-text-color, #ffffff);
             }
-            :host .item {
-                padding: 10px;
+            :host .item-info {
+                padding: 0 10px;
             }
             :host appsco-loader {
                 background-color: rgba(255, 255, 255, 0.3);
