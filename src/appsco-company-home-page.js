@@ -588,7 +588,6 @@ class AppscoCompanyHomePage extends mixinBehaviors([
 
     resetPage() {
         this.$.appscoApplications.reset();
-        this.$.appscoApplications.reloadApplications();
         this.$.appscoFolders.resetAllItems();
         this._hideInfo();
     }

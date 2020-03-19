@@ -360,7 +360,6 @@ class AppscoContactHomePage extends mixinBehaviors([
 
     resetPage() {
         this.$.appscoApplications.reset();
-        this.$.appscoApplications.reloadApplications();
         this._hideInfo();
     }
 
