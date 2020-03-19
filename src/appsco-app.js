@@ -3250,7 +3250,9 @@ class AppscoApp extends mixinBehaviors([
     }
 
     _onIntegrationRemoved(event) {
-        this.$.appscoProvisioningPage.reloadIntegrations();
+        if (this.$.appscoProvisioningPage.$) {
+            this.$.appscoProvisioningPage.reloadIntegrations();
+        }
         this._showCompanyProvisioningPage();
         this._notify('Integration was successfully removed.');
     }

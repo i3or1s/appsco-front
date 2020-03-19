@@ -271,25 +271,52 @@ class AppscoManageIntegrationPage extends mixinBehaviors([
             </div>
         </appsco-content>
 
-        <appsco-remove-integration id="appscoRemoveIntegration" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]">
+        <appsco-remove-integration
+            id="appscoRemoveIntegration"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]">
         </appsco-remove-integration>
 
-        <appsco-register-integration-webhook id="appscoRegisterIntegrationWebhook" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-integration-webhook-registered="_onIntegrationWebhookRegistered">
+        <appsco-register-integration-webhook
+            id="appscoRegisterIntegrationWebhook"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]"
+            on-integration-webhook-registered="_onIntegrationWebhookRegistered">
         </appsco-register-integration-webhook>
 
-        <appsco-unregister-integration-webhook id="appscoUnegisterIntegrationWebhook" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-integration-webhook-unregistered="_onIntegrationWebhookUnregistered">
+        <appsco-unregister-integration-webhook
+            id="appscoUnegisterIntegrationWebhook"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]"
+            on-integration-webhook-unregistered="_onIntegrationWebhookUnregistered">
         </appsco-unregister-integration-webhook>
 
-        <appsco-add-integration-rule id="appscoAddIntegrationRule" authorization-token="[[ authorizationToken ]]" on-integration-rule-added="_onIntegrationRuleAdded" api-errors="[[ apiErrors ]]">
+        <appsco-add-integration-rule
+            id="appscoAddIntegrationRule"
+            authorization-token="[[ authorizationToken ]]"            
+            api-errors="[[ apiErrors ]]"
+            on-integration-rule-added="_onIntegrationRuleAdded">
         </appsco-add-integration-rule>
 
-        <appsco-edit-integration-rule id="appscoEditIntegrationRule" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-integration-rule-edited="_onIntegrationRuleEdited">
+        <appsco-edit-integration-rule
+            id="appscoEditIntegrationRule"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]"
+            on-integration-rule-edited="_onIntegrationRuleEdited">
         </appsco-edit-integration-rule>
 
-        <appsco-run-integration-rule id="appscoRunIntegrationRule" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-integration-rule-run="_onIntegrationRuleRun">
+        <appsco-run-integration-rule
+            id="appscoRunIntegrationRule"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]"
+            on-integration-rule-run="_onIntegrationRuleRun">
         </appsco-run-integration-rule>
 
-        <appsco-remove-integration-rule id="appscoRemoveIntegrationRule" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-integration-rule-removed="_onIntegrationRuleRemoved">
+        <appsco-remove-integration-rule
+            id="appscoRemoveIntegrationRule"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]"
+            on-integration-rule-removed="_onIntegrationRuleRemoved">
         </appsco-remove-integration-rule>
 `;
     }
@@ -590,7 +617,7 @@ class AppscoManageIntegrationPage extends mixinBehaviors([
 
     _onRemoveIntegration(event) {
         const dialog = this.shadowRoot.getElementById('appscoRemoveIntegration');
-        dialog.setIntegration(event.detail.integration);
+        dialog.setIntegration(this.integration);
         dialog.open();
     }
 
