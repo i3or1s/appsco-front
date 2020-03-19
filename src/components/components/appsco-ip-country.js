@@ -42,7 +42,7 @@ class AppscoIPCountry extends PolymerElement {
         super.ready();
 
         if(this._isLocalStorageSupported()) {
-            this._cache = JSON.parse(this._getStoredValue('appsco-ip-country-cache'));
+            this._cache = this._getCountryCache();
         }
     }
 
@@ -50,6 +50,9 @@ class AppscoIPCountry extends PolymerElement {
      * @private
      */
     _calculateCountry() {
+        if (!this.ip) {
+            return;
+        }
         if(this._cache && this._cache[this.ip]) {
             this._country = this._cache[this.ip];
             return;
@@ -66,7 +69,7 @@ class AppscoIPCountry extends PolymerElement {
                 this._country = request.response.geoplugin_countryName;
                 this._cache[this.ip] = this._country;
                 if(this._isLocalStorageSupported()) {
-                    const _cache = JSON.parse(this._getStoredValue('appsco-ip-country-cache'));
+                    const _cache = this._getCountryCache();
                     if(!_cache[this.ip]) {
                         _cache[this.ip] = this._country;
                         this._storeValue('appsco-ip-country-cache', JSON.stringify(_cache));
@@ -91,6 +94,11 @@ class AppscoIPCountry extends PolymerElement {
             const secure_cookie = Boolean(Number(this.cookieSecure)) === true ? ';secure' : '';
             document.cookie = key + '=' + value + secure_cookie;
         }
+    }
+
+    _getCountryCache() {
+        const storedValue = JSON.parse(this._getStoredValue('appsco-ip-country-cache'));
+        return storedValue && Array.isArray(storedValue) ? storedValue : [];
     }
 
     _getStoredValue(key) {
