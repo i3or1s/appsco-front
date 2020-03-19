@@ -50,6 +50,8 @@
   "sources": [
     "src/**/*",
     "images/**/*",
+    "node_modules/@polymer/gold-cc-cvc-input/*.png",
+    "node_modules/@polymer/gold-cc-input/images/*.*",
     "package.json"
   ],
   "extraDependencies": [
