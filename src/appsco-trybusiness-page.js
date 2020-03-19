@@ -280,7 +280,7 @@ class AppscoTrybusinessPage extends mixinBehaviors([NeonAnimatableBehavior], Pol
             <div content="" slot="content">
 
                 <div class="upgrade-header flex-vertical">
-                    <img src\$="[[rootPath]]images/appsco-logo-business.png" alt="Appsco Business">
+                    <img src="images/appsco-logo-business.png" alt="Appsco Business">
 
                     <h1 class="title text-center">
                         Connect and manage users, apps and directories <br> simply and securely
@@ -294,7 +294,7 @@ class AppscoTrybusinessPage extends mixinBehaviors([NeonAnimatableBehavior], Pol
 
                 <div class="upgrade-content flex-horizontal">
                     <div class="box flex-vertical flex">
-                        <img src\$="[[rootPath]]images/try-business/increase-productivity-icon.png" alt="Increase Productivity" class="box-icon">
+                        <img src="images/try-business/increase-productivity-icon.png" alt="Increase Productivity" class="box-icon">
                         <h2 class="box-title">Increase Productivity</h2>
                         <hr>
                         <ul class="box-list">
@@ -307,7 +307,7 @@ class AppscoTrybusinessPage extends mixinBehaviors([NeonAnimatableBehavior], Pol
                         </ul>
                     </div>
                     <div class="box flex-vertical flex">
-                        <img src\$="[[rootPath]]images/try-business/improve-security-icon.png" alt="Improve Security" class="box-icon">
+                        <img src="images/try-business/improve-security-icon.png" alt="Improve Security" class="box-icon">
                         <h2 class="box-title">Improve Security</h2>
                         <hr>
                         <ul class="box-list">
@@ -325,7 +325,7 @@ class AppscoTrybusinessPage extends mixinBehaviors([NeonAnimatableBehavior], Pol
                         </ul>
                     </div>
                     <div class="box flex-vertical flex">
-                        <img src\$="[[rootPath]]images/try-business/ensure-compliance-icon.png" alt="Ensure Compliance" class="box-icon">
+                        <img src="images/try-business/ensure-compliance-icon.png" alt="Ensure Compliance" class="box-icon">
                         <h2 class="box-title">Ensure Compliance</h2>
                         <hr>
                         <ul class="box-list">

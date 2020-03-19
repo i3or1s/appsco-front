@@ -49,7 +49,7 @@ class AppscoSamlAuthnRequestInvalidPage extends PolymerElement {
                     <paper-button class="provisioning-action" on-tap="_onBackToDashboardAction">Back to dashboard</paper-button>
 
                     <div>
-                        <img src\$="[[rootPath]]images/provisioning/provisioning-integration-failed.png" class="image">
+                        <img src\$="[[ resolveUrl('./../images/provisioning/provisioning-integration-failed.png') ]]" class="image">
                     </div>
                 </div>
             </div>
@@ -66,6 +66,10 @@ class AppscoSamlAuthnRequestInvalidPage extends PolymerElement {
                 value: false
             }
         };
+    }
+
+    static get importMeta() {
+        return import.meta;
     }
 
     ready() {
