@@ -44,6 +44,9 @@ class AppscoOAuthApplicationsItem extends mixinBehaviors([
 
                 --iron-icon-fill-color: var(--primary-text-color, #ffffff);
             }
+            :host .item-info {
+                padding: 0 10px;
+            }
         </style>
 
         <div class="item">
