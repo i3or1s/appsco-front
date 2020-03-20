@@ -30,9 +30,7 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
 ], PolymerElement) {
     static get template() {
         return html`
-        <style include="appsco-list-item-styles"></style>
-
-        <style>
+        <style include="appsco-list-item-styles">
             :host {
                 --appsco-access-on-boarding-event-item: {
                     width: 100%;
@@ -113,6 +111,9 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
             }
             :host([screen800]) .item-additional-info {
                 display: none;
+            }
+            :host .item-info {
+                padding: 0 10px;
             }
         </style>
 
