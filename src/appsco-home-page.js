@@ -705,7 +705,7 @@ class AppscoHomePage extends mixinBehaviors([
 
     _pageLoadedChanged(pageLoaded) {
         if (pageLoaded) {
-            this.dispatchEvent(new CustomEvent('page-loaded', {bubbles: true, composed: true}));
+            this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
             this._initializeResourcesDragBehavior();
         }
     }
@@ -716,7 +716,6 @@ class AppscoHomePage extends mixinBehaviors([
 
     resetPage() {
         this.$.appscoApplications.reset();
-        this.$.appscoApplications.reloadApplications();
         this.$.appscoFolders.resetAllItems();
         this._hideInfo();
     }

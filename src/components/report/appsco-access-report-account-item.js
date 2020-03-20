@@ -95,6 +95,9 @@ class AppscoAccessReportAccountItem extends mixinBehaviors([
             :host([screen800]) .item-additional-info {
                 display: none;
             }
+            :host .item-info {
+                padding: 0 10px;
+            }
         </style>
 
         <iron-ajax id="getResourcesApiRequest" url="[[ _getResourcesApiUrl ]]" headers="[[ _headers ]]" auto="" on-error="_onGetResourcesError" on-response="_onGetResourcesResponse"></iron-ajax>

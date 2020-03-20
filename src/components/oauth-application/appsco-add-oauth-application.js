@@ -87,7 +87,7 @@ class AppscoAddOAuthApplication extends mixinBehaviors([Appsco.HeadersMixin], Po
                             <div class="input-container horizontal-align">
                                 <paper-input label="Icon" name="oauth_application[icon_url]" value\$="[[ _applicationIcon ]]" pattern="https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&amp;//=]*)" required="" auto-validate="" error-message="Please enter valid icon URL." class="flex" on-value-changed="_onIconInputValueChanged"></paper-input>
 
-                                <iron-image class="application-image no-flex" src="[[ _applicationIcon ]]" alt="Application image" preload="" fade="" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII=" sizing="contain"></iron-image>
+                                <iron-image class="application-image no-flex" src\$="[[ _applicationIcon ]]" alt="Application image" preload="" fade="" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII=" sizing="contain"></iron-image>
                             </div>
 
                             <div class="input-container">
@@ -206,10 +206,15 @@ class AppscoAddOAuthApplication extends mixinBehaviors([Appsco.HeadersMixin], Po
     }
 
     _onCompanyChanged(company) {
-        this._applicationIcon = company.image ? company.image : null;
+        if (company.image) {
+            this._applicationIcon = company.image;
+        }
     }
 
     _onIconInputValueChanged(event) {
+        if (!event.detail.value) {
+            return;
+        }
         this.debounce('setIconURL', function() {
             this._applicationIcon = event.detail.value;
         }.bind(this), 500);

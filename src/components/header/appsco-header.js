@@ -57,7 +57,15 @@ class AppscoHeader extends PolymerElement {
 
             <div class="layout horizontal center">
 
-                <appsco-header-account-actions id="appscoHeaderAccountActions" class="mr-10" account="[[ account ]]" chat="[[ accountChat ]]" tutorial-action-available="[[ tutorialActionAvailable ]]" authorization-token="[[ authorizationToken ]]" notifications-api="[[ notificationsApi ]]" notifications-size="[[ notificationsSize ]]">
+                <appsco-header-account-actions
+                    id="appscoHeaderAccountActions"
+                    class="mr-10"
+                    account="[[ account ]]"
+                    chat="[[ accountChat ]]"
+                    tutorial-action-available="[[ tutorialActionAvailable ]]"
+                    authorization-token="[[ authorizationToken ]]"
+                    notifications-api="[[ notificationsApi ]]"
+                    notifications-size="[[ notificationsSize ]]">
                 </appsco-header-account-actions>
 
                 <appsco-account-info account="[[ account ]]" info="[[ accountInfo ]]" display-name="[[ accountDisplayName ]]" logout-api="[[ logoutApi ]]">

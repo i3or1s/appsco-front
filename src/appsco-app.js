@@ -359,8 +359,28 @@ class AppscoApp extends mixinBehaviors([
                          on-applications-removed="_onApplicationsRemovedFromHomePage">
                      </appsco-home-page>
 
-                    <appsco-resource-page name="resource" page="" id="appscoApplicationPage" route="[[ subroute ]]" company="[[ _companyPage ]]" application="{{ application }}" applications-api="[[ _applicationsApi ]]" icons-api="[[ api.icons ]]" application-log="[[ application.meta.log ]]" authorization-token="[[ authorizationToken ]]" accounts-api="[[ api.accounts ]]" account="{{ account }}" toolbar="[[ \$.appscoApplicationPageActions ]]" on-application-shared="_onApplicationShared" on-application-removed="_onApplicationRemoved" on-subscription-revoked="_onSubscriptionRevoked" on-application-settings-saved="_onApplicationSettingsSaved" on-application-settings-no-changes="_onApplicationSettingsNoChanges" on-autologin-changed="_onAutologinChanged" on-resource-image-changed="_onResourceImageChanged" on-page-error="_onError" on-image-upload-error="_onImageUploadError">
-                    </appsco-resource-page>
+                     <appsco-resource-page name="resource" page=""
+                         id="appscoApplicationPage"
+                         route="[[ subroute ]]"
+                         company="[[ _companyPage ]]"
+                         application="{{ application }}"
+                         applications-api="[[ _applicationsApi ]]"
+                         icons-api="[[ api.icons ]]"
+                         application-log="[[ application.meta.log ]]"
+                         authorization-token="[[ authorizationToken ]]"
+                         accounts-api="[[ api.accounts ]]"
+                         account="{{ account }}"
+                         toolbar="[[ \$.appscoApplicationPageActions ]]"
+                         on-application-shared="_onApplicationShared"
+                         on-application-removed="_onApplicationRemoved"
+                         on-subscription-revoked="_onSubscriptionRevoked"
+                         on-application-settings-saved="_onApplicationSettingsSaved"
+                         on-application-settings-no-changes="_onApplicationSettingsNoChanges"
+                         on-autologin-changed="_onAutologinChanged"
+                         on-resource-image-changed="_onResourceImageChanged"
+                         on-page-error="_onError"
+                         on-image-upload-error="_onImageUploadError">
+                     </appsco-resource-page>
 
                     <appsco-account-page name="account" page="" id="appscoAccountPage" account="{{ account }}" authorization-token="[[ authorizationToken ]]" notifications-api="[[ api.notifications ]]" authorized-apps-api="[[ api.authorizedApps ]]" log-api="[[ api.accountLog ]]" two-fa-api="[[ api.twoFA ]]" two-fa-qr-api="[[ api.twoFAQr ]]" two-fa-codes-api="[[ api.twoFACodes ]]" settings-api="[[ api.me ]]" image-settings-api="[[ api.profileImage ]]" change-password-api="[[ api.changePassword ]]" application-template-api="[[ api.applicationTemplates ]]" api-errors="[[ _apiErrors ]]" remove-account-api="[[ api.removeAccount ]]" logout-api="[[ api.logout ]]" account-managed="[[ _accountManaged ]]" toolbar="[[ \$.appscoAccountPageActions ]]" on-twofa-disabled="_onTwoFaDisabled" on-application-revoked="_onAuthorizedApplicationRevoked" on-import-finished="_onImportPersonalResourcesFinished" on-settings-saved="_onAccountSettingsSaved" on-password-changed="_onAccountPasswordChanged" on-image-upload-error="_onImageUploadError">
                     </appsco-account-page>
@@ -417,7 +437,34 @@ class AppscoApp extends mixinBehaviors([
                          on-share-items-loaded-changed="onShareResourceDialogAccountsLoadedChanged">
                      </appsco-resources-page>
 
-                    <appsco-manage-resource-page name="manage-resource" page="" company-page="" id="appscoManageApplicationPage" route="[[ subroute ]]" application="{{ _companyApplication }}" company-api="[[ _companyApi ]]" company-idp-saml-metadata-api="[[ _companySamlMetadataApi ]]" company-contacts-api="[[ _companyContactsApi ]]" company-roles-api="[[ _companyRolesApi ]]" company-groups-api="[[ _companyGroupsApi ]]" domain="[[ domain ]]" application-log="[[ _companyApplication.meta.log ]]" authorization-token="[[ authorizationToken ]]" accounts-api="[[ api.accounts ]]" account="{{ account }}" api-errors="[[ _apiErrors ]]" resource-admin="[[ _resourceAdmin ]]" toolbar="[[ \$.appscoManageApplicationPageActions ]]" on-applications-removed="_onApplicationsRemoved" on-resources-shared="_onResourcesShared" on-access-revoked="_onAssigneeAccessRevoked" on-application-removed-from-group="_onApplicationRemovedFromGroup" on-resource-admin-added="_onResourceAdminAdded" on-resource-admin-revoked="_onResourceAdminRevoked" on-application-settings-saved="_onApplicationSettingsSaved" on-page-error="_onError" on-resource-image-changed="_onResourceImageChanged" on-image-upload-error="_onImageUploadError">
+                    <appsco-manage-resource-page name="manage-resource" page="" company-page=""
+                        id="appscoManageApplicationPage"
+                        route="[[ subroute ]]"
+                        application="{{ _companyApplication }}"
+                        company-api="[[ _companyApi ]]"
+                        company-idp-saml-metadata-api="[[ _companySamlMetadataApi ]]"
+                        company-contacts-api="[[ _companyContactsApi ]]"
+                        company-roles-api="[[ _companyRolesApi ]]"
+                        company-groups-api="[[ _companyGroupsApi ]]"
+                        domain="[[ domain ]]"
+                        application-log="[[ _companyApplication.meta.log ]]"
+                        authorization-token="[[ authorizationToken ]]"
+                        accounts-api="[[ api.accounts ]]"
+                        account="{{ account }}"
+                        api-errors="[[ _apiErrors ]]"
+                        resource-admin="[[ _resourceAdmin ]]"
+                        toolbar="[[ \$.appscoManageApplicationPageActions ]]"
+                        on-applications-removed="_onApplicationsRemoved"
+                        on-resources-shared="_onResourcesShared"
+                        on-access-revoked="_onAssigneeAccessRevoked"
+                        on-application-removed-from-group="_onApplicationRemovedFromGroup"
+                        on-resource-admin-added="_onResourceAdminAdded"
+                        on-resource-admin-revoked="_onResourceAdminRevoked"
+                        on-claims-changed="_onAssigneeClaimsChanged"
+                        on-application-settings-saved="_onApplicationSettingsSaved"
+                        on-page-error="_onError"
+                        on-resource-image-changed="_onResourceImageChanged"
+                        on-image-upload-error="_onImageUploadError">
                     </appsco-manage-resource-page>
 
                     <appsco-directory-page name="directory" page="" company-page="" id="appscoDirectoryPage" role="{{ _role }}" authorization-token="[[ authorizationToken ]]" company-invitations-api="[[ _companyInvitationsApi ]]" company-directory-roles-api="[[ _companyRolesApi ]]" company-orgunits-api="[[ _companyOrgunitsApi ]]" company-subscription-api="[[ _companySubscriptionApi ]]" domains-api="[[ _companyDomainsApi ]]" groups-api="[[ _companyGroupsApi ]]" company-notifications-api="[[ _companyNotificationsApi ]]" company-contacts-api="[[ _companyContactsApi ]]" company-import-accounts-api="[[ _companyImportAccountsApi ]]" company-api="[[ _companyApi ]]" api-errors="[[ _apiErrors ]]" domain="[[ domain ]]" toolbar="[[ \$.appscoDirectoryPageActions ]]" on-added-to-orgunit="_onAccountsAddedToOrgunit" on-accounts-removed="_onAccountsRemoved" on-import-finished="_onAccountImportFinished" on-orgunit-added="_onOrgunitChanged" on-orgunit-modified="_onOrgunitChanged" on-orgunit-removed="_onOrgunitChanged" on-edit-account="_onEditAccount" on-info-edit-account="_onEditAccount" on-group-added="_onGroupAdded" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled" on-company-subscription-loaded="_onSubscriptionLoaded" on-page-loaded="_onDirectoryPageLoaded">
@@ -467,8 +514,13 @@ class AppscoApp extends mixinBehaviors([
                     <appsco-access-on-boarding-page name="access-on-boarding" page="" company-page="" id="appscoAccessOnBoardingPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" access-on-boarding-users-api="[[ _accessOnBoardingUsersApi ]]" export-access-on-boarding-api="[[ _exportAccessAccessOnBoardingApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoAccessOnBoardingPageActions ]]">
                     </appsco-access-on-boarding-page>
 
-                    <appsco-get-started-page name="get-started" page="" company-page="" id="appscoGetStartedPage" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" tutorials="[[ _tutorials ]]" on-tutorial-start="_onTutorialStart">
-                    </appsco-get-started-page>
+                     <appsco-get-started-page name="get-started" page="" company-page=""
+                         id="appscoGetStartedPage"
+                         account="[[ account ]]"
+                         authorization-token="[[ authorizationToken ]]"
+                         tutorials="[[ _tutorials ]]"
+                         on-tutorial-start="_onTutorialStart">
+                     </appsco-get-started-page>
 
                     <appsco-oauth-applications-page name="oauth-applications" page="" company-page="" id="appscoOAuthApplicationsPage" authorization-token="[[ authorizationToken ]]" o-auth-applications-api="[[ _companyOAuthApplicationsApi ]]" current-company="[[ currentCompany.company ]]" toolbar="[[ \$.appscoOAuthApplicationsPageActions ]]" on-edit-oauth-application="_onEditOAuthApplicationAction" on-oauth-application-removed="_onOAuthApplicationRemoved">
                     </appsco-oauth-applications-page>
@@ -1064,6 +1116,7 @@ class AppscoApp extends mixinBehaviors([
         super.ready();
 
         beforeNextRender(this, function() {
+            this._addListeners();
             if (this.mobileScreen || this.tabletScreen) {
                 this.updateStyles();
             }
@@ -1075,7 +1128,6 @@ class AppscoApp extends mixinBehaviors([
         afterNextRender(this, function() {
             this._getIsUserLoggedIn();
             this._checkNewNotifications();
-            this._addListeners();
         });
     }
 
@@ -3198,7 +3250,9 @@ class AppscoApp extends mixinBehaviors([
     }
 
     _onIntegrationRemoved(event) {
-        this.$.appscoProvisioningPage.reloadIntegrations();
+        if (this.$.appscoProvisioningPage.$) {
+            this.$.appscoProvisioningPage.reloadIntegrations();
+        }
         this._showCompanyProvisioningPage();
         this._notify('Integration was successfully removed.');
     }

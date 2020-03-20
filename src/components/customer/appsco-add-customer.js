@@ -5,6 +5,7 @@ import '@polymer/iron-form/iron-form.js';
 import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-dialog/paper-dialog.js';
+import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
 import '@polymer/neon-animation/animations/scale-up-animation.js';
 import '@polymer/neon-animation/animations/fade-out-animation.js';
@@ -63,6 +64,9 @@ class AppscoAddCustomer extends mixinBehaviors([Appsco.HeadersMixin, NeonAnimati
                 top: 120px;
                 @apply --appsco-paper-dialog;
             }
+            :host paper-dialog-scrollable > * {
+                @apply --paper-dialog-scrollable-child;
+            }
             :host appsco-loader {
                 margin: 0 !important;
                 padding: 0 !important;
@@ -120,63 +124,65 @@ class AppscoAddCustomer extends mixinBehaviors([Appsco.HeadersMixin, NeonAnimati
 
             <appsco-loader active="[[ _loader ]]" loader-alt="Appsco is processing request" multi-color=""></appsco-loader>
 
-            <div class="dialog-container">
+            <paper-dialog-scrollable>
+                <div class="dialog-container">
 
-                <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
-
-                <template is="dom-if" if="[[ _infoShown ]]">
-                    <div class="info-box">
-                        Customer with the same name already exists.
-                        If you want to add it anyway please continue.
+                    <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
+    
+                    <template is="dom-if" if="[[ _infoShown ]]">
+                        <div class="info-box">
+                            Customer with the same name already exists.
+                            If you want to add it anyway please continue.
+                        </div>
+                    </template>
+    
+                    <div>
+                        <p>You can add an existing AppsCo Business as a customer by using the partner transfer token they provide you with, or you can create a new AppsCo Business and automatically add your company as a partner. </p>
                     </div>
-                </template>
-
-                <div>
-                    <p>You can add an existing AppsCo Business as a customer by using the partner transfer token they provide you with, or you can create a new AppsCo Business and automatically add your company as a partner. </p>
-                </div>
-
-                <iron-form id="formCustomerNew" headers="[[ _headers ]]" on-iron-form-presubmit="_onFormPresubmit" on-iron-form-error="_onFormError" on-iron-form-response="_onFormResponse">
-                    <form method="POST" action="[[ customersApi ]]">
-
-                        <div class="input-container">
-                            <paper-input id="name" label="Customer name" name="company_customer[name]" value="{{ _customerName }}" required="" auto-validate="" on-keyup="_onFormCustomerNewFocus" error-message="Please enter customer's name." on-value-changed="_onNameInputValueChanged"></paper-input>
-                        </div>
-
-                        <div class="input-container">
-                            <paper-input id="email" type="email" label="Contact e-mail" name="company_customer[contactEmail]" required="" auto-validate="" on-keyup="_onFormCustomerNewFocus" error-message="Please enter valid contact e-mail."></paper-input>
-                        </div>
-
-                        <div id="searchAdminsContainer" class="input-container">
-                            <appsco-search id="appscoSearchAdmins" label="Partner administrator" float-label="" on-focus="_onAdminSearchFocusAction" on-keyup="_onAdminSearchKeyupAction" on-value-changed="_onAdminValueChangedAction" on-search="_onAdminSearchAction" on-search-clear="_onAdminSearchClearAction"></appsco-search>
-
-                            <div id="adminListContainer" class="admin-list-container">
-
-                                <paper-listbox id="adminList" class="dropdown-content" selected="[[ _selectedAdministrator.value ]]" attr-for-selected="value" on-iron-activate="_onAdminSelected" on-iron-overlay-closed="_onListboxClosed">
-
-                                    <template is="dom-repeat" items="[[ _administratorsToDisplay ]]">
-                                        <paper-item class="paper-item" name="[[ item.account.name ]]" value="[[ item.self ]]">
-                                            [[ item.account.name ]]
-                                            <paper-ripple></paper-ripple>
-                                        </paper-item>
-                                    </template>
-
-                                </paper-listbox>
-
+    
+                    <iron-form id="formCustomerNew" headers="[[ _headers ]]" on-iron-form-presubmit="_onFormPresubmit" on-iron-form-error="_onFormError" on-iron-form-response="_onFormResponse">
+                        <form method="POST" action="[[ customersApi ]]">
+    
+                            <div class="input-container">
+                                <paper-input id="name" label="Customer name" name="company_customer[name]" value="{{ _customerName }}" required="" auto-validate="" on-keyup="_onFormCustomerNewFocus" error-message="Please enter customer's name." on-value-changed="_onNameInputValueChanged"></paper-input>
                             </div>
-                        </div>
-                    </form>
-                </iron-form>
-
-                <div class="or-separator"><span>or</span></div>
-
-                <iron-form id="formCustomerConvert" headers="[[ _headers ]]" on-iron-form-presubmit="_onFormTokenPresubmit" on-iron-form-error="_onFormError" on-iron-form-response="_onFormResponse">
-                    <form method="POST" action="[[ companyConvertToCustomerApi ]]">
-
-                        <paper-input id="customerToken" label="Customer token" name="customer_convert[token]" value="" required="" auto-validate="" on-keyup="_onFormCustomerConvertFocus" error-message="Please enter customer's token."></paper-input>
-                    </form>
-                </iron-form>
-            </div>
-
+    
+                            <div class="input-container">
+                                <paper-input id="email" type="email" label="Contact e-mail" name="company_customer[contactEmail]" required="" auto-validate="" on-keyup="_onFormCustomerNewFocus" error-message="Please enter valid contact e-mail."></paper-input>
+                            </div>
+    
+                            <div id="searchAdminsContainer" class="input-container">
+                                <appsco-search id="appscoSearchAdmins" label="Partner administrator" float-label="" on-focus="_onAdminSearchFocusAction" on-keyup="_onAdminSearchKeyupAction" on-value-changed="_onAdminValueChangedAction" on-search="_onAdminSearchAction" on-search-clear="_onAdminSearchClearAction"></appsco-search>
+    
+                                <div id="adminListContainer" class="admin-list-container">
+    
+                                    <paper-listbox id="adminList" class="dropdown-content" selected="[[ _selectedAdministrator.value ]]" attr-for-selected="value" on-iron-activate="_onAdminSelected" on-iron-overlay-closed="_onListboxClosed">
+    
+                                        <template is="dom-repeat" items="[[ _administratorsToDisplay ]]">
+                                            <paper-item class="paper-item" name="[[ item.account.name ]]" value="[[ item.self ]]">
+                                                [[ item.account.name ]]
+                                                <paper-ripple></paper-ripple>
+                                            </paper-item>
+                                        </template>
+    
+                                    </paper-listbox>
+    
+                                </div>
+                            </div>
+                        </form>
+                    </iron-form>
+    
+                    <div class="or-separator"><span>or</span></div>
+    
+                    <iron-form id="formCustomerConvert" headers="[[ _headers ]]" on-iron-form-presubmit="_onFormTokenPresubmit" on-iron-form-error="_onFormError" on-iron-form-response="_onFormResponse">
+                        <form method="POST" action="[[ companyConvertToCustomerApi ]]">
+    
+                            <paper-input id="customerToken" label="Customer token" name="customer_convert[token]" value="" required="" auto-validate="" on-keyup="_onFormCustomerConvertFocus" error-message="Please enter customer's token."></paper-input>
+                        </form>
+                    </iron-form>
+                </div>
+            </paper-dialog-scrollable>
+            
             <div class="buttons">
                 <paper-button dialog-dismiss="">Cancel</paper-button>
                 <paper-button autofocus="" on-tap="_onAddAction">Add</paper-button>

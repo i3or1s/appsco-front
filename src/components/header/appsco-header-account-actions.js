@@ -55,7 +55,11 @@ class AppscoHeaderAccountActions extends PolymerElement {
             </template>
 
             <template is="dom-if" if="[[ tutorialActionAvailable ]]">
-                <paper-icon-button icon="icons:help" on-tap="_onGetStartedIcon" class="appsco-get-started-icon"></paper-icon-button>
+                <paper-icon-button
+                    icon="icons:help"
+                    class="appsco-get-started-icon"
+                    on-tap="_onGetStartedIcon">
+                </paper-icon-button>
             </template>
 
             <appsco-notification-icon id="newNotificationsIcon" on-tap="_onNewNotificationsAction"></appsco-notification-icon>

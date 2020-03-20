@@ -81,7 +81,9 @@ class AppscoCustomerBillingItem extends mixinBehaviors([
                 white-space: nowrap;
                 color: var(--secondary-text-color);
             }
-
+            :host .item-info {
+                padding: 0 10px;
+            }
         </style>
 
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>

@@ -56,8 +56,17 @@ class AppscoApplicationAssigneesPage extends mixinBehaviors([NeonSharedElementAn
                     </div>
                 </template>
 
-                <appsco-application-assignees id="appscoApplicationAssignees" application="[[ application ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" size="10" auto-load="" load-more="" on-assignees-empty="_onAssigneesEmpty" on-assignees-loaded="_onAssigneesLoaded"></appsco-application-assignees>
-
+                <appsco-application-assignees
+                    id="appscoApplicationAssignees"
+                    application="[[ application ]]"
+                    authorization-token="[[ authorizationToken ]]"
+                    api-errors="[[ apiErrors ]]"
+                    size="10"
+                    auto-load=""
+                    load-more=""
+                    on-assignees-empty="_onAssigneesEmpty"
+                    on-assignees-loaded="_onAssigneesLoaded">
+                </appsco-application-assignees>
             </div>
         </paper-card>
 `;

@@ -19,6 +19,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoReportsPage extends mixinBehaviors([
     NeonAnimatableBehavior,
     AppscoPageBehavior,
@@ -52,7 +53,15 @@ class AppscoReportsPage extends mixinBehaviors([
                 </div>
 
                 <div class="info-content flex-vertical">
-                    <appsco-report-details id="appscoReportDetails" report-api="[[ getAccessReportApi ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-loaded="_onPageLoaded" show-auth-types="[[ _showAuthTypes ]]" report="[[ report ]]"></appsco-report-details>
+                    <appsco-report-details
+                        id="appscoReportDetails"
+                        report-api="[[ getAccessReportApi ]]"
+                        authorization-token="[[ authorizationToken ]]"
+                        api-errors="[[ apiErrors ]]"
+                        show-auth-types="[[ _showAuthTypes ]]"
+                        report="[[ report ]]"
+                        on-loaded="_onPageLoaded">
+                    </appsco-report-details>
                 </div>
 
                 <div class="info-actions flex-horizontal">

@@ -6,6 +6,7 @@ import './components/page/appsco-content.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoProvisioningIntegrationAuthorizationFailedPage extends PolymerElement {
     static get template() {
         return html`
@@ -48,7 +49,7 @@ class AppscoProvisioningIntegrationAuthorizationFailedPage extends PolymerElemen
                     <paper-button class="provisioning-action" on-tap="_onProvisioningAction">Provisioning</paper-button>
 
                     <div>
-                        <img src\$="[[rootPath]]images/provisioning/provisioning-integration-failed.png" class="image">
+                        <img src\$="[[ resolveUrl('./../images/provisioning/provisioning-integration-failed.png') ]]" class="image">
                     </div>
                 </div>
             </div>
@@ -65,6 +66,10 @@ class AppscoProvisioningIntegrationAuthorizationFailedPage extends PolymerElemen
                 value: false
             }
         };
+    }
+
+    static get importMeta() {
+        return import.meta;
     }
 
     ready() {
