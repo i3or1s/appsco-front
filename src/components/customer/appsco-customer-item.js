@@ -49,6 +49,9 @@ class AppscoCustomerItem extends mixinBehaviors([
             :host([mobile-screen]) .item-additional-info {
                 display: none;
             }
+            :host .item-info {
+                padding: 0 10px;
+            }
         </style>
 
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
