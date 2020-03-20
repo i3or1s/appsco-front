@@ -1390,7 +1390,7 @@ class AppscoApp extends mixinBehaviors([
         if (undefined !== oldPage) {
             this._setProgressBar(page);
             this._closeToastMessage();
-            this.$.appDrawer.close();
+            afterNextRender(this, () => this.$.appDrawer.close());
         }
 
         // Load page import on demand. Show 404 page if fails
@@ -3803,15 +3803,15 @@ class AppscoApp extends mixinBehaviors([
      * This method will reload page content for both from page and to page
      */
     _onPageAnimationFinish(event) {
+        if (event.detail.toPage.$ && typeof event.detail.toPage.initializePage !== 'undefined') {
+            beforeNextRender(this, () => event.detail.toPage.initializePage());
+        }
+
         if (event.detail.fromPage.$ && typeof event.detail.fromPage.resetPage !== 'undefined') {
             if(event.detail.fromPage.getAttribute('name') === 'home') {
                 this._applicationsApi = this.api.foldersApi + '/icons';
             }
-            event.detail.fromPage.resetPage();
-        }
-
-        if (event.detail.toPage.$ && typeof event.detail.toPage.initializePage !== 'undefined') {
-            event.detail.toPage.initializePage();
+            afterNextRender(this, () => event.detail.fromPage.resetPage());
         }
     }
 
@@ -3821,7 +3821,7 @@ class AppscoApp extends mixinBehaviors([
      */
     _onPageActionsAnimationFinish(event) {
         if (event.detail.fromPage.$ && typeof event.detail.fromPage.resetPage !== 'undefined') {
-            event.detail.fromPage.resetPage();
+            afterNextRender(this, () => event.detail.fromPage.resetPage());
         }
     }
 

@@ -182,7 +182,7 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
      */
     showSection(section) {
         if (section === 'content-top' && this.contentTopActive) {
-            this.shadowRoot.getElementById('contentTop').show();
+            afterNextRender(this, () => this.shadowRoot.getElementById('contentTop').show());
             return false;
         }
 
@@ -194,7 +194,7 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
         }
 
         this.shadowRoot.getElementById(section).style.display = 'inline-block';
-        this.playAnimation('entry');
+        afterNextRender(this, () => this.playAnimation('entry'));
     }
 
     /**
@@ -204,7 +204,7 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
      */
     hideSection(section) {
         if (section === 'content-top' && !this.contentTopActive) {
-            this.shadowRoot.getElementById('contentTop').hide();
+            afterNextRender(this, () => this.shadowRoot.getElementById('contentTop').hide());
             return false;
         }
 
@@ -214,8 +214,7 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
         else if (section === 'resource' && this.resourceActive) {
             this.resourceActive = false;
         }
-
-        this.playAnimation('exit');
+        afterNextRender(this, () => this.playAnimation('exit'));
     }
 
     /**
