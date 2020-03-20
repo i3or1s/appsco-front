@@ -74,6 +74,9 @@ class AppscoPolicyReportRoleItem extends mixinBehaviors([
                     box-sizing: border-box;
                 };
             }
+            :host .item-info {
+                padding: 0 10px;
+            }
         </style>
 
         <iron-ajax id="getPoliciesApiRequest" url="[[ _getPoliciesApiUrl ]]" headers="[[ _headers ]]" auto="" on-error="_onGetPoliciesError" on-response="_onGetPoliciesResponse"></iron-ajax>

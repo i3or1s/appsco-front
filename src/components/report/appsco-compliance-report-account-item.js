@@ -85,6 +85,9 @@ class AppscoComplianceReportAccountItem extends mixinBehaviors([
                     box-sizing: border-box;
                 };
             }
+            :host .item-info {
+                padding: 0 10px;
+            }
         </style>
 
         <iron-ajax id="getResourcesApiRequest" url="[[ _getResourcesApiUrl ]]" headers="[[ _headers ]]" auto="" on-error="_onGetResourcesError" on-response="_onGetResourcesResponse"></iron-ajax>
