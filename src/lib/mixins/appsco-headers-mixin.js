@@ -43,6 +43,10 @@ Appsco.HeadersMixin = {
         }
     },
 
+    getHeaders: function(authorizationToken) {
+        return { 'Authorization': 'token ' + authorizationToken };
+    },
+
     _computeAuthorizationHeaders: function (authorizationToken) {
         return { 'Authorization': 'token ' + authorizationToken };
     }

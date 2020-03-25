@@ -266,7 +266,7 @@ class AppscoReportsPage extends mixinBehaviors([
     }
 
     _resetPageActions() {
-        this.toolbar.resetPageActions();
+        this.dispatchEvent(new CustomEvent('reset-page-actions', { bubbles: true, composed: true }));
     }
 
     _updateScreen() {
