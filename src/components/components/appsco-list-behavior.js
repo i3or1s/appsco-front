@@ -1,6 +1,6 @@
 import '@polymer/polymer/polymer-legacy.js';
 import { NeonAnimationRunnerBehavior } from '@polymer/neon-animation/neon-animation-runner-behavior.js';
-import '../../lib/mixins/appsco-headers-mixin.js';
+import './../../lib/mixins/appsco-headers-mixin.js';
 import '@polymer/neon-animation/animations/cascaded-animation.js';
 import '@polymer/neon-animation/animations/slide-from-left-animation.js';
 
@@ -892,13 +892,14 @@ export const AppscoListBehavior = [
     },
 
     _getItems: function(url) {
+        let headers = this.getHeaders(this.authorizationToken);
         return new Promise(function(resolve, reject) {
             const request = document.createElement('iron-request'),
                 options = {
                     url: url,
                     method: 'GET',
                     handleAs: 'json',
-                    headers: this._headers
+                    headers: headers
                 };
 
             request.send(options).then(function() {

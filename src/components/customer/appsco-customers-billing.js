@@ -3,6 +3,7 @@ import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-progress/paper-progress.js';
 import './appsco-customer-billing-item.js';
+import './../../lib/mixins/appsco-headers-mixin.js';
 import { AppscoListBehavior } from '../components/appsco-list-behavior.js';
 import '../components/appsco-list-styles.js';
 import { AppscoListObserverBehavior } from '../components/appsco-list-observer-behavior.js';
@@ -12,7 +13,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 class AppscoCustomersBilling extends mixinBehaviors([
     AppscoListBehavior,
-    AppscoListObserverBehavior
+    AppscoListObserverBehavior,
+    Appsco.HeadersMixin
 ], PolymerElement) {
     static get template() {
         return html`
