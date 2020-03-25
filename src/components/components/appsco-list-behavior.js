@@ -587,7 +587,7 @@ export const AppscoListBehavior = [
 
     _showProgressBar: function() {
         this.dispatchEvent(new CustomEvent('show-page-progress-bar', { bubbles: true, composed: true }));
-        
+        if(!this.shadowRoot) return;
         if (this.shadowRoot.getElementById('paperProgress')) {
             this.shadowRoot.getElementById('paperProgress').hidden = false;
         }
