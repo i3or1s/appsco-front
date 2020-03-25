@@ -359,6 +359,18 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
     }
 
     _paymentCompleted(response) {
+        if(true !== response.requires_action) {
+            this.$.dialog.close();
+            this.dispatchEvent(new CustomEvent('subscription-changed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    subscription: response
+                }
+            }));
+            this._purchaseLoader = false;
+            return;
+        }
         const request = document.createElement('iron-request'),
             options = {
                 url: response.on_confirm,

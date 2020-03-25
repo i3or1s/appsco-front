@@ -88,6 +88,14 @@ class AppscoApp extends mixinBehaviors([
             is-tutorial-active="{{ isTutorialActive }}">            
         </appsco-tutorial>
 
+        <appsco-tutorial-progress
+                id="appscoTutorialProgress"
+                tutorials="[[ _tutorials ]]"
+                show="true"
+                is-tutorial-active="[[ isTutorialActive ]]"
+                progress="{{ _progress }}"
+        ></appsco-tutorial-progress>
+        
         <app-drawer-layout fullbleed="" force-narrow="">
 
              <!--Drawer content -->
