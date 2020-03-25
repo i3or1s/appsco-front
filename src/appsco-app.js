@@ -404,7 +404,24 @@ class AppscoApp extends mixinBehaviors([
                         on-upgrade-failed="_onUpgradeToCompanyFailed">
                     </appsco-trybusiness-page>
 
-                    <appsco-company-home-page name="company-home" page="" company-page="" id="appscoCompanyHomePage" authorization-token="[[ authorizationToken ]]" applications-api="[[ _companyIconsWithoutFolderApi ]]" folders-api="[[ api.foldersApi ]]" company-folders-api="[[ _companyFoldersApi ]]" netscaler-api="[[ _companyNetscalerFeatureApi ]]" accounts-api="[[ api.accounts ]]" account="[[ account ]]" domain="[[ domain ]]" api-errors="[[ _apiErrors ]]" page-config="[[ _pageConfig ]]" company="{{ currentCompany.company }}" toolbar="[[ \$.appscoCompanyHomePageActions ]]" on-loaded="_onLoadedPage" on-folder-tapped="_onFolderTapped" on-application-shared="_onApplicationShared" on-application-settings-saved="_onApplicationSettingsSaved">
+                    <appsco-company-home-page name="company-home" page="" company-page=""
+                        id="appscoCompanyHomePage"
+                        authorization-token="[[ authorizationToken ]]"
+                        applications-api="[[ _companyIconsWithoutFolderApi ]]"
+                        folders-api="[[ api.foldersApi ]]"
+                        company-folders-api="[[ _companyFoldersApi ]]"
+                        netscaler-api="[[ _companyNetscalerFeatureApi ]]"
+                        accounts-api="[[ api.accounts ]]"
+                        account="[[ account ]]"
+                        domain="[[ domain ]]"
+                        api-errors="[[ _apiErrors ]]"
+                        page-config="[[ _pageConfig ]]"
+                        company="{{ currentCompany.company }}"
+                        toolbar="[[ \$.appscoCompanyHomePageActions ]]"
+                        on-loaded="_onLoadedPage"
+                        on-folder-tapped="_onFolderTapped"
+                        on-application-shared="_onApplicationShared"
+                        on-application-settings-saved="_onApplicationSettingsSaved">
                     </appsco-company-home-page>
 
                     <appsco-contact-home-page name="contact-home" page="" company-page="" id="appscoContactHomePage" authorization-token="[[ authorizationToken ]]" applications-api="[[ _contactIconsApi ]]" page-config="[[ _pageConfig ]]" account="[[ account ]]" toolbar="[[ \$.appscoContactHomePageActions ]]" on-loaded="_onLoadedPage" on-application-shared="_onApplicationShared">

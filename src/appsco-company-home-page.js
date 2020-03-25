@@ -32,6 +32,7 @@ import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { AppscoDropHTMLElementBehavior } from './components/components/appsco-drop-html-element-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyHomePage extends mixinBehaviors([
     NeonAnimatableBehavior,
     AppscoDropHTMLElementBehavior,
@@ -408,7 +409,8 @@ class AppscoCompanyHomePage extends mixinBehaviors([
             },
 
             applicationsApi: {
-                type: String
+                type: String,
+                observer: '_applicationsApiChanged'
             },
 
             netscalerApi: {
@@ -531,7 +533,12 @@ class AppscoCompanyHomePage extends mixinBehaviors([
     }
 
     _companyFoldersApiChanged() {
+        this._foldersLoaded = false;
         this._hideFolders();
+    }
+
+    _applicationsApiChanged() {
+        this._applicationsLoaded = false;
     }
 
     _companyChanged() {
