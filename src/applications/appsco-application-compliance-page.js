@@ -72,7 +72,7 @@ class AppscoApplicationCompliancePage extends mixinBehaviors([
                         </div>
 
                         <p class="info">
-                            Enter coma-separated user information stored by this resource.
+                            Enter comma-separated user information stored by this resource.
                         </p>
 
                         <div class="input-container">
