@@ -21,9 +21,9 @@ class AppscoGroupRolesPage extends mixinBehaviors([AppscoGroupItemsPageBehavior,
                 @apply --full-page;
 
                 --paper-card-header: {
+                    @apply --full-page-paper-card-header-text;
                     border-bottom: 1px solid var(--divider-color);
                 };
-
                 --appsco-company-group-role-item: {
                      background-color: var(--body-background-color);
                  };

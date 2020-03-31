@@ -31,13 +31,13 @@ class AppscoManageApplicationComponentsPage extends mixinBehaviors([
         <style include="appsco-layout-with-cards-styles">
             :host {
                 --application-details-value: {
-                        font-size: 14px;
-                 };
+                    font-size: 14px;
+                };
                  
-                 --paper-card-content: {
+                --paper-card-content: {
                     padding-top: 16px;
                     padding-bottom: 16px;
-                 }
+                }
             }
             :host .info-item {
                 margin-bottom: 10px;

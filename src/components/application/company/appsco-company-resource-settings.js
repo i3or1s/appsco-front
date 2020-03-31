@@ -507,7 +507,7 @@ class AppscoCompanyResourceSettings extends mixinBehaviors([
     }
 
     _resetClaimsForm() {
-        if (this._resourceClaimsForm) {
+        if (Object.keys(this._resourceClaimsForm).length > 0) {
             this._resourceClaimsForm.reset();
         }
     }

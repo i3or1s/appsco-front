@@ -44,12 +44,14 @@ class AppscoApplicationComponentsPage extends mixinBehaviors([NeonSharedElementA
                      border-color: var(--divider-color);
                  };
                 --paper-card-header-text: {
-                     padding: 8px 16px;
+                     padding-top: 8px;
+                     padding-bottom: 8px;
+                     padding-left: 8px;
+                     padding-right: 8px;
                      font-size: 18px;
                      color: var(--primary-text-color);
                      border-bottom: 1px solid var(--divider-color);
                 };
-
                 --paper-button: {
                      padding: 6px 0;
                      margin: 0;
