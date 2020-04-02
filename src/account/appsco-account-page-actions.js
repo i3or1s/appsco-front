@@ -57,7 +57,7 @@ class AppscoAccountPageActions extends mixinBehaviors([NeonAnimatableBehavior], 
 
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
 
-        <appsco-account-actions id="appscoAccountActions" advanced=""></appsco-account-actions>
+        <appsco-account-actions id="appscoAccountActions" advanced-actions=""></appsco-account-actions>
 
         <div class="global-page-actions">
             <paper-icon-button class="back-action" icon="arrow-back" title="Back" on-tap="_backToHome"></paper-icon-button>
@@ -120,6 +120,14 @@ class AppscoAccountPageActions extends mixinBehaviors([NeonAnimatableBehavior], 
 
     enableAdvancedSettings() {
         this.$.appscoAccountActions.enableAdvancedSettings();
+    }
+
+    hideAdvancedSettings() {
+        this.$.appscoAccountActions.hideAdvancedSettings();
+    }
+
+    showAdvancedSettings() {
+        this.$.appscoAccountActions.showAdvancedSettings();
     }
 
     _backToHome() {

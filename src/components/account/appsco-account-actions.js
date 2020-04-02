@@ -28,8 +28,14 @@ class AppscoAccountActions extends PolymerElement {
             }
         </style>
 
-        <template is="dom-if" if="[[ advanced ]]">
-            <paper-button id="advancedSettingsAction" class="advanced-settings-button" toggles="" on-tap="_onAdvancedSettingsAction">Advanced settings</paper-button>
+        <template is="dom-if" if="[[ _shouldShowAdvancedActions ]]">
+            <paper-button
+                id="advancedSettingsAction"
+                class="advanced-settings-button"
+                disabled\$="[[ _advancedDisabled ]]"
+                toggles=""
+                on-tap="_onAdvancedSettingsAction"
+                >Advanced settings</paper-button>
         </template>
 `;
     }
@@ -38,7 +44,22 @@ class AppscoAccountActions extends PolymerElement {
 
     static get properties() {
         return {
-            advanced: {
+            advancedActions: {
+                type: Boolean,
+                value: false
+            },
+
+            _advancedActionsVisible: {
+                type: Boolean,
+                value: true
+            },
+
+            _shouldShowAdvancedActions: {
+                type: Boolean,
+                computed: '_computeShouldShowAdvancedActions(advancedActions, _advancedActionsVisible)'
+            },
+
+            _advancedDisabled: {
                 type: Boolean,
                 value: false
             }
@@ -50,15 +71,30 @@ class AppscoAccountActions extends PolymerElement {
     }
 
     disableAdvancedSettings() {
-        this.shadowRoot.getElementById('advancedSettingsAction').disabled = true;
+        this._advancedDisabled = true;
     }
 
     enableAdvancedSettings() {
-        this.shadowRoot.getElementById('advancedSettingsAction').disabled = false;
+        this._advancedDisabled = false;
     }
 
     resetAdvancedSettingsAction() {
-        this.shadowRoot.getElementById('advancedSettingsAction').active = false;
+        const button = this.shadowRoot.getElementById('advancedSettingsAction');
+        if (button) {
+            button.active = false;
+        }
+    }
+
+    hideAdvancedSettings() {
+        this._advancedActionsVisible = false;
+    }
+
+    showAdvancedSettings() {
+        this._advancedActionsVisible = true;
+    }
+
+    _computeShouldShowAdvancedActions(advancedActionsEnabled, _advancedActionsVisible) {
+        return advancedActionsEnabled && _advancedActionsVisible;
     }
 }
 window.customElements.define(AppscoAccountActions.is, AppscoAccountActions);

@@ -373,7 +373,8 @@ class AppscoManageResourcePage extends mixinBehaviors([
             _selected: {
                 type: String,
                 value: 'appsco-application-components-page',
-                notify: true
+                notify: true,
+                observer: '_selectedPageChanged'
             },
 
             companyIdpSamlMetadataApi: {
@@ -513,6 +514,16 @@ class AppscoManageResourcePage extends mixinBehaviors([
         else if(!this.$.appscoContent.resourceActive) {
             this.$.appscoContent.showSection('resource');
         }
+    }
+
+    _selectedPageChanged(selected) {
+        if (undefined === selected) {
+            return;
+        }
+        'appsco-application-components-page' === selected ?
+            this.toolbar.showAdvancedSettings() :
+            this.toolbar.hideAdvancedSettings()
+        ;
     }
 
     _computeGroupsForApplication(application) {

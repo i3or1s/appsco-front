@@ -62,8 +62,16 @@ class AppscoManageAccountPageActions extends mixinBehaviors([NeonAnimatableBehav
 
         <div class="global-page-actions">
 
-            <paper-button id="advancedSettingsAction" class="advanced-settings-button" toggles="" on-tap="_onAdvancedSettingsAction">Advanced settings</paper-button>
-
+            <template is="dom-if" if="[[ _shouldShowAdvancedActions ]]">
+                <paper-button
+                    id="advancedSettingsAction"
+                    class="advanced-settings-button"
+                    disabled\$="[[ _advancedDisabled ]]"
+                    toggles=""
+                    on-tap="_onAdvancedSettingsAction"
+                    >Advanced settings</paper-button>
+            </template>
+            
             <paper-icon-button class="back-action" icon="arrow-back" title="Back" on-tap="_backToDirectory"></paper-icon-button>
 
             <paper-icon-button class="info-action" icon="info-outline" title="Filters" on-tap="_onResourceAction"></paper-icon-button>
@@ -82,9 +90,24 @@ class AppscoManageAccountPageActions extends mixinBehaviors([NeonAnimatableBehav
             },
 
             /**
-             * Indicates if advanced action(s) should be visible or not.
+             * Indicates if advanced action(s) should be enabled
              */
-            advanced: {
+            advancedActions: {
+                type: Boolean,
+                value: false
+            },
+
+            _advancedActionsVisible: {
+                type: Boolean,
+                value: true
+            },
+
+            _shouldShowAdvancedActions: {
+                type: Boolean,
+                computed: '_computeShouldShowAdvancedActions(advancedActions, _advancedActionsVisible)'
+            },
+
+            _advancedDisabled: {
                 type: Boolean,
                 value: false
             },
@@ -138,15 +161,30 @@ class AppscoManageAccountPageActions extends mixinBehaviors([NeonAnimatableBehav
     }
 
     disableAdvancedSettings() {
-        this.shadowRoot.getElementById('advancedSettingsAction').disabled = true;
+        this._advancedDisabled = true;
     }
 
     enableAdvancedSettings() {
-        this.shadowRoot.getElementById('advancedSettingsAction').disabled = false;
+        this._advancedDisabled = false;
     }
 
     resetAdvancedSettingsAction() {
-        this.shadowRoot.getElementById('advancedSettingsAction').active = false;
+        const button = this.shadowRoot.getElementById('advancedSettingsAction');
+        if (button) {
+            button.active = false;
+        }
+    }
+
+    hideAdvancedSettings() {
+        this._advancedActionsVisible = false;
+    }
+
+    showAdvancedSettings() {
+        this._advancedActionsVisible = true;
+    }
+
+    _computeShouldShowAdvancedActions(advancedActionsEnabled, _advancedActionsVisible) {
+        return advancedActionsEnabled && _advancedActionsVisible;
     }
 }
 window.customElements.define(AppscoManageAccountPageActions.is, AppscoManageAccountPageActions);

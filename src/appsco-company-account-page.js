@@ -26,6 +26,7 @@ import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/re
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCompanyAccountPage extends mixinBehaviors([
     NeonAnimatableBehavior,
     Appsco.PageMixin
@@ -224,7 +225,8 @@ class AppscoCompanyAccountPage extends mixinBehaviors([
             _selected: {
                 type: String,
                 value: 'appsco-account-components-page',
-                notify: true
+                notify: true,
+                observer: '_selectedPageChanged'
             },
 
             mediumScreen: {
@@ -330,6 +332,17 @@ class AppscoCompanyAccountPage extends mixinBehaviors([
     _pageLoaded() {
         this.pageLoaded = true;
         this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
+    }
+
+
+    _selectedPageChanged(selected) {
+        if (undefined === selected) {
+            return;
+        }
+        'appsco-account-components-page' === selected ?
+            this.toolbar.showAdvancedSettings() :
+            this.toolbar.hideAdvancedSettings()
+        ;
     }
 
     _observeSeeAllNotifications(seeAll) {

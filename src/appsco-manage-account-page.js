@@ -313,7 +313,8 @@ class AppscoManageAccountPage extends mixinBehaviors([
             _selected: {
                 type: String,
                 value: 'appsco-account-components-page',
-                notify: true
+                notify: true,
+                observer: '_selectedPageChanged'
             },
 
             mediumScreen: {
@@ -391,6 +392,16 @@ class AppscoManageAccountPage extends mixinBehaviors([
 
     _onCompanyApiChanged() {
         this._getAccount();
+    }
+
+    _selectedPageChanged(selected) {
+        if (undefined === selected) {
+            return;
+        }
+        'appsco-account-components-page' === selected ?
+            this.toolbar.showAdvancedSettings() :
+            this.toolbar.hideAdvancedSettings()
+        ;
     }
 
     _updateScreen(medium, tablet, mobile) {

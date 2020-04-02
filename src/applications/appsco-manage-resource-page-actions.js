@@ -77,9 +77,15 @@ class AppscoManageResourcePageActions extends mixinBehaviors([NeonAnimatableBeha
         </template>
 
         <div class="global-page-actions">
-
-            <template is="dom-if" if="[[ !resourceAdmin ]]">
-                <paper-button id="advancedSettingsAction" class="advanced-settings-button" toggles="" on-tap="_onAdvancedSettingsAction">Advanced settings</paper-button>
+            
+            <template is="dom-if" if="[[ _shouldShowAdvancedActions ]]">
+                <paper-button
+                    id="advancedSettingsAction"
+                    class="advanced-settings-button"
+                    disabled\$="[[ _advancedDisabled ]]"
+                    toggles=""
+                    on-tap="_onAdvancedSettingsAction"
+                    >Advanced settings</paper-button>
             </template>
 
             <paper-icon-button class="back-action" icon="arrow-back" title="Back" on-tap="_backToApplications"></paper-icon-button>
@@ -98,10 +104,22 @@ class AppscoManageResourcePageActions extends mixinBehaviors([NeonAnimatableBeha
                 value: false
             },
 
-            /**
-             * Indicates if advanced action(s) should be visible or not.
-             */
-            advanced: {
+            advancedActions: {
+                type: Boolean,
+                value: false
+            },
+
+            _advancedActionsVisible: {
+                type: Boolean,
+                value: true
+            },
+
+            _shouldShowAdvancedActions: {
+                type: Boolean,
+                computed: '_computeShouldShowAdvancedActions(advancedActions, _advancedActionsVisible)'
+            },
+
+            _advancedDisabled: {
                 type: Boolean,
                 value: false
             },
@@ -209,22 +227,31 @@ class AppscoManageResourcePageActions extends mixinBehaviors([NeonAnimatableBeha
         }));
     }
 
-    /**
-     * Disables advanced settings action.
-     */
     disableAdvancedSettings() {
-        this.shadowRoot.getElementById('advancedSettingsAction').disabled = true;
+        this._advancedDisabled = true;
     }
 
-    /**
-     * Enables advanced settings action.
-     */
     enableAdvancedSettings() {
-        this.shadowRoot.getElementById('advancedSettingsAction').disabled = false;
+        this._advancedDisabled = false;
     }
 
     resetAdvancedSettingsAction() {
-        this.shadowRoot.getElementById('advancedSettingsAction').active = false;
+        const button = this.shadowRoot.getElementById('advancedSettingsAction');
+        if (button) {
+            button.active = false;
+        }
+    }
+
+    hideAdvancedSettings() {
+        this._advancedActionsVisible = false;
+    }
+
+    showAdvancedSettings() {
+        this._advancedActionsVisible = true;
+    }
+
+    _computeShouldShowAdvancedActions(advancedActionsEnabled, _advancedActionsVisible) {
+        return advancedActionsEnabled && _advancedActionsVisible;
     }
 }
 window.customElements.define(AppscoManageResourcePageActions.is, AppscoManageResourcePageActions);
