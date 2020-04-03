@@ -617,8 +617,16 @@ class AppscoDirectoryPage extends mixinBehaviors([
         this.$.appscoCompanyGroups.addItems([group]);
     }
 
-    removeGroup (group) {
-        this.$.appscoCompanyGroups.removeItems([group]);
+    removeGroup(group) {
+        this.removeGroups([group]);
+    }
+
+    modifyGroups(groups) {
+        this.$.appscoCompanyGroups.modifyItems(groups);
+    }
+
+    removeGroups(groups) {
+        this.$.appscoCompanyGroups.removeItems(groups);
     }
 
     resetPage() {

@@ -501,7 +501,20 @@ class AppscoApp extends mixinBehaviors([
                     <appsco-customers-page name="customers" page="" company-page="" id="appscoCustomersPage" customers-api="[[ _companyCustomersApi ]]" customers-export-api="[[ _companyCustomersExportApi ]]" customers-import-api="[[ _importCustomersApi ]]" convert-to-customer-api="[[ _companyConvertToCustomerApi ]]" company-roles-api="[[ _companyRolesApi ]]" check-if-customer-exists-api="[[ _checkIfCustomerExistsApi ]]" authorization-token="[[ authorizationToken ]]" add-partner-admin-to-customer-api="[[ _addPartnerAdminToCustomerApi ]]" domain="[[ domain ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoCustomersPageActions ]]" on-import-finished="_onCustomersImportFinished" on-partner-admins-added="_onPartnerAdminsAdded" on-edit-customer="_onEditCustomerAction" on-customer-added="_onCustomerAdded" on-customers-removed="_onRemovedCustomers" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
                     </appsco-customers-page>
 
-                    <appsco-groups-page name="groups" page="" company-page="" id="appscoGroupsPage" group="{{ _group }}" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" company-api="[[ _companyApi ]]" company-notifications-api="[[ _companyNotificationsApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoGroupsPageActions ]]" on-group-added="_onGroupAdded" on-edit-item="_onEditCompanyGroupAction" on-info-edit-group="_onEditCompanyGroupAction">
+                    <appsco-groups-page name="groups" page="" company-page=""
+                        id="appscoGroupsPage"
+                        group="{{ _group }}"
+                        authorization-token="[[ authorizationToken ]]"
+                        groups-api="[[ _companyGroupsApi ]]"
+                        company-api="[[ _companyApi ]]"
+                        company-notifications-api="[[ _companyNotificationsApi ]]"
+                        api-errors="[[ _apiErrors ]]"
+                        toolbar="[[ \$.appscoGroupsPageActions ]]"
+                        on-group-added="_onGroupAdded"
+                        on-groups-removed="_onRemovedGroups"
+                        on-group-renamed="_onGroupRenamed"
+                        on-edit-item="_onEditCompanyGroupAction"
+                        on-info-edit-group="_onEditCompanyGroupAction">
                     </appsco-groups-page>
 
                     <appsco-manage-account-page name="manage-account" page="" company-page="" id="appscoManageAccountPage" route="[[ subroute ]]" role="{{ _role }}" administrator="[[ account ]]" authorization-token="[[ authorizationToken ]]" company-api="[[ _companyApi ]]" notifications-api="[[ api.notifications ]]" log-api="[[ api.accountLog ]]" two-fa-api="[[ api.twoFA ]]" two-fa-enforced="[[ currentCompany.company.enforced_2fa ]]" settings-api="[[ api.me ]]" image-settings-api="[[ api.profileImage ]]" change-password-api="[[ api.changePassword ]]" company-orgunits-api="[[ _companyOrgunitsApi ]]" company-applications-api="[[ _companyApplicationsApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoManageAccountPageActions ]]" on-settings-saved="_onAccountSettingsSaved" on-password-changed="_onCompanyAccountPasswordChanged" on-access-revoked="_onAssigneeAccessRevoked" on-claims-changed="_onAssigneeClaimsChanged" on-added-to-orgunit="_onAccountsAddedToOrgunit" on-account-removed-from-orgunit="_onAccountRemovedFromOrgunit" on-account-removed-from-group="_onAccountRemovedFromGroup" on-resource-admin-revoked="_onResourceAdminRevoked" on-account-role-changed="_onAccountRoleChanged" on-page-error="_onError" on-image-upload-error="_onImageUploadError">
@@ -3431,8 +3444,21 @@ class AppscoApp extends mixinBehaviors([
         }
     }
 
-    _renameGroup() {
-        this._reloadGroups();
+    _renameGroups(groups) {
+        if (this.$.appscoGroupsPage.$) {
+            this.$.appscoGroupsPage.modifyGroups(groups);
+        }
+        if (this.$.appscoResourcesPage.$) {
+            this.$.appscoResourcesPage.modifyGroups(groups);
+        }
+
+        if (this.$.appscoDirectoryPage.$) {
+            this.$.appscoDirectoryPage.modifyGroups(groups);
+        }
+
+        if (this.$.appscoContactsPage.$) {
+            this.$.appscoContactsPage.modifyGroups(groups);
+        }
     }
 
     _onGroupAdded(event) {
@@ -3445,8 +3471,31 @@ class AppscoApp extends mixinBehaviors([
     _onGroupRenamed(event) {
         const group = event.detail.group;
 
-        this._renameGroup(group);
-        this._notify('Group ' + group.name + ' was successfully saved.');
+        this._renameGroups([group]);
+    }
+
+
+    _onRemovedGroups(event) {
+        const groups = event.detail.groups;
+        if (this.$.appscoResourcesPage.$) {
+            this.$.appscoResourcesPage.removeGroups(groups);
+        }
+
+        if (this.$.appscoDirectoryPage.$) {
+            this.$.appscoDirectoryPage.removeGroups(groups);
+        }
+
+        if (this.$.appscoContactsPage.$) {
+            this.$.appscoContactsPage.removeGroups(groups);
+        }
+
+        if (this.$.appscoGroupsPage.$) {
+            this.$.appscoGroupsPage.removeGroups(groups);
+        }
+
+        this._reloadCompanyApplications();
+        this._reloadCompanyAccounts();
+        this._reloadCompanyContacts();
     }
 
     _onGroupRemoved(event) {
@@ -3649,7 +3698,6 @@ class AppscoApp extends mixinBehaviors([
     }
 
     _reloadGroups() {
-
         if (this.$.appscoGroupsPage.$) {
             this.$.appscoGroupsPage.reloadGroups();
         }
