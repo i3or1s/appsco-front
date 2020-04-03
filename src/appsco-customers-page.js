@@ -145,21 +145,52 @@ class AppscoCustomersPage extends mixinBehaviors([
             </div>
         </appsco-content>
 
-        <appsco-add-partner-admin id="appscoAddPartnerAdmin" customers="[[ _selectedCustomers ]]" authorization-token="[[ authorizationToken ]]" get-roles-api="[[ companyRolesApi ]]" add-partner-admin-api="[[ addPartnerAdminToCustomerApi ]]" api-errors="[[ apiErrors ]]">
+        <appsco-add-partner-admin
+            id="appscoAddPartnerAdmin"
+            customers="[[ _selectedCustomers ]]"
+            authorization-token="[[ authorizationToken ]]"
+            get-roles-api="[[ companyRolesApi ]]"
+            add-partner-admin-api="[[ addPartnerAdminToCustomerApi ]]"
+            api-errors="[[ apiErrors ]]"
+            on-list-loaded="_hideProgressBar"
+            on-list-empty="_hideProgressBar">
         </appsco-add-partner-admin>
 
-        <appsco-import-customer-resources id="appscoImportCustomerResources" authorization-token="[[ authorizationToken ]]" import-api="[[ _importCustomerResourcesApi ]]" domain="[[ domain ]]" on-import-finished="_onCustomerResourcesImportFinished" disable-upgrade\$="[[!_applicationsApi]]">
+        <appsco-import-customer-resources
+            id="appscoImportCustomerResources"
+            authorization-token="[[ authorizationToken ]]"
+            import-api="[[ _importCustomerResourcesApi ]]"
+            domain="[[ domain ]]"
+            on-import-finished="_onCustomerResourcesImportFinished">
         </appsco-import-customer-resources>
 
-        <appsco-add-customer id="appscoAddCustomer" authorization-token="[[ authorizationToken ]]" customers-api="[[ customersApi ]]" company-convert-to-customer-api="[[ convertToCustomerApi ]]" roles-api="[[ companyRolesApi ]]" check-if-customer-exists-api="[[ checkIfCustomerExistsApi ]]" api-errors="[[ apiErrors ]]" on-customer-added="_onCustomerAdded">
+        <appsco-add-customer
+            id="appscoAddCustomer"
+            authorization-token="[[ authorizationToken ]]"
+            customers-api="[[ customersApi ]]"
+            company-convert-to-customer-api="[[ convertToCustomerApi ]]"
+            roles-api="[[ companyRolesApi ]]"
+            check-if-customer-exists-api="[[ checkIfCustomerExistsApi ]]"
+            api-errors="[[ apiErrors ]]"
+            on-customer-added="_onCustomerAdded">
         </appsco-add-customer>
 
-        <appsco-remove-customers id="appscoCustomersRemove" customers="[[ _selectedCustomers ]]" customers-api="[[ customersApi ]]" authorization-token="[[ authorizationToken ]]" on-customers-removed="_onRemovedCustomers" on-customers-remove-failed="_onRemovedCustomersFailed">
+        <appsco-remove-customers
+            id="appscoCustomersRemove"
+            customers="[[ _selectedCustomers ]]"
+            customers-api="[[ customersApi ]]"
+            authorization-token="[[ authorizationToken ]]"
+            on-customers-removed="_onRemovedCustomers"
+            on-customers-remove-failed="_onRemovedCustomersFailed">
         </appsco-remove-customers>
 
-        <appsco-import-customers id="appscoImportCustomers" authorization-token="[[ authorizationToken ]]" import-api="[[ customersImportApi ]]" domain="[[ domain ]]" on-import-finished="_onCustomersImportFinished">
-        </appsco-import-customers>
-`;
+        <appsco-import-customers
+            id="appscoImportCustomers"
+            authorization-token="[[ authorizationToken ]]"
+            import-api="[[ customersImportApi ]]"
+            domain="[[ domain ]]"
+            on-import-finished="_onCustomersImportFinished">
+        </appsco-import-customers>`;
     }
 
     static get is() { return 'appsco-customers-page'; }
