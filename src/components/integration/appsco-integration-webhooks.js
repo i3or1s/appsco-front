@@ -111,8 +111,6 @@ class AppscoIntegrationWebhooks extends mixinBehaviors([
         let watchers = JSON.parse(JSON.stringify(this._watcherList));
 
         watchers.push(watcher);
-
-        this.set('_watcherList', []);
         this.set('_watcherList', watchers);
     }
 
@@ -127,7 +125,6 @@ class AppscoIntegrationWebhooks extends mixinBehaviors([
             }
         }
 
-        this.set('_watcherList', []);
         this.set('_watcherList', watchers);
     }
 
@@ -152,30 +149,26 @@ class AppscoIntegrationWebhooks extends mixinBehaviors([
         let webhooks = JSON.parse(JSON.stringify(this._allListItems)),
             webhooksLength = webhooks.length,
             modifyWebhooks = [],
-            watchers = this._watcherList;
+            watchers = this._watcherList,
+            watchersLength = this._watcherList.length;
 
-        if (watchers && 0 < watchers.length) {
-            let watchersLength = watchers.length;
+        for (let j = 0; j < webhooksLength; j++) {
+            let webhook = webhooks[j];
+            let registered = false;
 
-            for (let j = 0; j < webhooksLength; j++) {
-                let webhook = webhooks[j];
-
-                for (let i = 0; i < watchersLength; i++) {
-                    if (webhook.self === watchers[i].meta.webhook) {
-                        webhook.removeWatcherApi = watchers[i].self;
-                        this.shadowRoot.getElementById('appscoListItem_' + j).register(watchers[i].url);
-                        modifyWebhooks.push(webhook);
-                        break;
-                    }
-                    else {
-                        delete webhook.removeWatcherApi;
-                        this.shadowRoot.getElementById('appscoListItem_' + j).unregister();
-
-                        if (i === watchersLength - 1) {
-                            modifyWebhooks.push(webhook);
-                        }
-                    }
+            for (let i = 0; i < watchersLength; i++) {
+                if (webhook.self === watchers[i].meta.webhook) {
+                    webhook.removeWatcherApi = watchers[i].self;
+                    this.shadowRoot.getElementById('appscoListItem_' + j).register(watchers[i].url);
+                    modifyWebhooks.push(webhook);
+                    registered = true;
+                    break;
                 }
+            }
+            if (!registered) {
+                delete webhook.removeWatcherApi;
+                this.shadowRoot.getElementById('appscoListItem_' + j).unregister();
+                modifyWebhooks.push(webhook);
             }
         }
 
