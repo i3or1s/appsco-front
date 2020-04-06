@@ -584,7 +584,15 @@ class AppscoResourcesPage extends mixinBehaviors([
     }
 
     removeGroup(group) {
-        this.shadowRoot.getElementById('appscoCompanyGroups').removeItems([group]);
+        this.removeGroups([group]);
+    }
+
+    removeGroups(groups) {
+        this.shadowRoot.getElementById('appscoCompanyGroups').removeItems(groups);
+    }
+
+    modifyGroups(groups) {
+        this.shadowRoot.getElementById('appscoCompanyGroups').modifyItems(groups);
     }
 
     _handleResourceInfo(resource) {

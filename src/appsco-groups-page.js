@@ -26,6 +26,7 @@ import './lib/mixins/appsco-page-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+
 class AppscoGroupsPage extends mixinBehaviors([
     NeonAnimatableBehavior,
     AppscoPageBehavior,
@@ -119,10 +120,20 @@ class AppscoGroupsPage extends mixinBehaviors([
             </div>
         </appsco-content>
 
-        <appsco-company-add-group id="appscoCompanyAddGroup" authorization-token="[[ authorizationToken ]]" company-groups-api="[[ groupsApi ]]" on-group-added="_onGroupAdded" api-errors="[[ apiErrors ]]">
+        <appsco-company-add-group
+            id="appscoCompanyAddGroup"
+            authorization-token="[[ authorizationToken ]]"
+            company-groups-api="[[ groupsApi ]]"            
+            api-errors="[[ apiErrors ]]">
         </appsco-company-add-group>
 
-        <appsco-delete-groups id="appscoGroupsRemove" groups="[[ _selectedGroups ]]" company-api="[[ companyApi ]]" authorization-token="[[ authorizationToken ]]" on-groups-removed="_onRemovedGroups" on-groups-remove-failed="_onGroupsRemoveFailed">
+        <appsco-delete-groups
+            id="appscoGroupsRemove"
+            groups="[[ _selectedGroups ]]"
+            company-api="[[ companyApi ]]"
+            authorization-token="[[ authorizationToken ]]"
+            on-groups-removed="_onRemovedGroups"
+            on-groups-remove-failed="_onGroupsRemoveFailed">
         </appsco-delete-groups>
 
         <appsco-company-remove-group id="appscoCompanyRemoveGroup" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-group-removed="_onGroupRemoved">
@@ -131,7 +142,12 @@ class AppscoGroupsPage extends mixinBehaviors([
         <appsco-company-group-notification-dialog id="appscoNotifyGroup" authorization-token="[[ authorizationToken ]]" company-groups-api="[[ groupsApi ]]" company-notifications-api="[[ companyNotificationsApi ]]" on-groups-loaded="_hideProgressBar" on-notification-sent="_onNotificationSent">
         </appsco-company-group-notification-dialog>
 
-        <appsco-company-rename-group id="appscoCompanyRenameGroup" authorization-token="[[ authorizationToken ]]" company-groups-api="[[ groupsApi ]]" api-errors="[[ apiErrors ]]" on-group-renamed="_onGroupRenamed">
+        <appsco-company-rename-group
+            id="appscoCompanyRenameGroup"
+            authorization-token="[[ authorizationToken ]]"
+            company-groups-api="[[ groupsApi ]]"
+            api-errors="[[ apiErrors ]]"
+            on-group-renamed="_onGroupRenamed">
         </appsco-company-rename-group>
 `;
     }
@@ -326,6 +342,7 @@ class AppscoGroupsPage extends mixinBehaviors([
     }
 
     reloadGroups() {
+        this._groupsLoaded = false;
         this.$.appscoGroups.reloadItems();
     }
 
@@ -543,6 +560,10 @@ class AppscoGroupsPage extends mixinBehaviors([
 
     removeGroups(groups) {
         this.$.appscoGroups.removeItems(groups);
+    }
+
+    modifyGroups(groups) {
+        this.$.appscoGroups.modifyItems(groups);
     }
 
     _onPageAnimationFinished(event) {

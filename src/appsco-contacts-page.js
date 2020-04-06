@@ -489,7 +489,15 @@ class AppscoContactsPage extends mixinBehaviors([
     }
 
     removeGroup(group) {
-        this.$.appscoCompanyGroups.removeItems([group]);
+        this.removeGroups([group]);
+    }
+
+    removeGroups(groups) {
+        this.$.appscoCompanyGroups.removeItems(groups);
+    }
+
+    modifyGroups(groups) {
+        this.$.appscoCompanyGroups.modifyItems(groups);
     }
 
     resetGroupSelection() {

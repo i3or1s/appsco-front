@@ -116,7 +116,7 @@ class AppscoDeleteGroups extends mixinBehaviors([Appsco.HeadersMixin], PolymerEl
                     bubbles: true,
                     composed: true,
                     detail: {
-                        contacts: request.response.groups
+                        groups: request.response.groups
                     }
                 }));
             }
