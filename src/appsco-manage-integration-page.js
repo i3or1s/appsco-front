@@ -157,7 +157,7 @@ class AppscoManageIntegrationPage extends mixinBehaviors([
 
                 <div class="resource-header">
                     <div class="integration-image">
-                        <iron-image src="[[ integration.integration.image ]]" alt="Integration image" class="sized" sizing="contain" preload="" fade="">
+                        <iron-image src\$="[[ integration.integration.image ]]" alt="Integration image" class="sized" sizing="contain" preload="" fade="">
                         </iron-image>
                     </div>
 
