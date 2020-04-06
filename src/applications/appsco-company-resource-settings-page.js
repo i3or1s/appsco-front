@@ -25,10 +25,7 @@ class AppscoCompanyResourceSettingsPage extends mixinBehaviors([NeonSharedElemen
                 @apply --full-page-paper-card;
 
                 --paper-card-header-text: {
-                    padding-bottom: 16px;
-                    padding-top: 16px;
-                    padding-left: 16px;
-                    padding-right: 16px;
+                    @apply --full-page-paper-card-header-text;
                 };
             }
             .page-close-action {
