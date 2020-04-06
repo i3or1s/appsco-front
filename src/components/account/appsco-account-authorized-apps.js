@@ -40,6 +40,7 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
                 margin: auto;
                 width: 100%;
                 @apply --appsco-list-progress-bar;
+                display: block;
             }
             :host appsco-account-authorized-app {
             @apply --account-authorized-app;
@@ -56,17 +57,21 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
             }
         </style>
 
-        <iron-ajax id="ironAjaxAuthorizedApps" url="{{ _computedUrl }}" method="GET" headers="{{ _headers }}" handle-as="json" on-error="_handleError" on-response="_handleResponse">
+        <iron-ajax
+            id="ironAjaxAuthorizedApps"
+            url="[[ _computedUrl ]]"
+            method="GET"
+            headers="[[ _headers ]]"
+            handle-as="json"
+            on-error="_handleError"
+            on-response="_handleResponse">
         </iron-ajax>
 
         <div class="authorized-apps">
+            <paper-progress id="progress" hidden\$="[[ !_progressVisible ]]" indeterminate=""></paper-progress>
 
-            <paper-progress id="progress" indeterminate=""></paper-progress>
-
-            <template is="dom-repeat" items="{{ _authorizedApps }}">
-
+            <template is="dom-repeat" items="[[ _authorizedApps ]]">
                 <appsco-account-authorized-app application="[[ item ]]" short-view="[[ shortView ]]"></appsco-account-authorized-app>
-
             </template>
 
             <template is="dom-if" if="[[ _message ]]">
@@ -75,10 +80,10 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
                 </p>
             </template>
 
-            <paper-button id="loadMore" class="load-more-button" hidden="[[ !loadMore ]]" on-tap="_loadMore">Load More</paper-button>
-
-        </div>
-`;
+            <template is="dom-if" if="[[ _shouldShowLoadMore ]]">
+                <paper-button id="loadMore" class="load-more-button" on-tap="_loadMore">Load More</paper-button>
+            </template>
+        </div>`;
     }
 
     static get is() { return 'appsco-account-authorized-apps'; }
@@ -110,9 +115,20 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
                 value: 5
             },
 
+            /** Is loadMore option enabled */
             loadMore: {
                 type: Boolean,
                 value: false
+            },
+
+            _hasMoreToLoad: {
+                type: Boolean,
+                value: false
+            },
+
+            _shouldShowLoadMore: {
+                type: Boolean,
+                computed: '_computeShouldShowLoadMore(loadMore, _hasMoreToLoad)'
             },
 
             shortView: {
@@ -135,6 +151,11 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
 
             _message: {
                 type: String
+            },
+
+            _progressVisible: {
+                type: Boolean,
+                value: false
             }
         };
     }
@@ -143,8 +164,12 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
         return authorizedAppsApi + '?page=' + this._nextPage + '&limit=' + this.size;
     }
 
+    _computeShouldShowLoadMore(loadMore, _hasMoreToLoad) {
+        return loadMore && _hasMoreToLoad;
+    }
+
     loadAuthorizedApps() {
-        this.$.progress.hidden = false;
+        this._showProgressBar();
         this._authorizedApps = [];
         this._nextPage = 1;
 
@@ -153,7 +178,7 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
     }
 
     _loadMore() {
-        this.$.progress.hidden = false;
+        this._showProgressBar();
 
         this.$.ironAjaxAuthorizedApps.url = this._computeUrl(this.authorizedAppsApi);
         this.$.ironAjaxAuthorizedApps.generateRequest();
@@ -169,6 +194,8 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
             applications = response.authorizations,
             currentLength = this._authorizedApps.length;
 
+        this._hasMoreToLoad = applications.length + currentLength < response.meta.total;
+
         if (applications && applications.length > 0) {
             this._nextPage += 1;
 
@@ -178,10 +205,6 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
 
                     if (i === (applications.length - 1)) {
                         this._hideProgressBar();
-
-                        if (applications.length < this.size) {
-                            this.$.loadMore.disabled = true;
-                        }
                     }
                 }.bind(this), (i + 1) * 30 );
             }.bind(this));
@@ -190,10 +213,6 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
             if (!currentLength) {
                 this._message = 'You don\'t have authorized applications.';
             }
-            else {
-                this.$.loadMore.disabled = true;
-            }
-
             this._hideProgressBar();
         }
         else if (!currentLength) {
@@ -202,9 +221,13 @@ class AppscoAccountAuthorizedApps extends mixinBehaviors([Appsco.HeadersMixin], 
         }
     }
 
+    _showProgressBar() {
+        this._progressVisible = true;
+    }
+
     _hideProgressBar() {
         setTimeout(function() {
-            this.$.progress.hidden = true;
+            this._progressVisible = false;
         }.bind(this), 500);
     }
 }
