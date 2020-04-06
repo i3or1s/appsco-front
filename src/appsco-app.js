@@ -259,13 +259,21 @@ class AppscoApp extends mixinBehaviors([
                             <appsco-resources-page-actions id="appscoResourcesPageActions" name="resources" authorization-token="[[ authorizationToken ]]" filter-api="[[ api.dashboards ]]?extended=1" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]" resource-admin="[[ _resourceAdmin ]]">
                             </appsco-resources-page-actions>
 
-                            <appsco-manage-resource-page-actions id="appscoManageApplicationPageActions" name="manage-resource" resource-admin="[[ _resourceAdmin ]]" on-back="_showCompanyResourcesPage">
+                            <appsco-manage-resource-page-actions
+                                id="appscoManageApplicationPageActions"
+                                name="manage-resource"
+                                advanced-actions\$="[[ !_resourceAdmin ]] "
+                                on-back="_showCompanyResourcesPage">
                             </appsco-manage-resource-page-actions>
 
                             <appsco-directory-page-actions id="appscoDirectoryPageActions" name="directory" on-manage-domains="_onManageDomains" authorization-token="[[ authorizationToken ]]">
                             </appsco-directory-page-actions>
 
-                            <appsco-manage-account-page-actions id="appscoManageAccountPageActions" name="manage-account" on-back="_showCompanyDirectoryPage">
+                            <appsco-manage-account-page-actions
+                                id="appscoManageAccountPageActions"
+                                name="manage-account"
+                                advanced-actions=""
+                                on-back="_showCompanyDirectoryPage">
                             </appsco-manage-account-page-actions>
 
                             <appsco-contacts-page-actions id="appscoContactsPageActions" name="contacts">
@@ -1188,8 +1196,6 @@ class AppscoApp extends mixinBehaviors([
         this.addEventListener('reload-accounts', this._onReloadAccounts.bind(this), { passive: true });
         this.addEventListener('application-settings-saved', this._onApplicationUpdated.bind(this), { passive: true });
         this.addEventListener('copied-application-attribute', this._onCopiedApplicationAttribute.bind(this), { passive: true });
-        this.addEventListener('enable-advanced-settings', this._onEnableAccountAdvancedSettings.bind(this), { passive: true });
-        this.addEventListener('disable-advanced-settings', this._onDisableAccountAdvancedSettings.bind(this), { passive: true });
         this.addEventListener('twofa-enabled', this._onTwoFaEnabled.bind(this), { passive: true });
         this.addEventListener('token-generated', this._onTokenGenerated.bind(this), { passive: true });
 

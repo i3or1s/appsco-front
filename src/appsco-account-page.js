@@ -243,7 +243,8 @@ class AppscoAccountPage extends mixinBehaviors([
             _selected: {
                 type: String,
                 value: 'appsco-account-components-page',
-                notify: true
+                notify: true,
+                observer: '_selectedPageChanged'
             },
 
             mediumScreen: {
@@ -350,6 +351,16 @@ class AppscoAccountPage extends mixinBehaviors([
         }
     }
 
+    _selectedPageChanged(selected) {
+        if (undefined === selected) {
+            return;
+        }
+        'appsco-account-components-page' === selected ?
+            this.toolbar.showAdvancedSettings() :
+            this.toolbar.hideAdvancedSettings()
+        ;
+    }
+
     _pageLoaded() {
         this.pageLoaded = true;
         this.dispatchEvent(new CustomEvent('page-loaded', { bubbles: true, composed: true }));
@@ -442,11 +453,11 @@ class AppscoAccountPage extends mixinBehaviors([
     }
 
     _disableAdvancedSettings() {
-        this.dispatchEvent(new CustomEvent('disable-advanced-settings', { bubbles: true, composed: true }));
+        this.toolbar.disableAdvancedSettings();
     }
 
     _enableAdvancedSettings() {
-        this.dispatchEvent(new CustomEvent('enable-advanced-settings', { bubbles: true, composed: true }));
+        this.toolbar.enableAdvancedSettings();
     }
 
     _onAccountSettings() {
