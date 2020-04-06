@@ -776,7 +776,7 @@ class AppscoHomePage extends mixinBehaviors([
         setTimeout(function() {
             dialog.setApplication(this.application);
             dialog.toggle();
-        }, 0);
+        }.bind(this), 0);
     }
 
     _onApplication(event) {
@@ -803,7 +803,7 @@ class AppscoHomePage extends mixinBehaviors([
         setTimeout(function() {
             dialog.applicationInstance = this.application;
             dialog.open();
-        }, 0);
+        }.bind(this), 0);
     }
 
     _onPageConfigChanged(newValue) {
