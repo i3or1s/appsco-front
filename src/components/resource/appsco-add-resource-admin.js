@@ -370,6 +370,7 @@ class AppscoAddResourceAdmin extends mixinBehaviors([Appsco.HeadersMixin], Polym
 
     _onAccountsLoadFinished() {
         this._rolesLoaded = true;
+        this.dispatchEvent(new CustomEvent('accounts-loaded', { bubbles: true, composed: true }));
     }
 
     _setAccountList(rolesLoaded) {

@@ -169,7 +169,7 @@ class AppscoAddResourceToResourceAdmin extends mixinBehaviors([Appsco.HeadersMix
 
                 <div class="dialog-container">
                     <div class="resource-list">
-                        <paper-progress id="resourceListProgress" indeterminate=""></paper-progress>
+                        <paper-progress id="resourceListProgress" hidden\$="[[ !_progressVisible ]]" indeterminate=""></paper-progress>
                         <table>
                             <thead>
                                 <tr>
@@ -217,10 +217,9 @@ class AppscoAddResourceToResourceAdmin extends mixinBehaviors([Appsco.HeadersMix
                     Selected [[ _numberOfSelectedResources ]] out of [[ _resourcesCount ]]
                 </div>
                 <paper-button dialog-dismiss="">Cancel</paper-button>
-                <paper-button autofocus="" on-tap="_onAssignResourceAdminAction">Share</paper-button>
+                <paper-button autofocus="" on-tap="_onAssignResourceAdminAction">Assign</paper-button>
             </div>
-        </paper-dialog>
-`;
+        </paper-dialog>`;
     }
 
     static get is() { return 'appsco-add-resource-to-resource-admin'; }
@@ -359,7 +358,7 @@ class AppscoAddResourceToResourceAdmin extends mixinBehaviors([Appsco.HeadersMix
 
             _resourcesCount: {
                 type: Number,
-                value: 0
+                computed: '_computeResourceListCount(_resourceList)'
             },
 
             _numberOfSelectedResources: {
@@ -375,6 +374,11 @@ class AppscoAddResourceToResourceAdmin extends mixinBehaviors([Appsco.HeadersMix
             _filterType: {
                 type: String,
                 value: 'all'
+            },
+
+            _progressVisible: {
+                type: Boolean,
+                value: true
             }
         };
     }
@@ -414,12 +418,12 @@ class AppscoAddResourceToResourceAdmin extends mixinBehaviors([Appsco.HeadersMix
     }
 
     _showResourceListProgress() {
-        this.$.resourceListProgress.hidden = false;
+        this._progressVisible = true;
     }
 
     _hideResourceListProgress() {
         setTimeout(function() {
-            this.$.resourceListProgress.hidden = true;
+            this._progressVisible = false;
         }.bind(this), 500);
     }
 
@@ -457,7 +461,6 @@ class AppscoAddResourceToResourceAdmin extends mixinBehaviors([Appsco.HeadersMix
 
         this.set('_resourceList', listItems);
         this.set('_resourceListAll', listItems);
-        this._resourcesCount = this._resourceList.length;
         this._hideResourceListProgress();
     }
 
@@ -593,36 +596,40 @@ class AppscoAddResourceToResourceAdmin extends mixinBehaviors([Appsco.HeadersMix
         this._hideMessage();
         this.set('_resourceList', []);
 
+        let resourceList = [];
+
         if ('all' === type) {
             if (term) {
                 for (let i = 0; i < lengthAll; i++) {
                     if (-1 !== listAll[i].title.toLowerCase().indexOf(term.toLowerCase())) {
-                        this.push('_resourceList', listAll[i]);
+                        resourceList.push(listAll[i]);
                     }
                 }
             }
             else {
-                this.set('_resourceList', listAll);
+                resourceList = listAll;
             }
         }
         else {
             if (term) {
                 for (let i = 0; i < lengthAll; i++) {
-                    if (this.isTypeMatching(type, listAll[i].auth_type) && (-1 != listAll[i].title.toLowerCase().indexOf(term))) {
-                        this.push('_resourceList', listAll[i]);
+                    if (this.isTypeMatching(type, listAll[i].auth_type) && (-1 !== listAll[i].title.toLowerCase().indexOf(term))) {
+                        resourceList.push(listAll[i]);
                     }
                 }
             }
             else {
                 for (let i = 0; i < lengthAll; i++) {
                     if (this.isTypeMatching(type, listAll[i].auth_type)) {
-                        this.push('_resourceList', listAll[i]);
+                        resourceList.push(listAll[i]);
                     }
                 }
             }
         }
 
-        if (0 === this._resourceList.length) {
+        this.set('_resourceList', resourceList);
+
+        if (0 === resourceList.length) {
             this._showMessage('There are no resources available according to selected filters.');
         }
     }
@@ -639,11 +646,14 @@ class AppscoAddResourceToResourceAdmin extends mixinBehaviors([Appsco.HeadersMix
         this._filterTerm = '';
         this._filterType = 'all';
         this._numberOfSelectedResources = 0;
-        this._resourcesCount = 0;
         this._bulkSelect = false;
         this._hideLoader();
         this._hideError();
         this._hideMessage();
+    }
+
+    _computeResourceListCount(resourceList) {
+        return resourceList && resourceList.length ? resourceList.length : 0;
     }
 
     _resourcesAssignFinished() {
@@ -653,7 +663,8 @@ class AppscoAddResourceToResourceAdmin extends mixinBehaviors([Appsco.HeadersMix
             bubbles: true,
             composed: true,
             detail: {
-                companyRole: this.role
+                companyRole: this.role,
+                resources: this._selectedResources
             }
         }));
 

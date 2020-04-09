@@ -262,6 +262,7 @@ class AppscoDirectoryRoleResourceAdminApplications extends mixinBehaviors([Appsc
         }
 
         if (applications && applications.length > 0) {
+            this._message = '';
             this._nextPage += 1;
             applications.forEach(function(application, index) {
                 this.loadTimeouts.push(setTimeout( function() {

@@ -174,36 +174,68 @@ class AppscoManageAccountPage extends mixinBehaviors([
 
         <iron-ajax auto="" url="[[ _canBeManagedApi ]]" on-error="_onCanBeManagedError" on-response="_onCanBeManagedResponse" headers="[[ _headers ]]"></iron-ajax>
 
-        <appsco-role-reset-two-fa id="appscoRoleResetTwoFA" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-role-two-fa-reset="_onRoleTwoFAReset">
+        <appsco-role-reset-two-fa
+            id="appscoRoleResetTwoFA"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]"
+            on-role-two-fa-reset="_onRoleTwoFAReset">
         </appsco-role-reset-two-fa>
 
-        <appsco-account-approve-device id="appscoAccountApproveDevice" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-device-approve-finished="_onDeviceApproveFinished">
+        <appsco-account-approve-device
+            id="appscoAccountApproveDevice"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]"
+            on-device-approve-finished="_onDeviceApproveFinished">
         </appsco-account-approve-device>
 
-        <appsco-account-disapprove-device id="appscoAccountDisapproveDevice" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-device-disapprove-finished="_onDeviceDisapproveFinished">
+        <appsco-account-disapprove-device
+            id="appscoAccountDisapproveDevice"
+            authorization-token="[[ authorizationToken ]]"
+            api-errors="[[ apiErrors ]]"
+            on-device-disapprove-finished="_onDeviceDisapproveFinished">
         </appsco-account-disapprove-device>
 
-        <appsco-application-assignee-revoke id="appscoApplicationAssigneeRevoke" authorization-token="[[ authorizationToken ]]">
+        <appsco-application-assignee-revoke
+            id="appscoApplicationAssigneeRevoke"
+            authorization-token="[[ authorizationToken ]]">
         </appsco-application-assignee-revoke>
 
-        <appsco-application-assignee-claims id="appscoApplicationAssigneeClaims" application="[[ _companyApplication ]]" authorization-token="[[ authorizationToken ]]">
+        <appsco-application-assignee-claims
+            id="appscoApplicationAssigneeClaims"
+            application="[[ _companyApplication ]]"
+            authorization-token="[[ authorizationToken ]]">
         </appsco-application-assignee-claims>
 
-        <appsco-account-orgunit id="appscoAccountOrgunit" authorization-token="[[ authorizationToken ]]" company-orgunits-api="[[ companyOrgunitsApi ]]">
+        <appsco-account-orgunit
+            id="appscoAccountOrgunit"
+            authorization-token="[[ authorizationToken ]]"
+            company-orgunits-api="[[ companyOrgunitsApi ]]">
         </appsco-account-orgunit>
 
-        <appsco-account-remove-orgunit id="appscoAccountRemoveOrgunit" authorization-token="[[ authorizationToken ]]" account="[[ _role ]]">
+        <appsco-account-remove-orgunit
+            id="appscoAccountRemoveOrgunit"
+            authorization-token="[[ authorizationToken ]]"
+            account="[[ _role ]]">
         </appsco-account-remove-orgunit>
 
-        <appsco-account-remove-group id="appscoAccountRemoveGroup" authorization-token="[[ authorizationToken ]]">
+        <appsco-account-remove-group
+            id="appscoAccountRemoveGroup"
+            authorization-token="[[ authorizationToken ]]">
         </appsco-account-remove-group>
 
-        <appsco-add-resource-to-resource-admin id="appscoAddResourceToResourceAdmin" authorization-token="[[ authorizationToken ]]" get-resources-api="[[ companyApplicationsApi ]]" api-errors="[[ apiErrors ]]" on-resource-admin-assigned="_onResourceAdminAssigned">
+        <appsco-add-resource-to-resource-admin
+            id="appscoAddResourceToResourceAdmin"
+            authorization-token="[[ authorizationToken ]]"
+            get-resources-api="[[ companyApplicationsApi ]]"
+            api-errors="[[ apiErrors ]]"
+            on-resource-admin-assigned="_onResourceAdminAssigned">
         </appsco-add-resource-to-resource-admin>
 
-        <appsco-resource-admin-revoke id="appscoResourceAdminRevoke" authorization-token="[[ authorizationToken ]]" on-access-revoked="_onResourceAdminRevoked">
-        </appsco-resource-admin-revoke>
-`;
+        <appsco-resource-admin-revoke
+            id="appscoResourceAdminRevoke"
+            authorization-token="[[ authorizationToken ]]"
+            on-access-revoked="_onResourceAdminRevoked">
+        </appsco-resource-admin-revoke>`;
     }
 
     static get is() { return 'appsco-manage-account-page'; }
@@ -706,6 +738,14 @@ class AppscoManageAccountPage extends mixinBehaviors([
     }
 
     _onResourceAdminAssigned(event) {
+        const resourcesAssigned = event.detail.resources;
+        if (resourcesAssigned && resourcesAssigned.length > 0) {
+            const account = event.detail.companyRole.account;
+            const message = resourcesAssigned.length > 1 ?
+                'Resource admin access for ' + account.display_name + ' for ' + resourcesAssigned.length + ' resources was assigned successfully.' :
+                'Resource admin access for ' + account.display_name + ' for ' + resourcesAssigned[0].title + ' was assigned successfully.';
+            this._notify(message);
+        }
         this.reloadResourceAdmins();
     }
 
