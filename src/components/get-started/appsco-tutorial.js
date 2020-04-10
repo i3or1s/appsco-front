@@ -171,7 +171,8 @@ class AppscoTutorial extends mixinBehaviors([
                 reflectToAttribute: true,
                 value: function () {
                     return {}
-                }
+                },
+                observer: '_tutorialsChanged'
             },
 
             _tutorialsInitialized: {
@@ -396,6 +397,26 @@ class AppscoTutorial extends mixinBehaviors([
         }
         this.currentSteps[event.detail.id] = event.detail.step;
         this._computeIsTutorialActive();
+    }
+
+    _tutorialsChanged(tutorials) {
+        let finishedTuts = 0;
+        let numOfTuts = 0;
+        for(const property in tutorials) {
+            numOfTuts++;
+            if(tutorials.hasOwnProperty(property) && tutorials[property].isDone()) {
+                finishedTuts++;
+            }
+        }
+        const progress = numOfTuts <= 0 ? 0 : Math.round(100*finishedTuts/numOfTuts);
+
+        this.dispatchEvent(new CustomEvent('tutorial-progress-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                progress: progress
+            }
+        }));
     }
 }
 window.customElements.define(AppscoTutorial.is, AppscoTutorial);
