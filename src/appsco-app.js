@@ -685,7 +685,9 @@ class AppscoApp extends mixinBehaviors([
             _apiErrors: {
                 type: Object,
                 value: function() {
-                    return {};
+                    return {
+                        getError: ()=>{}
+                    };
                 }
             },
 
