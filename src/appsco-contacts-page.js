@@ -112,6 +112,9 @@ class AppscoContactsPage extends mixinBehaviors([
                     width: 140px;
                 };
             }
+            neon-animated-pages .iron-selected:not(.neon-animating) {
+                position: relative; 
+            }
         </style>
 
         <iron-media-query query="(max-width: 992px)" query-matches="{{ screen992 }}"></iron-media-query>
@@ -460,6 +463,7 @@ class AppscoContactsPage extends mixinBehaviors([
 
     reloadInvitations() {
         this._resetPageActions();
+        this._invitationsLoaded = false;
         this.$.appscoInvitations.reloadInvitations();
     }
 
@@ -544,11 +548,7 @@ class AppscoContactsPage extends mixinBehaviors([
     }
 
     _computeContactExistence(contact) {
-        for (const key in contact) {
-            return true;
-        }
-
-        return false;
+        return Object.keys(contact) > 0;
     }
 
     _computePageReadyState(contacts, invitations) {
@@ -564,13 +564,13 @@ class AppscoContactsPage extends mixinBehaviors([
     }
 
     _onContactChanged(contact) {
-
         if (contact.meta && contact.meta.log) {
             this._loadLog();
         }
     }
 
     _reloadContacts() {
+        this._contactsLoaded = false;
         this.$.appscoContacts.reloadItems();
     }
 
