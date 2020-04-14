@@ -25,6 +25,11 @@ class AppscoResourceAdminsPage extends mixinBehaviors([NeonSharedElementAnimatab
                 --paper-card-header-text: {
                     @apply --full-page-paper-card-header-text;
                 };
+                
+                --paper-card-content: {
+                    padding-top: 16px;
+                    padding-bottom: 16px;
+                }
 
                 --item-background-color: var(--body-background-color);
                 --subscriber-initials-background-color: var(--body-background-color-darker);

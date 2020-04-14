@@ -303,7 +303,8 @@ class AppscoManageResourcePage extends mixinBehaviors([
             get-roles-api="[[ companyRolesApi ]]"
             get-contacts-api="[[ companyContactsApi ]]"
             api-errors="[[ apiErrors ]]"
-            on-resources-shared="_onResourceAdminAdded">
+            on-resources-shared="_onResourceAdminAdded"
+            on-accounts-loaded="_hideProgressBar">
         </appsco-add-resource-admin>
 
         <appsco-resource-admin-revoke
@@ -772,7 +773,6 @@ class AppscoManageResourcePage extends mixinBehaviors([
         const dialog = this.shadowRoot.getElementById('appscoAddResourceAdmin');
         dialog.setResources([event.detail.resource]);
         dialog.toggle();
-        this._hideProgressBar();
     }
 
     _onResourceAdminAdded(event) {
