@@ -2,6 +2,7 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/paper-input/paper-input.js';
 import './appsco-ip-whitelist-policy-settings.js';
 import './appsco-enforce-two-factor-policy-settings.js';
+import './appsco-enforce-duo-security-policy-settings.js';
 import './appsco-login-time-restriction-policy-settings.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -31,6 +32,10 @@ class AppscoPolicySettings extends PolymerElement {
 
         <template is="dom-if" if="[[ _enforceTwoFactoryPolicyActive ]]">
             <appsco-enforce-two-factor-policy-settings policy="[[ policy ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]"></appsco-enforce-two-factor-policy-settings>
+        </template>
+
+        <template is="dom-if" if="[[ _enforceDuoSecurityPolicyActive ]]">
+            <appsco-enforce-duo-security-policy-settings policy="[[ policy ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]"></appsco-enforce-duo-security-policy-settings>
         </template>
 
         <template is="dom-if" if="[[ _loginTimeRestrictionPolicyActive ]]">
@@ -72,6 +77,11 @@ class AppscoPolicySettings extends PolymerElement {
                 computed: '_computeEnforceTwoFactoryPolicyActive(policy)'
             },
 
+            _enforceDuoSecurityPolicyActive: {
+                type: Boolean,
+                computed: '_computeEnforceDuoSecurityPolicyActive(policy)'
+            },
+
             _loginTimeRestrictionPolicyActive: {
                 type: Boolean,
                 computed: '_computeLoginTimeRestrictionPolicyActive(policy)'
@@ -79,7 +89,7 @@ class AppscoPolicySettings extends PolymerElement {
 
             _customSettings: {
                 type: Boolean,
-                computed: '_computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive)'
+                computed: '_computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive, _enforceDuoSecurityPolicyActive)'
             }
         };
     }
@@ -92,12 +102,18 @@ class AppscoPolicySettings extends PolymerElement {
         return (policy.name && 'enforce two-factor' === policy.name.toLowerCase());
     }
 
+    _computeEnforceDuoSecurityPolicyActive(policy) {
+        return (policy.name && 'enforce duo security' === policy.name.toLowerCase());
+    }
+
     _computeLoginTimeRestrictionPolicyActive(policy) {
         return (policy.name && 'login time restriction' === policy.name.toLowerCase());
     }
 
-    _computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive) {
-        return _ipWhitelistPolicyActive || _enforceTwoFactoryPolicyActive;
+    _computeHasCustomSettings(..._check) {
+        return _check.reduce((result, start) => {
+            return result || start;
+        }, false);
     }
 }
 window.customElements.define(AppscoPolicySettings.is, AppscoPolicySettings);

@@ -701,7 +701,9 @@ export const AppscoListBehavior = [
 
     _onGetListError: function(event) {
         if (!event.detail.request.aborted) {
-            this._showMessage(this.apiErrors.getError(404));
+            if(this.apiErrors && this.apiErrors.getError) {
+                this._showMessage(this.apiErrors.getError(404));
+            }
         }
 
         this._totalListItems = 0;
