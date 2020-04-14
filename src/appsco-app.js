@@ -85,16 +85,8 @@ class AppscoApp extends mixinBehaviors([
             resource-share-accounts-loaded="[[ shareResourceDialogAccountsLoaded ]]" 
             current-page="[[ page ]]" 
             tutorial-response="[[ tutorialResponse ]]"
-            is-tutorial-active="{{ isTutorialActive }}">            
+            on-tutorial-progress-changed="onTutorialProgressChanged">
         </appsco-tutorial>
-
-        <appsco-tutorial-progress
-                id="appscoTutorialProgress"
-                tutorials="[[ _tutorials ]]"
-                show="true"
-                is-tutorial-active="[[ isTutorialActive ]]"
-                progress="{{ _progress }}"
-        ></appsco-tutorial-progress>
         
         <app-drawer-layout fullbleed="" force-narrow="">
 
@@ -1133,11 +1125,6 @@ class AppscoApp extends mixinBehaviors([
                         }
                     };
                 }
-            },
-
-            isTutorialActive: {
-                type: Boolean,
-                value: false
             },
 
             tutorialResponse: {
@@ -3112,6 +3099,10 @@ class AppscoApp extends mixinBehaviors([
      */
     _onTutorialStart(event) {
         this.$.appscoTutorial.startTutorial(event.detail.tutorialId);
+    }
+
+    onTutorialProgressChanged(event) {
+        this._progress = event.detail.progress;
     }
 
     /**

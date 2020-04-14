@@ -33,7 +33,6 @@ import './components/company/appsco-company-notice.js';
 import './shared-styles.js';
 import './webkit-scrollbar-style.js';
 import './components/get-started/appsco-tutorial.js';
-import './components/get-started/appsco-tutorial-progress.js';
 import './components/components/appsco-behavior-export-report.js';
 import '@polymer/polymer/lib/utils/render-status.js';
 
