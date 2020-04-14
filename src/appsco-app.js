@@ -3648,7 +3648,6 @@ class AppscoApp extends mixinBehaviors([
 
                 if (this.$.appscoContactsPage.$) {
                     this.$.appscoContactsPage.modifyContacts([item]);
-                    this.$.appscoContactsPage.removeSelectedContacts([item]);
                 }
 
                 break;
