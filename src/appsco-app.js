@@ -777,7 +777,7 @@ class AppscoApp extends mixinBehaviors([
 
             _companiesAccountHasPermissionTo: {
                 type: Array,
-                computed: '_computeCompaniesAccountHasPermissionTo(account, contactCompanies)',
+                computed: '_computeCompaniesAccountHasPermissionTo(account.companies, contactCompanies)',
                 observer: '_onCompaniesAccountHasPermissionToChanged'
             },
 
@@ -1280,7 +1280,7 @@ class AppscoApp extends mixinBehaviors([
     }
 
     _onCurrentCompanyChanged(company, oldCompany) {
-        if (company && company.company) {
+        if (company && company.company && company.company.self) {
             this._setResourceAdmin(company);
             this._personalFolderPage = false;
 
@@ -1299,7 +1299,7 @@ class AppscoApp extends mixinBehaviors([
                 this._setCompanyApi(company);
                 this._setProduct(this._companyPage);
 
-                if (oldCompany && oldCompany.company
+                if (oldCompany && oldCompany.company && oldCompany.company.self
                     && company.company.personal_dashboards_allowed !== oldCompany.company.personal_dashboards_allowed) {
                     this._getLoggedAccount();
                 }
@@ -1387,12 +1387,14 @@ class AppscoApp extends mixinBehaviors([
         return company.company_contact;
     }
 
-    _computeCompaniesAccountHasPermissionTo(account, companiesAccountIsContactIn) {
-        if (!account.self || undefined === companiesAccountIsContactIn) {
+    _computeCompaniesAccountHasPermissionTo(accountCompanies, companiesAccountIsContactIn) {
+        if (undefined === accountCompanies || undefined === companiesAccountIsContactIn) {
             return undefined;
         }
-        const companies = (account.companies && 0 < account.companies.length) ? account.companies : [];
-        return (0 < companiesAccountIsContactIn.length) ? companies.concat(companiesAccountIsContactIn) : companies;
+        return companiesAccountIsContactIn.length > 0 ?
+            accountCompanies.concat(companiesAccountIsContactIn) :
+            accountCompanies
+        ;
     }
 
     _computeAccessBilling(currentCompany) {
