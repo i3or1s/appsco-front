@@ -33,6 +33,7 @@ import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/re
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { AppscoDropHTMLElementBehavior } from './components/components/appsco-drop-html-element-behavior.js';
+
 class AppscoHomePage extends mixinBehaviors([
     NeonAnimatableBehavior,
     AppscoDropHTMLElementBehavior,
