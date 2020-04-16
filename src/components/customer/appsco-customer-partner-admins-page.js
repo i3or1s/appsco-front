@@ -29,6 +29,10 @@ class AppscoCustomerPartnerAdminsPage extends mixinBehaviors([NeonSharedElementA
             }
             :host paper-card {
                 @apply --full-page-paper-card;
+                
+                --paper-card-header-text: {
+                    @apply --full-page-paper-card-header-text;
+                };
             }
             .page-close-action {
                 @apply --page-close-action;
