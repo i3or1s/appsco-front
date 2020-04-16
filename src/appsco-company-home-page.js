@@ -591,6 +591,7 @@ class AppscoCompanyHomePage extends mixinBehaviors([
 
     initializePage() {
         this.setDefaultApplication();
+        this.$.appscoApplications.initialize();
     }
 
     resetPage() {
