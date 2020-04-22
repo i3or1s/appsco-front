@@ -388,7 +388,8 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
              */
             _applicationsApi: {
                 type: String,
-                computed: '_computeApplicationsApi(folder)'
+                computed: '_computeApplicationsApi(folder)',
+                observer: '_onApplicationsApiChanged'
             },
 
             netscalerApi: {
@@ -508,6 +509,12 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
         return folder.meta ? folder.meta.applications : null;
     }
 
+    _onApplicationsApiChanged(applicationsApi) {
+        if (applicationsApi) {
+            this.pageLoaded = false;
+        }
+    }
+
     _computeApplicationShared(application) {
         return application && !application.owner;
     }
@@ -575,7 +582,6 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
     }
 
     setFolder(folder) {
-        this.pageLoaded = false;
         this.set('folder', folder);
     }
 
@@ -585,6 +591,7 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
 
     initializePage() {
         this.setDefaultApplication();
+        this.$.appscoApplications.initialize();
     }
 
     resetPage() {
