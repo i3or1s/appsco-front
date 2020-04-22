@@ -297,7 +297,7 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
         <appsco-application-revoke id="appscoApplicationRevoke" authorization-token="[[ authorizationToken ]]">
         </appsco-application-revoke>
 
-        <appsco-company-resource-settings-dialog id="appscoCompanyResourceSettingsDialog" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" domain="[[ domain ]]" on-application-settings-saved="_onApplicationSettingsSaved">
+        <appsco-company-resource-settings-dialog id="appscoCompanyResourceSettingsDialog" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" domain="[[ domain ]]">
         </appsco-company-resource-settings-dialog>
 `;
     }
