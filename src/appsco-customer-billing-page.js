@@ -24,6 +24,7 @@ import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/re
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoCustomerBillingPage extends mixinBehaviors([
     NeonAnimatableBehavior,
     Appsco.HeadersMixin,
@@ -479,7 +480,7 @@ class AppscoCustomerBillingPage extends mixinBehaviors([
                 </div>
 
                 <div class="info-actions flex-horizontal">
-                    <paper-button class="send-invoice-button flex" on-tap="_onSendInvoice">
+                    <paper-button class="button flex" on-tap="_onSendInvoice">
                         Send invoice
                     </paper-button>
                 </div>

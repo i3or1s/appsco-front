@@ -24,6 +24,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class AppscoBillingPage extends mixinBehaviors([
     Appsco.HeadersMixin,
     Appsco.PageMixin
