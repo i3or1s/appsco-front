@@ -312,7 +312,7 @@ class AppscoApplicationComponentsPage extends mixinBehaviors([NeonSharedElementA
     }
 
     _computeIsUnPwAuthType(application) {
-        var isUnpw =
+        const isUnpw =
             application.auth_type &&
             (application.auth_type === 'unpw' || application.auth_type === 'item')
         ;
@@ -321,7 +321,6 @@ class AppscoApplicationComponentsPage extends mixinBehaviors([NeonSharedElementA
     }
 
     _setSharedElement(target) {
-
         while (target.tagName.toLowerCase() !== 'paper-card' && !target._templateInstance) {
             target = target.parentNode;
         }
@@ -338,7 +337,7 @@ class AppscoApplicationComponentsPage extends mixinBehaviors([NeonSharedElementA
 
     _onApplicationChanged() {
         this._autologinUnavailable = false;
-        this._autologinItem = this.application.auth_type == 'item';
+        this._autologinItem = 'item' === this.application.auth_type;
     }
 
     _onManageApplicationSettings(event) {
@@ -360,9 +359,8 @@ class AppscoApplicationComponentsPage extends mixinBehaviors([NeonSharedElementA
         this._autologinUnavailable = true;
     }
 
-    _onAutologinChanged() {
-        this._autologinItem = !this._autologinItem;
-
+    _onAutologinChanged(event) {
+        this._autologinItem = !event.detail.autoLogin;
         this.$.appscoApplicationLog.load();
     }
 }

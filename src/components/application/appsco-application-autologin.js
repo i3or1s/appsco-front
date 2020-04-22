@@ -33,7 +33,8 @@ class AppscoApplicationAutologin extends mixinBehaviors([Appsco.HeadersMixin], P
                 value: function () {
                     return {};
                 },
-                notify: true
+                notify: true,
+                observer: '_processAuthType'
             }
         };
     }
@@ -42,14 +43,12 @@ class AppscoApplicationAutologin extends mixinBehaviors([Appsco.HeadersMixin], P
         super.ready();
 
         afterNextRender(this, function() {
-            this._processAuthType();
             this._addListeners();
         });
     }
 
     _addListeners() {
         this.addEventListener('change', this._switch);
-        this.addEventListener('application-changed', this._processAuthType);
     }
 
     _processAuthType() {
@@ -96,7 +95,14 @@ class AppscoApplicationAutologin extends mixinBehaviors([Appsco.HeadersMixin], P
 
         request.send(options).then(function() {
             me.$.switch.disabled = false;
-            this.dispatchEvent(new CustomEvent('autologin-changed', { bubbles: true, composed: true }));
+            this.dispatchEvent(new CustomEvent('autologin-changed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    autoLogin: this.$.switch.checked,
+                    application: this.application
+                }
+            }));
         }.bind(this));
     }
 }
