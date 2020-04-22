@@ -173,7 +173,7 @@ class AppscoResourcePage extends mixinBehaviors([
                 <div class="application-components">
                     <neon-animated-pages class="flex" selected="{{ _selected }}" attr-for-selected="name" on-neon-animation-finish="_onPageAnimationFinish">
 
-                        <appsco-application-components-page id="appscoApplicationComponentsPage" name="appsco-application-components-page" application="{{ application }}" authorization-token="[[ authorizationToken ]]" on-application-settings="_onApplicationSettings" on-all-subscribers="_onAllSubscribers" on-all-log="_onAllLog" on-log-loaded="_pageLoaded" on-log-empty="_pageLoaded">
+                        <appsco-application-components-page id="appscoApplicationComponentsPage" name="appsco-application-components-page" application="{{ application }}" authorization-token="[[ authorizationToken ]]" on-application-settings="_onApplicationSettings" on-all-subscribers="_onAllSubscribers" on-all-log="_onAllLog" on-log-loaded="_pageLoaded" on-log-empty="_pageLoaded" on-autologin-changed="_onAutologinChanged">
                         </appsco-application-components-page>
 
                         <appsco-application-settings-page id="appscoApplicationSettingsPage" name="appsco-application-settings-page" application="{{ application }}" authorization-token="[[ authorizationToken ]]" on-application-settings-saved="_onApplicationSettingsSaved" on-back="_onApplicationSettingsBack">
@@ -496,6 +496,11 @@ class AppscoResourcePage extends mixinBehaviors([
 
     _onDisableSubscribersSearchAction() {
         this.toolbar.disableSubscribersSearchAction();
+    }
+
+    _onAutologinChanged(event) {
+        const operation = event.detail.autoLogin ? 'on' : 'off';
+        this._notify(`Auto Login for ${event.detail.application.title} turned ${operation} successfully`);
     }
 }
 window.customElements.define(AppscoResourcePage.is, AppscoResourcePage);
