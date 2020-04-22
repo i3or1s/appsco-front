@@ -382,6 +382,7 @@ class AppscoAddPartnerAdmin extends mixinBehaviors([Appsco.HeadersMixin], Polyme
         this.set('_accountListAll', listItems);
         this._accountsCount = this._accountList.length;
         this._hideAccountListProgress();
+        this.dispatchEvent(new CustomEvent('accounts-loaded', { bubbles: true, composed: true }));
     }
 
     _setAccountList() {

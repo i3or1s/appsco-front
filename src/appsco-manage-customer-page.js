@@ -121,7 +121,7 @@ class AppscoManageCustomerPage extends mixinBehaviors([
         <appsco-manage-customer-subscription id="appscoManageCustomerSubscription" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" partner="[[ currentCompany ]]" on-customer-subscription-state-changed="_onCustomerSubscriptionStateChanged" on-customer-licences-managed="_onCustomerLicencesManaged">
         </appsco-manage-customer-subscription>
 
-        <appsco-add-partner-admin id="appscoAddPartnerAdmin" authorization-token="[[ authorizationToken ]]" get-roles-api="[[ companyRolesApi ]]" add-partner-admin-api="[[ addPartnerAdminToCustomerApi ]]" api-errors="[[ apiErrors ]]" on-partner-admins-added="_onPartnerAdminsAdded">
+        <appsco-add-partner-admin id="appscoAddPartnerAdmin" authorization-token="[[ authorizationToken ]]" get-roles-api="[[ companyRolesApi ]]" add-partner-admin-api="[[ addPartnerAdminToCustomerApi ]]" api-errors="[[ apiErrors ]]" on-partner-admins-added="_onPartnerAdminsAdded" on-accounts-loaded="_hideProgressBar">
         </appsco-add-partner-admin>
 
         <appsco-customer-partner-admin-remove id="appscoCustomerPartnerAdminRemove" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-partner-admin-removed-from-customer="_onPartnerAdminRemovedFromCustomer">
