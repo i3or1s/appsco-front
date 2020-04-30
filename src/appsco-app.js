@@ -1781,9 +1781,8 @@ class AppscoApp extends mixinBehaviors([
             }
 
             if (companyAlias && companyAlias.toString().length > 0) {
-
                 for (let i = 0; i < length; i++) {
-                    if (companies[i].company.alias === companyAlias) {
+                    if (companies[i].company.alias == companyAlias) {
                         currentCompany = companies[i];
                     }
                 }
