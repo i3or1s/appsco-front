@@ -19,7 +19,7 @@ class AppscoCompanyDashboardImageSettings extends mixinBehaviors([AppscoUploadIm
         <div class="upload-container">
             <appsco-loader active="[[ _loader ]]" loader-alt="AppsCo is processing request" multi-color=""></appsco-loader>
 
-            <iron-image class="item-image" src="[[ company.dashboard_image ]]" alt="Company logo" sizing="contain"></iron-image>
+            <iron-image class="item-image" src\$="[[ company.dashboard_image ]]" alt="Company logo" sizing="contain"></iron-image>
 
             <template is="dom-if" if="[[ !previewOnly ]]">
                 <label for="dashboardImageInput" class\$="item-image-upload [[ _imagePreview ]]">

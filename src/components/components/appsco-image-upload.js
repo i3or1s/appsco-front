@@ -18,7 +18,7 @@ class AppscoImageUpload extends mixinBehaviors([AppscoUploadImageBehavior], Poly
 
             <appsco-loader active="[[ _loader ]]" loader-alt="[[ loaderAlt]]" multi-color=""></appsco-loader>
 
-            <iron-image class="item-image" src="[[ image ]]" alt="[[ imageAlt ]]" sizing="contain"></iron-image>
+            <iron-image class="item-image" src\$="[[ image ]]" alt="[[ imageAlt ]]" sizing="contain"></iron-image>
 
             <template is="dom-if" if="[[ !previewOnly ]]">
                 <label for="imageInput" class\$="item-image-upload [[ _imagePreview ]]">
