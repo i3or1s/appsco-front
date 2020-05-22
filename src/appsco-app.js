@@ -650,7 +650,7 @@ class AppscoApp extends mixinBehaviors([
 
             _companyPage: {
                 type: Boolean,
-                computed: '_computeCompany(page)'
+                computed: '_computeCompany(page, _companyPageResolved)'
             },
 
             page: {
@@ -1072,7 +1072,17 @@ class AppscoApp extends mixinBehaviors([
 
             _personalFolderPage: {
                 type: Boolean,
-                value: false
+                computed: '_computePersonaFolderPage(_activeFolder)'
+            },
+
+            _activeFolder: {
+                type: Object,
+                observer: '_activeFolderChanged'
+            },
+
+            _companyPageResolved: {
+                type: Boolean,
+                computed: '_computeCompanyPageResolved(page, _personalFolderPage)'
             },
 
             _tutorials: {
@@ -1140,7 +1150,7 @@ class AppscoApp extends mixinBehaviors([
             '_updateScreen(mobileScreen, tabletScreen)',
             '_routePageChanged(routeData.page)',
             '_changeTheme(_companyPage, currentCompany)',
-            '_redirectToCompany(page, currentCompany, account)',
+            '_redirectToCompany(page, currentCompany, account, _companyPageResolved)',
             '_setupCompanyAccountPage(page, account)',
             '_handlePagePermission(currentCompany, page)',
             '_processPageConfigResponse(pageConfigResponse)'
@@ -1271,7 +1281,6 @@ class AppscoApp extends mixinBehaviors([
     _onCurrentCompanyChanged(company, oldCompany) {
         if (company && company.company && company.company.self) {
             this._setResourceAdmin(company);
-            this._personalFolderPage = false;
 
             setTimeout(function() {
                 if (
@@ -1286,7 +1295,9 @@ class AppscoApp extends mixinBehaviors([
                 this._storeValue('company', company.company.alias);
 
                 this._setCompanyApi(company);
-                this._setProduct(this._companyPage);
+                if ('dashboard-folder' !== this.page) {
+                    this._setProduct(this._companyPage);
+                }
 
                 if (oldCompany && oldCompany.company && oldCompany.company.self
                     && company.company.personal_dashboards_allowed !== oldCompany.company.personal_dashboards_allowed) {
@@ -1325,11 +1336,18 @@ class AppscoApp extends mixinBehaviors([
         return defaultCompany;
     }
 
-    _redirectToCompany(page, currentCompany, account) {
-        if (account.self && currentCompany.company && page && !this._personalFolderPage) {
+    _redirectToCompany(page, currentCompany, account, companyPageResolved) {
+        if (account.self && currentCompany.company && page && companyPageResolved && !this._personalFolderPage) {
             this._checkPersonalDashboardPermission(page, account);
             this._redirectToDefaultCompany(page);
         }
+    }
+
+    _computeCompanyPageResolved(page, personalFolderPage) {
+        return 'dashboard-folder' === page ?
+            undefined !== personalFolderPage :
+            true
+        ;
     }
 
     _redirectToDefaultCompany(page) {
@@ -1851,6 +1869,9 @@ class AppscoApp extends mixinBehaviors([
      * @private
      */
     _isPersonalPage(page) {
+        if ('dashboard-folder' === page) {
+            return this._personalFolderPage;
+        }
         const personalPages = ['home', 'resource', 'trybusiness', 'account'];
         return personalPages.indexOf(page) !== -1;
     }
@@ -3337,15 +3358,11 @@ class AppscoApp extends mixinBehaviors([
      */
 
     _openFolder(folder) {
-        if (this.$.appscoDashboardFolderPage.$) {
-            this.$.appscoDashboardFolderPage.setFolder(folder);
-        }
-
+        this._activeFolder = folder;
         this._showManagePage('dashboard-folder/' + folder.alias);
     }
 
     _onFolderTapped(event) {
-        this._personalFolderPage = event.detail.personal;
         this._openFolder(event.detail.folder);
     }
 
@@ -3809,11 +3826,14 @@ class AppscoApp extends mixinBehaviors([
         this.$.pageProgress.hidden = true;
     }
 
-    _computeCompany(page) {
+    _computeCompany(page, companyPageResolved) {
+        if (!companyPageResolved) {
+            return false;
+        }
         const companyPages = dom(this.root).querySelectorAll('[company-page]');
         for(let index = 0; index < companyPages.length; index++) {
             if(companyPages[index].getAttribute('name') === page) {
-                return !this._personalFolderPage;
+                return 'dashboard-folder' !== page || !this._personalFolderPage;
             }
         }
         return false;
@@ -3868,6 +3888,38 @@ class AppscoApp extends mixinBehaviors([
         });
 
         this.set('account.companies', companies);
+    }
+
+    _computePersonaFolderPage(activeFolder) {
+        return !(activeFolder && activeFolder.company);
+    }
+
+    _activeFolderChanged(activeFolder) {
+        if (!activeFolder || !activeFolder.company) {
+            return;
+        }
+        const company = this._findCompanyByPath(activeFolder.company);
+        if (!company) {
+            return;
+        }
+        if (undefined === this.currentCompany || this.currentCompany.company.self !== company.company.self) {
+            this.set('currentCompany', company);
+            this._setProduct(true);
+        }
+    }
+
+    _findCompanyByPath(path) {
+        if (!this._companiesAccountHasPermissionTo) {
+            return null;
+        }
+        for (let x = 0; x < this._companiesAccountHasPermissionTo.length; x++) {
+            const company = this._companiesAccountHasPermissionTo[x];
+            if (company.company && company.company.self === path) {
+                return company;
+            }
+        }
+
+        return null;
     }
 
     /**

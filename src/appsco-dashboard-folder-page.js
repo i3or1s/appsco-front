@@ -308,9 +308,7 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
         return {
             folder: {
                 type: Object,
-                value: function () {
-                    return {};
-                }
+                notify: true
             },
 
             application: {
@@ -506,7 +504,7 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
     }
 
     _computeApplicationsApi(folder) {
-        return folder.meta ? folder.meta.applications : null;
+        return folder && folder.meta ? folder.meta.applications : null;
     }
 
     _onApplicationsApiChanged(applicationsApi) {
@@ -556,7 +554,7 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
     }
 
     _getFolder() {
-        if (!this.folder.self && this.foldersApi && this._headers) {
+        if (!this.folder || !this.folder.self && this.foldersApi && this._headers) {
             const folderApi = this.foldersApi + this.route.path,
                 getFolderRequest = this.$.ironAjaxGetFolder;
 
@@ -780,7 +778,7 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
     }
 
     _getRemoveResourceFromFolderApi(resource) {
-        return (this.folder.self && resource.alias) ? (this.folder.self + '/resource/' + resource.alias) : null;
+        return (this.folder && this.folder.self && resource.alias) ? (this.folder.self + '/resource/' + resource.alias) : null;
     }
 
     _removeResourceFromFolder(item) {
@@ -840,7 +838,7 @@ class AppscoDashboardFolderPage extends mixinBehaviors([
         const dialog = this.shadowRoot.getElementById('appscoFoldersApplicationAdd');
         dialog.setApplicationIcon(applicationIcon);
         dialog.setCurrentFolder(currentFolder);
-        dialog.setCompany(this.company.company);
+        dialog.setCompany(this.isOnPersonal ? null : this.company.company);
         dialog.toggle();
     }
 
