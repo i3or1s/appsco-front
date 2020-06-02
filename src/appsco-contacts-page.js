@@ -173,6 +173,12 @@ class AppscoContactsPage extends mixinBehaviors([
                     </neon-animated-pages>
 
                 </div>
+                
+                <div class="info-actions flex-horizontal">
+                    <paper-button class="button flex" on-tap="_onEditContactInfoEdit">
+                        Edit
+                    </paper-button>
+                </div>
             </div>
 
         </appsco-content>
@@ -631,6 +637,16 @@ class AppscoContactsPage extends mixinBehaviors([
 
     _onGroupSelected(event) {
         this._loadContactsForGroup(event.detail.item);
+    }
+
+    _onEditContactInfoEdit(event) {
+        this.dispatchEvent(new CustomEvent('edit-contact', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                contact: this.contact
+            }
+        }));
     }
 
     _onContactAction(event) {
