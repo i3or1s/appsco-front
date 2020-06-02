@@ -642,6 +642,7 @@ class AppscoManageAccountPage extends mixinBehaviors([
 
     reloadResourceAdmins() {
         this.$.appscoDirectoryRoleResourceAdminApplicationsPage.reloadResourceAdmins();
+        this.$.appscoManageAccountComponentsPage.reloadResourceAdmins();
     }
 
     showAdvanced() {
