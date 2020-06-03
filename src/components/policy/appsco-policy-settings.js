@@ -89,7 +89,7 @@ class AppscoPolicySettings extends PolymerElement {
 
             _customSettings: {
                 type: Boolean,
-                computed: '_computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive, _enforceDuoSecurityPolicyActive)'
+                computed: '_computeHasCustomSettings(_ipWhitelistPolicyActive, _enforceTwoFactoryPolicyActive, _enforceDuoSecurityPolicyActive, _loginTimeRestrictionPolicyActive)'
             }
         };
     }
