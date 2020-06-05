@@ -39,9 +39,13 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
                     box-sizing: border-box;
                 };
 
+                --read-background-color: #e0e0e0;
                 --paper-checkbox-size: 24px;
                 --paper-checkbox-unchecked-color: var(--primary-text-color);
-                --paper-checkbox-checked-color: var(--primary-text-color);
+                --paper-checkbox-checked-color: var(--primary-text-color);                
+            }
+            :host .item[done] {
+                --item-background-color: var(--read-background-color);
             }
             appsco-account-image {
                 --account-initials-background-color: var(--report-account-initials-background-color);
@@ -53,6 +57,9 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
                 padding: 20px;
                 background-color: var(--collapsible-content-background-color);
                 position: relative;
+            }
+            :host .events-container[done] {
+                background-color: var(--read-background-color);
             }
             .event-list {
                 width: 100%;
@@ -75,6 +82,12 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
                 font-size: 12px;
                 color: var(--secondary-text-color);
             }
+            :host .event-list tr[data-status="unresolved"] td .resource-title {
+                color: var(--primary-text-color);
+            }
+            :host .resource-status {
+                text-transform: capitalize;
+            }
             :host table {
                 width: 100%;
                 border-collapse: separate;
@@ -96,6 +109,9 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
             :host table tr td.event {
                 color: var(--app-danger-color);
             }
+            :host .event-list tr[data-status="resolved"] td {
+                color: var(--secondary-text-color);
+            }
             :host .list-actions {
                 margin-top: 10px;
                 @apply --layout-vertical;
@@ -115,11 +131,20 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
             :host .item-info {
                 padding: 0 10px;
             }
+            :host .item-additional-info > .info > .info-label {
+                margin-left: 10px;
+            }
+            :host .info-value[data-count] {
+                color: var(--app-danger-color);
+            }
+            :host .info-value[data-count="0"] {
+                color: inherit;
+            }
         </style>
 
         <iron-media-query query="(max-width: 800px)" query-matches="{{ screen800}}"></iron-media-query>
 
-        <div class="item">
+        <div class="item" done\$="[[ !_hasUnresolved ]]">
             <appsco-account-image account="[[ item.user_info ]]"></appsco-account-image>
 
             <div class="item-info item-basic-info">
@@ -129,8 +154,10 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
 
             <div class="item-info item-additional-info">
                 <div class="info">
-                    <span class="info-label">Unresolved applications:&nbsp;</span>
-                    <span class="info-value">{{ renderedCount }}</span>
+                    <span class="info-label">Unresolved:&nbsp;</span>
+                    <span class="info-value" data-count\$="[[ _unresolvedCount ]]">[[ _unresolvedCount ]]</span>
+                    <span class="info-label">Resolved:&nbsp;</span>
+                    <span class="info-value">[[ _resolvedCount ]]</span>
                 </div>
             </div>
 
@@ -141,7 +168,7 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
         </div>
 
         <iron-collapse id="events">
-            <div class="events-container">
+            <div class="events-container" done\$="[[ !_hasUnresolved ]]">
 
                 <appsco-loader class="dialog-loader" active="[[ _loader ]]" loader-alt="AppsCo is processing request" multi-color=""></appsco-loader>
 
@@ -156,12 +183,13 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
                             <th>Event</th>
                             <th>Date</th>
                             <th>Action required</th>
+                            <th>Status</th>
                         </tr>
 
-                        <template is="dom-repeat" items="[[ item.access_onboardings ]]" as="ev" filter="_isUnresolvedEvent" observe="status" rendered-item-count="{{ renderedCount }}">
-                            <tr>
+                        <template is="dom-repeat" items="[[ item.access_onboardings ]]" as="ev" observe="status">
+                            <tr data-status\$="[[ ev.status ]]">
                                 <td>
-                                    <paper-checkbox noink="" checked="{{ ev.selected }}"></paper-checkbox>
+                                    <paper-checkbox noink="" checked="{{ ev.selected }}" disabled\$="[[ ev.disabled ]]"></paper-checkbox>
                                 </td>
                                 <td>
                                     <iron-image class="resource-icon" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAI5JREFUeAHt1YEJwCAQBEFN/60KYgMRbGMnHXjs5Ofa5x/h7wu//T3dAAqIL4BAPIChAAXEF0AgHoCfIAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBdAIB6AK4AAAvEFEIgH4AoggEB8AQTiAbgCCCAQXwCBeACuAAIIxBe4yV0EThqVC64AAAAASUVORK5CYII=" sizing="cover" preload="" fade="" src="[[ ev.application_icon.application.application_url ]]"></iron-image>
@@ -178,14 +206,19 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
                                 <td>
                                     {{ _getParameter(ev, 'action') }}
                                 </td>
+                                <td>
+                                    <span class="resource-status">[[ ev.status ]]</span>
+                                </td>
                             </tr>
                         </template>
                     </tbody></table>
                 </div>
 
-                <div class="list-actions">
-                    <paper-button class="resolve-action" on-tap="_onResolveSelectedAction">Mark as resolved</paper-button>
-                </div>
+                <template is="dom-if" if="[[ _hasUnresolved ]]">
+                    <div class="list-actions">
+                        <paper-button class="resolve-action" on-tap="_onResolveSelectedAction">Mark as resolved</paper-button>
+                    </div>
+                </template>
             </div>
         </iron-collapse>
 `;
@@ -195,6 +228,10 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
 
     static get properties() {
         return {
+            item: {
+                type: Object
+            },
+
             screen800: {
                 type: Boolean,
                 value: false,
@@ -216,6 +253,21 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
             _resolveRequests: {
                 type: Number,
                 value: 0
+            },
+
+            _resolvedCount: {
+                type: Number,
+                computed: '_computeCountByStatus(item.access_onboardings, "resolved")'
+            },
+
+            _unresolvedCount: {
+                type: Number,
+                computed: '_computeCountByStatus(item.access_onboardings, "unresolved")'
+            },
+
+            _hasUnresolved: {
+                type: Boolean,
+                computed: '_computeHasUnresolved(_unresolvedCount)'
             },
 
             _resolvedEvents: {
@@ -245,12 +297,27 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
 
     static get observers() {
         return [
-            '_updateScreen(screen800)'
+            '_updateScreen(screen800)',
+            '_processAccessOnBoardings(item.access_onboardings)'
         ];
     }
 
     _updateScreen() {
         this.updateStyles();
+    }
+
+    _processAccessOnBoardings(events) {
+        if (!events) {
+            return;
+        }
+        for(let x = 0; x < events.length; x++) {
+            this._processAccessOnBoarding(events[x]);
+        }
+    }
+
+    _processAccessOnBoarding(event) {
+        event.selected = this._isResolvedEvent(event);
+        event.disabled = this._isResolvedEvent(event);
     }
 
     _showLoader() {
@@ -279,10 +346,8 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
         this._eventsVisible = false;
     }
 
-    _isUnresolvedEvent(item) {
-        item.selected = item.selected ? item.selected : false;
-
-        return ('unresolved' === item.status);
+    _isResolvedEvent(item) {
+        return ('resolved' === item.status);
     }
 
     _getParameter(item, parameter) {
@@ -328,8 +393,11 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
 
         this.set('_resolvedEvents', []);
         this.set('_unresolvedEvents', []);
+        this.set('item.access_onboardings', this.item.access_onboardings.splice(0));
+        if (!this._hasUnresolved) {
+            this._onHideEvents();
+        }
         this._hideLoader();
-        this._removeItemIfNoUnresolvedEvents();
     }
 
     _resolveEvent(item) {
@@ -354,23 +422,18 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
         }.bind(this));
     }
 
-    _removeResolvedEvent(item) {
-        const events = this.item.access_onboardings,
-            eventsClone = JSON.parse(JSON.stringify(this.item.access_onboardings));
-
-        events.forEach(function(ev, i) {
-            if (item.self === ev.self) {
-                eventsClone.splice(i, 1);
-            }
-        }.bind(this));
-
-        this.set('item.access_onboardings', []);
-        this.set('item.access_onboardings', eventsClone);
+    _processResolvedEvent(item) {
+        this._processAccessOnBoarding(item);
+        this.push('_resolvedEvents', item);
+        const index = this._findIndexOfAccessOnBoardingById(item.id);
+        if (index > -1) {
+            this.set('item.access_onboardings.' + index, item);
+        }
     }
 
     _onResolveSelectedAction() {
         const resolveList = this.item.access_onboardings.filter(function (el) {
-                return el.selected;
+                return el.selected && !el.disabled;
             }),
             length = resolveList.length;
 
@@ -389,10 +452,8 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
 
             (function(me) {
                 me._resolveEvent(item).then(function(item) {
-                    me.push('_resolvedEvents', item);
-                    me._removeResolvedEvent(item);
+                    me._processResolvedEvent(item);
                     me._resolveRequests--;
-
                     if (me._resolveRequests === 0) {
                         me._onResolveEventsFinished();
                     }
@@ -404,9 +465,27 @@ class AppscoAccessOnBoardingRolesItem extends mixinBehaviors([
                         me._onResolveEventsFinished();
                     }
                 }.bind(me));
-
             })(this);
         }
+    }
+
+    _findIndexOfAccessOnBoardingById(id) {
+        return this.item.access_onboardings.findIndex(ev => ev.id === id);
+    }
+
+    _computeCountByStatus(events, status) {
+        if (!events) {
+            return 0;
+        }
+        let count = 0;
+        events.forEach(function(ev) {
+            if (status === ev.status) count++;
+        });
+        return count;
+    }
+
+    _computeHasUnresolved(unresolvedCount) {
+        return unresolvedCount > 0;
     }
 }
 window.customElements.define(AppscoAccessOnBoardingRolesItem.is, AppscoAccessOnBoardingRolesItem);

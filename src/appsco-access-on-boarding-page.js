@@ -25,8 +25,6 @@ class AppscoAccessOnBoardingPage extends mixinBehaviors([
         return html`
         <style include="appsco-page-styles">
             :host {
-                --content-background-color: #ffffff;
-                --item-background-color: var(--body-background-color);
                 --report-account-initials-background-color: var(--body-background-color-darker);
                 --appsco-access-on-boarding-list-item: {
                     cursor: default;
