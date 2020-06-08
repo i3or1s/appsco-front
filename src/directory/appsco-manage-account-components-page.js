@@ -540,7 +540,7 @@ class AppscoManageAccountComponentsPage extends mixinBehaviors([
     }
 
     reloadResourceAdmins() {
-        this.$.resourceAdminApplications.reload();
+        this.shadowRoot.getElementById('resourceAdminApplications').reload();
     }
 
     showAdvanced() {
