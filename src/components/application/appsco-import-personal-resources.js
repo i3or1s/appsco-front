@@ -18,6 +18,17 @@ class AppscoImportPersonalResources extends PolymerElement {
             :host .info {
                 margin: 0;
             }
+            .download-action {
+                color: var(--primary-text-color);
+                display: inline;
+                padding: 0;
+                font-size: 12px;
+            }
+            .download-icon {
+                width: 18px;
+                height: 18px;
+                margin-top: -4px;
+            }
         </style>
 
         <appsco-import-resource id="appscoImportResource" authorization-token="[[ authorizationToken ]]" import-api="[[ _importPersonalResourcesApi ]]">
@@ -35,6 +46,15 @@ class AppscoImportPersonalResources extends PolymerElement {
                     <li>
                         Records with username and password will be imported as custom application,
                         records without username and password will be imported as secure note.
+                    </li>
+                    <li>
+                        If you do not use LastPass, you can still bulk upload resources by creating a .csv file based on the example file.
+                    </li>
+                    <li>
+                        Download example import for reference.                        
+                        <paper-button class="download-action" on-tap="_onDownloadExampleImportFile">
+                            <iron-icon class="download-icon" icon="icons:attachment"></iron-icon> Download
+                        </paper-button>
                     </li>
                 </ul>
                 <p></p>
@@ -62,6 +82,10 @@ class AppscoImportPersonalResources extends PolymerElement {
         };
     }
 
+    static get importMeta() {
+        return import.meta;
+    }
+
     toggle() {
         this.$.appscoImportResource.toggle();
     }
@@ -72,6 +96,11 @@ class AppscoImportPersonalResources extends PolymerElement {
 
     _computeImportPersonalResourcesApi(applicationTemplateApi) {
         return applicationTemplateApi ? applicationTemplateApi + '/import' : null;
+    }
+
+    _onDownloadExampleImportFile(event) {
+        event.stopPropagation();
+        window.location.href = this.resolveUrl('./data/example_resource_import.csv');
     }
 }
 window.customElements.define(AppscoImportPersonalResources.is, AppscoImportPersonalResources);

@@ -1,0 +1,3 @@
+url,username,password,extra,name,grouping,fav
+https://example.com,myemail@example.com,password,your note goes here,Custom application resource title,,
+https://www.example02.com,,,,Secure note resource title,,
