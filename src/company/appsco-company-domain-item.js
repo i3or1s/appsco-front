@@ -82,18 +82,15 @@ class AppscoCompanyDomainItem extends mixinBehaviors([
             paper-button[disabled] {
                 background: transparent;
             }
-
             appsco-date-format {
                 padding-left: 3px;
             }
-
             .domain-info {
                 @apply --layout-vertical;
                 @apply --layout-start;
                 padding: 0 10px;
             }
             .domain-basic-info {
-                width: 220px;
                 @apply --domain-basic-info;
             }
             .domain-status-info {
@@ -101,14 +98,9 @@ class AppscoCompanyDomainItem extends mixinBehaviors([
                 @apply --domain-status-info;
             }
             .domain-basic-info .info-label, .domain-basic-info .info-value {
-                width: 220px;
+                width: 240px;
                 @apply --paper-font-common-nowrap;
                 @apply --domain-basic-info-values;
-            }
-            .domain-status-info .info-label, .domain-status-info .info-value {
-                width: 220px;
-                @apply --paper-font-common-nowrap;
-                @apply --domain-status-info-values;
             }
             .domain-status-info .info-label {
                 color: var(--app-primary-color);
@@ -130,6 +122,10 @@ class AppscoCompanyDomainItem extends mixinBehaviors([
             }
             :host([screen1000]) .actions {
                 @apply --layout-vertical;
+            }
+            :host([screen1080]) appsco-date-format {
+                display: block;
+                padding-left: 0;
             }
             :host([screen1000]) .item {
                 height: 90px;
@@ -155,6 +151,7 @@ class AppscoCompanyDomainItem extends mixinBehaviors([
 
         <iron-media-query query="(max-width: 768px)" query-matches="{{ mobileScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 1000px)" query-matches="{{ screen1000 }}"></iron-media-query>
+        <iron-media-query query="(max-width: 1080px)" query-matches="{{ screen1080 }}"></iron-media-query>
 
         <template is="dom-if" if="[[ preview ]]">
             <span class="info-label domain-title preview">[[ domain.domain ]]</span>
@@ -231,6 +228,12 @@ class AppscoCompanyDomainItem extends mixinBehaviors([
             },
 
             screen1000: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+
+            screen1080: {
                 type: Boolean,
                 value: false,
                 reflectToAttribute: true
