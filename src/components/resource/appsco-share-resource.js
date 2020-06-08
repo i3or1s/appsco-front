@@ -190,13 +190,6 @@ class AppscoShareResource extends mixinBehaviors([Appsco.HeadersMixin, NeonAnima
 
             <appsco-loader active="[[ _shareLoader ]]" loader-alt="Appsco is processing request" multi-color=""></appsco-loader>
 
-            <template is="dom-if" if="[[ _ssoResourceExists ]]">
-                <p class="message">
-                    At least one of the selected resources is a SSO resource.
-                    SSO resources can only be shared to managed users.
-                </p>
-            </template>
-
             <div class="error-container">
                 <appsco-form-error message="[[ _errorMessage ]]"></appsco-form-error>
             </div>
