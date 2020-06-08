@@ -554,7 +554,7 @@ class AppscoContactsPage extends mixinBehaviors([
     }
 
     _computeContactExistence(contact) {
-        return Object.keys(contact) > 0;
+        return Object.keys(contact).length > 0;
     }
 
     _computePageReadyState(contacts, invitations) {
