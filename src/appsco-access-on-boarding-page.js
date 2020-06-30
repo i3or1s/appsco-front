@@ -226,7 +226,7 @@ class AppscoAccessOnBoardingPage extends mixinBehaviors([
                 const link = document.createElement('a');
 
                 link.href = event.target.result;
-                link.setAttribute('download', 'AppsCo - Access On-boarding Status List.xlsx');
+                link.setAttribute('download', 'AppsCo - Access Tasks Status List.xlsx');
                 document.body.appendChild(link);
 
                 if (link.click) {
@@ -247,7 +247,7 @@ class AppscoAccessOnBoardingPage extends mixinBehaviors([
             this._hideProgressBar();
         }.bind(this), function() {
             this._hideProgressBar();
-            this._notify('Export of Access On Boarding Report failed. Please contact AppsCo support.');
+            this._notify('Export of Access Tasks Report failed. Please contact AppsCo support.');
         }.bind(this));
     }
 

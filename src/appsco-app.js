@@ -147,7 +147,7 @@ class AppscoApp extends mixinBehaviors([
                                     <iron-icon icon="icons:reorder"></iron-icon> <span class="menu-text">Audit</span>
                                 </a>
                                 <a name="access-on-boarding" href="#">
-                                    <iron-icon icon="icons:accessibility"></iron-icon> <span class="menu-text">Access On-boarding</span>
+                                    <iron-icon icon="icons:accessibility"></iron-icon> <span class="menu-text">Access Tasks</span>
                                 </a>
                                 <a name="statistics" href="#">
                                     <iron-icon icon="icons:donut-large"></iron-icon> <span class="menu-text">Statistics</span>
@@ -1489,7 +1489,7 @@ class AppscoApp extends mixinBehaviors([
             case 'audit-log':
                 return 'Audit Log';
             case 'access-on-boarding':
-                return 'Access On-boarding';
+                return 'Access Tasks';
             case 'oauth-applications':
                 return 'oAuth';
             case 'trybusiness':
