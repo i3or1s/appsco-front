@@ -359,6 +359,7 @@ class AppscoApp extends mixinBehaviors([
                          icons-api="[[ api.icons ]]"
                          personal-items-api="[[ api.personalItems ]]"
                          shared-with-me-items-api="[[ api.sharedWithMeItems ]]"
+                         labels="[[ _applicationLabels ]]"
                          on-loaded="_onLoadedPage"
                          on-folder-tapped="_onFolderTapped"
                          on-application-shared="_onApplicationShared"
@@ -773,6 +774,11 @@ class AppscoApp extends mixinBehaviors([
                 type: Array,
                 computed: '_computeCompaniesAccountHasPermissionTo(account.companies, contactCompanies)',
                 observer: '_onCompaniesAccountHasPermissionToChanged'
+            },
+
+            _applicationLabels: {
+                type: Array,
+                computed: '_computeApplicationLabels(_companiesAccountHasPermissionTo, api.personalItemsWithoutFolder)'
             },
 
             /**
@@ -1402,6 +1408,27 @@ class AppscoApp extends mixinBehaviors([
             accountCompanies.concat(companiesAccountIsContactIn) :
             accountCompanies
         ;
+    }
+
+    _computeApplicationLabels(companies, personalApplicationsApi) {
+        if (undefined === companies || undefined === personalApplicationsApi) {
+            return undefined;
+        }
+        const labels = [
+            { name: 'My items', applicationsApi: personalApplicationsApi, company: null }
+        ];
+
+        companies.forEach((company) => labels.push(this._createLabelFromCompany(company)));
+
+        return labels;
+    }
+
+    _createLabelFromCompany(company) {
+        return {
+            name: 'Shared by ' + company.company.name,
+            applicationsApi: company.company.self + '/dashboard-groups/no-personal-dashboard-icons',
+            company: company.company
+        };
     }
 
     _computeAccessBilling(currentCompany) {
