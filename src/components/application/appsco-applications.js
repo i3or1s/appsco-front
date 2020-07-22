@@ -257,7 +257,8 @@ class AppscoApplications extends mixinBehaviors([
 
     static get observers() {
         return [
-            '_setSearchApplicationsApi(applicationsApi, _sort)'
+            '_setSearchApplicationsApi(applicationsApi, _sort)',
+            '_applicationsCountChanged(_applications.length, _applicationsEmpty)'
         ];
     }
 
@@ -991,6 +992,16 @@ class AppscoApplications extends mixinBehaviors([
                 }
             }));
         }
+    }
+
+    _applicationsCountChanged(count, applicationsEmpty) {
+        this.dispatchEvent(new CustomEvent('applications-count-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                count: this._applicationsEmpty ? 0 : this._applications.length
+            }
+        }));
     }
 
     initialize() {

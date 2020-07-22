@@ -82,6 +82,10 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Pol
                 background-color: white;
             }
             
+            :host #dropDownGroupByOptions {
+                margin-top: 20px;
+            }
+            
             .input-container-show-resource-section paper-dropdown-menu {
                 width: 100%;
             }
@@ -137,6 +141,18 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Pol
                             </paper-dropdown-menu>
                         </div>
                     </template>
+                    
+                    <template is="dom-if" if="[[ optionGroupBy ]]">
+                        <div class="input-container">
+                            <paper-dropdown-menu id="dropDownGroupByOptions" label="Group resources by" horizontal-align="left" data-field="choice" name="group_by">
+                                <paper-listbox id="paperListboxGroupByOptions" class="dropdown-content filter" attr-for-selected="value" selected="{{ _groupByOption }}" slot="dropdown-content">
+                                    <template is="dom-repeat" items="[[ _groupByList ]]">
+                                        <paper-item value="[[ item.value ]]" on-tap="_onSaveChanges">[[ item.name ]]</paper-item>
+                                    </template>
+                                </paper-listbox>
+                            </paper-dropdown-menu>
+                        </div>
+                    </template>
                 </div>
             </paper-card>
         </appsco-dropdown>
@@ -183,6 +199,21 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Pol
             optionSort: {
                 type: Boolean,
                 value: false
+            },
+
+            optionGroupBy: {
+                type: Boolean,
+                value: true
+            },
+
+            _groupByList: {
+                type: Array,
+                value: function () {
+                    return [
+                        {value: 'none', name: 'None'},
+                        {value: 'origin', name: 'Origin'}
+                    ];
+                }
             },
 
             _displayKindList: {
@@ -253,6 +284,11 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Pol
             _sortOption: {
                 type: String,
                 computed: '_computeSortOption(pageConfig, page)'
+            },
+
+            _groupByOption: {
+                type: String,
+                computed: '_computeGroupBy(pageConfig, page)'
             }
         };
     }
@@ -280,6 +316,10 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Pol
         return pageConfig[page] ?
             (pageConfig[page].sort_field + (pageConfig[page].sort_ascending ? 1 : 0)) :
             (this._sortOptionList ? this._sortOptionList[0].value : '');
+    }
+
+    _computeGroupBy(pageConfig, page) {
+        return pageConfig[page] ? pageConfig[page].group_by : 'none';
     }
 
     _showLoader() {

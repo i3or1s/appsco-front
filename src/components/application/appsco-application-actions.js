@@ -161,18 +161,16 @@ class AppscoApplicationActions extends mixinBehaviors([NeonAnimationRunnerBehavi
             </div>
         </template>
 
-        <template is="dom-if" if="[[ _showOptions ]]">
-            <template is="dom-if" if="[[ !company ]]">
-                <div class="action flex-none">
-                    <paper-dropdown-menu on-iron-activate="_onFilterItemsAction" horizontal-align="right" no-label-float="">
-                        <paper-listbox id="filterItemsList" class="dropdown-content filter" selected="0" slot="dropdown-content">
-                            <template is="dom-repeat" items="[[ _filterItems ]]">
-                                <paper-item value\$="[[ item.value ]]" name\$="[[ item.name ]]">[[ item.name ]]</paper-item>
-                            </template>
-                        </paper-listbox>
-                    </paper-dropdown-menu>
-                </div>
-            </template>
+        <template is="dom-if" if="[[ _showFilterItems ]]">
+            <div class="action flex-none">
+                <paper-dropdown-menu on-iron-activate="_onFilterItemsAction" horizontal-align="right" no-label-float="">
+                    <paper-listbox id="filterItemsList" class="dropdown-content filter" selected="0" slot="dropdown-content">
+                        <template is="dom-repeat" items="[[ _filterItems ]]">
+                            <paper-item value\$="[[ item.value ]]" name\$="[[ item.name ]]">[[ item.name ]]</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+            </div>
         </template>
 
         <template is="dom-if" if="[[ _showOptions ]]">
@@ -333,6 +331,11 @@ class AppscoApplicationActions extends mixinBehaviors([NeonAnimationRunnerBehavi
                 computed: '_computeShowOptions(resourceAdmin, company)'
             },
 
+            _showFilterItems: {
+                type: Boolean,
+                computed: '_computeShowFilterItems(pageConfig, page, _showOptions, company)'
+            },
+
             resourceAdmin: {
                 type: Boolean,
                 value: false
@@ -470,6 +473,11 @@ class AppscoApplicationActions extends mixinBehaviors([NeonAnimationRunnerBehavi
 
     _computeShowOptions(resourceAdmin, company) {
         return !resourceAdmin || !company;
+    }
+
+    _computeShowFilterItems(pageConfig, page, showOptions, company) {
+        const config = pageConfig[page];
+        return showOptions && !company && (!config || config.group_by !== 'origin');
     }
 
     /**

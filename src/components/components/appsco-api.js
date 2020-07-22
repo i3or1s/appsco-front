@@ -77,6 +77,11 @@ class AppscoApi extends PolymerElement {
                 computed: '_personalItems(index, domain)'
             },
 
+            personalItemsWithoutFolder: {
+                type: String,
+                computed: '_computePersonalItemsWithoutFolder(foldersApi)'
+            },
+
             sharedWithMeItems: {
                 type: String,
                 computed: '_sharedWithMeItems(index, domain)'
@@ -217,6 +222,7 @@ class AppscoApi extends PolymerElement {
                         accounts: this.accounts,
                         icons: this.icons,
                         personalItems: this.personalItems,
+                        personalItemsWithoutFolder: this.personalItemsWithoutFolder,
                         sharedWithMeItems: this.sharedWithMeItems,
                         logout: this.logout,
                         authorizedApps: this.authorizedApps,
@@ -264,6 +270,7 @@ class AppscoApi extends PolymerElement {
             accounts: this.accounts,
             icons: this.icons,
             personalItems: this.personalItems,
+            personalItemsWithoutFolder: this.personalItemsWithoutFolder,
             sharedWithMeItems: this.sharedWithMeItems,
             logout: this.logout,
             authorizedApps: this.authorizedApps,
@@ -302,6 +309,10 @@ class AppscoApi extends PolymerElement {
 
     _dashboards(index, domain) {
         return this._computeOrigin(domain, index)+'/dashboards';
+    }
+
+    _computePersonalItemsWithoutFolder(foldersApi) {
+        return foldersApi+'/personal-icons';
     }
 
     _applicationTemplates(index, domain) {
