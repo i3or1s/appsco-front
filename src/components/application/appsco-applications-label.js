@@ -76,7 +76,15 @@ class AppscoApplicationsLabel extends mixinBehaviors([
     }
 
     _onApplicationsCountChanged(event) {
-        this._applicationCount = event.detail.count;
+        const newCount = event.detail.count;
+        const oldCount = this._applicationCount;
+        this._applicationCount = newCount;
+        if (0 === newCount) {
+            this.collapse();
+        }
+        if (0 === oldCount && newCount > 0) {
+            this.expand();
+        }
     }
 
     initializeResourcesDragBehavior() {
@@ -131,6 +139,14 @@ class AppscoApplicationsLabel extends mixinBehaviors([
 
     toggle() {
         this.$.ironCollapse.toggle();
+    }
+
+    collapse() {
+        this.$.ironCollapse.opened = false;
+    }
+
+    expand() {
+        this.$.ironCollapse.opened = true;
     }
 
     isLabelForCompany(company) {
