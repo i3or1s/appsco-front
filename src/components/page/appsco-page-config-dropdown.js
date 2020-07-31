@@ -142,7 +142,7 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Pol
                         </div>
                     </template>
                     
-                    <template is="dom-if" if="[[ optionGroupBy ]]">
+                    <template is="dom-if" if="[[ optionShowGroupBy ]]">
                         <div class="input-container">
                             <paper-dropdown-menu id="dropDownGroupByOptions" label="Group resources by" horizontal-align="left" data-field="choice" name="group_by">
                                 <paper-listbox id="paperListboxGroupByOptions" class="dropdown-content filter" attr-for-selected="value" selected="{{ _groupByOption }}" slot="dropdown-content">
@@ -201,9 +201,9 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Pol
                 value: false
             },
 
-            optionGroupBy: {
+            optionShowGroupBy: {
                 type: Boolean,
-                value: true
+                value: false
             },
 
             _groupByList: {

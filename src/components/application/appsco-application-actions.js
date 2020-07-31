@@ -225,7 +225,7 @@ class AppscoApplicationActions extends mixinBehaviors([NeonAnimationRunnerBehavi
         <div class="action flex-none">
             <paper-icon-button id="configAction" class="config-icon" icon="icons:settings" alt="Page Settings" on-tap="_onShowPageSettings"></paper-icon-button>
 
-            <appsco-page-config-dropdown id="resourcePageConfigDropdown" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" page-config-api="[[ pageConfigApi ]]" page-config="[[ pageConfig ]]" page="[[ page ]]" option-hide-resource-section="[[ pageConfigOptionHideResourceSection ]]" option-display-list="[[ pageConfigOptionDisplayList ]]" option-sort="[[ pageConfigOptionSort ]]"></appsco-page-config-dropdown>
+            <appsco-page-config-dropdown id="resourcePageConfigDropdown" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" page-config-api="[[ pageConfigApi ]]" page-config="[[ pageConfig ]]" page="[[ page ]]" option-hide-resource-section="[[ pageConfigOptionHideResourceSection ]]" option-show-group-by="[[ pageConfigOptionShowGroupBy ]]" option-display-list="[[ pageConfigOptionDisplayList ]]" option-sort="[[ pageConfigOptionSort ]]"></appsco-page-config-dropdown>
         </div>
 `;
     }
@@ -268,6 +268,11 @@ class AppscoApplicationActions extends mixinBehaviors([NeonAnimationRunnerBehavi
             },
 
             pageConfigOptionDisplayList: {
+                type: Boolean,
+                value: false
+            },
+
+            pageConfigOptionShowGroupBy: {
                 type: Boolean,
                 value: false
             },
