@@ -200,7 +200,8 @@ class AppscoHomePage extends mixinBehaviors([
                             on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
                             on-edit-shared-application="_onEditSharedApplication"
                             on-loaded="_onApplicationsLoaded"
-                            on-empty-load="_onApplicationsLoaded">                    
+                            on-empty-load="_onApplicationsLoaded"
+                            disable-upgrade\$="[[ !_labelsActive ]]">
                         </appsco-applications-labels>
                         <appsco-applications
                             id="appscoApplications"
@@ -217,7 +218,8 @@ class AppscoHomePage extends mixinBehaviors([
                             on-open-move-to-folder-dialog="_onOpenMoveToFolderDialog"
                             on-edit-shared-application="_onEditSharedApplication"
                             on-loaded="_onApplicationsLoaded"
-                            on-empty-load="_onApplicationsLoaded">
+                            on-empty-load="_onApplicationsLoaded"
+                            disable-upgrade\$="[[ !_applicationsActive ]]">
                         </appsco-applications>
                     </neon-animated-pages>
                 </div>
@@ -420,6 +422,18 @@ class AppscoHomePage extends mixinBehaviors([
 
             activeComponentName: {
                 type: String
+            },
+
+            _labelsActive: {
+                type: Boolean,
+                value: false,
+                computed: 'computeIsComponentActive("labels", activeComponentName)'
+            },
+
+            _applicationsActive: {
+                type: Boolean,
+                value: false,
+                computed: 'computeIsComponentActive("applications", activeComponentName)'
             },
 
             labels: {
@@ -1057,6 +1071,10 @@ class AppscoHomePage extends mixinBehaviors([
         }
 
         return components;
+    }
+
+    computeIsComponentActive(componentName, activeComponentName) {
+        return componentName === activeComponentName;
     }
 }
 window.customElements.define(AppscoHomePage.is, AppscoHomePage);

@@ -5,11 +5,12 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import {beforeNextRender} from "@polymer/polymer/lib/utils/render-status";
+import { beforeNextRender } from "@polymer/polymer/lib/utils/render-status";
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 
 class AppscoApplicationsLabels extends mixinBehaviors([
     Appsco.HeadersMixin
-], PolymerElement) {
+], DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
         
