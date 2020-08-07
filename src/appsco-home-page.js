@@ -306,6 +306,12 @@ class AppscoHomePage extends mixinBehaviors([
 
         </appsco-content>
 
+        ${this.dialogsTemplate}
+`;
+    }
+
+    static get dialogsTemplate() {
+        return html`
         <appsco-application-add
             id="appscoApplicationAdd"
             authorization-token="[[ authorizationToken ]]"
@@ -392,8 +398,7 @@ class AppscoHomePage extends mixinBehaviors([
             authorization-token="[[ authorizationToken ]]"
             domain="[[ domain ]]"
             disable-upgrade>
-        </appsco-company-resource-settings-dialog>
-`;
+        </appsco-company-resource-settings-dialog>`;
     }
 
     static get is() { return 'appsco-home-page'; }
