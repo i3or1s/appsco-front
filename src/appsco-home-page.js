@@ -222,87 +222,89 @@ class AppscoHomePage extends mixinBehaviors([
                     </neon-animated-pages>
                 </div>
             </div>
-
-            <div class="flex-vertical" info="" slot="info">
-                <div class="info-header flex-horizontal">
-                    <appsco-application-info class="flex" application="[[ application ]]">
-                    </appsco-application-info>
-
-                    <template is="dom-if" if="[[ application.claims.password ]]">
-                        <appsco-application-security application="[[ application ]]"></appsco-application-security>
-                    </template>
-                </div>
-
-                <div class="info-content flex-vertical">
-                    <template is="dom-if" if="[[ !_shared ]]">
-                        <appsco-application-subscribers application="[[ application ]]" authorization-token="[[ authorizationToken ]]" preview="">
-                        </appsco-application-subscribers>
-                    </template>
-
-                    <template is="dom-if" if="[[ _shared ]]">
-                        <div class="info">
-                            <template is="dom-if" if="[[ !application.application.company ]]">
-                                Shared by [[ application.application.added_by.display_name ]]
-                            </template>
-                            <template is="dom-if" if="[[ application.application.company ]]">
-                                Shared by [[ application.application.company.name ]]
-                            </template>
-                        </div>
-                    </template>
-
-                    <template is="dom-if" if="[[ !_shared ]]">
-                        <paper-tabs id="paperTabs" selected="{{ _selectedTab }}">
-                            <paper-tab name="details">Details</paper-tab>
-                            <paper-tab name="log">Log</paper-tab>
-                        </paper-tabs>
-
-                        <neon-animated-pages selected="{{ _selectedTab }}" entry-animation="fade-in-animation" exit-animation="fade-out-animation" class="info-details-section">
-
-                            <div name="details" class="tab-content details">
+            
+            <template is="dom-if" if="[[ _infoShown ]]">
+                <div class="flex-vertical" info="" slot="info">
+                    <div class="info-header flex-horizontal">
+                        <appsco-application-info class="flex" application="[[ application ]]">
+                        </appsco-application-info>
+    
+                        <template is="dom-if" if="[[ application.claims.password ]]">
+                            <appsco-application-security application="[[ application ]]"></appsco-application-security>
+                        </template>
+                    </div>
+    
+                    <div class="info-content flex-vertical">
+                        <template is="dom-if" if="[[ !_shared ]]">
+                            <appsco-application-subscribers application="[[ application ]]" authorization-token="[[ authorizationToken ]]" preview="">
+                            </appsco-application-subscribers>
+                        </template>
+    
+                        <template is="dom-if" if="[[ _shared ]]">
+                            <div class="info">
+                                <template is="dom-if" if="[[ !application.application.company ]]">
+                                    Shared by [[ application.application.added_by.display_name ]]
+                                </template>
+                                <template is="dom-if" if="[[ application.application.company ]]">
+                                    Shared by [[ application.application.company.name ]]
+                                </template>
+                            </div>
+                        </template>
+    
+                        <template is="dom-if" if="[[ !_shared ]]">
+                            <paper-tabs id="paperTabs" selected="{{ _selectedTab }}">
+                                <paper-tab name="details">Details</paper-tab>
+                                <paper-tab name="log">Log</paper-tab>
+                            </paper-tabs>
+    
+                            <neon-animated-pages selected="{{ _selectedTab }}" entry-animation="fade-in-animation" exit-animation="fade-out-animation" class="info-details-section">
+    
+                                <div name="details" class="tab-content details">
+                                    <appsco-application-details application="[[ application ]]">
+                                    </appsco-application-details>
+                                </div>
+    
+                                <div name="log" class="tab-content log">
+                                    <appsco-application-log application="[[ application ]]" authorization-token="[[ authorizationToken ]]">
+                                    </appsco-application-log>
+                                </div>
+    
+                            </neon-animated-pages>
+                        </template>
+    
+                        <template is="dom-if" if="[[ _shared ]]">
+                            <div name="details">
                                 <appsco-application-details application="[[ application ]]">
                                 </appsco-application-details>
                             </div>
-
-                            <div name="log" class="tab-content log">
-                                <appsco-application-log application="[[ application ]]" authorization-token="[[ authorizationToken ]]">
-                                </appsco-application-log>
-                            </div>
-
-                        </neon-animated-pages>
-                    </template>
-
-                    <template is="dom-if" if="[[ _shared ]]">
-                        <div name="details">
-                            <appsco-application-details application="[[ application ]]">
-                            </appsco-application-details>
+                        </template>
+                    </div>
+    
+                    <div class="info-actions flex-horizontal">
+                        <template is="dom-if" if="[[ _editClaims ]]">
+                            <paper-button class="button view-button flex" on-tap="_onApplicationEditCredentials">
+                                Manage
+                            </paper-button>
+    
+                        </template>
+    
+                        <template is="dom-if" if="[[ !_shared ]]">
+                            <paper-button class="button secondary-button flex" on-tap="_onShareApplication">
+                                Share
+                            </paper-button>
+                        </template>
+                    </div>
+    
+                    <template is="dom-if" if="[[ application.permisions.revoke ]]">
+                        <div class="info-actions flex-horizontal">
+                            <paper-button class="button danger-button flex" on-tap="_onRevokeApplication">
+                                Revoke
+                            </paper-button>
                         </div>
                     </template>
+    
                 </div>
-
-                <div class="info-actions flex-horizontal">
-                    <template is="dom-if" if="[[ _editClaims ]]">
-                        <paper-button class="button view-button flex" on-tap="_onApplicationEditCredentials">
-                            Manage
-                        </paper-button>
-
-                    </template>
-
-                    <template is="dom-if" if="[[ !_shared ]]">
-                        <paper-button class="button secondary-button flex" on-tap="_onShareApplication">
-                            Share
-                        </paper-button>
-                    </template>
-                </div>
-
-                <template is="dom-if" if="[[ application.permisions.revoke ]]">
-                    <div class="info-actions flex-horizontal">
-                        <paper-button class="button danger-button flex" on-tap="_onRevokeApplication">
-                            Revoke
-                        </paper-button>
-                    </div>
-                </template>
-
-            </div>
+            </template>
 
         </appsco-content>
 
