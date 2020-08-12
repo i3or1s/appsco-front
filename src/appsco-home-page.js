@@ -422,11 +422,6 @@ class AppscoHomePage extends mixinBehaviors([
                 computed: 'computeActiveApplicationsComponent(activeComponentName)'
             },
 
-            applicationsComponents: {
-                type: Array,
-                computed: 'computeApplicationsComponents(activeComponentName)'
-            },
-
             activeComponentName: {
                 type: String
             },
@@ -773,7 +768,7 @@ class AppscoHomePage extends mixinBehaviors([
     }
 
     resetPage() {
-        this.applicationsComponents.forEach((component) => component.reset());
+        this.applicationsComponents().forEach((component) => component.reset());
         this.$.appscoFolders.resetAllItems();
         this._hideInfo();
     }
@@ -887,19 +882,19 @@ class AppscoHomePage extends mixinBehaviors([
 
     reloadApplications() {
         this._applicationsLoaded = false;
-        this.applicationsComponents.forEach((component) => component.reloadApplications());
+        this.applicationsComponents().forEach((component) => component.reloadApplications());
     }
 
     setApplication(application) {
-        this.applicationsComponents.forEach((component) => component.modifyApplications([application]));
+        this.applicationsComponents().forEach((component) => component.modifyApplications([application]));
     }
 
     addApplications(applications) {
-        this.applicationsComponents.forEach((component) => component.addApplications(applications));
+        this.applicationsComponents().forEach((component) => component.addApplications(applications));
     }
 
     removeApplications(applications) {
-        this.applicationsComponents.forEach((component) => component.removeApplications(applications));
+        this.applicationsComponents().forEach((component) => component.removeApplications(applications));
     }
 
     _onApplicationRemoved() {
@@ -1066,7 +1061,7 @@ class AppscoHomePage extends mixinBehaviors([
         return undefined;
     }
 
-    computeApplicationsComponents(activeComponentName) {
+    applicationsComponents() {
         const components = [];
 
         if (this.$.appscoApplicationsLabels.$) {
@@ -1074,7 +1069,7 @@ class AppscoHomePage extends mixinBehaviors([
         }
 
         if (this.$.appscoApplications.$) {
-            components.push(this.$.appscoApplicationsLabels);
+            components.push(this.$.appscoApplications);
         }
 
         return components;
