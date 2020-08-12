@@ -164,52 +164,54 @@ class AppscoAccountInfo extends PolymerElement {
                     <iron-icon icon="arrow-drop-down" class="hidden-xs"></iron-icon>
                 </template>
             </div>
+            
+            <template is="dom-if" if="[[ _dropDownEnabled ]]">
+                <appsco-dropdown id="accountInfoDropdown" trigger="[[ _triggerDropdown ]]" data-info\$="[[ info ]]">
 
-            <appsco-dropdown id="accountInfoDropdown" trigger="[[ _triggerDropdown ]]" data-info\$="[[ info ]]">
-
-                <template is="dom-if" if="[[ info ]]">
-                    <div class="info">
-                        [[ info ]]
-                    </div>
-                </template>
-
-                <div class="account-holder layout vertical">
-                    <div class="active-account account layout horizontal">
-                        <appsco-account-image account="[[ account ]]" class="active-account-image"></appsco-account-image>
-
-                        <div class="account-info layout vertical">
-
-                            <template is="dom-if" if="[[ account.first_name ]]">
-                                <span class="info-lead truncate">[[ account.name ]]</span>
-                            </template>
-
-                            <span class="info-additional truncate">[[ account.email ]]</span>
-
-                            <div class="layout vertical end-justified flex">
-                                <paper-button class="my-account-button" on-tap="_onAccountSettingsAction">
-                                    My Account
-                                </paper-button>
+                    <template is="dom-if" if="[[ info ]]">
+                        <div class="info">
+                            [[ info ]]
+                        </div>
+                    </template>
+    
+                    <div class="account-holder layout vertical">
+                        <div class="active-account account layout horizontal">
+                            <appsco-account-image account="[[ account ]]" class="active-account-image"></appsco-account-image>
+    
+                            <div class="account-info layout vertical">
+    
+                                <template is="dom-if" if="[[ account.first_name ]]">
+                                    <span class="info-lead truncate">[[ account.name ]]</span>
+                                </template>
+    
+                                <span class="info-additional truncate">[[ account.email ]]</span>
+    
+                                <div class="layout vertical end-justified flex">
+                                    <paper-button class="my-account-button" on-tap="_onAccountSettingsAction">
+                                        My Account
+                                    </paper-button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="actions layout horizontal">
-                    <div class="flex">
-                        <paper-button class="gray-button add-account-button" on-tap="_onAddAccountAction" disabled="">
-                            Add Account
-                        </paper-button>
-                    </div>
-
-                    <div>
-                        <a href="[[ logoutApi ]]" class="link-button" tabindex="-1" target="_self">
-                            <paper-button class="gray-button" on-tap="_onLogoutAccountAction">
-                                Logout
+    
+                    <div class="actions layout horizontal">
+                        <div class="flex">
+                            <paper-button class="gray-button add-account-button" on-tap="_onAddAccountAction" disabled="">
+                                Add Account
                             </paper-button>
-                        </a>
+                        </div>
+    
+                        <div>
+                            <a href="[[ logoutApi ]]" class="link-button" tabindex="-1" target="_self">
+                                <paper-button class="gray-button" on-tap="_onLogoutAccountAction">
+                                    Logout
+                                </paper-button>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </appsco-dropdown>
+                </appsco-dropdown>
+            </template>
         </div>
 `;
     }
@@ -255,8 +257,19 @@ class AppscoAccountInfo extends PolymerElement {
 
             logoutApi: {
                 type: String
+            },
+
+            _dropDownEnabled: {
+                type: Boolean,
+                value: false
             }
         };
+    }
+
+    static get observers() {
+        return [
+            '_checkAccountInfo(info, _dropDownEnabled)'
+        ];
     }
 
     ready() {
@@ -265,7 +278,6 @@ class AppscoAccountInfo extends PolymerElement {
         this._triggerDropdown = this.shadowRoot.getElementById('triggerDropdown');
 
         beforeNextRender(this, function() {
-            this._checkAccountInfo();
             this._checkIfAccountExists();
         });
     }
@@ -284,12 +296,21 @@ class AppscoAccountInfo extends PolymerElement {
         }
     }
 
-    _checkAccountInfo() {
-        const accountInfoDropdown = this.$.accountInfoDropdown;
-
-        if (this.info && this.info.trim() !== '') {
-            accountInfoDropdown.updateStyles({'--dropdown-caret-background-color': 'var(--info-background-color, #edf9ff);'});
+    _checkAccountInfo(info, dropDownEnabled) {
+        if (!dropDownEnabled) {
+            return;
         }
+
+        setTimeout(function() {
+            const accountInfoDropdown = this.shadowRoot.getElementById('accountInfoDropdown');
+
+            const style = info && info.trim() !== '' ?
+                {'--dropdown-caret-background-color': 'var(--info-background-color, #edf9ff);'} :
+                {'--dropdown-caret-background-color': 'unset'}
+            ;
+
+            accountInfoDropdown.updateStyles(style);
+        }.bind(this));
     }
 
     _accountChanged() {
@@ -300,7 +321,8 @@ class AppscoAccountInfo extends PolymerElement {
     }
 
     _toggleDropdown() {
-        this.$.accountInfoDropdown.toggle();
+        this._dropDownEnabled = true;
+        setTimeout(() => this.shadowRoot.getElementById('accountInfoDropdown').toggle());
     }
 
     _onAccountSettingsAction() {

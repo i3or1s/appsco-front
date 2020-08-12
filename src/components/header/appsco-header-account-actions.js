@@ -64,7 +64,7 @@ class AppscoHeaderAccountActions extends PolymerElement {
 
             <appsco-notification-icon id="newNotificationsIcon" on-tap="_onNewNotificationsAction"></appsco-notification-icon>
 
-            <appsco-account-notifications-dropdown id="appscoAccountNotificationsDropdown" authorization-token="[[ authorizationToken ]]" notifications-api="[[ notificationsApi ]]" notifications-size="[[ notificationsSize ]]">
+            <appsco-account-notifications-dropdown id="appscoAccountNotificationsDropdown" authorization-token="[[ authorizationToken ]]" notifications-api="[[ notificationsApi ]]" notifications-size="[[ notificationsSize ]]" disable-upgrade>
             </appsco-account-notifications-dropdown>
 
         </div>
@@ -127,13 +127,12 @@ class AppscoHeaderAccountActions extends PolymerElement {
         this._newNotifications = false;
     }
 
-    _onNotificationsAction(event) {
-        this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
-    }
-
     _onNewNotificationsAction(event) {
         this._newNotifications = false;
-        this.$.appscoAccountNotificationsDropdown.toggleNotifications(event.target);
+        const dropDown = this.$.appscoAccountNotificationsDropdown;
+        dropDown.removeAttribute('disable-upgrade');
+
+        setTimeout(() => dropDown.toggleNotifications(event.target));
     }
 
     _onGetStartedIcon(event) {

@@ -145,7 +145,7 @@ class AppscoDropdown extends mixinBehaviors([NeonAnimationRunnerBehavior], Polym
     }
 
     toggle() {
-        this.open = !this.open;
+        setTimeout(() => this.open = !this.open);
     }
 
     /**

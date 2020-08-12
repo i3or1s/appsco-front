@@ -6,9 +6,10 @@ import '@polymer/paper-card/paper-card.js';
 import './appsco-dropdown.js';
 import '../account/appsco-account-notifications.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-class AppscoAccountNotificationsDropdown extends PolymerElement {
+class AppscoAccountNotificationsDropdown extends DisableUpgradeMixin(PolymerElement) {
     static get template() {
         return html`
         <style include="iron-flex iron-flex-alignment">
@@ -139,11 +140,13 @@ class AppscoAccountNotificationsDropdown extends PolymerElement {
     toggleNotifications(target) {
         this._open = !this._open;
         this._triggerDropdown = target;
-        this.$.appscoNotificationsDropdown.toggle();
 
-        if (this._open) {
-            this.$.appscoAccountNotifications.loadNotifications();
-        }
+        setTimeout(function() {
+            this.$.appscoNotificationsDropdown.toggle();
+            if (this._open) {
+                this.$.appscoAccountNotifications.loadNotifications();
+            }
+        }.bind(this));
     }
 
     _onNotificationsLoad() {
