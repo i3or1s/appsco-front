@@ -92,123 +92,7 @@ class AppscoApp extends mixinBehaviors([
 
              <!--Drawer content -->
             <app-drawer slot="drawer" id="appDrawer">
-                <iron-selector selected="[[ page ]]" attr-for-selected="name" class="drawer-list" role="navigation" on-iron-select="_onMenuItemSelected" id="menuContainer">
-                    <template is="dom-if" if="[[ !_companyPage ]]">
-                        <a name="home" href="#">
-                            <iron-icon icon="icons:home"></iron-icon> <span class="menu-text">Home</span>
-                        </a>
-
-                        <template is="dom-if" if="[[ _accountCanCreateCompany ]]">
-                            <div purchase="">
-                                <div>Manage your business applications, employees and get meaningful insights.</div>
-                                <paper-button on-tap="_showTryBusinessPage">
-                                    Try Appsco Business
-                                </paper-button>
-                            </div>
-                        </template>
-                    </template>
-
-                    <template is="dom-if" if="[[ _companyPage ]]">
-                        <template is="dom-if" if="[[ _companyUser ]]">
-                            <template is="dom-if" if="[[ _tutorialsPageVisible ]]">
-                                <a name="get-started" href="#">
-                                    <iron-icon icon="icons:help"></iron-icon>
-                                    <span class="menu-text">Get started - [[ _progress ]]%
-                                    </span>
-                                </a>
-                            </template>
-                            <a name="company-home" href="#">
-                                <iron-icon icon="icons:apps"></iron-icon> <span class="menu-text">Dashboard</span>
-                            </a>
-                            <template is="dom-if" if="[[ _companyAdmin ]]">
-                                <div class="section">
-                                    <span class="menu-text">Administration</span>
-                                </div>
-                                <a name="resources" href="#">
-                                    <iron-icon icon="icons:list"></iron-icon> <span class="menu-text" id="menuCompanyResourcesText">Resources</span>
-                                </a>
-                                <a name="directory" href="#">
-                                    <iron-icon icon="icons:social:person"></iron-icon> <span class="menu-text" id="menuCompanyDirectoryText">Directory</span>
-                                </a>
-                                <a name="contacts" href="#">
-                                    <iron-icon icon="icons:perm-contact-calendar"></iron-icon> <span class="menu-text">Contacts</span>
-                                </a>
-                                <a name="groups" href="#">
-                                    <iron-icon icon="icons:supervisor-account"></iron-icon> <span class="menu-text">Groups</span>
-                                </a>
-                                <a name="provisioning" href="#">
-                                    <iron-icon icon="icons:compare-arrows"></iron-icon> <span class="menu-text" id="menuProvisioningText">Provisioning</span>
-                                </a>
-
-                                <div class="section">
-                                    <span class="menu-text">Management</span>
-                                </div>
-                                <a name="audit-log" href="#">
-                                    <iron-icon icon="icons:reorder"></iron-icon> <span class="menu-text">Audit</span>
-                                </a>
-                                <a name="access-on-boarding" href="#">
-                                    <iron-icon icon="icons:accessibility"></iron-icon> <span class="menu-text">Access Tasks</span>
-                                </a>
-                                <a name="statistics" href="#">
-                                    <iron-icon icon="icons:donut-large"></iron-icon> <span class="menu-text">Statistics</span>
-                                </a>
-                                <a name="reports" href="#">
-                                    <iron-icon icon="icons:description"></iron-icon>
-                                    <span class="menu-text">Reports</span>
-                                </a>
-                                <template is="dom-if" if="[[ _accessBilling ]]">
-                                    <a name="billing" href="#">
-                                        <iron-icon icon="icons:payment"></iron-icon> <span class="menu-text">Billing</span>
-                                    </a>
-                                </template>
-                                <a name="company" href="#" id="menuCompanySettings">
-                                    <iron-icon icon="icons:settings"></iron-icon> <span class="menu-text" id="menuCompanySettingsText">Settings</span>
-                                </a>
-
-                                <template is="dom-if" if="[[ currentCompany.company.is_partner ]]">
-                                    <div class="section">
-                                        <span class="menu-text">Partner</span>
-                                    </div>
-                                    <a name="customers" href="#">
-                                        <iron-icon icon="icons:social:domain"></iron-icon> <span class="menu-text">Customers</span>
-                                    </a>
-                                    <a name="customer-billing" href="#">
-                                        <iron-icon icon="icons:payment"></iron-icon> <span class="menu-text">Customer Billing</span>
-                                    </a>
-                                    <a name="billing-report" href="#">
-                                        <iron-icon icon="icons:description"></iron-icon><span class="menu-text">Billing Report</span>
-                                    </a>
-
-                                </template>
-
-                                <div class="section">
-                                    <span class="menu-text">Advanced</span>
-                                </div>
-                                <a name="oauth-applications" href="#">
-                                    <iron-icon icon="device:widgets"></iron-icon> <span class="menu-text">OAuth applications</span>
-                                </a>
-                                <a name="policies" href="#">
-                                    <iron-icon icon="icons:verified-user"></iron-icon> <span class="menu-text">Policies</span>
-                                </a>
-                            </template>
-
-                            <template is="dom-if" if="[[ _resourceAdmin ]]">
-                                <div class="section">
-                                    <span class="menu-text">Administration</span>
-                                </div>
-                                <a name="resources" href="#">
-                                    <iron-icon icon="icons:list"></iron-icon> <span class="menu-text">Resources</span>
-                                </a>
-                            </template>
-                        </template>
-                        <template is="dom-if" if="[[ _companyContact ]]">
-                            <a name="contact-home" href="#">
-                                <iron-icon icon="icons:apps"></iron-icon> <span class="menu-text">Dashboard</span>
-                            </a>
-                        </template>
-                    </template>
-
-                </iron-selector>
+                ${this.menuTemplate}
             </app-drawer>
 
             <!-- Main content -->
@@ -220,118 +104,7 @@ class AppscoApp extends mixinBehaviors([
                         <div class="page-title" condense-title="">[[ _pageName ]]</div>
 
                         <neon-animated-pages id="animatedActions" class="actions flex flex-end" selected="[[page]]" attr-for-selected="name" on-neon-animation-finish="_onPageActionsAnimationFinish">
-
-                            <appsco-home-page-actions id="appscoHomePageActions" name="home" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]">
-                            </appsco-home-page-actions>
-
-                            <appsco-groups-page-actions id="appscoGroupsPageActions" name="groups" authorization-token="[[ authorizationToken ]]">
-                            </appsco-groups-page-actions>
-
-                            <appsco-resource-page-actions id="appscoApplicationPageActions" name="resource" on-back="_showHomePage">
-                            </appsco-resource-page-actions>
-
-                            <appsco-account-page-actions id="appscoAccountPageActions" name="account" on-back="_onBackFromAccountAction">
-                            </appsco-account-page-actions>
-
-                            <appsco-company-account-page-actions id="appscoCompanyAccountPageActions" name="company-account" on-back="_onBackFromAccountAction">
-                            </appsco-company-account-page-actions>
-
-                            <appsco-upgrade-page-actions
-                                name="upgrade"
-                                authorization-token="[[ authorizationToken ]]"
-                                on-toggle-pricing="_onUpgradeTogglePricing">
-                            </appsco-upgrade-page-actions>
-
-                            <appsco-company-home-page-actions id="appscoCompanyHomePageActions" name="company-home" authorization-token="[[ authorizationToken ]]" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]">
-                            </appsco-company-home-page-actions>
-
-                            <appsco-contact-home-page-actions id="appscoContactHomePageActions" name="contact-home" authorization-token="[[ authorizationToken ]]" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]">
-                            </appsco-contact-home-page-actions>
-
-                            <appsco-resources-page-actions id="appscoResourcesPageActions" name="resources" authorization-token="[[ authorizationToken ]]" filter-api="[[ api.dashboards ]]?extended=1" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]" resource-admin="[[ _resourceAdmin ]]">
-                            </appsco-resources-page-actions>
-
-                            <appsco-manage-resource-page-actions
-                                id="appscoManageApplicationPageActions"
-                                name="manage-resource"
-                                advanced-actions\$="[[ !_resourceAdmin ]] "
-                                on-back="_showCompanyResourcesPage">
-                            </appsco-manage-resource-page-actions>
-
-                            <appsco-directory-page-actions id="appscoDirectoryPageActions" name="directory" on-manage-domains="_onManageDomains" authorization-token="[[ authorizationToken ]]">
-                            </appsco-directory-page-actions>
-
-                            <appsco-manage-account-page-actions
-                                id="appscoManageAccountPageActions"
-                                name="manage-account"
-                                advanced-actions=""
-                                on-back="_showCompanyDirectoryPage">
-                            </appsco-manage-account-page-actions>
-
-                            <appsco-contacts-page-actions id="appscoContactsPageActions" name="contacts">
-                            </appsco-contacts-page-actions>
-
-                            <appsco-manage-contact-page-actions id="appscoManageContactPageActions" name="manage-contact" on-back="_showContactsPage">
-                            </appsco-manage-contact-page-actions>
-
-                            <appsco-manage-customer-page-actions id="appscoManageCustomerPageActions" name="manage-customer" on-back="_showCustomersPage">
-                            </appsco-manage-customer-page-actions>
-
-                            <appsco-manage-group-page-actions id="appscoManageGroupPageActions" name="manage-group" on-back="_showGroupsPage">
-                            </appsco-manage-group-page-actions>
-
-                            <appsco-manage-integration-page-actions name="manage-integration" on-back="_showCompanyProvisioningPage">
-                            </appsco-manage-integration-page-actions>
-
-                            <appsco-customers-page-actions id="appscoCustomersPageActions" name="customers">
-                            </appsco-customers-page-actions>
-
-                            <appsco-audit-log-page-actions id="appscoAuditLogPageActions" name="audit-log">
-                            </appsco-audit-log-page-actions>
-
-                            <appsco-access-on-boarding-page-actions id="appscoAccessOnBoardingPageActions" name="access-on-boarding">
-                            </appsco-access-on-boarding-page-actions>
-
-                            <appsco-billing-page-actions id="appscoBillingPageActions" name="billing">
-                            </appsco-billing-page-actions>
-
-                            <appsco-company-page-actions id="appscoCompanyPageActions" name="company">
-                            </appsco-company-page-actions>
-
-                            <appsco-reports-page-actions id="appscoReportsPageActions" name="reports">
-                            </appsco-reports-page-actions>
-
-                            <appsco-access-report-page-actions id="appscoAccessReportPageActions" name="access-report" on-back="_showReportsPage">
-                            </appsco-access-report-page-actions>
-
-                            <appsco-compliance-report-page-actions id="appscoComplianceReportPageActions" name="compliance-report" on-back="_showReportsPage">
-                            </appsco-compliance-report-page-actions>
-
-                            <appsco-billing-report-page-actions
-                                id="appscoBillingReportPageActions"
-                                name="billing-report">
-                            </appsco-billing-report-page-actions>
-
-                            <appsco-provisioning-page-actions id="appscoProvisioningPageActions" name="provisioning">
-                            </appsco-provisioning-page-actions>
-
-                            <appsco-oauth-applications-page-actions id="appscoOAuthApplicationsPageActions" name="oauth-applications">
-                            </appsco-oauth-applications-page-actions>
-
-                            <appsco-manage-oauth-application-page-actions id="appscoManageOAuthApplicationPageActions" name="manage-oauth-application" on-back="_showOAuthApplicationsPage">
-                            </appsco-manage-oauth-application-page-actions>
-
-                            <appsco-dashboard-folder-page-actions id="appscoDashboardFolderPageActions" name="dashboard-folder" on-back="_backFromFolderPage">
-                            </appsco-dashboard-folder-page-actions>
-
-                            <appsco-policies-page-actions id="appscoPoliciesPageActions" name="policies">
-                            </appsco-policies-page-actions>
-
-                            <appsco-policy-report-page-actions id="appscoPolicyReportPageActions" name="policies-report" on-back="_showReportsPage">
-                            </appsco-policy-report-page-actions>
-
-                            <appsco-additional-options-page-actions id="appscoAdditionalOptionsPageActions" name="additional-options" on-back="_showCompanyResourcesPage">
-                            </appsco-additional-options-page-actions>
+                            ${this.toolbarsTemplate}                            
                         </neon-animated-pages>
                     </app-toolbar>
                 </app-header>
@@ -339,282 +112,7 @@ class AppscoApp extends mixinBehaviors([
                 <paper-progress id="pageProgress" indeterminate=""></paper-progress>
 
                 <neon-animated-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main" on-neon-animation-finish="_onPageAnimationFinish">
-
-                     <appsco-home-page name="home" page=""
-                         id="appscoHomePage"
-                         application="{{ application }}"
-                         account="[[ account ]]"
-                         application-log="[[ application.meta.log ]]"
-                         authorization-token="[[ authorizationToken ]]"
-                         applications-api="[[ _applicationsApi ]]"
-                         folders-api="[[ api.foldersApi ]]"
-                         dashboard-api="[[ _addAppApi ]]"
-                         page-config="[[ _pageConfig ]]"
-                         api-errors="[[ _apiErrors ]]"
-                         accounts-api="[[ api.accounts ]]"
-                         domain="[[ domain ]]"
-                         item="[[ _copyObject(item) ]]"
-                         toolbar="[[ \$.appscoHomePageActions ]]"
-                         applications-template-api="[[ api.applicationTemplates ]]"
-                         icons-api="[[ api.icons ]]"
-                         personal-items-api="[[ api.personalItems ]]"
-                         shared-with-me-items-api="[[ api.sharedWithMeItems ]]"
-                         labels="[[ _applicationLabels ]]"
-                         on-loaded="_onLoadedPage"
-                         on-folder-tapped="_onFolderTapped"
-                         on-application-shared="_onApplicationShared"
-                         on-application-settings-saved="_onApplicationSettingsSaved"
-                         on-application-settings-no-changes="_onApplicationSettingsNoChanges"
-                         on-applications-removed="_onApplicationsRemovedFromHomePage">
-                     </appsco-home-page>
-
-                     <appsco-resource-page name="resource" page=""
-                         id="appscoApplicationPage"
-                         route="[[ subroute ]]"
-                         company="[[ _companyPage ]]"
-                         application="{{ application }}"
-                         applications-api="[[ _applicationsApi ]]"
-                         icons-api="[[ api.icons ]]"
-                         application-log="[[ application.meta.log ]]"
-                         authorization-token="[[ authorizationToken ]]"
-                         accounts-api="[[ api.accounts ]]"
-                         account="{{ account }}"
-                         toolbar="[[ \$.appscoApplicationPageActions ]]"
-                         on-application-shared="_onApplicationShared"
-                         on-application-removed="_onApplicationRemoved"
-                         on-subscription-revoked="_onSubscriptionRevoked"
-                         on-application-settings-saved="_onApplicationSettingsSaved"
-                         on-application-settings-no-changes="_onApplicationSettingsNoChanges"
-                         on-autologin-changed="_onAutologinChanged"
-                         on-resource-image-changed="_onResourceImageChanged"
-                         on-page-error="_onError"
-                         on-image-upload-error="_onImageUploadError">
-                     </appsco-resource-page>
-
-                    <appsco-account-page name="account" page="" id="appscoAccountPage" account="{{ account }}" authorization-token="[[ authorizationToken ]]" notifications-api="[[ api.notifications ]]" authorized-apps-api="[[ api.authorizedApps ]]" log-api="[[ api.accountLog ]]" two-fa-api="[[ api.twoFA ]]" two-fa-qr-api="[[ api.twoFAQr ]]" two-fa-codes-api="[[ api.twoFACodes ]]" settings-api="[[ api.me ]]" image-settings-api="[[ api.profileImage ]]" change-password-api="[[ api.changePassword ]]" application-template-api="[[ api.applicationTemplates ]]" api-errors="[[ _apiErrors ]]" remove-account-api="[[ api.removeAccount ]]" logout-api="[[ api.logout ]]" account-managed="[[ _accountManaged ]]" toolbar="[[ \$.appscoAccountPageActions ]]" on-twofa-disabled="_onTwoFaDisabled" on-application-revoked="_onAuthorizedApplicationRevoked" on-import-finished="_onImportPersonalResourcesFinished" on-settings-saved="_onAccountSettingsSaved" on-password-changed="_onAccountPasswordChanged" on-image-upload-error="_onImageUploadError">
-                    </appsco-account-page>
-
-                    <appsco-company-account-page name="company-account" page="" company-page="" id="appscoCompanyAccountPage" account="{{ account }}" authorization-token="[[ authorizationToken ]]" notifications-api="[[ api.notifications ]]" authorized-apps-api="[[ api.authorizedApps ]]" log-api="[[ api.accountLog ]]" two-fa-enforced="[[ currentCompany.company.enforced_2fa ]]" two-fa-api="[[ api.twoFA ]]" two-fa-qr-api="[[ api.twoFAQr ]]" two-fa-codes-api="[[ api.twoFACodes ]]" settings-api="[[ api.me ]]" image-settings-api="[[ api.profileImage ]]" change-password-api="[[ api.changePassword ]]" application-template-api="[[ api.applicationTemplates ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoCompanyAccountPageActions ]]" on-import-finished="_onImportPersonalResourcesFinished" on-twofa-disabled="_onTwoFaDisabled" on-application-revoked="_onAuthorizedApplicationRevoked" on-settings-saved="_onAccountSettingsSaved" on-password-changed="_onAccountPasswordChanged" on-image-upload-error="_onImageUploadError">
-                    </appsco-company-account-page>
-
-                    <appsco-trybusiness-page name="trybusiness" page=""
-                        id="appscoUpgradePage"
-                        authorization-token="[[ authorizationToken ]]"
-                        company-upgrade-api="[[ api.upgradeToBusiness ]]"
-                        on-upgraded="_upgradedToBusiness"
-                        on-upgrade-failed="_onUpgradeToCompanyFailed">
-                    </appsco-trybusiness-page>
-
-                    <appsco-company-home-page name="company-home" page="" company-page=""
-                        id="appscoCompanyHomePage"
-                        authorization-token="[[ authorizationToken ]]"
-                        applications-api="[[ _companyIconsWithoutFolderApi ]]"
-                        folders-api="[[ api.foldersApi ]]"
-                        company-folders-api="[[ _companyFoldersApi ]]"
-                        netscaler-api="[[ _companyNetscalerFeatureApi ]]"
-                        accounts-api="[[ api.accounts ]]"
-                        account="[[ account ]]"
-                        domain="[[ domain ]]"
-                        api-errors="[[ _apiErrors ]]"
-                        page-config="[[ _pageConfig ]]"
-                        company="{{ currentCompany.company }}"
-                        toolbar="[[ \$.appscoCompanyHomePageActions ]]"
-                        on-loaded="_onLoadedPage"
-                        on-folder-tapped="_onFolderTapped"
-                        on-application-shared="_onApplicationShared"
-                        on-application-settings-saved="_onApplicationSettingsSaved">
-                    </appsco-company-home-page>
-
-                    <appsco-contact-home-page name="contact-home" page="" company-page="" id="appscoContactHomePage" authorization-token="[[ authorizationToken ]]" applications-api="[[ _contactIconsApi ]]" page-config="[[ _pageConfig ]]" account="[[ account ]]" toolbar="[[ \$.appscoContactHomePageActions ]]" on-loaded="_onLoadedPage" on-application-shared="_onApplicationShared">
-                    </appsco-contact-home-page>
-
-                     <appsco-resources-page name="resources" page="" company-page=""
-                         id="appscoResourcesPage"
-                         resource="{{ _companyApplication }}"
-                         account="[[ account ]]"
-                         application-log="[[ _companyApplication.meta.log ]]"
-                         authorization-token="[[ authorizationToken ]]"
-                         company-resources-api="[[ _companyApplicationsApi ]]"
-                         company-applications-api="[[ _companyApplicationsApi ]]"
-                         company-roles-api="[[ _companyRolesApi ]]"
-                         company-contacts-api="[[ _companyContactsApi ]]"
-                         company-import-resources-api="[[ _companyImportResourcesApi ]]"
-                         groups-api="[[ _companyGroupsApi ]]"
-                         company-api="[[ _companyApi ]]"
-                         applications-template-api="[[ api.applicationTemplates ]]"
-                         item="[[ _copyObject(item) ]]"
-                         link="[[ _copyObject(link) ]]"
-                         domain="[[ domain ]]"
-                         api-errors="[[ _apiErrors ]]"
-                         resource-admin="[[ _resourceAdmin ]]"
-                         page-config="[[ _pageConfig ]]"
-                         get-company-idp-config-list-api="[[ _getCompanyIdpConfigListApi ]]"
-                         toolbar="[[ \$.appscoResourcesPageActions ]]"
-                         on-applications-removed="_onApplicationsRemoved"
-                         on-resources-shared="_onResourcesShared"
-                         on-import-finished="_onImportCompanyResourcesFinished"
-                         on-application-settings-saved="_onApplicationSettingsSaved"
-                         on-list-loaded="_onLoadedPage"
-                         on-observable-list-empty="_onObservableListEmpty"
-                         on-observable-list-filled="_onObservableListFilled"
-                         on-page-loaded="_onResourcesPageLoaded"
-                         on-load-forbidden="_onResourcesLoadForbidden"
-                         on-edit-additional-options="_onEditAdditionalOptionsAction"
-                         on-share-items-loaded-changed="onShareResourceDialogAccountsLoadedChanged">
-                     </appsco-resources-page>
-
-                    <appsco-manage-resource-page name="manage-resource" page="" company-page=""
-                        id="appscoManageApplicationPage"
-                        route="[[ subroute ]]"
-                        application="{{ _companyApplication }}"
-                        company-api="[[ _companyApi ]]"
-                        company-idp-saml-metadata-api="[[ _companySamlMetadataApi ]]"
-                        company-contacts-api="[[ _companyContactsApi ]]"
-                        company-roles-api="[[ _companyRolesApi ]]"
-                        company-groups-api="[[ _companyGroupsApi ]]"
-                        domain="[[ domain ]]"
-                        application-log="[[ _companyApplication.meta.log ]]"
-                        authorization-token="[[ authorizationToken ]]"
-                        accounts-api="[[ api.accounts ]]"
-                        account="{{ account }}"
-                        api-errors="[[ _apiErrors ]]"
-                        resource-admin="[[ _resourceAdmin ]]"
-                        toolbar="[[ \$.appscoManageApplicationPageActions ]]"
-                        on-applications-removed="_onApplicationsRemoved"
-                        on-resources-shared="_onResourcesShared"
-                        on-access-revoked="_onAssigneeAccessRevoked"
-                        on-application-removed-from-group="_onApplicationRemovedFromGroup"
-                        on-resource-admin-added="_onResourceAdminAdded"
-                        on-resource-admin-revoked="_onResourceAdminRevoked"
-                        on-claims-changed="_onAssigneeClaimsChanged"
-                        on-application-settings-saved="_onApplicationSettingsSaved"
-                        on-page-error="_onError"
-                        on-resource-image-changed="_onResourceImageChanged"
-                        on-image-upload-error="_onImageUploadError">
-                    </appsco-manage-resource-page>
-
-                    <appsco-directory-page name="directory" page="" company-page="" id="appscoDirectoryPage" role="{{ _role }}" authorization-token="[[ authorizationToken ]]" company-invitations-api="[[ _companyInvitationsApi ]]" company-directory-roles-api="[[ _companyRolesApi ]]" company-orgunits-api="[[ _companyOrgunitsApi ]]" company-subscription-api="[[ _companySubscriptionApi ]]" domains-api="[[ _companyDomainsApi ]]" groups-api="[[ _companyGroupsApi ]]" company-notifications-api="[[ _companyNotificationsApi ]]" company-contacts-api="[[ _companyContactsApi ]]" company-import-accounts-api="[[ _companyImportAccountsApi ]]" company-api="[[ _companyApi ]]" api-errors="[[ _apiErrors ]]" domain="[[ domain ]]" toolbar="[[ \$.appscoDirectoryPageActions ]]" on-added-to-orgunit="_onAccountsAddedToOrgunit" on-accounts-removed="_onAccountsRemoved" on-import-finished="_onAccountImportFinished" on-orgunit-added="_onOrgunitChanged" on-orgunit-modified="_onOrgunitChanged" on-orgunit-removed="_onOrgunitChanged" on-edit-account="_onEditAccount" on-info-edit-account="_onEditAccount" on-group-added="_onGroupAdded" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled" on-company-subscription-loaded="_onSubscriptionLoaded" on-page-loaded="_onDirectoryPageLoaded">
-                    </appsco-directory-page>
-
-                    <appsco-contacts-page name="contacts" page="" company-page="" id="appscoContactsPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" company-invitations-api="[[ _companyInvitationsApi ]]" company-contacts-api="[[ _companyContactsApi ]]" company-api="[[ _companyApi ]]" company-roles-api="[[ _companyRolesApi ]]" company-notifications-api="[[ _companyNotificationsApi ]]" api-errors="[[ _apiErrors ]]" import-contacts-api="[[ _companyImportContactsApi ]]" domain="[[ domain ]]" toolbar="[[ \$.appscoContactsPageActions ]]" on-edit-contact="_onEditContactAction" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
-                    </appsco-contacts-page>
-
-                    <appsco-customers-page name="customers" page="" company-page="" id="appscoCustomersPage" customers-api="[[ _companyCustomersApi ]]" customers-export-api="[[ _companyCustomersExportApi ]]" customers-import-api="[[ _importCustomersApi ]]" convert-to-customer-api="[[ _companyConvertToCustomerApi ]]" company-roles-api="[[ _companyRolesApi ]]" check-if-customer-exists-api="[[ _checkIfCustomerExistsApi ]]" authorization-token="[[ authorizationToken ]]" add-partner-admin-to-customer-api="[[ _addPartnerAdminToCustomerApi ]]" domain="[[ domain ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoCustomersPageActions ]]" on-import-finished="_onCustomersImportFinished" on-partner-admins-added="_onPartnerAdminsAdded" on-edit-customer="_onEditCustomerAction" on-customer-added="_onCustomerAdded" on-customers-removed="_onRemovedCustomers" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
-                    </appsco-customers-page>
-
-                    <appsco-groups-page name="groups" page="" company-page=""
-                        id="appscoGroupsPage"
-                        group="{{ _group }}"
-                        authorization-token="[[ authorizationToken ]]"
-                        groups-api="[[ _companyGroupsApi ]]"
-                        company-api="[[ _companyApi ]]"
-                        company-notifications-api="[[ _companyNotificationsApi ]]"
-                        api-errors="[[ _apiErrors ]]"
-                        toolbar="[[ \$.appscoGroupsPageActions ]]"
-                        on-group-added="_onGroupAdded"
-                        on-groups-removed="_onRemovedGroups"
-                        on-group-renamed="_onGroupRenamed"
-                        on-edit-item="_onEditCompanyGroupAction"
-                        on-info-edit-group="_onEditCompanyGroupAction">
-                    </appsco-groups-page>
-
-                    <appsco-manage-account-page name="manage-account" page="" company-page="" id="appscoManageAccountPage" route="[[ subroute ]]" role="{{ _role }}" administrator="[[ account ]]" authorization-token="[[ authorizationToken ]]" company-api="[[ _companyApi ]]" notifications-api="[[ api.notifications ]]" log-api="[[ api.accountLog ]]" two-fa-api="[[ api.twoFA ]]" two-fa-enforced="[[ currentCompany.company.enforced_2fa ]]" settings-api="[[ api.me ]]" image-settings-api="[[ api.profileImage ]]" change-password-api="[[ api.changePassword ]]" company-orgunits-api="[[ _companyOrgunitsApi ]]" company-applications-api="[[ _companyApplicationsApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoManageAccountPageActions ]]" on-settings-saved="_onAccountSettingsSaved" on-password-changed="_onCompanyAccountPasswordChanged" on-access-revoked="_onAssigneeAccessRevoked" on-claims-changed="_onAssigneeClaimsChanged" on-added-to-orgunit="_onAccountsAddedToOrgunit" on-account-removed-from-orgunit="_onAccountRemovedFromOrgunit" on-account-removed-from-group="_onAccountRemovedFromGroup" on-resource-admin-revoked="_onResourceAdminRevoked" on-account-role-changed="_onAccountRoleChanged" on-page-error="_onError" on-image-upload-error="_onImageUploadError">
-                    </appsco-manage-account-page>
-
-                    <appsco-manage-contact-page name="manage-contact" page="" company-page="" id="appscoManageContactPage" route="[[ subroute ]]" authorization-token="[[ authorizationToken ]]" contacts-api="[[ _companyContactsApi ]]" toolbar="[[ \$.appscoManageContactPageActions ]]" on-contact-deleted="_onContactDeleted" on-contact-converted="_onContactConverted" on-page-error="_onError" on-access-revoked="_onAssigneeAccessRevoked" on-contact-removed-from-group="_onContactRemovedFromGroup">
-                    </appsco-manage-contact-page>
-
-                    <appsco-manage-customer-page name="manage-customer" page="" company-page="" id="appscoManageCustomerPage" route="[[ subroute ]]" authorization-token="[[ authorizationToken ]]" customers-api="[[ _companyCustomersApi ]]" current-company="[[ currentCompany.company ]]" company-roles-api="[[ _companyRolesApi ]]" add-partner-admin-to-customer-api="[[ _addPartnerAdminToCustomerApi ]]" toolbar="[[ \$.appscoManageCustomerPageActions ]]" api-errors="[[ _apiErrors ]]" on-page-error="_onError" on-partner-admins-added="_onPartnerAdminsAdded" on-customer-removed="_onCustomerRemoved">
-                    </appsco-manage-customer-page>
-
-                    <appsco-manage-group-page name="manage-group" page="" company-page="" id="appscoManageGroupPage" route="[[ subroute ]]" group="{{ _group }}" authorization-token="[[ authorizationToken ]]" group-api="[[ _companyGroupApi ]]" company-applications-api="[[ _companyApplicationsApi ]]" company-roles-api="[[ _companyRolesApi ]]" company-contacts-api="[[ _companyContactsApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoManageGroupPageActions ]]" on-page-error="_onError" on-group-removed="_onGroupRemoved" on-resource-removed-from-group="_onResourceRemovedFromGroup" on-resources-added-to-group="_onResourcesAddedToGroup">
-                    </appsco-manage-group-page>
-
-                    <appsco-provisioning-page name="provisioning" page="" company-page="" id="appscoProvisioningPage" active-integrations-api="[[ _getActiveIntegrationsApi ]]" available-integrations-api="[[ _getAvailableIntegrationsApi ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoProvisioningPageActions ]]" on-edit-integration="_onEditIntegrationAction" on-active-integration="_onIntegrationSetup">
-                    </appsco-provisioning-page>
-
-                    <appsco-manage-integration-page name="manage-integration" page="" company-page="" id="appscoManageIntegrationPage" route="[[ subroute ]]" integration="[[ _selectedIntegration ]]" integration-api="[[ _companyIntegrationApi ]]" api-errors="[[ _apiErrors ]]" authorization-token="[[ authorizationToken ]]" on-page-error="_onError" on-integration-removed="_onIntegrationRemoved" on-integration-settings-changed="_onIntegrationSettingsChanged">
-                    </appsco-manage-integration-page>
-
-                    <appsco-provisioning-integration-authorization-success-page name="provisioning-integration-authorization-success" page="" company-page="" id="appscoProvisioningIntegrationSuccessPage" on-provisioning="_showCompanyProvisioningPage">
-                    </appsco-provisioning-integration-authorization-success-page>
-
-                    <appsco-provisioning-integration-authorization-failed-page name="provisioning-integration-authorization-failed" page="" company-page="" id="appscoProvisioningIntegrationFailedPage" on-provisioning="_showCompanyProvisioningPage">
-                    </appsco-provisioning-integration-authorization-failed-page>
-
-                    <appsco-audit-log-page name="audit-log" page="" company-page="" 
-                        id="appscoAuditLogPage" 
-                        authorization-token="[[ authorizationToken ]]" 
-                        audit-log-api="[[ _companyAuditLogApi ]]" 
-                        company-api="[[ _companyApi ]]"
-                        toolbar="[[ \$.appscoAuditLogPageActions ]]">
-                    </appsco-audit-log-page>
-
-                    <appsco-access-on-boarding-page name="access-on-boarding" page="" company-page="" id="appscoAccessOnBoardingPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" access-on-boarding-users-api="[[ _accessOnBoardingUsersApi ]]" export-access-on-boarding-api="[[ _exportAccessAccessOnBoardingApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoAccessOnBoardingPageActions ]]">
-                    </appsco-access-on-boarding-page>
-
-                     <appsco-get-started-page name="get-started" page="" company-page=""
-                         id="appscoGetStartedPage"
-                         account="[[ account ]]"
-                         authorization-token="[[ authorizationToken ]]"
-                         tutorials="[[ _tutorials ]]"
-                         on-tutorial-start="_onTutorialStart">
-                     </appsco-get-started-page>
-
-                    <appsco-oauth-applications-page name="oauth-applications" page="" company-page="" id="appscoOAuthApplicationsPage" authorization-token="[[ authorizationToken ]]" o-auth-applications-api="[[ _companyOAuthApplicationsApi ]]" current-company="[[ currentCompany.company ]]" toolbar="[[ \$.appscoOAuthApplicationsPageActions ]]" on-edit-oauth-application="_onEditOAuthApplicationAction" on-oauth-application-removed="_onOAuthApplicationRemoved">
-                    </appsco-oauth-applications-page>
-
-                    <appsco-statistics-page name="statistics" page="" company-page="" id="appscoStatisticsPage" company-api="[[ _companyApi ]]" authorization-token="[[ authorizationToken ]]">
-                    </appsco-statistics-page>
-
-                    <appsco-reports-page name="reports" page="" company-page="" id="appscoReportsPage" get-access-report-api="[[ _getAccessReportApi ]]" get-policies-api="[[ _companyPoliciesApi ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoReportsPageActions ]]" on-open-access-report="_showAccessReportPage" on-open-compliance-report="_showComplianceReportPage" on-open-policies-report="_showPoliciesReportPage">
-                    </appsco-reports-page>
-
-                    <appsco-access-report-page name="access-report" page="" company-page="" id="appscoAccessReportPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" roles-api="[[ _companyRolesApi ]]" contacts-api="[[ _companyContactsApi ]]" export-access-report-api="[[ _exportAccessReportApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoAccessReportPageActions ]]">
-                    </appsco-access-report-page>
-
-                    <appsco-compliance-report-page name="compliance-report" page="" company-page="" id="appscoComplianceReportPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" roles-api="[[ _companyRolesApi ]]" contacts-api="[[ _companyContactsApi ]]" export-compliance-report-api="[[ _exportComplianceReportApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoComplianceReportPageActions ]]">
-                    </appsco-compliance-report-page>
-
-                    <appsco-billing-page name="billing" page="" company-page="" id="appscoBillingPage" company-api="[[ _companyApi ]]" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" toolbar="[[ \$.appscoBillingPageActions ]]" current-company="[[ currentCompany.company ]]" on-credit-card-added="_onCreditCardAdded" on-subscription-canceled="_onSubscriptionCanceled" on-subscription-changed="_onSubscriptionChanged" on-subscription-updated="_onSubscriptionUpdated">
-                    </appsco-billing-page>
-
-                    <appsco-company-page name="company" page="" company-page="" id="appscoCompanyPage" company="{{ currentCompany.company }}" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" transfer-token-api="[[ _getTransferTokenApi ]]" partners-api-url="[[ api.partners ]]" send-transfer-token-api="[[ _sendTransferTokenApi ]]" save-ip-white-list-api="[[ _saveIPWhiteListApi ]]" brand-logo="[[ _brandLogo ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoCompanyPageActions ]]" on-domain-added="_onDomainAdded" on-domain-removed="_onDomainRemoved" on-image-upload-error="_onImageUploadError" on-company-settings-changed="_onCompanySettingsChanged" on-company-ip-whitelist-changed="_onCompanyIPWhiteListChanged" on-company-brand-settings-changed="_onCompanyBrandSettingsChanged" on-company-branded-login-changed="_onCompanyBrandedLoginChanged" on-company-logo-changed="_onCompanyLogoChanged" on-company-dashboard-logo-changed="_onCompanyDashboardLogoChanged" on-domain-verified="_onDomainVerified" on-company-domains-loaded="_onCompanyDomainsLoadFinished" on-empty-company-domains-loaded="_onCompanyDomainsLoadFinished">
-                    </appsco-company-page>
-
-                    <appsco-manage-oauth-application-page name="manage-oauth-application" page="" company-page="" id="appscoManageOAuthApplicationPage" route="[[ subroute ]]" authorization-token="[[ authorizationToken ]]" oauth-applications-api="[[ _companyOAuthApplicationsApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoManageOAuthApplicationPageActions ]]" on-page-error="_onError" on-resource-image-changed="_onResourceImageChanged" on-image-upload-error="_onImageUploadError" on-oauth-application-removed="_onOAuthApplicationRemoved" on-oauth-application-updated="_onOAuthApplicationUpdated">
-                    </appsco-manage-oauth-application-page>
-
-                    <appsco-customer-billing-page name="customer-billing" page="" company-page="" id="appscoCustomerBillingPage" company-api="[[ _companyApi ]]" account="[[ account ]]" current-company="[[ currentCompany.company ]]" authorization-token="[[ authorizationToken ]]" on-credit-card-added="_onCreditCardAdded" on-subscription-canceled="_onSubscriptionCanceled" on-subscription-changed="_onSubscriptionChanged" on-subscription-updated="_onSubscriptionUpdated">
-                    </appsco-customer-billing-page>
-
-                    <appsco-billing-report-page name="billing-report" page="" company-page=""
-                        id="appscoBillingReportPage"
-                        billing-report-api="[[ _billingReportApi ]]"
-                        customers-api="[[ _companyCustomersApi ]]"
-                        authorization-token="[[ authorizationToken ]]">
-                    </appsco-billing-report-page>
-
-                    <appsco-dashboard-folder-page name="dashboard-folder" page="" company-page="" id="appscoDashboardFolderPage" route="[[ subroute ]]" folder="{{ _activeFolder }}" is-on-personal="[[ _personalFolderPage ]]" authorization-token="[[ authorizationToken ]]" folders-api="[[ api.foldersApi ]]" company-folders-api="[[ _companyFoldersApi ]]" company="[[ currentCompany ]]" netscaler-api="[[ _companyNetscalerFeatureApi ]]" account="[[ account ]]" domain="[[ domain ]]" accounts-api="[[ api.accounts ]]" api-errors="[[ _apiErrors ]]" page-config="[[ _pageConfig ]]" toolbar="[[ \$.appscoDashboardFolderPageActions ]]" on-loaded="_onLoadedPage" on-application-shared="_onApplicationShared" on-application-instance-removed="_onApplicationInstanceRevoked" on-show-page="_onShowPage"  on-application-settings-saved="_onApplicationSettingsSaved">
-                    </appsco-dashboard-folder-page>
-
-                    <appsco-saml-authn-request-invalid-page name="saml-authn-request-invalid" page="" company-page=""
-                        id="appscoSamlAuthnRequestInvalidPage"
-                        on-back-to-dashboard="_showCompanyHomePage">
-                    </appsco-saml-authn-request-invalid-page>
-
-                    <appsco-policies-page name="policies" page="" company-page="" id="appscoPoliciesPage" authorization-token="[[ authorizationToken ]]" company-policies-api="[[ _companyPoliciesApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoPoliciesPageActions ]]" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
-                    </appsco-policies-page>
-
-                    <appsco-policies-report-page name="policies-report" page="" company-page="" id="appscoPoliciesReportPage" authorization-token="[[ authorizationToken ]]" policies-api="[[ _companyPoliciesApi ]]" roles-api="[[ _companyRolesApi ]]" policies-report-api="[[ _getPoliciesReportApi ]]" export-compliance-report-api="[[ _exportComplianceReportApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoPolicyReportPageActions ]]">
-                    </appsco-policies-report-page>
-
-                    <appsco-additional-options-page name="additional-options" page="" company-page="" id="appscoAdditionalOptionsPage" authorization-token="[[ authorizationToken ]]" get-company-idp-config-list-api="[[ _getCompanyIdpConfigListApi ]]" company="[[ currentCompany.company ]]" api-errors="[[ _apiErrors ]]" link="[[ _copyObject(link) ]]" company-applications-api="[[ _companyApplicationsApi ]]" toolbar="[[ \$.appscoAdditionalOptionsPageActions ]]">
-                    </appsco-additional-options-page>
-
-                    <appsco-logout-page name="logout" page="" logout-api="[[ api.logout ]]"></appsco-logout-page>
-
-                    <appsco-not-found-page name="404" page="" on-back-to-home-page="_onBackToHomePageAction"></appsco-not-found-page>
+                    ${this.pagesTemplate}
                 </neon-animated-pages>
             </app-header-layout>
         </app-drawer-layout>
@@ -638,6 +136,521 @@ class AppscoApp extends mixinBehaviors([
 
         <iron-ajax id="getDashboardsLink" url="[[ api.dashboards ]]?extended=1" on-response="_onDashboardsResponse" headers="[[ _headers ]]"></iron-ajax>
 `;
+    }
+
+    static get menuTemplate() {
+        return html`                
+            <iron-selector selected="[[ page ]]" attr-for-selected="name" class="drawer-list" role="navigation" on-iron-select="_onMenuItemSelected" id="menuContainer">
+                <template is="dom-if" if="[[ !_companyPage ]]">
+                    <a name="home" href="#">
+                        <iron-icon icon="icons:home"></iron-icon> <span class="menu-text">Home</span>
+                    </a>
+
+                    <template is="dom-if" if="[[ _accountCanCreateCompany ]]">
+                        <div purchase="">
+                            <div>Manage your business applications, employees and get meaningful insights.</div>
+                            <paper-button on-tap="_showTryBusinessPage">
+                                Try Appsco Business
+                            </paper-button>
+                        </div>
+                    </template>
+                </template>
+
+                <template is="dom-if" if="[[ _companyPage ]]">
+                    <template is="dom-if" if="[[ _companyUser ]]">
+                        <template is="dom-if" if="[[ _tutorialsPageVisible ]]">
+                            <a name="get-started" href="#">
+                                <iron-icon icon="icons:help"></iron-icon>
+                                <span class="menu-text">Get started - [[ _progress ]]%
+                                </span>
+                            </a>
+                        </template>
+                        <a name="company-home" href="#">
+                            <iron-icon icon="icons:apps"></iron-icon> <span class="menu-text">Dashboard</span>
+                        </a>
+                        <template is="dom-if" if="[[ _companyAdmin ]]">
+                            <div class="section">
+                                <span class="menu-text">Administration</span>
+                            </div>
+                            <a name="resources" href="#">
+                                <iron-icon icon="icons:list"></iron-icon> <span class="menu-text" id="menuCompanyResourcesText">Resources</span>
+                            </a>
+                            <a name="directory" href="#">
+                                <iron-icon icon="icons:social:person"></iron-icon> <span class="menu-text" id="menuCompanyDirectoryText">Directory</span>
+                            </a>
+                            <a name="contacts" href="#">
+                                <iron-icon icon="icons:perm-contact-calendar"></iron-icon> <span class="menu-text">Contacts</span>
+                            </a>
+                            <a name="groups" href="#">
+                                <iron-icon icon="icons:supervisor-account"></iron-icon> <span class="menu-text">Groups</span>
+                            </a>
+                            <a name="provisioning" href="#">
+                                <iron-icon icon="icons:compare-arrows"></iron-icon> <span class="menu-text" id="menuProvisioningText">Provisioning</span>
+                            </a>
+
+                            <div class="section">
+                                <span class="menu-text">Management</span>
+                            </div>
+                            <a name="audit-log" href="#">
+                                <iron-icon icon="icons:reorder"></iron-icon> <span class="menu-text">Audit</span>
+                            </a>
+                            <a name="access-on-boarding" href="#">
+                                <iron-icon icon="icons:accessibility"></iron-icon> <span class="menu-text">Access Tasks</span>
+                            </a>
+                            <a name="statistics" href="#">
+                                <iron-icon icon="icons:donut-large"></iron-icon> <span class="menu-text">Statistics</span>
+                            </a>
+                            <a name="reports" href="#">
+                                <iron-icon icon="icons:description"></iron-icon>
+                                <span class="menu-text">Reports</span>
+                            </a>
+                            <template is="dom-if" if="[[ _accessBilling ]]">
+                                <a name="billing" href="#">
+                                    <iron-icon icon="icons:payment"></iron-icon> <span class="menu-text">Billing</span>
+                                </a>
+                            </template>
+                            <a name="company" href="#" id="menuCompanySettings">
+                                <iron-icon icon="icons:settings"></iron-icon> <span class="menu-text" id="menuCompanySettingsText">Settings</span>
+                            </a>
+
+                            <template is="dom-if" if="[[ currentCompany.company.is_partner ]]">
+                                <div class="section">
+                                    <span class="menu-text">Partner</span>
+                                </div>
+                                <a name="customers" href="#">
+                                    <iron-icon icon="icons:social:domain"></iron-icon> <span class="menu-text">Customers</span>
+                                </a>
+                                <a name="customer-billing" href="#">
+                                    <iron-icon icon="icons:payment"></iron-icon> <span class="menu-text">Customer Billing</span>
+                                </a>
+                                <a name="billing-report" href="#">
+                                    <iron-icon icon="icons:description"></iron-icon><span class="menu-text">Billing Report</span>
+                                </a>
+
+                            </template>
+
+                            <div class="section">
+                                <span class="menu-text">Advanced</span>
+                            </div>
+                            <a name="oauth-applications" href="#">
+                                <iron-icon icon="device:widgets"></iron-icon> <span class="menu-text">OAuth applications</span>
+                            </a>
+                            <a name="policies" href="#">
+                                <iron-icon icon="icons:verified-user"></iron-icon> <span class="menu-text">Policies</span>
+                            </a>
+                        </template>
+
+                        <template is="dom-if" if="[[ _resourceAdmin ]]">
+                            <div class="section">
+                                <span class="menu-text">Administration</span>
+                            </div>
+                            <a name="resources" href="#">
+                                <iron-icon icon="icons:list"></iron-icon> <span class="menu-text">Resources</span>
+                            </a>
+                        </template>
+                    </template>
+                    <template is="dom-if" if="[[ _companyContact ]]">
+                        <a name="contact-home" href="#">
+                            <iron-icon icon="icons:apps"></iron-icon> <span class="menu-text">Dashboard</span>
+                        </a>
+                    </template>
+                </template>
+            </iron-selector>`;
+    }
+
+    static get toolbarsTemplate() {
+        return html`
+            <appsco-home-page-actions id="appscoHomePageActions" name="home" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]">
+            </appsco-home-page-actions>
+
+            <appsco-groups-page-actions id="appscoGroupsPageActions" name="groups" authorization-token="[[ authorizationToken ]]">
+            </appsco-groups-page-actions>
+
+            <appsco-resource-page-actions id="appscoApplicationPageActions" name="resource" on-back="_showHomePage">
+            </appsco-resource-page-actions>
+
+            <appsco-account-page-actions id="appscoAccountPageActions" name="account" on-back="_onBackFromAccountAction">
+            </appsco-account-page-actions>
+
+            <appsco-company-account-page-actions id="appscoCompanyAccountPageActions" name="company-account" on-back="_onBackFromAccountAction">
+            </appsco-company-account-page-actions>
+
+            <appsco-upgrade-page-actions
+                name="upgrade"
+                authorization-token="[[ authorizationToken ]]"
+                on-toggle-pricing="_onUpgradeTogglePricing">
+            </appsco-upgrade-page-actions>
+
+            <appsco-company-home-page-actions id="appscoCompanyHomePageActions" name="company-home" authorization-token="[[ authorizationToken ]]" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]">
+            </appsco-company-home-page-actions>
+
+            <appsco-contact-home-page-actions id="appscoContactHomePageActions" name="contact-home" authorization-token="[[ authorizationToken ]]" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]">
+            </appsco-contact-home-page-actions>
+
+            <appsco-resources-page-actions id="appscoResourcesPageActions" name="resources" authorization-token="[[ authorizationToken ]]" filter-api="[[ api.dashboards ]]?extended=1" page-config-api="[[ api.pageConfigApi ]]" page-config="[[ _pageConfig ]]" page="[[ page ]]" api-errors="[[ _apiErrors ]]" resource-admin="[[ _resourceAdmin ]]">
+            </appsco-resources-page-actions>
+
+            <appsco-manage-resource-page-actions
+                id="appscoManageApplicationPageActions"
+                name="manage-resource"
+                advanced-actions\$="[[ !_resourceAdmin ]] "
+                on-back="_showCompanyResourcesPage">
+            </appsco-manage-resource-page-actions>
+
+            <appsco-directory-page-actions id="appscoDirectoryPageActions" name="directory" on-manage-domains="_onManageDomains" authorization-token="[[ authorizationToken ]]">
+            </appsco-directory-page-actions>
+
+            <appsco-manage-account-page-actions
+                id="appscoManageAccountPageActions"
+                name="manage-account"
+                advanced-actions=""
+                on-back="_showCompanyDirectoryPage">
+            </appsco-manage-account-page-actions>
+
+            <appsco-contacts-page-actions id="appscoContactsPageActions" name="contacts">
+            </appsco-contacts-page-actions>
+
+            <appsco-manage-contact-page-actions id="appscoManageContactPageActions" name="manage-contact" on-back="_showContactsPage">
+            </appsco-manage-contact-page-actions>
+
+            <appsco-manage-customer-page-actions id="appscoManageCustomerPageActions" name="manage-customer" on-back="_showCustomersPage">
+            </appsco-manage-customer-page-actions>
+
+            <appsco-manage-group-page-actions id="appscoManageGroupPageActions" name="manage-group" on-back="_showGroupsPage">
+            </appsco-manage-group-page-actions>
+
+            <appsco-manage-integration-page-actions name="manage-integration" on-back="_showCompanyProvisioningPage">
+            </appsco-manage-integration-page-actions>
+
+            <appsco-customers-page-actions id="appscoCustomersPageActions" name="customers">
+            </appsco-customers-page-actions>
+
+            <appsco-audit-log-page-actions id="appscoAuditLogPageActions" name="audit-log">
+            </appsco-audit-log-page-actions>
+
+            <appsco-access-on-boarding-page-actions id="appscoAccessOnBoardingPageActions" name="access-on-boarding">
+            </appsco-access-on-boarding-page-actions>
+
+            <appsco-billing-page-actions id="appscoBillingPageActions" name="billing">
+            </appsco-billing-page-actions>
+
+            <appsco-company-page-actions id="appscoCompanyPageActions" name="company">
+            </appsco-company-page-actions>
+
+            <appsco-reports-page-actions id="appscoReportsPageActions" name="reports">
+            </appsco-reports-page-actions>
+
+            <appsco-access-report-page-actions id="appscoAccessReportPageActions" name="access-report" on-back="_showReportsPage">
+            </appsco-access-report-page-actions>
+
+            <appsco-compliance-report-page-actions id="appscoComplianceReportPageActions" name="compliance-report" on-back="_showReportsPage">
+            </appsco-compliance-report-page-actions>
+
+            <appsco-billing-report-page-actions
+                id="appscoBillingReportPageActions"
+                name="billing-report">
+            </appsco-billing-report-page-actions>
+
+            <appsco-provisioning-page-actions id="appscoProvisioningPageActions" name="provisioning">
+            </appsco-provisioning-page-actions>
+
+            <appsco-oauth-applications-page-actions id="appscoOAuthApplicationsPageActions" name="oauth-applications">
+            </appsco-oauth-applications-page-actions>
+
+            <appsco-manage-oauth-application-page-actions id="appscoManageOAuthApplicationPageActions" name="manage-oauth-application" on-back="_showOAuthApplicationsPage">
+            </appsco-manage-oauth-application-page-actions>
+
+            <appsco-dashboard-folder-page-actions id="appscoDashboardFolderPageActions" name="dashboard-folder" on-back="_backFromFolderPage">
+            </appsco-dashboard-folder-page-actions>
+
+            <appsco-policies-page-actions id="appscoPoliciesPageActions" name="policies">
+            </appsco-policies-page-actions>
+
+            <appsco-policy-report-page-actions id="appscoPolicyReportPageActions" name="policies-report" on-back="_showReportsPage">
+            </appsco-policy-report-page-actions>
+
+            <appsco-additional-options-page-actions id="appscoAdditionalOptionsPageActions" name="additional-options" on-back="_showCompanyResourcesPage">
+            </appsco-additional-options-page-actions>
+        `;
+    }
+
+    static get pagesTemplate() {
+        return html`
+             <appsco-home-page name="home" page=""
+                 id="appscoHomePage"
+                 application="{{ application }}"
+                 account="[[ account ]]"
+                 application-log="[[ application.meta.log ]]"
+                 authorization-token="[[ authorizationToken ]]"
+                 applications-api="[[ _applicationsApi ]]"
+                 folders-api="[[ api.foldersApi ]]"
+                 dashboard-api="[[ _addAppApi ]]"
+                 page-config="[[ _pageConfig ]]"
+                 api-errors="[[ _apiErrors ]]"
+                 accounts-api="[[ api.accounts ]]"
+                 domain="[[ domain ]]"
+                 item="[[ _copyObject(item) ]]"
+                 toolbar="[[ \$.appscoHomePageActions ]]"
+                 applications-template-api="[[ api.applicationTemplates ]]"
+                 icons-api="[[ api.icons ]]"
+                 personal-items-api="[[ api.personalItems ]]"
+                 shared-with-me-items-api="[[ api.sharedWithMeItems ]]"
+                 labels="[[ _applicationLabels ]]"
+                 on-loaded="_onLoadedPage"
+                 on-folder-tapped="_onFolderTapped"
+                 on-application-shared="_onApplicationShared"
+                 on-application-settings-saved="_onApplicationSettingsSaved"
+                 on-application-settings-no-changes="_onApplicationSettingsNoChanges"
+                 on-applications-removed="_onApplicationsRemovedFromHomePage">
+             </appsco-home-page>
+
+             <appsco-resource-page name="resource" page=""
+                 id="appscoApplicationPage"
+                 route="[[ subroute ]]"
+                 company="[[ _companyPage ]]"
+                 application="{{ application }}"
+                 applications-api="[[ _applicationsApi ]]"
+                 icons-api="[[ api.icons ]]"
+                 application-log="[[ application.meta.log ]]"
+                 authorization-token="[[ authorizationToken ]]"
+                 accounts-api="[[ api.accounts ]]"
+                 account="{{ account }}"
+                 toolbar="[[ \$.appscoApplicationPageActions ]]"
+                 on-application-shared="_onApplicationShared"
+                 on-application-removed="_onApplicationRemoved"
+                 on-subscription-revoked="_onSubscriptionRevoked"
+                 on-application-settings-saved="_onApplicationSettingsSaved"
+                 on-application-settings-no-changes="_onApplicationSettingsNoChanges"
+                 on-autologin-changed="_onAutologinChanged"
+                 on-resource-image-changed="_onResourceImageChanged"
+                 on-page-error="_onError"
+                 on-image-upload-error="_onImageUploadError">
+             </appsco-resource-page>
+
+            <appsco-account-page name="account" page="" id="appscoAccountPage" account="{{ account }}" authorization-token="[[ authorizationToken ]]" notifications-api="[[ api.notifications ]]" authorized-apps-api="[[ api.authorizedApps ]]" log-api="[[ api.accountLog ]]" two-fa-api="[[ api.twoFA ]]" two-fa-qr-api="[[ api.twoFAQr ]]" two-fa-codes-api="[[ api.twoFACodes ]]" settings-api="[[ api.me ]]" image-settings-api="[[ api.profileImage ]]" change-password-api="[[ api.changePassword ]]" application-template-api="[[ api.applicationTemplates ]]" api-errors="[[ _apiErrors ]]" remove-account-api="[[ api.removeAccount ]]" logout-api="[[ api.logout ]]" account-managed="[[ _accountManaged ]]" toolbar="[[ \$.appscoAccountPageActions ]]" on-twofa-disabled="_onTwoFaDisabled" on-application-revoked="_onAuthorizedApplicationRevoked" on-import-finished="_onImportPersonalResourcesFinished" on-settings-saved="_onAccountSettingsSaved" on-password-changed="_onAccountPasswordChanged" on-image-upload-error="_onImageUploadError">
+            </appsco-account-page>
+
+            <appsco-company-account-page name="company-account" page="" company-page="" id="appscoCompanyAccountPage" account="{{ account }}" authorization-token="[[ authorizationToken ]]" notifications-api="[[ api.notifications ]]" authorized-apps-api="[[ api.authorizedApps ]]" log-api="[[ api.accountLog ]]" two-fa-enforced="[[ currentCompany.company.enforced_2fa ]]" two-fa-api="[[ api.twoFA ]]" two-fa-qr-api="[[ api.twoFAQr ]]" two-fa-codes-api="[[ api.twoFACodes ]]" settings-api="[[ api.me ]]" image-settings-api="[[ api.profileImage ]]" change-password-api="[[ api.changePassword ]]" application-template-api="[[ api.applicationTemplates ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoCompanyAccountPageActions ]]" on-import-finished="_onImportPersonalResourcesFinished" on-twofa-disabled="_onTwoFaDisabled" on-application-revoked="_onAuthorizedApplicationRevoked" on-settings-saved="_onAccountSettingsSaved" on-password-changed="_onAccountPasswordChanged" on-image-upload-error="_onImageUploadError">
+            </appsco-company-account-page>
+
+            <appsco-trybusiness-page name="trybusiness" page=""
+                id="appscoUpgradePage"
+                authorization-token="[[ authorizationToken ]]"
+                company-upgrade-api="[[ api.upgradeToBusiness ]]"
+                on-upgraded="_upgradedToBusiness"
+                on-upgrade-failed="_onUpgradeToCompanyFailed">
+            </appsco-trybusiness-page>
+
+            <appsco-company-home-page name="company-home" page="" company-page=""
+                id="appscoCompanyHomePage"
+                authorization-token="[[ authorizationToken ]]"
+                applications-api="[[ _companyIconsWithoutFolderApi ]]"
+                folders-api="[[ api.foldersApi ]]"
+                company-folders-api="[[ _companyFoldersApi ]]"
+                netscaler-api="[[ _companyNetscalerFeatureApi ]]"
+                accounts-api="[[ api.accounts ]]"
+                account="[[ account ]]"
+                domain="[[ domain ]]"
+                api-errors="[[ _apiErrors ]]"
+                page-config="[[ _pageConfig ]]"
+                company="{{ currentCompany.company }}"
+                toolbar="[[ \$.appscoCompanyHomePageActions ]]"
+                on-loaded="_onLoadedPage"
+                on-folder-tapped="_onFolderTapped"
+                on-application-shared="_onApplicationShared"
+                on-application-settings-saved="_onApplicationSettingsSaved">
+            </appsco-company-home-page>
+
+            <appsco-contact-home-page name="contact-home" page="" company-page="" id="appscoContactHomePage" authorization-token="[[ authorizationToken ]]" applications-api="[[ _contactIconsApi ]]" page-config="[[ _pageConfig ]]" account="[[ account ]]" toolbar="[[ \$.appscoContactHomePageActions ]]" on-loaded="_onLoadedPage" on-application-shared="_onApplicationShared">
+            </appsco-contact-home-page>
+
+             <appsco-resources-page name="resources" page="" company-page=""
+                 id="appscoResourcesPage"
+                 resource="{{ _companyApplication }}"
+                 account="[[ account ]]"
+                 application-log="[[ _companyApplication.meta.log ]]"
+                 authorization-token="[[ authorizationToken ]]"
+                 company-resources-api="[[ _companyApplicationsApi ]]"
+                 company-applications-api="[[ _companyApplicationsApi ]]"
+                 company-roles-api="[[ _companyRolesApi ]]"
+                 company-contacts-api="[[ _companyContactsApi ]]"
+                 company-import-resources-api="[[ _companyImportResourcesApi ]]"
+                 groups-api="[[ _companyGroupsApi ]]"
+                 company-api="[[ _companyApi ]]"
+                 applications-template-api="[[ api.applicationTemplates ]]"
+                 item="[[ _copyObject(item) ]]"
+                 link="[[ _copyObject(link) ]]"
+                 domain="[[ domain ]]"
+                 api-errors="[[ _apiErrors ]]"
+                 resource-admin="[[ _resourceAdmin ]]"
+                 page-config="[[ _pageConfig ]]"
+                 get-company-idp-config-list-api="[[ _getCompanyIdpConfigListApi ]]"
+                 toolbar="[[ \$.appscoResourcesPageActions ]]"
+                 on-applications-removed="_onApplicationsRemoved"
+                 on-resources-shared="_onResourcesShared"
+                 on-import-finished="_onImportCompanyResourcesFinished"
+                 on-application-settings-saved="_onApplicationSettingsSaved"
+                 on-list-loaded="_onLoadedPage"
+                 on-observable-list-empty="_onObservableListEmpty"
+                 on-observable-list-filled="_onObservableListFilled"
+                 on-page-loaded="_onResourcesPageLoaded"
+                 on-load-forbidden="_onResourcesLoadForbidden"
+                 on-edit-additional-options="_onEditAdditionalOptionsAction"
+                 on-share-items-loaded-changed="onShareResourceDialogAccountsLoadedChanged">
+             </appsco-resources-page>
+
+            <appsco-manage-resource-page name="manage-resource" page="" company-page=""
+                id="appscoManageApplicationPage"
+                route="[[ subroute ]]"
+                application="{{ _companyApplication }}"
+                company-api="[[ _companyApi ]]"
+                company-idp-saml-metadata-api="[[ _companySamlMetadataApi ]]"
+                company-contacts-api="[[ _companyContactsApi ]]"
+                company-roles-api="[[ _companyRolesApi ]]"
+                company-groups-api="[[ _companyGroupsApi ]]"
+                domain="[[ domain ]]"
+                application-log="[[ _companyApplication.meta.log ]]"
+                authorization-token="[[ authorizationToken ]]"
+                accounts-api="[[ api.accounts ]]"
+                account="{{ account }}"
+                api-errors="[[ _apiErrors ]]"
+                resource-admin="[[ _resourceAdmin ]]"
+                toolbar="[[ \$.appscoManageApplicationPageActions ]]"
+                on-applications-removed="_onApplicationsRemoved"
+                on-resources-shared="_onResourcesShared"
+                on-access-revoked="_onAssigneeAccessRevoked"
+                on-application-removed-from-group="_onApplicationRemovedFromGroup"
+                on-resource-admin-added="_onResourceAdminAdded"
+                on-resource-admin-revoked="_onResourceAdminRevoked"
+                on-claims-changed="_onAssigneeClaimsChanged"
+                on-application-settings-saved="_onApplicationSettingsSaved"
+                on-page-error="_onError"
+                on-resource-image-changed="_onResourceImageChanged"
+                on-image-upload-error="_onImageUploadError">
+            </appsco-manage-resource-page>
+
+            <appsco-directory-page name="directory" page="" company-page="" id="appscoDirectoryPage" role="{{ _role }}" authorization-token="[[ authorizationToken ]]" company-invitations-api="[[ _companyInvitationsApi ]]" company-directory-roles-api="[[ _companyRolesApi ]]" company-orgunits-api="[[ _companyOrgunitsApi ]]" company-subscription-api="[[ _companySubscriptionApi ]]" domains-api="[[ _companyDomainsApi ]]" groups-api="[[ _companyGroupsApi ]]" company-notifications-api="[[ _companyNotificationsApi ]]" company-contacts-api="[[ _companyContactsApi ]]" company-import-accounts-api="[[ _companyImportAccountsApi ]]" company-api="[[ _companyApi ]]" api-errors="[[ _apiErrors ]]" domain="[[ domain ]]" toolbar="[[ \$.appscoDirectoryPageActions ]]" on-added-to-orgunit="_onAccountsAddedToOrgunit" on-accounts-removed="_onAccountsRemoved" on-import-finished="_onAccountImportFinished" on-orgunit-added="_onOrgunitChanged" on-orgunit-modified="_onOrgunitChanged" on-orgunit-removed="_onOrgunitChanged" on-edit-account="_onEditAccount" on-info-edit-account="_onEditAccount" on-group-added="_onGroupAdded" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled" on-company-subscription-loaded="_onSubscriptionLoaded" on-page-loaded="_onDirectoryPageLoaded">
+            </appsco-directory-page>
+
+            <appsco-contacts-page name="contacts" page="" company-page="" id="appscoContactsPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" company-invitations-api="[[ _companyInvitationsApi ]]" company-contacts-api="[[ _companyContactsApi ]]" company-api="[[ _companyApi ]]" company-roles-api="[[ _companyRolesApi ]]" company-notifications-api="[[ _companyNotificationsApi ]]" api-errors="[[ _apiErrors ]]" import-contacts-api="[[ _companyImportContactsApi ]]" domain="[[ domain ]]" toolbar="[[ \$.appscoContactsPageActions ]]" on-edit-contact="_onEditContactAction" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
+            </appsco-contacts-page>
+
+            <appsco-customers-page name="customers" page="" company-page="" id="appscoCustomersPage" customers-api="[[ _companyCustomersApi ]]" customers-export-api="[[ _companyCustomersExportApi ]]" customers-import-api="[[ _importCustomersApi ]]" convert-to-customer-api="[[ _companyConvertToCustomerApi ]]" company-roles-api="[[ _companyRolesApi ]]" check-if-customer-exists-api="[[ _checkIfCustomerExistsApi ]]" authorization-token="[[ authorizationToken ]]" add-partner-admin-to-customer-api="[[ _addPartnerAdminToCustomerApi ]]" domain="[[ domain ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoCustomersPageActions ]]" on-import-finished="_onCustomersImportFinished" on-partner-admins-added="_onPartnerAdminsAdded" on-edit-customer="_onEditCustomerAction" on-customer-added="_onCustomerAdded" on-customers-removed="_onRemovedCustomers" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
+            </appsco-customers-page>
+
+            <appsco-groups-page name="groups" page="" company-page=""
+                id="appscoGroupsPage"
+                group="{{ _group }}"
+                authorization-token="[[ authorizationToken ]]"
+                groups-api="[[ _companyGroupsApi ]]"
+                company-api="[[ _companyApi ]]"
+                company-notifications-api="[[ _companyNotificationsApi ]]"
+                api-errors="[[ _apiErrors ]]"
+                toolbar="[[ \$.appscoGroupsPageActions ]]"
+                on-group-added="_onGroupAdded"
+                on-groups-removed="_onRemovedGroups"
+                on-group-renamed="_onGroupRenamed"
+                on-edit-item="_onEditCompanyGroupAction"
+                on-info-edit-group="_onEditCompanyGroupAction">
+            </appsco-groups-page>
+
+            <appsco-manage-account-page name="manage-account" page="" company-page="" id="appscoManageAccountPage" route="[[ subroute ]]" role="{{ _role }}" administrator="[[ account ]]" authorization-token="[[ authorizationToken ]]" company-api="[[ _companyApi ]]" notifications-api="[[ api.notifications ]]" log-api="[[ api.accountLog ]]" two-fa-api="[[ api.twoFA ]]" two-fa-enforced="[[ currentCompany.company.enforced_2fa ]]" settings-api="[[ api.me ]]" image-settings-api="[[ api.profileImage ]]" change-password-api="[[ api.changePassword ]]" company-orgunits-api="[[ _companyOrgunitsApi ]]" company-applications-api="[[ _companyApplicationsApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoManageAccountPageActions ]]" on-settings-saved="_onAccountSettingsSaved" on-password-changed="_onCompanyAccountPasswordChanged" on-access-revoked="_onAssigneeAccessRevoked" on-claims-changed="_onAssigneeClaimsChanged" on-added-to-orgunit="_onAccountsAddedToOrgunit" on-account-removed-from-orgunit="_onAccountRemovedFromOrgunit" on-account-removed-from-group="_onAccountRemovedFromGroup" on-resource-admin-revoked="_onResourceAdminRevoked" on-account-role-changed="_onAccountRoleChanged" on-page-error="_onError" on-image-upload-error="_onImageUploadError">
+            </appsco-manage-account-page>
+
+            <appsco-manage-contact-page name="manage-contact" page="" company-page="" id="appscoManageContactPage" route="[[ subroute ]]" authorization-token="[[ authorizationToken ]]" contacts-api="[[ _companyContactsApi ]]" toolbar="[[ \$.appscoManageContactPageActions ]]" on-contact-deleted="_onContactDeleted" on-contact-converted="_onContactConverted" on-page-error="_onError" on-access-revoked="_onAssigneeAccessRevoked" on-contact-removed-from-group="_onContactRemovedFromGroup">
+            </appsco-manage-contact-page>
+
+            <appsco-manage-customer-page name="manage-customer" page="" company-page="" id="appscoManageCustomerPage" route="[[ subroute ]]" authorization-token="[[ authorizationToken ]]" customers-api="[[ _companyCustomersApi ]]" current-company="[[ currentCompany.company ]]" company-roles-api="[[ _companyRolesApi ]]" add-partner-admin-to-customer-api="[[ _addPartnerAdminToCustomerApi ]]" toolbar="[[ \$.appscoManageCustomerPageActions ]]" api-errors="[[ _apiErrors ]]" on-page-error="_onError" on-partner-admins-added="_onPartnerAdminsAdded" on-customer-removed="_onCustomerRemoved">
+            </appsco-manage-customer-page>
+
+            <appsco-manage-group-page name="manage-group" page="" company-page="" id="appscoManageGroupPage" route="[[ subroute ]]" group="{{ _group }}" authorization-token="[[ authorizationToken ]]" group-api="[[ _companyGroupApi ]]" company-applications-api="[[ _companyApplicationsApi ]]" company-roles-api="[[ _companyRolesApi ]]" company-contacts-api="[[ _companyContactsApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoManageGroupPageActions ]]" on-page-error="_onError" on-group-removed="_onGroupRemoved" on-resource-removed-from-group="_onResourceRemovedFromGroup" on-resources-added-to-group="_onResourcesAddedToGroup">
+            </appsco-manage-group-page>
+
+            <appsco-provisioning-page name="provisioning" page="" company-page="" id="appscoProvisioningPage" active-integrations-api="[[ _getActiveIntegrationsApi ]]" available-integrations-api="[[ _getAvailableIntegrationsApi ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoProvisioningPageActions ]]" on-edit-integration="_onEditIntegrationAction" on-active-integration="_onIntegrationSetup">
+            </appsco-provisioning-page>
+
+            <appsco-manage-integration-page name="manage-integration" page="" company-page="" id="appscoManageIntegrationPage" route="[[ subroute ]]" integration="[[ _selectedIntegration ]]" integration-api="[[ _companyIntegrationApi ]]" api-errors="[[ _apiErrors ]]" authorization-token="[[ authorizationToken ]]" on-page-error="_onError" on-integration-removed="_onIntegrationRemoved" on-integration-settings-changed="_onIntegrationSettingsChanged">
+            </appsco-manage-integration-page>
+
+            <appsco-provisioning-integration-authorization-success-page name="provisioning-integration-authorization-success" page="" company-page="" id="appscoProvisioningIntegrationSuccessPage" on-provisioning="_showCompanyProvisioningPage">
+            </appsco-provisioning-integration-authorization-success-page>
+
+            <appsco-provisioning-integration-authorization-failed-page name="provisioning-integration-authorization-failed" page="" company-page="" id="appscoProvisioningIntegrationFailedPage" on-provisioning="_showCompanyProvisioningPage">
+            </appsco-provisioning-integration-authorization-failed-page>
+
+            <appsco-audit-log-page name="audit-log" page="" company-page="" 
+                id="appscoAuditLogPage" 
+                authorization-token="[[ authorizationToken ]]" 
+                audit-log-api="[[ _companyAuditLogApi ]]" 
+                company-api="[[ _companyApi ]]"
+                toolbar="[[ \$.appscoAuditLogPageActions ]]">
+            </appsco-audit-log-page>
+
+            <appsco-access-on-boarding-page name="access-on-boarding" page="" company-page="" id="appscoAccessOnBoardingPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" access-on-boarding-users-api="[[ _accessOnBoardingUsersApi ]]" export-access-on-boarding-api="[[ _exportAccessAccessOnBoardingApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoAccessOnBoardingPageActions ]]">
+            </appsco-access-on-boarding-page>
+
+             <appsco-get-started-page name="get-started" page="" company-page=""
+                 id="appscoGetStartedPage"
+                 account="[[ account ]]"
+                 authorization-token="[[ authorizationToken ]]"
+                 tutorials="[[ _tutorials ]]"
+                 on-tutorial-start="_onTutorialStart">
+             </appsco-get-started-page>
+
+            <appsco-oauth-applications-page name="oauth-applications" page="" company-page="" id="appscoOAuthApplicationsPage" authorization-token="[[ authorizationToken ]]" o-auth-applications-api="[[ _companyOAuthApplicationsApi ]]" current-company="[[ currentCompany.company ]]" toolbar="[[ \$.appscoOAuthApplicationsPageActions ]]" on-edit-oauth-application="_onEditOAuthApplicationAction" on-oauth-application-removed="_onOAuthApplicationRemoved">
+            </appsco-oauth-applications-page>
+
+            <appsco-statistics-page name="statistics" page="" company-page="" id="appscoStatisticsPage" company-api="[[ _companyApi ]]" authorization-token="[[ authorizationToken ]]">
+            </appsco-statistics-page>
+
+            <appsco-reports-page name="reports" page="" company-page="" id="appscoReportsPage" get-access-report-api="[[ _getAccessReportApi ]]" get-policies-api="[[ _companyPoliciesApi ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoReportsPageActions ]]" on-open-access-report="_showAccessReportPage" on-open-compliance-report="_showComplianceReportPage" on-open-policies-report="_showPoliciesReportPage">
+            </appsco-reports-page>
+
+            <appsco-access-report-page name="access-report" page="" company-page="" id="appscoAccessReportPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" roles-api="[[ _companyRolesApi ]]" contacts-api="[[ _companyContactsApi ]]" export-access-report-api="[[ _exportAccessReportApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoAccessReportPageActions ]]">
+            </appsco-access-report-page>
+
+            <appsco-compliance-report-page name="compliance-report" page="" company-page="" id="appscoComplianceReportPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" roles-api="[[ _companyRolesApi ]]" contacts-api="[[ _companyContactsApi ]]" export-compliance-report-api="[[ _exportComplianceReportApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoComplianceReportPageActions ]]">
+            </appsco-compliance-report-page>
+
+            <appsco-billing-page name="billing" page="" company-page="" id="appscoBillingPage" company-api="[[ _companyApi ]]" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" toolbar="[[ \$.appscoBillingPageActions ]]" current-company="[[ currentCompany.company ]]" on-credit-card-added="_onCreditCardAdded" on-subscription-canceled="_onSubscriptionCanceled" on-subscription-changed="_onSubscriptionChanged" on-subscription-updated="_onSubscriptionUpdated">
+            </appsco-billing-page>
+
+            <appsco-company-page name="company" page="" company-page="" id="appscoCompanyPage" company="{{ currentCompany.company }}" account="[[ account ]]" authorization-token="[[ authorizationToken ]]" transfer-token-api="[[ _getTransferTokenApi ]]" partners-api-url="[[ api.partners ]]" send-transfer-token-api="[[ _sendTransferTokenApi ]]" save-ip-white-list-api="[[ _saveIPWhiteListApi ]]" brand-logo="[[ _brandLogo ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoCompanyPageActions ]]" on-domain-added="_onDomainAdded" on-domain-removed="_onDomainRemoved" on-image-upload-error="_onImageUploadError" on-company-settings-changed="_onCompanySettingsChanged" on-company-ip-whitelist-changed="_onCompanyIPWhiteListChanged" on-company-brand-settings-changed="_onCompanyBrandSettingsChanged" on-company-branded-login-changed="_onCompanyBrandedLoginChanged" on-company-logo-changed="_onCompanyLogoChanged" on-company-dashboard-logo-changed="_onCompanyDashboardLogoChanged" on-domain-verified="_onDomainVerified" on-company-domains-loaded="_onCompanyDomainsLoadFinished" on-empty-company-domains-loaded="_onCompanyDomainsLoadFinished">
+            </appsco-company-page>
+
+            <appsco-manage-oauth-application-page name="manage-oauth-application" page="" company-page="" id="appscoManageOAuthApplicationPage" route="[[ subroute ]]" authorization-token="[[ authorizationToken ]]" oauth-applications-api="[[ _companyOAuthApplicationsApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoManageOAuthApplicationPageActions ]]" on-page-error="_onError" on-resource-image-changed="_onResourceImageChanged" on-image-upload-error="_onImageUploadError" on-oauth-application-removed="_onOAuthApplicationRemoved" on-oauth-application-updated="_onOAuthApplicationUpdated">
+            </appsco-manage-oauth-application-page>
+
+            <appsco-customer-billing-page name="customer-billing" page="" company-page="" id="appscoCustomerBillingPage" company-api="[[ _companyApi ]]" account="[[ account ]]" current-company="[[ currentCompany.company ]]" authorization-token="[[ authorizationToken ]]" on-credit-card-added="_onCreditCardAdded" on-subscription-canceled="_onSubscriptionCanceled" on-subscription-changed="_onSubscriptionChanged" on-subscription-updated="_onSubscriptionUpdated">
+            </appsco-customer-billing-page>
+
+            <appsco-billing-report-page name="billing-report" page="" company-page=""
+                id="appscoBillingReportPage"
+                billing-report-api="[[ _billingReportApi ]]"
+                customers-api="[[ _companyCustomersApi ]]"
+                authorization-token="[[ authorizationToken ]]">
+            </appsco-billing-report-page>
+
+            <appsco-dashboard-folder-page name="dashboard-folder" page="" company-page="" id="appscoDashboardFolderPage" route="[[ subroute ]]" folder="{{ _activeFolder }}" is-on-personal="[[ _personalFolderPage ]]" authorization-token="[[ authorizationToken ]]" folders-api="[[ api.foldersApi ]]" company-folders-api="[[ _companyFoldersApi ]]" company="[[ currentCompany ]]" netscaler-api="[[ _companyNetscalerFeatureApi ]]" account="[[ account ]]" domain="[[ domain ]]" accounts-api="[[ api.accounts ]]" api-errors="[[ _apiErrors ]]" page-config="[[ _pageConfig ]]" toolbar="[[ \$.appscoDashboardFolderPageActions ]]" on-loaded="_onLoadedPage" on-application-shared="_onApplicationShared" on-application-instance-removed="_onApplicationInstanceRevoked" on-show-page="_onShowPage"  on-application-settings-saved="_onApplicationSettingsSaved">
+            </appsco-dashboard-folder-page>
+
+            <appsco-saml-authn-request-invalid-page name="saml-authn-request-invalid" page="" company-page=""
+                id="appscoSamlAuthnRequestInvalidPage"
+                on-back-to-dashboard="_showCompanyHomePage">
+            </appsco-saml-authn-request-invalid-page>
+
+            <appsco-policies-page name="policies" page="" company-page="" id="appscoPoliciesPage" authorization-token="[[ authorizationToken ]]" company-policies-api="[[ _companyPoliciesApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoPoliciesPageActions ]]" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
+            </appsco-policies-page>
+
+            <appsco-policies-report-page name="policies-report" page="" company-page="" id="appscoPoliciesReportPage" authorization-token="[[ authorizationToken ]]" policies-api="[[ _companyPoliciesApi ]]" roles-api="[[ _companyRolesApi ]]" policies-report-api="[[ _getPoliciesReportApi ]]" export-compliance-report-api="[[ _exportComplianceReportApi ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoPolicyReportPageActions ]]">
+            </appsco-policies-report-page>
+
+            <appsco-additional-options-page name="additional-options" page="" company-page="" id="appscoAdditionalOptionsPage" authorization-token="[[ authorizationToken ]]" get-company-idp-config-list-api="[[ _getCompanyIdpConfigListApi ]]" company="[[ currentCompany.company ]]" api-errors="[[ _apiErrors ]]" link="[[ _copyObject(link) ]]" company-applications-api="[[ _companyApplicationsApi ]]" toolbar="[[ \$.appscoAdditionalOptionsPageActions ]]">
+            </appsco-additional-options-page>
+
+            <appsco-logout-page name="logout" page="" logout-api="[[ api.logout ]]"></appsco-logout-page>
+
+            <appsco-not-found-page name="404" page="" on-back-to-home-page="_onBackToHomePageAction"></appsco-not-found-page>`;
     }
 
     static get is() { return 'appsco-app'; }

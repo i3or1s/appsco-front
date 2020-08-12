@@ -13,9 +13,10 @@ import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], PolymerElement) {
+class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
         <style include="iron-flex iron-flex-alignment">
@@ -301,7 +302,7 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Pol
 
     toggle(target) {
         this._triggerDropdown = target;
-        this.$.pageSettingsDropdown.toggle();
+        setTimeout(() => this.$.pageSettingsDropdown.toggle());
     }
 
     _computeHideResourceSection(pageConfig, page) {
