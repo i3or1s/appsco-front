@@ -36,7 +36,7 @@ class AppscoApplicationInfo extends PolymerElement {
             }
         </style>
         <div class="basic-info">
-            <iron-image placeholder="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=" sizing="cover" preload="" fade="" src="[[ _applicationIcon ]]"></iron-image>
+            <iron-image placeholder="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=" sizing="cover" preload="" fade="" src\$="[[ _applicationIcon ]]"></iron-image>
             <div>
                 <span caption="">[[ application.title ]]</span>
             </div>
