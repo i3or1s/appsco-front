@@ -117,7 +117,7 @@ class AppscoApp extends mixinBehaviors([
             </app-header-layout>
         </app-drawer-layout>
 
-        <appsco-company-notice id="appscoCompanyNotice"></appsco-company-notice>
+        <appsco-company-notice id="appscoCompanyNotice" disable-upgrade></appsco-company-notice>
 
         <appsco-role-save-client-data account="[[ account ]]" save-api="[[ api.saveClientDataApi ]]" authorization-token="[[ authorizationToken ]]">
         </appsco-role-save-client-data>
@@ -2071,9 +2071,13 @@ class AppscoApp extends mixinBehaviors([
 
     _showUserSessionExpiredInfo() {
         const dialog = this.shadowRoot.getElementById('appscoCompanyNotice');
-        dialog.setNotice('Your session has expired. You will be redirected in order to login again.');
-        dialog.setNoticeEvent('user-session-expired');
-        dialog.open();
+        dialog.removeAttribute('disable-upgrade');
+
+        setTimeout(function() {
+            dialog.setNotice('Your session has expired. You will be redirected in order to login again.');
+            dialog.setNoticeEvent('user-session-expired');
+            dialog.open();
+        });
     }
 
     _onUserSessionExpired() {
@@ -3149,13 +3153,6 @@ class AppscoApp extends mixinBehaviors([
     }
     /**
      * Manage Contact page END
-     */
-
-    /**
-     * Audit Log page START
-     */
-    /**
-     * Audit Log page END
      */
 
     /**

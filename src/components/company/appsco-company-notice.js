@@ -6,9 +6,10 @@ import '@polymer/neon-animation/animations/fade-out-animation.js';
 import '@polymer/neon-animation/animations/scale-up-animation.js';
 import '../components/appsco-loader.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { DisableUpgradeMixin } from "@polymer/polymer/lib/mixins/disable-upgrade-mixin";
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-class AppscoCompanyNotice extends PolymerElement {
+class AppscoCompanyNotice extends DisableUpgradeMixin(PolymerElement) {
     static get template() {
         return html`
         <style>
