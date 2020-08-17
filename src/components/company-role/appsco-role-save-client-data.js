@@ -29,6 +29,11 @@ class AppscoRoleSaveClientData extends mixinBehaviors([NeonAnimationRunnerBehavi
                 }
             },
 
+            delay: {
+                type: Number,
+                value: 0
+            },
+
             saveApi: {
                 type: String
             },
@@ -63,7 +68,7 @@ class AppscoRoleSaveClientData extends mixinBehaviors([NeonAnimationRunnerBehavi
 
     _readyStateChanged(state) {
         if (state && !this._deviceInfoSent) {
-            setTimeout(this._sendClientData.bind(this));
+            setTimeout(this._sendClientData.bind(this), this.delay);
         }
     }
 

@@ -10,7 +10,6 @@ import '@polymer/iron-icons/iron-icons.js';
 import '../components/page/appsco-page-global.js';
 import '../components/application/appsco-application-actions.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
@@ -166,22 +165,15 @@ class AppscoHomePageActions extends mixinBehaviors([ NeonAnimatableBehavior ], P
     static get properties() {
         return {
             account: {
-                type: Object,
-                value: function () {
-                    return {};
-                }
+                type: Object
             },
 
             authorizationToken: {
-                type: String,
-                value: ''
+                type: String
             },
 
             apiErrors: {
-                type: Object,
-                value: function () {
-                    return {};
-                }
+                type: Object
             },
 
             pageConfigApi: {
@@ -189,15 +181,11 @@ class AppscoHomePageActions extends mixinBehaviors([ NeonAnimatableBehavior ], P
             },
 
             pageConfig: {
-                type: Object,
-                value: function () {
-                    return {};
-                }
+                type: Object
             },
 
             page: {
-                type: String,
-                value: ''
+                type: String
             },
 
             mobileScreen: {
@@ -254,12 +242,6 @@ class AppscoHomePageActions extends mixinBehaviors([ NeonAnimatableBehavior ], P
                 }
             }
         };
-
-        beforeNextRender(this, function() {
-            if (this.mobileScreen || this.tabletScreen) {
-                this.updateStyles();
-            }
-        });
     }
 
     _updateScreen(mobile, tablet) {

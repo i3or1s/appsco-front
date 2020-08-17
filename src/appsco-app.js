@@ -14,7 +14,61 @@ class AppscoApp extends mixinBehaviors([
 ], PolymerElement) {
     static get template() {
         return html`
-        <style include="appsco-app-header"></style>
+        
+        ${this.headerTemplate}
+        
+        <app-drawer-layout fullbleed="" force-narrow="">
+
+             <!--Drawer content -->
+            <app-drawer slot="drawer" id="appDrawer">
+                ${this.menuTemplate}
+            </app-drawer>
+
+            <!-- Main content -->
+            <app-header-layout has-scrolling-region="">
+
+                <app-header slot="header">
+                    <app-toolbar class="flex-horizontal">
+                        <paper-icon-button id="menuBurger" icon="menu" drawer-toggle=""></paper-icon-button>
+                        <div class="page-title" condense-title="">[[ _pageName ]]</div>
+
+                        <neon-animated-pages id="animatedActions" class="actions flex flex-end" selected="[[page]]" attr-for-selected="name" on-neon-animation-finish="_onPageActionsAnimationFinish">
+                            ${this.toolbarsTemplate}                            
+                        </neon-animated-pages>
+                    </app-toolbar>
+                </app-header>
+
+                <paper-progress id="pageProgress" indeterminate=""></paper-progress>
+
+                <neon-animated-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main" on-neon-animation-finish="_onPageAnimationFinish">
+                    ${this.pagesTemplate}
+                </neon-animated-pages>
+            </app-header-layout>
+        </app-drawer-layout>
+
+        <appsco-company-notice id="appscoCompanyNotice"></appsco-company-notice>
+
+        <appsco-role-save-client-data account="[[ account ]]" save-api="[[ api.saveClientDataApi ]]" authorization-token="[[ authorizationToken ]]" delay="1000">
+        </appsco-role-save-client-data>
+
+        <!--endRegion Shared-->
+
+        <iron-ajax id="getPageConfigRequest" url="[[ api.pageConfigApi ]]" on-response="_onGetPageConfig" headers="[[ _headers ]]"></iron-ajax>
+
+        <iron-ajax id="getCompaniesAccountIsContactIn" url="[[ api.companiesAccountIsContactInApi ]]" on-response="_onGetCompaniesAccountIsContactInApiResponse" headers="[[ _headers ]]"></iron-ajax>
+
+        <iron-ajax id="getIsUserLoggedIn" url="[[ api.isUserLoggedInApi ]]" headers="[[ _headers ]]" handle-as="json" on-response="_onGetIsUserLoggedInResponse" on-error="_onIsUserLoggedInError"></iron-ajax>
+
+        <iron-ajax id="checkNewNotifications" url="[[ api.checkNewNotifications ]]" headers="[[ _headers ]]" handle-as="json" on-response="_onCheckNewNotificationsResponse"></iron-ajax>
+
+        <iron-ajax id="notificationsSeen" method="PUT" url="[[ api.notificationsSeen ]]" headers="[[ _headers ]]" handle-as="json"></iron-ajax>
+
+        <iron-ajax id="getDashboardsLink" url="[[ api.dashboards ]]?extended=1" on-response="_onDashboardsResponse" headers="[[ _headers ]]"></iron-ajax>
+`;
+    }
+
+    static get headerTemplate() {
+        return html `        <style include="appsco-app-header"></style>
 
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
         <iron-media-query query="(max-width: 800px)" query-matches="{{ tabletScreen }}"></iron-media-query>
@@ -86,56 +140,7 @@ class AppscoApp extends mixinBehaviors([
             current-page="[[ page ]]" 
             tutorial-response="[[ tutorialResponse ]]"
             on-tutorial-progress-changed="onTutorialProgressChanged">
-        </appsco-tutorial>
-        
-        <app-drawer-layout fullbleed="" force-narrow="">
-
-             <!--Drawer content -->
-            <app-drawer slot="drawer" id="appDrawer">
-                ${this.menuTemplate}
-            </app-drawer>
-
-            <!-- Main content -->
-            <app-header-layout has-scrolling-region="">
-
-                <app-header slot="header">
-                    <app-toolbar class="flex-horizontal">
-                        <paper-icon-button id="menuBurger" icon="menu" drawer-toggle=""></paper-icon-button>
-                        <div class="page-title" condense-title="">[[ _pageName ]]</div>
-
-                        <neon-animated-pages id="animatedActions" class="actions flex flex-end" selected="[[page]]" attr-for-selected="name" on-neon-animation-finish="_onPageActionsAnimationFinish">
-                            ${this.toolbarsTemplate}                            
-                        </neon-animated-pages>
-                    </app-toolbar>
-                </app-header>
-
-                <paper-progress id="pageProgress" indeterminate=""></paper-progress>
-
-                <neon-animated-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main" on-neon-animation-finish="_onPageAnimationFinish">
-                    ${this.pagesTemplate}
-                </neon-animated-pages>
-            </app-header-layout>
-        </app-drawer-layout>
-
-        <appsco-company-notice id="appscoCompanyNotice"></appsco-company-notice>
-
-        <appsco-role-save-client-data account="[[ account ]]" save-api="[[ api.saveClientDataApi ]]" authorization-token="[[ authorizationToken ]]">
-        </appsco-role-save-client-data>
-
-        <!--endRegion Shared-->
-
-        <iron-ajax id="getPageConfigRequest" url="[[ api.pageConfigApi ]]" on-response="_onGetPageConfig" headers="[[ _headers ]]"></iron-ajax>
-
-        <iron-ajax id="getCompaniesAccountIsContactIn" url="[[ api.companiesAccountIsContactInApi ]]" on-response="_onGetCompaniesAccountIsContactInApiResponse" headers="[[ _headers ]]"></iron-ajax>
-
-        <iron-ajax id="getIsUserLoggedIn" url="[[ api.isUserLoggedInApi ]]" headers="[[ _headers ]]" handle-as="json" on-response="_onGetIsUserLoggedInResponse" on-error="_onIsUserLoggedInError"></iron-ajax>
-
-        <iron-ajax id="checkNewNotifications" url="[[ api.checkNewNotifications ]]" headers="[[ _headers ]]" handle-as="json" on-response="_onCheckNewNotificationsResponse"></iron-ajax>
-
-        <iron-ajax id="notificationsSeen" method="PUT" url="[[ api.notificationsSeen ]]" headers="[[ _headers ]]" handle-as="json"></iron-ajax>
-
-        <iron-ajax id="getDashboardsLink" url="[[ api.dashboards ]]?extended=1" on-response="_onDashboardsResponse" headers="[[ _headers ]]"></iron-ajax>
-`;
+        </appsco-tutorial>`;
     }
 
     static get menuTemplate() {
@@ -1179,20 +1184,20 @@ class AppscoApp extends mixinBehaviors([
     ready() {
         super.ready();
 
+        this._hideProgressBar();
+
         beforeNextRender(this, function() {
             this._addListeners();
-            if (this.mobileScreen || this.tabletScreen) {
-                this.updateStyles();
-            }
+
             if(!this.account.self) {
                 this._getLoggedAccount();
             }
         });
 
-        afterNextRender(this, function() {
+        setTimeout(function() {
             this._getIsUserLoggedIn();
             this._checkNewNotifications();
-        });
+        }.bind(this), 2000);
     }
 
     _addListeners() {
@@ -2071,9 +2076,13 @@ class AppscoApp extends mixinBehaviors([
 
     _showUserSessionExpiredInfo() {
         const dialog = this.shadowRoot.getElementById('appscoCompanyNotice');
-        dialog.setNotice('Your session has expired. You will be redirected in order to login again.');
-        dialog.setNoticeEvent('user-session-expired');
-        dialog.open();
+        dialog.removeAttribute('disable-upgrade');
+
+        setTimeout(function() {
+            dialog.setNotice('Your session has expired. You will be redirected in order to login again.');
+            dialog.setNoticeEvent('user-session-expired');
+            dialog.open();
+        });
     }
 
     _onUserSessionExpired() {

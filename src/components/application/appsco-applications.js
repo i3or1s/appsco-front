@@ -66,7 +66,7 @@ class AppscoApplications extends mixinBehaviors([
                     </template>
 
                     <div class="list" company\$="[[ company ]]">
-                        <template is="dom-repeat" items="{{ _applications }}">
+                        <template is="dom-repeat" items="{{ _applications }}" initial-count="20">
                             <appsco-application-item id="appscoApplicationItem_[[ index ]]" class="application-item drag-item" application="{{ item }}" company="[[ company ]]" display-grid\$="[[ displayGrid ]]" on-application="_onApplicationAction" draggable="true" data-drag-item="[[ item ]]"></appsco-application-item>
                         </template>
                     </div>
@@ -366,18 +366,7 @@ class AppscoApplications extends mixinBehaviors([
 
         let response = e.detail.response,
             icons = response.icons ? response.icons : response.applications,
-            icon = null,
-            meta = response.meta,
-            iconTimeout = 30,
-            createAdderFunction = function(icon) {
-                return function() {
-                    if (this.company) {
-                        el.selected = false;
-                    }
-                    this.push('_allApplications', icon);
-                    this.push('_applications', icon);
-                }.bind(this);
-            }.bind(this);
+            meta = response.meta;
 
         if (meta.page.toString() === '1') {
             this._clearApplications();
@@ -395,13 +384,9 @@ class AppscoApplications extends mixinBehaviors([
         this._applicationsEmpty = false;
         this._message = '';
 
-        for (let idx in icons) {
-            if (!icons.hasOwnProperty(idx)) {
-                continue;
-            }
-            icon = icons[idx];
-            this._loaders.push(setTimeout(createAdderFunction(icon), 0));
-        }
+        this.push('_allApplications', ...icons);
+        this.push('_applications', ...icons);
+
         this.dispatchEvent(new CustomEvent('loaded', {
             bubbles: true,
             composed: true,
