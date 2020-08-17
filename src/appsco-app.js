@@ -2382,15 +2382,6 @@ class AppscoApp extends mixinBehaviors([
         }
     }
 
-    _onBackFromResourcePageAction() {
-        if (this._activeFolder.alias) {
-            this._openFolder(this._activeFolder);
-        } else {
-            this._showHomePage();
-            this.set('_activeFolder', {});
-        }
-    }
-
     _onApplicationShared(event) {
         const application = event.detail.application,
             succeeded = event.detail.succeded,
@@ -2424,12 +2415,10 @@ class AppscoApp extends mixinBehaviors([
 
         if (this.$.appscoHomePage.$) {
             this.$.appscoHomePage.removeApplications(applications);
-        } else {
-            this._showHomePage();
         }
 
+        this._showHomePage();
         this._notify(message);
-
         this._notifyAccountLog();
     }
 
