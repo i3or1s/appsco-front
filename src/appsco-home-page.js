@@ -785,17 +785,19 @@ class AppscoHomePage extends mixinBehaviors([
     }
 
     _hideInfo() {
-        this.$.appscoContent.hideSection('info');
-        this._infoShown = false;
+        const appscoContent = this.shadowRoot.getElementById('appscoContent');
+        appscoContent.addEventListener(
+            'neon-animation-finish',
+            () => this._infoShown = false,
+            { once: true }
+        );
+        appscoContent.hideSection('info');
     }
 
     toggleInfo() {
-        this.$.appscoContent.toggleSection('info');
-        this._infoShown = !this._infoShown;
-
-        if (this._infoShown) {
-            this._selectedTab = 0;
-        }
+        this._infoShown ?
+            this._hideInfo() :
+            this._showInfo();
     }
 
     _onViewApplicationInfo(event) {
