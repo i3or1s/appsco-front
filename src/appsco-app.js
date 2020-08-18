@@ -540,7 +540,27 @@ class AppscoApp extends mixinBehaviors([
             <appsco-contacts-page name="contacts" page="" company-page="" id="appscoContactsPage" authorization-token="[[ authorizationToken ]]" groups-api="[[ _companyGroupsApi ]]" company-invitations-api="[[ _companyInvitationsApi ]]" company-contacts-api="[[ _companyContactsApi ]]" company-api="[[ _companyApi ]]" company-roles-api="[[ _companyRolesApi ]]" company-notifications-api="[[ _companyNotificationsApi ]]" api-errors="[[ _apiErrors ]]" import-contacts-api="[[ _companyImportContactsApi ]]" domain="[[ domain ]]" toolbar="[[ \$.appscoContactsPageActions ]]" on-edit-contact="_onEditContactAction" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
             </appsco-contacts-page>
 
-            <appsco-customers-page name="customers" page="" company-page="" id="appscoCustomersPage" customers-api="[[ _companyCustomersApi ]]" customers-export-api="[[ _companyCustomersExportApi ]]" customers-import-api="[[ _importCustomersApi ]]" convert-to-customer-api="[[ _companyConvertToCustomerApi ]]" company-roles-api="[[ _companyRolesApi ]]" check-if-customer-exists-api="[[ _checkIfCustomerExistsApi ]]" authorization-token="[[ authorizationToken ]]" add-partner-admin-to-customer-api="[[ _addPartnerAdminToCustomerApi ]]" domain="[[ domain ]]" api-errors="[[ _apiErrors ]]" toolbar="[[ \$.appscoCustomersPageActions ]]" on-import-finished="_onCustomersImportFinished" on-partner-admins-added="_onPartnerAdminsAdded" on-edit-customer="_onEditCustomerAction" on-customer-added="_onCustomerAdded" on-customers-removed="_onRemovedCustomers" on-observable-list-empty="_onObservableListEmpty" on-observable-list-filled="_onObservableListFilled">
+            <appsco-customers-page name="customers" page="" company-page=""
+                id="appscoCustomersPage"
+                customers-api="[[ _companyCustomersApi ]]"
+                customers-export-api="[[ _companyCustomersExportApi ]]"
+                customers-import-api="[[ _importCustomersApi ]]"
+                customers-import-resource-api="[[ _importCustomerResourcesApi ]]"
+                convert-to-customer-api="[[ _companyConvertToCustomerApi ]]"
+                company-roles-api="[[ _companyRolesApi ]]"
+                check-if-customer-exists-api="[[ _checkIfCustomerExistsApi ]]"
+                authorization-token="[[ authorizationToken ]]"
+                add-partner-admin-to-customer-api="[[ _addPartnerAdminToCustomerApi ]]"
+                domain="[[ domain ]]"
+                api-errors="[[ _apiErrors ]]"
+                toolbar="[[ \$.appscoCustomersPageActions ]]"
+                on-import-finished="_onCustomersImportFinished"
+                on-partner-admins-added="_onPartnerAdminsAdded"
+                on-edit-customer="_onEditCustomerAction"
+                on-customer-added="_onCustomerAdded"
+                on-customers-removed="_onRemovedCustomers"
+                on-observable-list-empty="_onObservableListEmpty"
+                on-observable-list-filled="_onObservableListFilled">
             </appsco-customers-page>
 
             <appsco-groups-page name="groups" page="" company-page=""
@@ -697,8 +717,7 @@ class AppscoApp extends mixinBehaviors([
             },
 
             api: {
-                type: Object,
-                value: function () { return {}; }
+                type: Object
             },
 
             _apiErrors: {
@@ -1184,8 +1203,6 @@ class AppscoApp extends mixinBehaviors([
     ready() {
         super.ready();
 
-        this._hideProgressBar();
-
         beforeNextRender(this, function() {
             this._addListeners();
 
@@ -1263,7 +1280,7 @@ class AppscoApp extends mixinBehaviors([
         this._showBulkSelectAll();
     }
 
-    _computePrefixPath (domain) {
+    _computePrefixPath(domain) {
         if(window.location.href.includes('localhost')) {
             return '';
         }
@@ -1745,10 +1762,6 @@ class AppscoApp extends mixinBehaviors([
 
     _computeCompanyExportCustomersApi(customersApi) {
         return customersApi ? customersApi + '/export' : null;
-    }
-
-    _computeCompanyIntegrationsApi(companyApi) {
-        return companyApi ? companyApi + '/integration' : null;
     }
 
     _computeAddPartnerAdminToCustomerApi(customersApi) {
@@ -2585,30 +2598,10 @@ class AppscoApp extends mixinBehaviors([
         this._notifyReloadAccounts();
     }
 
-    _onEnableAccountAdvancedSettings() {
-        const pageActions = this.getCurrentAppscoPageActionsElement();
-
-        if (pageActions && pageActions.enableAdvancedSettings) {
-            pageActions.enableAdvancedSettings();
-        }
-    }
-
-    _onDisableAccountAdvancedSettings() {
-        const pageActions = this.getCurrentAppscoPageActionsElement();
-
-        if (pageActions) {
-            pageActions.disableAdvancedSettings();
-        }
-    }
-
     _onTwoFaEnabled() {
         this._notify("Two-factor authentication enabled.");
 
         this._notifyReloadAccounts();
-    }
-
-    _onDisableTwoFaAction() {
-        this.shadowRoot.getElementById('appscoAccountDisableTwoFa').open();
     }
 
     _setupAfterTwoFaDisabled() {
@@ -2675,16 +2668,6 @@ class AppscoApp extends mixinBehaviors([
         this._notifyAccountLog();
     }
 
-    _onCompanyApplicationClaimsUpdated (event) {
-        const application = event.detail.application,
-            applications = [application];
-        this.$.appscoResourcesPage.addResources(applications);
-    }
-
-    _onImportResourcesAction() {
-        this.shadowRoot.getElementById('appscoImportResources').toggle();
-    }
-
     _onImportCompanyResourcesFinished() {
         this._notifyAccountLog();
     }
@@ -2739,15 +2722,8 @@ class AppscoApp extends mixinBehaviors([
     }
 
     resetApplicationAssigneesPage() {
-
         if (this.shadowRoot.getElementById('appscoManageApplicationPageActions').$) {
             this.shadowRoot.getElementById('appscoManageApplicationPageActions').resetApplicationAssigneesPageActions();
-        }
-    }
-
-    _reloadApplicationAssignees() {
-        if (this.$.appscoManageApplicationPage.$) {
-            this.$.appscoManageApplicationPage.reloadAssignees();
         }
     }
 
@@ -2773,14 +2749,6 @@ class AppscoApp extends mixinBehaviors([
         if (this.$.appscoResourcesPage.$) {
             this.$.appscoResourcesPage.reloadResources();
         }
-    }
-
-    _onChangeAssigneeClaims(event) {
-        const assigneeClaimsComponent = this.shadowRoot.getElementById('appscoApplicationAssigneeClaims');
-
-        assigneeClaimsComponent.setApplication(event.detail.application);
-        assigneeClaimsComponent.setAssignee(event.detail.assignee);
-        assigneeClaimsComponent.toggle();
     }
 
     _onAssigneeClaimsChanged(event) {
@@ -2847,10 +2815,6 @@ class AppscoApp extends mixinBehaviors([
         this._notifyReloadApplications();
     }
 
-    _onApplicationsRemoveFailed() {
-        this._notify('An error occurred. Selected resources were not removed from company. Please try again.');
-    }
-
     _onApplicationRemovedFromGroup(event) {
         const application = event.detail.application,
             group = event.detail.group;
@@ -2893,7 +2857,6 @@ class AppscoApp extends mixinBehaviors([
      * Directory page START
      */
     _evaluateSubscriptionLicences() {
-
         if (this.$.appscoDirectoryPage.$) {
             this.$.appscoDirectoryPage.evaluateSubscriptionLicences();
         }
@@ -2902,17 +2865,6 @@ class AppscoApp extends mixinBehaviors([
     _onAccountsRemoved(event) {
         this._notifyAccountLog();
         this._notifyReloadAccessOnBoarding();
-    }
-
-    _onCompanyImportAccounts() {
-        this.shadowRoot.getElementById('appscoDirectoryImportAccounts').toggle();
-    }
-
-    _onCustomerResourcesImportFinished(event) {
-        const response = event.detail.response;
-        let message = 'Customer resources imported. Number of failed imports: ' + response.numberOfFailed;
-        this._notify(message, true);
-        this._notifyAccountLog();
     }
 
     _onAccountImportFinished() {
@@ -2959,12 +2911,6 @@ class AppscoApp extends mixinBehaviors([
     _reloadCompanyContacts() {
         if (this.$.appscoContactsPage.$) {
             this.$.appscoContactsPage.reloadContacts();
-        }
-    }
-
-    _reloadCompanyInvitations() {
-        if (this.$.appscoDirectoryPage.$) {
-            this.$.appscoDirectoryPage.reloadInvitations();
         }
     }
 
@@ -3071,14 +3017,6 @@ class AppscoApp extends mixinBehaviors([
      */
 
     /**
-     * Contacts page START
-     */
-
-    /**
-     * Contacts page END
-     */
-
-    /**
      * Groups page START
      */
     _onEditCompanyGroupAction(event) {
@@ -3103,10 +3041,6 @@ class AppscoApp extends mixinBehaviors([
         }
 
         this._showManagePage('manage-contact/' + contact.alias);
-    }
-
-    _onHideContactsBulkActions() {
-        this.shadowRoot.getElementById('appscoContactsPageActions').hideBulkActions();
     }
 
     _onContactConverted(event) {
@@ -3147,13 +3081,6 @@ class AppscoApp extends mixinBehaviors([
     }
     /**
      * Manage Contact page END
-     */
-
-    /**
-     * Audit Log page START
-     */
-    /**
-     * Audit Log page END
      */
 
     /**
@@ -3739,12 +3666,6 @@ class AppscoApp extends mixinBehaviors([
         }
     }
 
-    _reloadCustomers() {
-        if (this.$.appscoCustomersPage.$) {
-            this.$.appscoCustomersPage.reloadCustomers();
-        }
-    }
-
     _reloadCustomersInfo(customers) {
         if (this.$.appscoCustomersPage.$) {
             this.$.appscoCustomersPage.reloadCustomersInfo(customers);
@@ -3875,14 +3796,6 @@ class AppscoApp extends mixinBehaviors([
             }
         }
         return false;
-    }
-
-    _computePage(page, pageToCompare) {
-        return pageToCompare === page;
-    }
-
-    _computePanel(company) {
-        return company ? 'appsco-business-product' : 'appsco-product';
     }
 
     _computeBrandLogo(company, companyPage) {
