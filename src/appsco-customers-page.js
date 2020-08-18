@@ -159,7 +159,7 @@ class AppscoCustomersPage extends mixinBehaviors([
         <appsco-import-customer-resources
             id="appscoImportCustomerResources"
             authorization-token="[[ authorizationToken ]]"
-            import-api="[[ _importCustomerResourcesApi ]]"
+            import-api="[[ customersImportResourceApi ]]"
             domain="[[ domain ]]"
             on-import-finished="_onCustomerResourcesImportFinished">
         </appsco-import-customer-resources>
@@ -214,6 +214,10 @@ class AppscoCustomersPage extends mixinBehaviors([
             },
 
             customersImportApi: {
+                type: String
+            },
+
+            customersImportResourceApi: {
                 type: String
             },
 
@@ -640,6 +644,12 @@ class AppscoCustomersPage extends mixinBehaviors([
             this.reloadCustomers();
         }
 
+        this._notify(message, true);
+    }
+
+    _onCustomerResourcesImportFinished(event) {
+        const response = event.detail.response;
+        let message = 'Customer resources imported. Number of failed imports: ' + response.numberOfFailed;
         this._notify(message, true);
     }
 }
