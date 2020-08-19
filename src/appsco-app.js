@@ -46,7 +46,7 @@ class AppscoApp extends mixinBehaviors([
             </app-header-layout>
         </app-drawer-layout>
 
-        <appsco-company-notice id="appscoCompanyNotice"></appsco-company-notice>
+        <appsco-company-notice id="appscoCompanyNotice" disable-upgrade></appsco-company-notice>
 
         <appsco-role-save-client-data account="[[ account ]]" save-api="[[ api.saveClientDataApi ]]" authorization-token="[[ authorizationToken ]]" delay="1000">
         </appsco-role-save-client-data>

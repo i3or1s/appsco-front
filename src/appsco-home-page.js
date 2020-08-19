@@ -30,7 +30,7 @@ import './components/application/company/appsco-company-resource-settings-dialog
 import './lib/mixins/appsco-headers-mixin.js';
 import './lib/mixins/appsco-page-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { beforeNextRender, afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { NeonAnimatableBehavior } from '@polymer/neon-animation/neon-animatable-behavior.js';
 import { AppscoDropHTMLElementBehavior } from './components/components/appsco-drop-html-element-behavior.js';
@@ -411,9 +411,6 @@ class AppscoHomePage extends mixinBehaviors([
         return {
             application: {
                 type: Object,
-                value: function () {
-                    return {};
-                },
                 notify: true
             },
 
@@ -443,10 +440,7 @@ class AppscoHomePage extends mixinBehaviors([
             },
 
             account: {
-                type: Object,
-                value: function () {
-                    return {};
-                }
+                type: Object
             },
 
             foldersApi: {
@@ -487,9 +481,6 @@ class AppscoHomePage extends mixinBehaviors([
 
             pageConfig: {
                 type: Object,
-                value: function () {
-                    return {};
-                },
                 observer: '_onPageConfigChanged'
             },
 
@@ -522,10 +513,7 @@ class AppscoHomePage extends mixinBehaviors([
             },
 
             _applications: {
-                type: Array,
-                value: function () {
-                    return [];
-                }
+                type: Array
             },
 
             _selectedApplicationsGroup: {
@@ -614,12 +602,6 @@ class AppscoHomePage extends mixinBehaviors([
                 }
             }
         };
-
-        beforeNextRender(this, function() {
-            if (this.mobileScreen || this.tabletScreen || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopScreen) {
-                this.updateStyles();
-            }
-        });
 
         afterNextRender(this, function() {
             this._addListeners();
