@@ -1192,7 +1192,7 @@ class AppscoApp extends mixinBehaviors([
         return [
             '_updateScreen(mobileScreen, tabletScreen)',
             '_routePageChanged(routeData.page)',
-            '_changeTheme(_companyPage, currentCompany)',
+            '_changeTheme(_companyPage, currentCompany.company)',
             '_redirectToCompany(page, currentCompany, account, _companyPageResolved)',
             '_setupCompanyAccountPage(page, account)',
             '_handlePagePermission(currentCompany, page)',
@@ -3992,8 +3992,10 @@ class AppscoApp extends mixinBehaviors([
         return this._isLocalStorageSupported() ? window.localStorage.getItem(key) : this._getCookie(key);
     }
 
-    _changeTheme(companyPage, currentCompany) {
-        const company = currentCompany.company ? currentCompany.company : {};
+    _changeTheme(companyPage, company) {
+        if (undefined === companyPage || undefined === company) {
+            return;
+        }
 
         let headerBackgroundColor = 'var(--app-primary-color)',
             headerTextColor = 'var(--brand-default-text-color)',
