@@ -26,7 +26,7 @@ class AppscoResourceImageSettings extends mixinBehaviors([AppscoUploadImageBehav
 
             <appsco-loader active="[[ _loader ]]" loader-alt="AppsCo is processing request" multi-color=""></appsco-loader>
 
-            <iron-image class="item-image" src="[[ resource.application_url ]]" alt="Resource image" sizing="cover"></iron-image>
+            <iron-image class="item-image" src\$="[[ resource.application_url ]]" alt="Resource image" sizing="cover"></iron-image>
 
             <template is="dom-if" if="[[ !previewOnly ]]">
                 <label for="resourceImageInput" class\$="item-image-upload [[ _imagePreview ]]">
