@@ -46,7 +46,7 @@ class AppscoApp extends mixinBehaviors([
             </app-header-layout>
         </app-drawer-layout>
 
-        <appsco-company-notice id="appscoCompanyNotice"></appsco-company-notice>
+        <appsco-company-notice id="appscoCompanyNotice" disable-upgrade></appsco-company-notice>
 
         <appsco-role-save-client-data account="[[ account ]]" save-api="[[ api.saveClientDataApi ]]" authorization-token="[[ authorizationToken ]]" delay="1000">
         </appsco-role-save-client-data>
@@ -1192,7 +1192,7 @@ class AppscoApp extends mixinBehaviors([
         return [
             '_updateScreen(mobileScreen, tabletScreen)',
             '_routePageChanged(routeData.page)',
-            '_changeTheme(_companyPage, currentCompany)',
+            '_changeTheme(_companyPage, currentCompany.company)',
             '_redirectToCompany(page, currentCompany, account, _companyPageResolved)',
             '_setupCompanyAccountPage(page, account)',
             '_handlePagePermission(currentCompany, page)',
@@ -3992,8 +3992,10 @@ class AppscoApp extends mixinBehaviors([
         return this._isLocalStorageSupported() ? window.localStorage.getItem(key) : this._getCookie(key);
     }
 
-    _changeTheme(companyPage, currentCompany) {
-        const company = currentCompany.company ? currentCompany.company : {};
+    _changeTheme(companyPage, company) {
+        if (undefined === companyPage || undefined === company) {
+            return;
+        }
 
         let headerBackgroundColor = 'var(--app-primary-color)',
             headerTextColor = 'var(--brand-default-text-color)',
