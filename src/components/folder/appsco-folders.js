@@ -55,7 +55,7 @@ class AppscoFolders extends mixinBehaviors([
             }
         </style>
 
-        <iron-ajax id="getListApiRequest" url="[[ _listApi ]]" on-error="_onGetListError" on-response="_onGetListResponse" headers="[[ _headers ]]" debounce-duration="300"></iron-ajax>
+        <iron-ajax id="getListApiRequest" url="[[ _listApi ]]" on-error="_onGetListError" on-response="_onGetListResponse" headers="[[ _headers ]]"></iron-ajax>
 
         <div class="list-container">
 
