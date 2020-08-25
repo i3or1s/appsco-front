@@ -148,7 +148,7 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
         active ? this.showSection('resource') : this.hideSection('resource');
     }
 
-    _onInfoActiveChanged(active) {
+    _onInfoActiveChanged() {
         beforeNextRender(this, function () {
             this.animationConfig = {
                 'entry': {
@@ -167,9 +167,6 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
                 }
             };
         });
-        setTimeout(function() {
-            active ? this.showSection('info') : this.hideSection('info');
-        }.bind(this));
     }
 
     _onContentTopActiveChanged(active) {
@@ -227,7 +224,9 @@ class AppscoContent extends mixinBehaviors([NeonAnimationRunnerBehavior], Polyme
      */
     toggleSection(section) {
         if (section === 'info') {
-            this.infoActive = !this.infoActive;
+            !this.infoActive ?
+                this.showSection('info') :
+                this.hideSection('info');
         }
         else if (section === 'resource') {
             this.resourceActive = !this.resourceActive;

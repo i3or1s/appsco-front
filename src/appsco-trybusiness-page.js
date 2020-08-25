@@ -495,8 +495,6 @@ class AppscoTrybusinessPage extends mixinBehaviors([NeonAnimatableBehavior], Pol
         };
 
         beforeNextRender(this, function() {
-            this.$.appscoContent.showSection('info');
-
             if (this.mobileScreen || this.mobileScreenHeight || this.tabletS768Screen || this.tabletS920Screen
                 || this.tabletS1024Screen || this.tabletS1280Screen || this.laptopS1440Screen || this.s1600Screen) {
                 this.updateStyles();
@@ -504,6 +502,8 @@ class AppscoTrybusinessPage extends mixinBehaviors([NeonAnimatableBehavior], Pol
         });
 
         afterNextRender(this, function() {
+            this.$.appscoContent.showSection('info');
+
             this._onPageLoaded();
         });
     }
