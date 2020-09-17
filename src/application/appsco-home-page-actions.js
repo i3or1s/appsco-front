@@ -154,9 +154,9 @@ class AppscoHomePageActions extends mixinBehaviors([ NeonAnimatableBehavior ], P
             </div>
         </div>
 
-        <appsco-application-actions id="appscoApplicationActions" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" page-config-api="[[ pageConfigApi ]]" page-config="[[ pageConfig ]]" page="[[ page ]]" page-config-option-display-list="" page-config-option-sort="" page-config-option-show-group-by adding-resource-allowed="[[ _isAddingResourceAllowed ]]" on-search-icon="_onSearchIcon" on-close-search="_closeSearch"></appsco-application-actions>
+        <appsco-application-actions id="appscoApplicationActions" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" page-config-api="[[ pageConfigApi ]]" page-config="[[ pageConfig ]]" page="[[ page ]]" page-config-option-hide-resource-section="" page-config-option-display-list="" page-config-option-sort="" page-config-option-show-group-by adding-resource-allowed="[[ _isAddingResourceAllowed ]]" on-search-icon="_onSearchIcon" on-close-search="_closeSearch"></appsco-application-actions>
 
-        <appsco-page-global id="appscoPageGlobal" info=""></appsco-page-global>
+        <appsco-page-global id="appscoPageGlobal" info="" filters=""></appsco-page-global>
 `;
     }
 

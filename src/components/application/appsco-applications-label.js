@@ -18,18 +18,21 @@ class AppscoApplicationsLabel extends mixinBehaviors([
             }
         </style>
         
-        <div class="text-title" on-tap="toggle">[[ label.name ]] ([[ _applicationCount ]]) <iron-icon icon="[[ icon ]]"></iron-icon></div>
-        <iron-collapse id="ironCollapse" opened="true" on-opened-changed="_onOpenedChanged">
-            <appsco-applications
+        <div hidden\$="[[ !_show ]]">
+            <div class="text-title" on-tap="toggle">[[ label.name ]] ([[ _applicationCount ]]) <iron-icon icon="[[ icon ]]"></iron-icon></div>
+            <iron-collapse id="ironCollapse" opened="true" on-opened-changed="_onOpenedChanged">
+                <appsco-applications
                     id="appscoApplications"
                     size="[[ size ]]"
                     load-more=""
-                    account="[[ account ]]"            
+                    account="[[ account ]]"
+                    display-style="[[ displayStyle ]]"
                     authorization-token="[[ authorizationToken ]]"
                     applications-api="[[ label.applicationsApi ]]"
                     on-applications-count-changed="_onApplicationsCountChanged">
-            </appsco-applications>
-        </iron-collapse>
+                </appsco-applications>
+            </iron-collapse>
+        </div>
 `;
     }
 
@@ -60,6 +63,35 @@ class AppscoApplicationsLabel extends mixinBehaviors([
                 value: 0
             },
 
+            hideOnEmpty: {
+                type: Boolean,
+                value: true
+            },
+
+            collapseOnEmpty: {
+                type: Boolean,
+                value: true
+            },
+
+            displayStyle: {
+                type: String
+            },
+
+            sort: {
+                type: Object,
+                observer: 'setSort'
+            },
+
+            _show: {
+                type: Boolean,
+                computed: '_computeShow(_applicationCount, hideOnEmpty)'
+            },
+
+            _group: {
+                type: Object,
+                observer: '_groupChanged'
+            },
+
             icon: {
                 type: String,
                 computed: '_computeIcon(opened)'
@@ -75,10 +107,26 @@ class AppscoApplicationsLabel extends mixinBehaviors([
         return opened ? 'arrow-drop-down' : 'arrow-drop-up';
     }
 
+    _computeShow(_applicationCount, hideOnEmpty) {
+        return _applicationCount > 0 || !hideOnEmpty;
+    }
+
+    setGroup(group) {
+        this._group = group;
+    }
+
+    _groupChanged(group) {
+        this.$.appscoApplications.applicationsApi = !group ? this.label.applicationsApi : group.self + '/no-personal-dashboard-icons';
+    }
+
     _onApplicationsCountChanged(event) {
         const newCount = event.detail.count;
         const oldCount = this._applicationCount;
         this._applicationCount = newCount;
+        if (!this.collapseOnEmpty) {
+            this.expand();
+            return;
+        }
         if (0 === newCount) {
             this.collapse();
         }
@@ -91,12 +139,6 @@ class AppscoApplicationsLabel extends mixinBehaviors([
         setTimeout(function() {
             this.$.appscoApplications.initializeDragBehavior();
         }.bind(this), 500);
-    }
-
-    setDisplayStyle(displayStyle) {
-        beforeNextRender(this, function() {
-            this.$.appscoApplications.setDisplayStyle(displayStyle);
-        });
     }
 
     setSort(sort) {

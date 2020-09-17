@@ -14,12 +14,16 @@ class AppscoApplicationsLabels extends mixinBehaviors([
     static get template() {
         return html`
         
-        <template is="dom-repeat" items="[[ labels ]]">
+        <template is="dom-repeat" items="[[ labels ]]" filter="{{ computeFilter(_showOnlyPersonal, _showOnlyShared, _group, _company) }}">
             <appsco-applications-label
                 authorization-token="[[ authorizationToken ]]"
                 account="[[ account ]]"
                 label="[[ item ]]"
                 size="[[ size ]]"
+                hide-on-empty="[[ hideOnEmpty ]]"
+                collapse-on-empty="[[ hideOnEmpty ]]"
+                display-style="[[ displayStyle ]]"
+                sort="[[ sort ]]"
                 on-empty-load="_onApplicationsLoaded"
                 on-loaded="_onApplicationsLoaded">
             </appsco-applications-label>            
@@ -42,6 +46,38 @@ class AppscoApplicationsLabels extends mixinBehaviors([
 
             labels: {
                 type: Array
+            },
+
+            displayStyle: {
+                type: String
+            },
+
+            sort: {
+                type: Object
+            },
+
+            _group: {
+                type: Object
+            },
+
+            _company: {
+                type: Object
+            },
+
+            _showOnlyPersonal: {
+                type: Boolean,
+                value: false
+            },
+
+            _showOnlyShared: {
+                type: Boolean,
+                value: false
+            },
+
+            hideOnEmpty: {
+                type: Boolean,
+                computed: '_computeHideOnEmpty(_group, _company)',
+                value: true
             }
         };
     }
@@ -56,16 +92,94 @@ class AppscoApplicationsLabels extends mixinBehaviors([
         }.bind(this), 500);
     }
 
+    _computeHideOnEmpty(group, company) {
+        return !group && !company;
+    }
+
     setDisplayStyle(displayStyle) {
-        beforeNextRender(this, function() {
-            this._labelComponents().forEach((component) => component.setDisplayStyle(displayStyle));
-        });
+        this.displayStyle = displayStyle;
     }
 
     setSort(sort) {
         beforeNextRender(this, function() {
             this._labelComponents().forEach((component) => component.setSort(sort));
         });
+    }
+
+    _viewProperties() {
+        return [
+            '_showOnlyPersonal',
+            '_showOnlyShared',
+            '_company',
+            '_group'
+        ]
+    }
+
+    _resetViewProperties(except) {
+        this._viewProperties().forEach((item) => this.set(item, null));
+    }
+
+    showOnlyPersonal() {
+        this._resetViewProperties();
+        this._showOnlyPersonal = true;
+    }
+
+    showAll() {
+        this._resetViewProperties();
+    }
+
+    showGroup(group) {
+        this._resetViewProperties();
+        this._group = group;
+        if (!group) {
+            this._labelComponents().forEach((component) => component.setGroup(null));
+            return;
+        }
+        const groupCompany = group.company.self ? group.company : { self: group.company };
+        this._labelComponents().forEach(function(component) {
+            component.setGroup(component.isLabelForCompany(groupCompany) ? group : null);
+        });
+    }
+
+    showSharedByCompany(company) {
+        this._resetViewProperties();
+        this._company = company;
+        this._labelComponents().forEach((component) => component.setGroup(null));
+    }
+
+    showOnlyShared() {
+        this._resetViewProperties();
+        this._showOnlyShared = true;
+    }
+
+    computeFilter(showOnlyPersonal, showOnlyShared, group, company){
+        if (!showOnlyPersonal && !showOnlyShared && !group && !company) {
+            return null;
+        }
+
+        if (showOnlyPersonal) {
+            return function (label) {
+                return !label.company;
+            }
+        }
+
+        if (showOnlyShared) {
+            return function (label) {
+                return label.company;
+            }
+        }
+
+        if (group) {
+            return function (label) {
+                return label.company && label.company.self === group.company;
+            }
+        }
+
+        if (company) {
+            return function (label) {
+                return label.company && label.company.self === company.self;
+            }
+        }
     }
 
     addApplications(applications) {
@@ -82,7 +196,11 @@ class AppscoApplicationsLabels extends mixinBehaviors([
             return this._labelComponents()[0];
         }
 
-        return this._labelComponents().find((component) => { return component.isLabelForCompany(application.application.company) });
+        return this._findComponentForCompany(application.application.company);
+    }
+
+    _findComponentForCompany(company) {
+        return this._labelComponents().find((component) => { return component.isLabelForCompany(company) });
     }
 
     modifyApplications(applications) {

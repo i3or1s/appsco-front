@@ -400,6 +400,7 @@ class AppscoApp extends mixinBehaviors([
                  icons-api="[[ api.icons ]]"
                  personal-items-api="[[ api.personalItems ]]"
                  shared-with-me-items-api="[[ api.sharedWithMeItems ]]"
+                 company-icons-without-folder-api="[[ _companyIconsWithoutFolderApi ]]"
                  labels="[[ _applicationLabels ]]"
                  on-loaded="_onLoadedPage"
                  on-folder-tapped="_onFolderTapped"
@@ -1167,7 +1168,8 @@ class AppscoApp extends mixinBehaviors([
                 value: function() {
                     return {
                         home: {
-                            display_style: 'grid'
+                            display_style: 'grid',
+                            hide_resource_section: true
                         },
                         'company-home': {
                             display_style: 'grid'
@@ -1462,6 +1464,8 @@ class AppscoApp extends mixinBehaviors([
         return {
             name: 'Shared by ' + company.company.name,
             applicationsApi: company.company.self + '/dashboard-groups/no-personal-dashboard-icons',
+            companyIconsWithoutFolderApi: company.company.self + '/dashboard-groups/icons',
+            groupsApi: company.company.self + '/groups',
             company: company.company
         };
     }
