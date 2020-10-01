@@ -1455,7 +1455,7 @@ class AppscoApp extends mixinBehaviors([
             { name: 'My items', applicationsApi: personalApplicationsApi, company: null }
         ];
 
-        companies.forEach((company) => labels.push(this._createLabelFromCompany(company)));
+        companies.forEach(company => labels.push(this._createLabelFromCompany(company)));
 
         return labels;
     }

@@ -15,12 +15,26 @@ class AppscoApplicationsLabel extends mixinBehaviors([
                 margin: 20px 0 10px 0;
                 font-size: 15px;
                 cursor: pointer;
+                display: inline-block;
+            }
+            :host .toggle-icon {
+                transition: transform 0.2s linear;
+                cursor: pointer;
+            }
+            :host .toggle-icon[opened] {
+                transform: rotate(-180deg);
+                transition: transform 0.3s linear;
             }
         </style>
-        
         <div hidden\$="[[ !_show ]]">
-            <div class="text-title" on-tap="toggle">[[ label.name ]] ([[ _applicationCount ]]) <iron-icon icon="[[ icon ]]"></iron-icon></div>
-            <iron-collapse id="ironCollapse" opened="true" on-opened-changed="_onOpenedChanged">
+            <div class="text-title" on-tap="toggle">[[ label.name ]]
+                <template is="dom-if" if="[[ _group ]]">
+                    - [[ _group.name ]] 
+                </template>
+                ([[ _applicationCount ]])
+                <iron-icon icon="icons:expand-less" class="toggle-icon" opened\$="[[ opened ]]"></iron-icon>
+            </div>
+            <iron-collapse id="ironCollapse">
                 <appsco-applications
                     id="appscoApplications"
                     size="[[ size ]]"
@@ -55,7 +69,8 @@ class AppscoApplicationsLabel extends mixinBehaviors([
 
             opened: {
                 type: Boolean,
-                value: true
+                value: true,
+                observer: '_onOpenedChanged'
             },
 
             _applicationCount: {
@@ -90,21 +105,18 @@ class AppscoApplicationsLabel extends mixinBehaviors([
             _group: {
                 type: Object,
                 observer: '_groupChanged'
-            },
-
-            icon: {
-                type: String,
-                computed: '_computeIcon(opened)'
             }
         };
     }
 
-    _onOpenedChanged(event) {
-        this.opened = event.detail.value;
+    static get observers() {
+        return [
+            '_processIsCollapsed(_applicationCount, collapseOnEmpty)'
+        ];
     }
 
-    _computeIcon(opened) {
-        return opened ? 'arrow-drop-down' : 'arrow-drop-up';
+    _onOpenedChanged(opened) {
+        this.$.ironCollapse.opened = opened;
     }
 
     _computeShow(_applicationCount, hideOnEmpty) {
@@ -119,20 +131,21 @@ class AppscoApplicationsLabel extends mixinBehaviors([
         this.$.appscoApplications.applicationsApi = !group ? this.label.applicationsApi : group.self + '/no-personal-dashboard-icons';
     }
 
-    _onApplicationsCountChanged(event) {
-        const newCount = event.detail.count;
-        const oldCount = this._applicationCount;
-        this._applicationCount = newCount;
-        if (!this.collapseOnEmpty) {
-            this.expand();
+    _processIsCollapsed(applicationsCount, collapseOnEmpty) {
+        if (undefined === applicationsCount || undefined === collapseOnEmpty) {
             return;
         }
-        if (0 === newCount) {
+
+        if (collapseOnEmpty && 0 === applicationsCount) {
             this.collapse();
+            return;
         }
-        if (0 === oldCount && newCount > 0) {
-            this.expand();
-        }
+
+        this.expand();
+    }
+
+    _onApplicationsCountChanged(event) {
+        this._applicationCount = event.detail.count;
     }
 
     initializeResourcesDragBehavior() {
@@ -180,15 +193,15 @@ class AppscoApplicationsLabel extends mixinBehaviors([
     }
 
     toggle() {
-        this.$.ironCollapse.toggle();
+        this.opened = !this.opened;
     }
 
     collapse() {
-        this.$.ironCollapse.opened = false;
+        this.opened = false;
     }
 
     expand() {
-        this.$.ironCollapse.opened = true;
+        this.opened = true;
     }
 
     isLabelForCompany(company) {

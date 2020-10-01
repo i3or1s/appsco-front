@@ -13,22 +13,20 @@ class AppscoApplicationsLabels extends mixinBehaviors([
 ], DisableUpgradeMixin(PolymerElement)) {
     static get template() {
         return html`
-        
-        <template is="dom-repeat" items="[[ labels ]]" filter="{{ computeFilter(_showOnlyPersonal, _showOnlyShared, _group, _company) }}">
-            <appsco-applications-label
-                authorization-token="[[ authorizationToken ]]"
-                account="[[ account ]]"
-                label="[[ item ]]"
-                size="[[ size ]]"
-                hide-on-empty="[[ hideOnEmpty ]]"
-                collapse-on-empty="[[ hideOnEmpty ]]"
-                display-style="[[ displayStyle ]]"
-                sort="[[ sort ]]"
-                on-empty-load="_onApplicationsLoaded"
-                on-loaded="_onApplicationsLoaded">
-            </appsco-applications-label>            
-        </template>
-`;
+        <template is="dom-repeat" items="[[ labels ]]">
+            <div hidden\$="[[ !_isLabelVisible(item, _showOnlyPersonal, _showOnlyShared, _group, _company) ]]">
+                <appsco-applications-label
+                    authorization-token="[[ authorizationToken ]]"
+                    account="[[ account ]]"
+                    label="[[ item ]]"
+                    size="[[ size ]]"
+                    hide-on-empty="[[ hideOnEmpty ]]"
+                    collapse-on-empty="[[ hideOnEmpty ]]"
+                    display-style="[[ displayStyle ]]"
+                    sort="[[ sort ]]">
+                </appsco-applications-label>            
+            </div>
+        </template>`;
     }
 
     static get is() { return 'appsco-applications-labels'; }
@@ -88,7 +86,7 @@ class AppscoApplicationsLabels extends mixinBehaviors([
 
     initializeResourcesDragBehavior() {
         setTimeout(function() {
-            this._labelComponents().forEach((component) => component.initializeResourcesDragBehavior());
+            this._labelComponents().forEach(component => component.initializeResourcesDragBehavior());
         }.bind(this), 500);
     }
 
@@ -102,21 +100,23 @@ class AppscoApplicationsLabels extends mixinBehaviors([
 
     setSort(sort) {
         beforeNextRender(this, function() {
-            this._labelComponents().forEach((component) => component.setSort(sort));
+            this._labelComponents().forEach(component => component.setSort(sort));
         });
     }
 
-    _viewProperties() {
-        return [
-            '_showOnlyPersonal',
-            '_showOnlyShared',
-            '_company',
-            '_group'
-        ]
+    _resetViewProperties(){
+        this._setViewProperties({});
     }
 
-    _resetViewProperties(except) {
-        this._viewProperties().forEach((item) => this.set(item, null));
+    _setViewProperties(properties) {
+        const defaultProperties = {
+            _showOnlyPersonal: false,
+            _showOnlyShared: false,
+            _group: null,
+            _company: null
+        };
+
+        this.setProperties({ ...defaultProperties, ...properties });
     }
 
     showOnlyPersonal() {
@@ -126,13 +126,13 @@ class AppscoApplicationsLabels extends mixinBehaviors([
 
     showAll() {
         this._resetViewProperties();
+        this._labelComponents().forEach(component => component.setGroup(null));
     }
 
     showGroup(group) {
-        this._resetViewProperties();
-        this._group = group;
+        this._setViewProperties({ _group: group });
         if (!group) {
-            this._labelComponents().forEach((component) => component.setGroup(null));
+            this._labelComponents().forEach(component => component.setGroup(null));
             return;
         }
         const groupCompany = group.company.self ? group.company : { self: group.company };
@@ -142,9 +142,8 @@ class AppscoApplicationsLabels extends mixinBehaviors([
     }
 
     showSharedByCompany(company) {
-        this._resetViewProperties();
-        this._company = company;
-        this._labelComponents().forEach((component) => component.setGroup(null));
+        this._setViewProperties({ _company: company });
+        this._labelComponents().forEach(component => component.setGroup(null));
     }
 
     showOnlyShared() {
@@ -152,33 +151,25 @@ class AppscoApplicationsLabels extends mixinBehaviors([
         this._showOnlyShared = true;
     }
 
-    computeFilter(showOnlyPersonal, showOnlyShared, group, company){
+    _isLabelVisible(label, showOnlyPersonal, showOnlyShared, group, company){
         if (!showOnlyPersonal && !showOnlyShared && !group && !company) {
-            return null;
+            return true;
         }
 
         if (showOnlyPersonal) {
-            return function (label) {
-                return !label.company;
-            }
+            return !label.company;
         }
 
         if (showOnlyShared) {
-            return function (label) {
-                return label.company;
-            }
+            return label.company;
         }
 
         if (group) {
-            return function (label) {
-                return label.company && label.company.self === group.company;
-            }
+            return label.company && label.company.self === group.company;
         }
 
         if (company) {
-            return function (label) {
-                return label.company && label.company.self === company.self;
-            }
+            return label.company && label.company.self === company.self;
         }
     }
 
@@ -213,7 +204,7 @@ class AppscoApplicationsLabels extends mixinBehaviors([
     }
 
     reloadApplications() {
-        this._labelComponents().forEach((component) => component.reloadApplications());
+        this._labelComponents().forEach(component => component.reloadApplications());
     }
 
     removeApplications(applications) {
@@ -230,19 +221,15 @@ class AppscoApplicationsLabels extends mixinBehaviors([
     }
 
     filterByStatus(api) {
-        this._labelComponents().forEach((component) => component.filterByStatus(api));
+        this._labelComponents().forEach(component => component.filterByStatus(api));
     }
 
     filterByTerm(term) {
-        this._labelComponents().forEach((component) => component.filterByTerm(term));
+        this._labelComponents().forEach(component => component.filterByTerm(term));
     }
 
     reset() {
-        this._labelComponents().forEach((component) => component.reset());
-    }
-
-    _onApplicationsLoaded() {
-        this._labelComponents().forEach((component) => component._applicationsLoaded);
+        this._labelComponents().forEach(component => component.reset());
     }
 }
 window.customElements.define(AppscoApplicationsLabels.is, AppscoApplicationsLabels);
