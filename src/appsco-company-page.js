@@ -7,6 +7,7 @@ import '@polymer/iron-icons/communication-icons.js';
 import '@polymer/iron-icon/iron-icon.js';
 import './components/page/appsco-content.js';
 import './components/page/appsco-manage-page-styles.js';
+import './components/components/appsco-copy.js';
 import './company/appsco-company-components-page.js';
 import './company/appsco-company-settings-page.js';
 import './company/appsco-company-brand-settings-page.js';
@@ -44,8 +45,26 @@ class AppscoCompanyPage extends mixinBehaviors([
             .info-icon {
                 margin-right: 4px;
             }
-            :host .company-branded-login {
-                margin-top: 10px;
+            :host .resource-content > div {
+                margin-top: 20px;
+                display: block;
+            }
+            :host .resource-content > div:first-child {
+                margin-top: 0;
+            }
+            :host div[label] {
+                color: var(--secondary-text-color);
+                font-size: 12px;
+                margin-top: 20px;
+            }            
+            :host div[content] {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                font-size: 12px;
+            }
+            :host .flex {
+                @apply --layout-flex;
+                @apply --paper-font-common-nowrap;
             }
         </style>
 
@@ -65,10 +84,26 @@ class AppscoCompanyPage extends mixinBehaviors([
                         <iron-icon icon="communication:email" class="info-icon"></iron-icon>
                         [[ company.contact_email ]]
                     </div>
-                    <div class="company-branded-login">
-                        <div>Company login URL: </div>
-                        <span class="branded-login-url">[[ company.meta.branded_login_url]]</span>
+                    <div>
+                        <div label="">Company login URL:</div>
+                        <div content="">
+                            <div class="flex">[[ company.meta.branded_login_url ]]</div>
+                            <div>                            
+                                <appsco-copy value="[[ company.meta.branded_login_url ]]"></appsco-copy>
+                            </div>
+                        </div>
                     </div>
+                    <template is="dom-if" if="[[ company.partner_token ]]">
+                        <div>
+                            <div label="">Partner token:</div>
+                            <div content="">
+                                <div class="flex">[[ company.partner_token ]]</div>
+                                <div>                            
+                                    <appsco-copy value="[[ company.partner_token ]]"></appsco-copy>
+                                </div>
+                            </div>
+                        </div>
+                    </template>                   
                 </div>
             </div>
 
