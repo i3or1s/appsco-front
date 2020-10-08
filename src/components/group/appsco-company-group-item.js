@@ -27,8 +27,8 @@ class AppscoCompanyGroupItem extends mixinBehaviors([
             :host([preview][activated]) {
                 background-color: #e8e8e8;
             }
-            :host([preview]) .item-title {
-                font-size: 14px;
+            :host([preview]) .item-title {                
+                font-size: var(--group-item-preview-font-size, 14px);
                 cursor: pointer;
             }
             :host .item-title {

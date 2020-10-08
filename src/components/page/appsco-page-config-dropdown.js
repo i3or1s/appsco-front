@@ -108,7 +108,7 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Dis
 
                     <template is="dom-if" if="[[ optionHideResourceSection ]]">
                         <div class="input-container input-container-show-resource-section">
-                            <paper-toggle-button id="hideResourceSectionToggle" name="hide_resource_section" data-field="" on-tap="_onSaveChanges" checked\$="[[ _hideResourceSection ]]">Hide groups section
+                            <paper-toggle-button id="hideResourceSectionToggle" name="hide_resource_section" data-field="" on-tap="_onSaveChanges" checked\$="[[ _hideResourceSection ]]">Hide [[ resourceSectionName ]] section
                             </paper-toggle-button>
                             <p class="info">
                                 Resource section will not be displayed by default when this option is turned on.
@@ -205,6 +205,11 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Dis
             optionShowGroupBy: {
                 type: Boolean,
                 value: false
+            },
+
+            resourceSectionName: {
+                type: String,
+                computed: '_computeResourceSectionName(page)'
             },
 
             _groupByList: {
@@ -402,6 +407,10 @@ class AppscoPageConfigDropdown extends mixinBehaviors([Appsco.HeadersMixin], Dis
             }.bind(this));
             this._saveChanges(settings);
         }.bind(this), 30);
+    }
+
+    _computeResourceSectionName(page){
+        return page === 'home' ? 'filters' : 'groups';
     }
 }
 window.customElements.define(AppscoPageConfigDropdown.is, AppscoPageConfigDropdown);

@@ -8,13 +8,15 @@ import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-media-query/iron-media-query.js';
 import './components/page/appsco-content.js';
 import './components/page/appsco-page-styles.js';
-import './components/application/appsco-applications.js';
+import './components/components/appsco-list-item-styles.js';
+import './components/application/appsco-home-page-applications.js';
 import './components/application/appsco-applications-labels.js';
 import './components/application/appsco-application-info.js';
 import './components/application/appsco-application-security.js';
 import './components/application/appsco-application-subscribers.js';
 import './components/application/appsco-application-details.js';
 import './components/application/appsco-application-log.js';
+import './components/group/appsco-company-groups.js';
 import './components/folder/appsco-folders.js';
 import './components/application/appsco-application-add.js';
 import './application/appsco-dialog-application-add.js';
@@ -25,6 +27,7 @@ import './components/folder/appsco-folders-application-add.js';
 import './application/appsco-application-settings-dialog.js';
 import './components/application/appsco-application-share.js';
 import './components/application/appsco-application-revoke.js';
+import './components/filter/appsco-filter-company-groups.js';
 import './application/appsco-home-page-actions.js';
 import './components/application/company/appsco-company-resource-settings-dialog.js';
 import './lib/mixins/appsco-headers-mixin.js';
@@ -43,6 +46,7 @@ class AppscoHomePage extends mixinBehaviors([
 ], PolymerElement) {
     static get template() {
         return html`
+        <style include="appsco-list-item-styles"></style>
         <style include="appsco-page-styles">
             :host {
                 --appsco-application-item: {
@@ -104,6 +108,9 @@ class AppscoHomePage extends mixinBehaviors([
             :host .info-actions > .share-button {
                 @apply --secondary-button;
             }
+            :host .resource-header {
+                border-top: 1px solid var(--divider-color);
+            }
             appsco-application-share {
                 --appsco-application-share-button: {
                      border-radius: 0;
@@ -117,6 +124,27 @@ class AppscoHomePage extends mixinBehaviors([
             }
             appsco-application-details {
                 --appsco-application-icons-color: var(--primary-text-color);
+            }
+            .filters [activated] {
+                background-color: #e8e8e8;
+            }
+            .filters > div > * {
+                @apply --item-info-label;
+                display: block;
+                @apply --paper-font-common-base;
+                font-size: 15px;
+                padding: 2px 5px;                
+                overflow: hidden;
+                cursor: pointer;
+            }
+            :host .filters > .info-label {
+                cursor: pointer;
+            }
+            :host .filters span > iron-icon {
+                width: 20px;
+                height: 20px;
+                margin-right: 6px;
+                vertical-align: top;
             }
             :host([laptop-screen]) {
                 --appsco-application-item: {
@@ -163,9 +191,38 @@ class AppscoHomePage extends mixinBehaviors([
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
         <appsco-content id="appscoContent">
+            <template is="dom-if" if="[[ _resourceShown ]]">
+                <div class="flex-vertical" resource="" slot="resource">
+                    <div class="resource-content filters">
+                        <div>            
+                            <span on-tap="_onAllItemsTapped" activated filter="all"><iron-icon icon="icons:home"></iron-icon>All</span>
+                            <span on-tap="_onPersonalTapped" filter="personal"><iron-icon icon="social:person"></iron-icon>Personal</span>
+                            <span on-tap="_onSharedTapped" filter="shared"><iron-icon icon="social:share"></iron-icon>Shared with me</span>
+                        </div>
+                    </div>
+                    <template is="dom-if" if="[[ _hasCompanyLabels ]]">
+                        <div class="resource-header">Companies</div>
+                        <div class="resource-content filters">
+                            <template is="dom-repeat" items="[[ labels ]]">
+                                <template is="dom-if" if="[[ item.company ]]">
+                                    <appsco-filter-company-groups
+                                        id="appsco-company-groups-[[ index ]]"
+                                        company="[[ item.company ]]"
+                                        groups-api="[[ item.groupsApi ]]"
+                                        authorization-token="[[ authorizationToken ]]"
+                                        group-size="10"                    
+                                        on-company-selected="_onCompanySelected"                
+                                        on-company-deselected="showAll"
+                                        on-item="_onGroupSelected">
+                                    </appsco-filter-company-groups>
+                                </template>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
 
             <div content="" slot="content">
-
                 <div class="content-container folders-container" hidden\$="[[ _foldersEmpty ]]">
                     <h4 class="subtitle">Folders</h4>
                     <appsco-folders
@@ -203,13 +260,16 @@ class AppscoHomePage extends mixinBehaviors([
                             on-empty-load="_onApplicationsLoaded"
                             disable-upgrade\$="[[ !_labelsActive ]]">
                         </appsco-applications-labels>
-                        <appsco-applications
+                        <appsco-home-page-applications
                             id="appscoApplications"
                             name="applications"
                             size="100"
                             load-more=""
                             authorization-token="[[ authorizationToken ]]"
                             applications-api="[[ applicationsApi ]]"
+                            personal-items-api="[[ personalItemsApi ]]"
+                            shared-with-me-items-api="[[ sharedWithMeItemsApi ]]"
+                            company-icons-without-folder-api="[[ _companyIconsWithoutFolderApi ]]"
                             account="[[ account ]]"
                             on-info="_onViewApplicationInfo"
                             on-edit="_onApplicationEdit"
@@ -220,7 +280,7 @@ class AppscoHomePage extends mixinBehaviors([
                             on-loaded="_onApplicationsLoaded"
                             on-empty-load="_onApplicationsLoaded"
                             disable-upgrade\$="[[ !_applicationsActive ]]">
-                        </appsco-applications>
+                        </appsco-home-page-applications>
                     </neon-animated-pages>
                 </div>
             </div>
@@ -480,8 +540,13 @@ class AppscoHomePage extends mixinBehaviors([
             },
 
             pageConfig: {
+                type: Object
+            },
+
+            currentPageConfig: {
                 type: Object,
-                observer: '_onPageConfigChanged'
+                computed: 'computeCurrentPageConfig(pageConfig)',
+                observer: '_onCurrentPageConfigChanged'
             },
 
             _foldersEmpty: {
@@ -500,6 +565,11 @@ class AppscoHomePage extends mixinBehaviors([
             },
 
             _infoShown: {
+                type: Boolean,
+                value: false
+            },
+
+            _resourceShown: {
                 type: Boolean,
                 value: false
             },
@@ -573,6 +643,12 @@ class AppscoHomePage extends mixinBehaviors([
 
             apiErrors: {
                 type: Object
+            },
+
+            _hasCompanyLabels: {
+                type: Boolean,
+                value: false,
+                computed: '_computeHasCompanyLabels(labels)'
             }
         }
     }
@@ -614,6 +690,115 @@ class AppscoHomePage extends mixinBehaviors([
         this.toolbar.addEventListener('filter-items', this._onFilterItemsAction.bind(this));
         this.toolbar.addEventListener('add-new-folder', this._onAddNewFolderAction.bind(this));
         this.toolbar.addEventListener('search-clear', this._onSearchApplicationsClear.bind(this));
+    }
+
+    _onAllItemsTapped() {
+        this.showAll();
+    }
+
+    showAll() {
+        this.activateFilter('all');
+        this.resetAllCompanyFilterControls();
+        this.activeApplicationsComponent.showAll();
+    }
+
+    _onPersonalTapped() {
+        this.showOnlyPersonal();
+    }
+
+    _onSharedTapped() {
+        this.showOnlyShared();
+    }
+
+    _onCompanySelected(event) {
+        this.showSharedByCompany(event.detail.company);
+    }
+
+    showOnlyPersonal() {
+        this.activateFilter('personal');
+        this.resetAllCompanyFilterControls();
+        this.activeApplicationsComponent.showOnlyPersonal();
+    }
+
+    showOnlyShared() {
+        this.activateFilter('shared');
+        this.resetAllCompanyFilterControls();
+        this.activeApplicationsComponent.showOnlyShared();
+    }
+
+    showGroup(group) {
+        Array.from(this._companyGroupFilters())
+            .filter(filter => !filter.isForGroup(group))
+            .forEach(filter => filter.reset())
+        ;
+        this.deactivateAllFilters();
+        this.activeApplicationsComponent.showGroup(group);
+    }
+
+    showSharedByCompany(company) {
+        Array.from(this._companyGroupFilters())
+            .filter(filter => !filter.isForCompany(company))
+            .forEach(filter => filter.reset())
+        ;
+        this.deactivateAllFilters();
+        this.activeApplicationsComponent.showSharedByCompany(company);
+    }
+
+    resetAllCompanyFilterControls() {
+        this.shadowRoot.querySelectorAll('appsco-filter-company-groups')
+            .forEach(filterControl => filterControl.reset());
+    }
+
+    _companyGroupFilters() {
+        return this.shadowRoot.querySelectorAll('appsco-filter-company-groups');
+    }
+
+    deactivateAllFilters() {
+        this.shadowRoot.querySelectorAll('.filters [activated]')
+            .forEach(item => item.removeAttribute('activated'));
+    }
+
+    activateFilter(filter) {
+        this.deactivateAllFilters();
+        const element = this.shadowRoot.querySelector('[filter="' + filter + '"]');
+        if (element) {
+            element.setAttribute('activated', '');
+        }
+    }
+
+    _onGroupSelected(event) {
+        const item = event.detail.item;
+        if (!item.activated) {
+            this.showAll();
+            return;
+        }
+
+        const elementId = event.target.id;
+        this.shadowRoot.querySelectorAll('appsco-company-groups').forEach(function(groupsControl) {
+            if (elementId !== groupsControl.id) {
+                groupsControl.resetAllItems();
+            }
+        });
+        this.showGroup(item);
+    }
+
+    applyComponentFromPageConfig(config){
+        this.activeComponentName = config.group_by && 'origin' === config.group_by ? 'labels' : 'applications';
+
+        if (config.display_style) {
+            this.activeApplicationsComponent.setDisplayStyle(config.display_style);
+        }
+
+        config.hide_resource_section ?
+            this._hideResource() :
+            this._showResource();
+
+        if (config.sort_field && 'undefined' !== typeof config.sort_ascending) {
+            this.activeApplicationsComponent.setSort({
+                orderBy: config.sort_field,
+                ascending: config.sort_ascending
+            });
+        }
     }
 
     _onSearchApplications(event) {
@@ -750,7 +935,7 @@ class AppscoHomePage extends mixinBehaviors([
     }
 
     resetPage() {
-        this.applicationsComponents().forEach((component) => component.reset());
+        this.applicationsComponents().forEach(component => component.reset());
         this.$.appscoFolders.resetAllItems();
         this._hideInfo();
     }
@@ -775,6 +960,30 @@ class AppscoHomePage extends mixinBehaviors([
         this._infoShown ?
             this._hideInfo() :
             this._showInfo();
+    }
+
+    _showResource() {
+        this.$.appscoContent.showSection('resource');
+        this._resourceShown = true;
+    }
+
+    _hideResource() {
+        const appscoContent = this.$.appscoContent;
+
+        appscoContent.addEventListener(
+            'neon-animation-finish',
+            () => this._resourceShown = false,
+            { once: true }
+        );
+        appscoContent.hideSection('resource');
+    }
+
+    toggleResource() {
+        this._resourceShown ?
+            this._hideResource() :
+            this._showResource();
+
+        this.showAll();
     }
 
     _onViewApplicationInfo(event) {
@@ -843,42 +1052,37 @@ class AppscoHomePage extends mixinBehaviors([
         }.bind(this), 0);
     }
 
-    _onPageConfigChanged(newValue) {
-        newValue = newValue[this.getAttribute('name')];
+    computeCurrentPageConfig(pageConfig) {
+        return pageConfig[this.getAttribute('name')];
+    }
 
-        if (!newValue) {
-            return false;
+    _onCurrentPageConfigChanged(pageConfig) {
+        if (!pageConfig) {
+            return;
         }
 
-        this.activeComponentName = newValue.group_by && 'origin' === newValue.group_by ? 'labels' : 'applications';
-
-        if (newValue.display_style) {
-            this.activeApplicationsComponent.setDisplayStyle(newValue.display_style);
+        if (this.activeApplicationsComponent) {
+            this.showAll();
         }
 
-        if (newValue.sort_field && 'undefined' !== typeof newValue.sort_ascending) {
-            this.activeApplicationsComponent.setSort({
-                orderBy: newValue.sort_field,
-                ascending: newValue.sort_ascending
-            });
-        }
+        this.applyComponentFromPageConfig(pageConfig);
     }
 
     reloadApplications() {
         this._applicationsLoaded = false;
-        this.applicationsComponents().forEach((component) => component.reloadApplications());
+        this.applicationsComponents().forEach(component => component.reloadApplications());
     }
 
     setApplication(application) {
-        this.applicationsComponents().forEach((component) => component.modifyApplications([application]));
+        this.applicationsComponents().forEach(component => component.modifyApplications([application]));
     }
 
     addApplications(applications) {
-        this.applicationsComponents().forEach((component) => component.addApplications(applications));
+        this.applicationsComponents().forEach(component => component.addApplications(applications));
     }
 
     removeApplications(applications) {
-        this.applicationsComponents().forEach((component) => component.removeApplications(applications));
+        this.applicationsComponents().forEach(component => component.removeApplications(applications));
     }
 
     _onApplicationRemoved() {
@@ -1061,6 +1265,14 @@ class AppscoHomePage extends mixinBehaviors([
 
     computeIsComponentActive(componentName, activeComponentName) {
         return componentName === activeComponentName;
+    }
+
+    _computeHasCompanyLabels(labels){
+        if(undefined === labels) {
+            return false;
+        }
+
+        return undefined !== labels.find(label => null !== label.company);
     }
 }
 window.customElements.define(AppscoHomePage.is, AppscoHomePage);

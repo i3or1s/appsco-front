@@ -32,7 +32,7 @@ class AppscoCompanyGroups extends mixinBehaviors([
 
             <paper-progress id="paperProgress" class="list-progress-bar" indeterminate=""></paper-progress>
 
-            <template is="dom-if" if="[[ _message ]]">
+            <template is="dom-if" if="[[ _shouldDisplayMessage ]]">
                 <p class="message">[[ _message ]]</p>
             </template>
 
@@ -63,6 +63,16 @@ class AppscoCompanyGroups extends mixinBehaviors([
             preview: {
                 type: Boolean,
                 value: false
+            },
+
+            hideMessages: {
+                type: Boolean,
+                value: false
+            },
+
+            _shouldDisplayMessage: {
+                type: Boolean,
+                computed: '_computeShouldDisplayMessage(_message, hideMessages)'
             },
 
             selectable: {
@@ -129,6 +139,10 @@ class AppscoCompanyGroups extends mixinBehaviors([
                 break;
             }
         }
+    }
+
+    _computeShouldDisplayMessage(message, hideMessages) {
+        return message && !hideMessages;
     }
 }
 window.customElements.define(AppscoCompanyGroups.is, AppscoCompanyGroups);

@@ -352,7 +352,7 @@ class AppscoApi extends PolymerElement {
     }
 
     _sharedWithMeItems(index, domain) {
-        return this._computeOrigin(domain, index) + '/me/icons/shared-with-me';
+        return this._computeOrigin(domain, index) + '/me/icons/no-personal-dashboard-group-shared-with-me';
     }
 
     _logout(index, domain) {
