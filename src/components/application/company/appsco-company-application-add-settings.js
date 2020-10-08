@@ -13,6 +13,7 @@ import '@polymer/neon-animation/animations/fade-out-animation.js';
 import '../../components/appsco-form-error.js';
 import '../appsco-application-info.js';
 import '../appsco-application-form-item.js';
+import '../appsco-application-form-rdp.js';
 import '../appsco-application-form-unpw.js';
 import '../appsco-application-form-cc.js';
 import '../appsco-application-form-login.js';
@@ -131,7 +132,7 @@ class AppscoCompanyApplicationAddSettings extends mixinBehaviors([
                 </template>
 
                 <template is="dom-if" if="[[ _samlAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
-                    <appsco-application-form-saml data-claims="" claims-name-prefix="application_claims[claims]" domain="[[ domain ]]"></appsco-application-form-saml>
+                    <appsco-application-form-saml data-claims="" application="[[ application ]]" claims-name-prefix="application_claims[claims]" domain="[[ domain ]]"></appsco-application-form-saml>
                 </template>
 
                 <template is="dom-if" if="[[ _openIDAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
@@ -144,6 +145,10 @@ class AppscoCompanyApplicationAddSettings extends mixinBehaviors([
 
                 <template is="dom-if" if="[[ _samlOffice365AuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
                     <appsco-application-form-saml-office-365 data-claims="" claims-name-prefix="application_claims[claims]" domain="[[ domain ]]"></appsco-application-form-saml-office-365>
+                </template>
+                
+                <template is="dom-if" if="[[ _rdpAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
+                    <appsco-application-form-rdp data-claims="" claims-name-prefix="application_claims[claims]"></appsco-application-form-rdp>
                 </template>
             </template>
 
@@ -222,7 +227,7 @@ class AppscoCompanyApplicationAddSettings extends mixinBehaviors([
                 value: function () {
                     return [
                         'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
-                        'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
+                        'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none', 'icon_rdp'
                     ]
                 }
             },
@@ -262,6 +267,11 @@ class AppscoCompanyApplicationAddSettings extends mixinBehaviors([
                 computed: '_computeSAMLAuthType(application, _action, "saml")'
             },
 
+            _customSAMLApps: {
+                type: Array,
+                value: ['1587982700']
+            },
+
             _openIDAuthType: {
                 type: Boolean,
                 computed: "_computeOpenIDAuthType(application, _action, 'open_id')"
@@ -275,6 +285,11 @@ class AppscoCompanyApplicationAddSettings extends mixinBehaviors([
             _samlOffice365AuthType: {
                 type: Boolean,
                 computed: "_computeSAMLAuthType(application, _action, 'saml_office_365')"
+            },
+
+            _rdpAuthType: {
+                type: Boolean,
+                computed: "_computeAuthType(_action, 'rdp-application')"
             },
 
             _isSSOApplication: {

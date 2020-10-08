@@ -4,6 +4,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/iron-icons/social-icons.js';
+import '@polymer/iron-icons/hardware-icons.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox/paper-listbox.js';
@@ -383,6 +384,12 @@ class AppscoApplicationActions extends mixinBehaviors([NeonAnimationRunnerBehavi
                             name: 'Secure Note',
                             icon: 'editor:insert-drive-file',
                             tpl: '/api/v2/applications/1493886246'
+                        },
+                        {
+                            value: 'rdp-application',
+                            name: 'RDP Application',
+                            icon: 'hardware:desktop-windows',
+                            tpl: '/api/v2/applications/1602143378'
                         }
                     ]
                 }

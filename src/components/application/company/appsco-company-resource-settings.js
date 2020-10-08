@@ -14,6 +14,7 @@ import '@polymer/paper-item/paper-item.js';
 import '../../components/appsco-loader.js';
 import '../../components/appsco-form-error.js';
 import '../appsco-application-form-item.js';
+import '../appsco-application-form-rdp.js';
 import '../appsco-application-form-unpw.js';
 import '../appsco-application-form-cc.js';
 import '../appsco-application-form-login.js';
@@ -168,6 +169,10 @@ class AppscoCompanyResourceSettings extends mixinBehaviors([
                 <template is="dom-if" if="[[ _samlOffice365AuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
                     <appsco-application-form-saml-office-365 data-claims="" claims-name-prefix="application_claims[claims]" claims="[[ resource.claims ]]" domain="[[ domain ]]"></appsco-application-form-saml-office-365>
                 </template>
+                
+                <template is="dom-if" if="[[ _rdpAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
+                    <appsco-application-form-rdp data-claims="" claims-name-prefix="application_claims[claims]" claims="[[ resource.claims ]]" domain="[[ domain ]]"></appsco-application-form-rdp>
+                </template>
             </template>
         </div>
 
@@ -268,7 +273,7 @@ class AppscoCompanyResourceSettings extends mixinBehaviors([
                 value: function () {
                     return [
                         'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
-                        'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none'
+                        'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none', 'icon_rdp'
                     ]
                 }
             },
@@ -335,6 +340,11 @@ class AppscoCompanyResourceSettings extends mixinBehaviors([
             _samlOffice365AuthType: {
                 type: Boolean,
                 computed: "_computeAuthType(resource, 'saml_office_365')"
+            },
+
+            _rdpAuthType: {
+                type: Boolean,
+                computed: "_computeAuthType(resource, 'rdp')"
             },
 
             isDialog: {

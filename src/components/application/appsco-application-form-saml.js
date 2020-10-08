@@ -28,7 +28,8 @@ class AppscoApplicationFormSaml extends mixinBehaviors([AppscoApplicationFormBeh
 
         <paper-input id="domain" data-field="" label="Domain registered at SP" value="[[ claims.domain ]]" name\$="[[ claimsNamePrefix ]][domain]" error-message="Please enter domain" auto-validate="" required=""></paper-input>
 
-        <paper-dropdown-menu data-field="choice" id="nameIdPolicy" name\$="[[ claimsNamePrefix ]][nameIdPolicy]" label="Name ID Policy" horizontal-align="left" always-float-label="" disabled="true">
+        <paper-dropdown-menu data-field="choice" id="nameIdPolicy" name\$="[[ claimsNamePrefix ]][nameIdPolicy]" label="Name ID Policy" horizontal-align="left" always-float-label="" disabled="true" on-iron-overlay-closed="dontCloseOverlay"ma ne to
+        >
             <paper-listbox id="paperListboxNameIdPolicy" class="dropdown-content filter" attr-for-selected="value" selected="[[ claims.nameIdPolicy ]]" slot="dropdown-content">
                 <template is="dom-repeat" items="[[ _nameIdPolicyList ]]">
                     <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
@@ -36,7 +37,7 @@ class AppscoApplicationFormSaml extends mixinBehaviors([AppscoApplicationFormBeh
             </paper-listbox>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu data-field="choice" id="confirmationMethod" name\$="[[ claimsNamePrefix ]][confirmationMethod]" label="Confirmation method" horizontal-align="left" always-float-label="" disabled="true">
+        <paper-dropdown-menu data-field="choice" id="confirmationMethod" name\$="[[ claimsNamePrefix ]][confirmationMethod]" label="Confirmation method" horizontal-align="left" always-float-label="" disabled="true" on-iron-overlay-closed="dontCloseOverlay">
             <paper-listbox id="paperListboxConfirmationMethod" class="dropdown-content filter" attr-for-selected="value" selected="[[ claims.confirmationMethod ]]" slot="dropdown-content">
                 <template is="dom-repeat" items="[[ _confirmationMethodList ]]">
                     <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
@@ -44,8 +45,8 @@ class AppscoApplicationFormSaml extends mixinBehaviors([AppscoApplicationFormBeh
             </paper-listbox>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu data-field="choice" id="authenticationContext" name\$="[[ claimsNamePrefix ]][authenticationContext]" label="Authentication context" horizontal-align="left" always-float-label="" disabled="true">
-            <paper-listbox id="paperListboxAuthenticationContext" class="dropdown-content filter" attr-for-selected="value" selected="[[ claims.authenticationContext ]]" slot="dropdown-content">
+        <paper-dropdown-menu data-field="choice" id="authenticationContext" name\$="[[ claimsNamePrefix ]][authenticationContext]" label="Authentication context" horizontal-align="left" always-float-label="" disabled="true" on-iron-overlay-closed="dontCloseOverlay">
+            <paper-listbox id="paperListboxAuthenticationContext" class="dropdown-content filter" attr-for-selected="value" selected="[[ claims.authenticationContext ]]" slot="dropdown-content" >
                 <template is="dom-repeat" items="[[ _authenticationContextList ]]">
                     <paper-item value="[[ item.value ]]">[[ item.name ]]</paper-item>
                 </template>
@@ -64,6 +65,12 @@ class AppscoApplicationFormSaml extends mixinBehaviors([AppscoApplicationFormBeh
 
     static get properties() {
         return {
+            application: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+            },
             claims: {
                 type: Object,
                 value: function () {
@@ -88,6 +95,10 @@ class AppscoApplicationFormSaml extends mixinBehaviors([AppscoApplicationFormBeh
                         {
                             name: 'Email',
                             value: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
+                        },
+                        {
+                            name: 'Unspecified',
+                            value: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'
                         },
                         {
                             name: 'Persistent',
@@ -132,6 +143,13 @@ class AppscoApplicationFormSaml extends mixinBehaviors([AppscoApplicationFormBeh
             return false;
         }
 
+        if(this.application.url_editable) {
+            this.$.nameIdPolicy.removeAttribute('disabled');
+            this.$.confirmationMethod.removeAttribute('disabled');
+            this.$.authenticationContext.removeAttribute('disabled');
+        }
+
+
         this.set('claims', {
             samlIssuer : this.domain,
             nameIdPolicy : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
@@ -139,6 +157,11 @@ class AppscoApplicationFormSaml extends mixinBehaviors([AppscoApplicationFormBeh
             authenticationContext : 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password',
             allowCreate : false
         });
+    }
+
+    dontCloseOverlay(event, a) {
+        event.stopPropagation();
+        return false;
     }
 }
 window.customElements.define(AppscoApplicationFormSaml.is, AppscoApplicationFormSaml);
