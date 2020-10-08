@@ -9,7 +9,10 @@ It is created from a collection of AppsCo, vaadin and polymer web components.
 `npm install -g bower`
 
 2. Install polymer
+
 `npm install -g polymer-cli`
+
+`sudo npm install --unsafe-perm -g polymer-cli`
 
 3. Install dependencies
 `bower install`

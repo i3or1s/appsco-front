@@ -81,7 +81,8 @@ class AppscoApplicationSubscribers extends mixinBehaviors([Appsco.HeadersMixin],
             }
         </style>
 
-        <iron-ajax id="getSubscribersCall" url="[[ _computedAction ]]" headers="[[ _headers ]]" method="GET" handle-as="json" on-response="_handleResponse" on-error="_handleError">
+        <iron-ajax id="getSubscribersCall" url="[[ _computedAction ]]" headers="[[ _headers ]]" method="GET" handle-as="json" 
+        on-response="_handleResponse" on-error="_handleError">
         </iron-ajax>
 
         <div class="accounts">
@@ -198,7 +199,8 @@ class AppscoApplicationSubscribers extends mixinBehaviors([Appsco.HeadersMixin],
             },
 
             _totalSubscribers: {
-                type: Number
+                type: Number,
+                value: 0
             },
 
             _loadMore: {

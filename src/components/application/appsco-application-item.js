@@ -162,6 +162,8 @@ class AppscoApplicationItem extends PolymerElement {
 
     _computeApplicationType(application) {
         switch (application.auth_type) {
+            case 'rdp':
+                return 'Remote Desktop Protocol';
             case 'login':
                 return 'Login';
             case 'cc':

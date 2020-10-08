@@ -1026,7 +1026,7 @@ class AppscoHomePage extends mixinBehaviors([
     }
 
     _onApplication(event) {
-        if(['unpw', 'item', 'none', 'saml', 'saml_dropbox', 'saml_office_365', 'open_id'].indexOf(event.detail.application.auth_type) > -1) {
+        if(['rdp','unpw', 'item', 'none', 'saml', 'saml_dropbox', 'saml_office_365', 'open_id'].indexOf(event.detail.application.auth_type) > -1) {
             window.open(event.detail.application.meta.plugin_go, "_blank");
         } else {
             this._onViewApplicationInfo(event);

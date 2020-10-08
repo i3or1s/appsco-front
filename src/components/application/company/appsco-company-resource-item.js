@@ -141,6 +141,8 @@ class AppscoCompanyResourceItem extends mixinBehaviors([
 
     _computeResourceType(resource) {
         switch (resource.auth_type) {
+            case 'rdp':
+                return 'Remote Desktop Protocol';
             case 'login':
                 return 'Login';
             case 'cc':
