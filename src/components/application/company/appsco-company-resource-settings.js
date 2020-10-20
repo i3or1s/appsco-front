@@ -25,6 +25,7 @@ import '../appsco-application-form-saml.js';
 import '../appsco-application-form-saml-dropbox.js';
 import '../appsco-application-form-saml-office-365.js';
 import '../appsco-application-form-open-id.js';
+import '../appsco-application-form-aurora-files.js';
 import '../../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
@@ -160,6 +161,10 @@ class AppscoCompanyResourceSettings extends mixinBehaviors([
 
                 <template is="dom-if" if="[[ _openIDAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
                     <appsco-application-form-open-id data-claims="" application="application" claims-name-prefix="application_claims[claims]" claims="[[ resource.claims ]]" domain="[[ domain ]]"></appsco-application-form-open-id>
+                </template>
+                
+                <template is="dom-if" if="[[ _auroraFilesAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
+                    <appsco-application-form-aurora-files data-claims="" application="application" claims-name-prefix="application_claims[claims]" claims="[[ resource.claims ]]" domain="[[ domain ]]"></appsco-application-form-aurora-files>
                 </template>
 
                 <template is="dom-if" if="[[ _samlDropBoxAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
@@ -330,6 +335,11 @@ class AppscoCompanyResourceSettings extends mixinBehaviors([
             _openIDAuthType: {
                 type: Boolean,
                 computed: '_computeAuthType(resource, "open_id")'
+            },
+
+            _auroraFilesAuthType: {
+                type: Boolean,
+                computed: '_computeAuthType(resource, "aurora_files")'
             },
 
             _samlDropBoxAuthType: {

@@ -178,6 +178,8 @@ class AppscoApplicationItem extends PolymerElement {
                 return 'Link';
             case 'open_id':
                 return 'Open ID';
+            case 'aurora_files':
+                return 'Aurora Files';
             default:
                 return 'Application';
         }
