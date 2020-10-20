@@ -24,6 +24,7 @@ import '../appsco-application-form-saml.js';
 import '../appsco-application-form-saml-dropbox.js';
 import '../appsco-application-form-saml-office-365.js';
 import '../appsco-application-form-open-id.js';
+import '../appsco-application-form-aurora-files.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
@@ -138,6 +139,9 @@ class AppscoCompanyApplicationAddSettings extends mixinBehaviors([
                 <template is="dom-if" if="[[ _openIDAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
                     <appsco-application-form-open-id data-claims="" claims-name-prefix="application_claims[claims]" domain="[[ domain ]]"></appsco-application-form-open-id>
                 </template>
+                <template is="dom-if" if="[[ _auroraFilesAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
+                    <appsco-application-form-aurora-files data-claims="" claims-name-prefix="application_claims[claims]" domain="[[ domain ]]"></appsco-application-form-aurora-files>
+                </template>
 
                 <template is="dom-if" if="[[ _samlDropBoxAuthType ]]" restamp="" on-dom-change="_onAuthTypeChanged">
                     <appsco-application-form-saml-dropbox data-claims="" claims-name-prefix="application_claims[claims]" domain="[[ domain ]]"></appsco-application-form-saml-dropbox>
@@ -227,7 +231,8 @@ class AppscoCompanyApplicationAddSettings extends mixinBehaviors([
                 value: function () {
                     return [
                         'icon_item', 'icon_unpw', 'icon_saml', 'icon_jwt', 'icon_cc', 'icon_login',
-                        'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none', 'icon_rdp'
+                        'icon_passport', 'icon_securenote', 'icon_softwarelicence', 'icon_none', 'icon_rdp',
+                        'aurora_files'
                     ]
                 }
             },
@@ -275,6 +280,11 @@ class AppscoCompanyApplicationAddSettings extends mixinBehaviors([
             _openIDAuthType: {
                 type: Boolean,
                 computed: "_computeOpenIDAuthType(application, _action, 'open_id')"
+            },
+
+            _auroraFilesAuthType: {
+                type: Boolean,
+                computed: "_computeAuroraFilesAuthType(application, _action, 'aurora_files')"
             },
 
             _samlDropBoxAuthType: {
@@ -383,6 +393,20 @@ class AppscoCompanyApplicationAddSettings extends mixinBehaviors([
     }
 
     _computeOpenIDAuthType(application, _action, authType) {
+        if(_action !== 'sso-application') {
+            return false;
+        }
+
+        for(const type in application.auth_types) {
+            if (type === authType) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    _computeAuroraFilesAuthType(application, _action, authType) {
         if(_action !== 'sso-application') {
             return false;
         }

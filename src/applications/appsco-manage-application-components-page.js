@@ -283,6 +283,11 @@ class AppscoManageApplicationComponentsPage extends mixinBehaviors([
                 computed: '_computeIsOpenIDApp(application)'
             },
 
+            _isAuroraFilesApp: {
+                type: Boolean,
+                computed: '_computeIsAuroraFilesApp(application)'
+            },
+
             _isUnPwAuthType: {
                 type: Boolean,
                 computed: '_computeIsUnPwAuthType(application)'
@@ -379,6 +384,10 @@ class AppscoManageApplicationComponentsPage extends mixinBehaviors([
 
     _computeIsOpenIDApp(application) {
         return application.auth_type === 'open_id';
+    }
+
+    _computeIsAuroraFilesApp(application) {
+        return application.auth_type === 'aurora_files';
     }
 
     _computeIsUnPwAuthType (application) {
