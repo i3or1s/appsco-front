@@ -52,17 +52,17 @@ class AppscoCompanyPage extends mixinBehaviors([
             :host .resource-content > div:first-child {
                 margin-top: 0;
             }
-            :host div[label] {
+            :host .resource-content div[label] {
                 color: var(--secondary-text-color);
                 font-size: 12px;
                 margin-top: 20px;
             }            
-            :host div[content] {
+            :host .resource-content div[content] {
                 @apply --layout-horizontal;
                 @apply --layout-center;
                 font-size: 12px;
             }
-            :host .flex {
+            :host .resource-content .flex {
                 @apply --layout-flex;
                 @apply --paper-font-common-nowrap;
             }
