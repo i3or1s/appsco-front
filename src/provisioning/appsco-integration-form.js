@@ -280,11 +280,11 @@ class AppscoIntegrationForm extends PolymerElement {
 
     _computeRequireToken(integration) {
         if (integration.integration) {
-            return integration.integration.alias === 8;
+            return integration.integration.alias === 8 || integration.integration.alias === 13;
         }
 
         if (integration) {
-            return integration.alias === 8;
+            return integration.alias === 8 || integration.alias === 13;
         }
 
         return false;
@@ -304,11 +304,11 @@ class AppscoIntegrationForm extends PolymerElement {
 
     _computeRequiresInstanceId(integration) {
         if (integration && integration.integration) {
-            return [6, 10].indexOf(integration.integration.alias) > -1;
+            return [6, 10, 13].indexOf(integration.integration.alias) > -1;
         }
 
         if (integration) {
-            return [6, 10].indexOf(integration.alias) > -1;
+            return [6, 10, 13].indexOf(integration.alias) > -1;
         }
 
         return false;
