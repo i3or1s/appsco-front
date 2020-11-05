@@ -221,7 +221,8 @@ class AppscoAccountSettings extends mixinBehaviors([Appsco.HeadersMixin], Polyme
                 value: function () {
                     return [
                         {title: 'Dashboard', value: 'dashboard'},
-                        {title: 'Resources', value: 'resources'}
+                        {title: 'Resources', value: 'resources'},
+                        {title: 'AppsCo HR', value: 'appsco-one-hr'}
                     ]
                 }
             },
