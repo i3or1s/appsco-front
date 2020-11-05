@@ -138,7 +138,9 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
                                         <paper-radio-button name="[[ item.id ]]" class="flex hidden" value="[[ item.id ]]">[[ item.displayText ]]</paper-radio-button>
                                         <div class="flex-vertical price-plan-item">
                                             <div class="flex">
-                                                <input type="radio" name="packages" value="[[ item.id ]]" id="plan-[[ item.id ]]" on-tap="_onPlanChange">
+                                                <input type="radio" name="packages" value="[[ item.id ]]" id="plan-[[ item.id ]]" on-tap="_onPlanChange"
+                                                    checked="{{ _isSelectedPlan(item.id) }}"
+                                                >
                                                 <label for="plan-[[ item.id ]]">[[ item.displayText ]] / [[ item.interval ]]</label>                                            
                                             </div>
                                             
@@ -241,6 +243,9 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
                 computed: '_computePublicKeyApi(companyApi)'
             }
         };
+    }
+    _isSelectedPlan(id) {
+        return this._selectedPlan === id;
     }
     _onPlanChange(e) {
         this.$.subscriptionPlan.selected = e.model.item.id;
