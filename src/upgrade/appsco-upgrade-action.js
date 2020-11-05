@@ -75,6 +75,9 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
             :host .flex-vertical {
                 @apply --layout-vertical;
             }
+            :host .flex-wrap {
+                @apply --layout-wrap;
+            }
             :host .flex-center {
                 @apply --layout-center;
             }
@@ -94,6 +97,15 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
             }
             :host .savings {
                 color: var(--app-primary-color);
+            }
+            :host .hidden {
+                display:none;
+            }
+            :host .price-plan-item {
+                border-bottom: 1px solid var(--divider-color);
+                min-width: 50%;
+                padding-left: 0;
+                padding-right: 0;
             }
         </style>
 
@@ -121,26 +133,39 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
                         <div class="flex-vertical flex-center text-center">
                             <paper-input allowed-pattern="\\d+" class="num-of-subscriptions text-center" id="quantity" label="Number of subscriptions" name="subscription[numUsers]" error-message="Please enter number of subscriptions." auto-validate="" on-keyup="_reCalculateAllPlans"></paper-input>
                             <div style="width:100%">
-                                <paper-radio-group selected="[[ _selectedPlan ]]" class="flex-horizontal" id="subscriptionPlan">
+                                <paper-radio-group selected="[[ _selectedPlan ]]" class="flex-horizontal flex-wrap" id="subscriptionPlan">
                                     <template is="dom-repeat" items="[[ _plans ]]">
-                                        <paper-radio-button name="[[ item.id ]]" class="flex" value="[[ item.id ]]">[[ item.displayText ]]</paper-radio-button>
+                                        <paper-radio-button name="[[ item.id ]]" class="flex hidden" value="[[ item.id ]]">[[ item.displayText ]]</paper-radio-button>
+                                        <div class="flex-vertical price-plan-item">
+                                            <div class="flex">
+                                                <input type="radio" name="packages" value="[[ item.id ]]" id="plan-[[ item.id ]]" on-tap="_onPlanChange">
+                                                <label for="plan-[[ item.id ]]">[[ item.displayText ]] / [[ item.interval ]]</label>                                            
+                                            </div>
+                                            
+                                            <div class="flex">
+                                                <br/>
+                                                <appsco-price price="{{ _reCalculate(item) }}" currency="[[ item.currency ]]"></appsco-price>&nbsp;/&nbsp;year
+                                                <br>
+                                                <span class="op6">
+                                                    <appsco-price price="[[ item.amount ]]" currency="[[ item.currency ]]"></appsco-price>
+                                                    &nbsp;per user / [[ item.interval ]]</span>
+                                                <br>
+                                                <template is="dom-if" if="[[ item.flatFee ]]">
+                                                    <span class="op6">
+                                                    <appsco-price price="[[ item.flatFee ]]" currency="[[ item.currency ]]"></appsco-price>
+                                                    &nbsp; / [[ item.interval ]]</span>
+                                                    <br>
+                                                </template>
+                                                <template is="dom-if" if="[[ _isPlanYearly(item) ]]">
+                                                    <span class="savings">20% Savings</span>
+                                                </template>
+                                                <template is="dom-if" if="[[ !_isPlanYearly(item) ]]">
+                                                    <span class="savings">&nbsp;</span>
+                                                </template>
+                                            </div>
+                                        </div>
                                     </template>
                                 </paper-radio-group>
-                            </div>
-                            <div style="width:100%" class="flex-horizontal">
-                                <template is="dom-repeat" items="[[ _plans ]]">
-                                    <div class="flex">
-                                        <appsco-price price="{{ _reCalculate(item) }}" currency="[[ item.currency ]]"></appsco-price>&nbsp;/&nbsp;year
-                                        <br>
-                                        <span class="op6">
-                                            <appsco-price price="[[ item.amount ]]" currency="[[ item.currency ]]"></appsco-price>
-                                            &nbsp;per user / [[ item.interval ]]</span>
-                                        <br>
-                                        <template is="dom-if" if="[[ _isPlanYearly(item) ]]">
-                                            <span class="savings">20% Savings</span>
-                                        </template>
-                                    </div>
-                                </template>
                             </div>
                             <paper-input class="coupon-code text-center" id="couponCode" label="Coupon code" name="subscription[coupon]"></paper-input>
                         </div>
@@ -217,6 +242,9 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
             }
         };
     }
+    _onPlanChange(e) {
+        this.$.subscriptionPlan.selected = e.model.item.id;
+    }
 
     _computePublicKeyApi(companyApi) {
         return companyApi + '/billing/pk';
@@ -255,7 +283,12 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
     }
 
     _reCalculate(plan) {
-        return this.$.quantity && this.$.quantity.value ? plan.amount * this.$.quantity.value : plan.amount;
+        let amount = this.$.quantity && this.$.quantity.value ? plan.amount * this.$.quantity.value : plan.amount + (plan.flatFee ? plan.flatFee : 0);
+        if(this.$.quantity.value && plan.flatFee) {
+            amount += plan.flatFee * this.$.quantity.value;
+        }
+
+        return amount;
     }
 
     toggle() {
