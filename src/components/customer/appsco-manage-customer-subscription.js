@@ -8,6 +8,7 @@ import '@polymer/paper-input/paper-input.js';
 import '../components/appsco-loader.js';
 import '../components/appsco-form-error.js';
 import './appsco-customer-subscription-toggle.js';
+import './appsco-customer-handbook-toggle.js';
 import '../../lib/mixins/appsco-headers-mixin.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
@@ -60,6 +61,8 @@ class AppscoManageCustomerSubscription extends mixinBehaviors([Appsco.HeadersMix
                 <template is="dom-if" if="[[ _isPaidExternally ]]">
                     <paper-input allowed-pattern="\\d+" id="numOfLicences" label="Number of licences" error-message="Please enter number of licences." value="[[ customer.max_subscription_size ]]" auto-validate=""></paper-input>
                 </template>
+                
+            <appsco-customer-handbook-toggle id="appscoCustomerHandbook" customer="[[ customer ]]" partner="[[ partner ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-customer-handbook-state-changed="_onManageCustomerState"></appsco-customer-handbook-toggle>
 
             <div class="buttons">
                 <paper-button dialog-dismiss="">Close</paper-button>
