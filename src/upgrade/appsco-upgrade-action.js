@@ -146,7 +146,7 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
                                             
                                             <div class="flex">
                                                 <br/>
-                                                <appsco-price price="{{ _reCalculate(item) }}" currency="[[ item.currency ]]"></appsco-price>&nbsp;/&nbsp;year
+                                                <appsco-price price="{{ _reCalculate(item) }}" currency="[[ item.currency ]]"></appsco-price>&nbsp;/&nbsp;[[ item.interval ]]
                                                 <br>
                                                 <span class="op6">
                                                     <appsco-price price="[[ item.amount ]]" currency="[[ item.currency ]]"></appsco-price>
@@ -290,8 +290,9 @@ class AppscoUpgradeAction extends mixinBehaviors([Appsco.HeadersMixin], PolymerE
     _reCalculate(plan) {
         let amount = this.$.quantity && this.$.quantity.value ? plan.amount * this.$.quantity.value : plan.amount + (plan.flatFee ? plan.flatFee : 0);
         if(this.$.quantity.value && plan.flatFee) {
-            amount += plan.flatFee * this.$.quantity.value;
+            amount += plan.flatFee;
         }
+
 
         return amount;
     }
