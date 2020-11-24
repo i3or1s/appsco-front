@@ -4,6 +4,8 @@ import '@polymer/iron-ajax/iron-request.js';
 import '@polymer/paper-dialog/paper-dialog.js';
 import '@polymer/neon-animation/animations/fade-out-animation.js';
 import '@polymer/neon-animation/animations/scale-up-animation.js';
+import '@polymer/paper-radio-group/paper-radio-group.js';
+import '@polymer/paper-radio-button/paper-radio-button.js';
 import '@polymer/paper-input/paper-input.js';
 import '../components/appsco-loader.js';
 import '../components/appsco-form-error.js';
@@ -58,9 +60,17 @@ class AppscoManageCustomerSubscription extends mixinBehaviors([Appsco.HeadersMix
 
             <appsco-customer-subscription-toggle id="appscoAccountRoles" customer="[[ customer ]]" partner="[[ partner ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-customer-subscription-state-changed="_onManageCustomerState"></appsco-customer-subscription-toggle>
 
-                <template is="dom-if" if="[[ _isPaidExternally ]]">
-                    <paper-input allowed-pattern="\\d+" id="numOfLicences" label="Number of licences" error-message="Please enter number of licences." value="[[ customer.max_subscription_size ]]" auto-validate=""></paper-input>
-                </template>
+            <template is="dom-if" if="[[ _isPaidExternally ]]">
+                <paper-input allowed-pattern="\\d+" id="numOfLicences" label="Number of licences" error-message="Please enter number of licences." value="[[ customer.max_subscription_size ]]" auto-validate=""></paper-input>
+                <h3 style="margin-bottom:0;">Packages</h3>
+                <paper-radio-group style="margin-top:5px;" selected="{{ selectedPackage }}">
+                      <paper-radio-button name="free">Appsco One People</paper-radio-button>
+                      <paper-radio-button name="plus">Appsco One Plus</paper-radio-button>
+                      <paper-radio-button name="premium">Appsco One Premium</paper-radio-button>
+                </paper-radio-group>
+            </template>
+            
+            <h3>Handbook</h3>
                 
             <appsco-customer-handbook-toggle id="appscoCustomerHandbook" customer="[[ customer ]]" partner="[[ partner ]]" authorization-token="[[ authorizationToken ]]" api-errors="[[ apiErrors ]]" on-customer-handbook-state-changed="_onManageCustomerState"></appsco-customer-handbook-toggle>
 
@@ -99,6 +109,15 @@ class AppscoManageCustomerSubscription extends mixinBehaviors([Appsco.HeadersMix
             _isPaidExternally: {
                 type: Boolean,
                 computed: "_computeIsPaidExternally(customer)"
+            },
+
+            _activePackage: {
+                type: String,
+                computed: "_computeActivePackage(customer)"
+            },
+            selectedPackage: {
+                type: String,
+                value: 'free'
             },
 
             _loader: {
@@ -152,12 +171,69 @@ class AppscoManageCustomerSubscription extends mixinBehaviors([Appsco.HeadersMix
         return customer && customer.subscription_paid_externally == true;
     }
 
+    _computeActivePackage(customer) {
+        if(!customer.self) {
+            return;
+        }
+        const appRequest = document.createElement('iron-request'),
+            options = {
+                url: `${customer.self}/appscoonehr-configuration`,
+                method: 'GET',
+                handleAs: 'json',
+                headers: this._headers
+            };
+
+        appRequest.send(options).then(function() {
+            let packageSelected = 'free';
+            appRequest.response.packages.forEach((availablePackage) => {
+                if(availablePackage === 'plus') {
+                    packageSelected = 'plus';
+                }
+                if(availablePackage === 'premium') {
+                    packageSelected = 'premium';
+                }
+            })
+            this.selectedPackage = packageSelected;
+
+        }.bind(this), function() {
+            if (appRequest.status !== 200) {
+                this._errorMessage = this.apiErrors.getError(appRequest.response.code);
+            }
+            this._loader = false;
+        }.bind(this));
+
+    }
+
     _onManageCustomerState(event) {
         const customer = event.detail.customer,
             partner = event.detail.partner;
 
         this._setCustomer(customer);
         this._setPartner(partner);
+    }
+
+    _updatePackages(customer) {
+        if(!customer.self) {
+            return;
+        }
+        const appRequest = document.createElement('iron-request'),
+            options = {
+                url: `${customer.self}/appscoonehr-packages`,
+                method: 'PUT',
+                handleAs: 'json',
+                headers: this._headers,
+                body: 'form[package]=' + this.selectedPackage
+            };
+        this._loader = true;
+        appRequest.send(options).then(function() {
+            console.log(appRequest.response);
+
+        }.bind(this), function() {
+            if (appRequest.status !== 200) {
+                this._errorMessage = this.apiErrors.getError(appRequest.response.code);
+            }
+            this._loader = false;
+        }.bind(this));
     }
 
     _assign() {
@@ -191,6 +267,7 @@ class AppscoManageCustomerSubscription extends mixinBehaviors([Appsco.HeadersMix
                     'customer' : appRequest.response.customer
                 }
             }));
+            this._updatePackages(appRequest.response.customer);
         }.bind(this), function() {
             if (appRequest.status !== 200) {
                 this._errorMessage = this.apiErrors.getError(appRequest.response.code);
