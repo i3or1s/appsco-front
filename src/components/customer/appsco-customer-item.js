@@ -56,10 +56,6 @@ class AppscoCustomerItem extends mixinBehaviors([
 
         <iron-media-query query="(max-width: 600px)" query-matches="{{ mobileScreen }}"></iron-media-query>
 
-        <iron-ajax id="getPartnerAdminsApiRequest" url="[[ _partnerAdminsApiUrl ]]" headers="[[ _headers ]]" auto="" on-error="_onPartnerAdminsError" on-response="_onPartnerAdminsResponse"></iron-ajax>
-
-        <iron-ajax id="getLicencesApiRequest" url="[[ _licencesApiUrl ]]" headers="[[ _headers ]]" auto="" on-error="_onLicencesError" on-response="_onLicencesResponse"></iron-ajax>
-
         <div class="item">
 
             <template is="dom-if" if="[[ selectable ]]">
@@ -124,34 +120,14 @@ class AppscoCustomerItem extends mixinBehaviors([
                 type: String
             },
 
-            _partnerAdminsApiUrl: {
-                type: String,
-                computed: '_computePartnerAdminsApiUrl(item, listApi)'
-            },
-
-            _licencesApiUrl: {
-                type: String,
-                computed: '_computeLicencesApiUrl(item, listApi)'
-            },
-
             _partnerAdminsCount: {
                 type: Number,
                 value: 0
             },
 
-            _partnerAdminsLoaded: {
-                type: Boolean,
-                value: false
-            },
-
             _licencesCount: {
                 type: Number,
                 value: 0
-            },
-
-            _licencesLoaded: {
-                type: Boolean,
-                value: false
             },
 
             mobileScreen: {
@@ -162,19 +138,14 @@ class AppscoCustomerItem extends mixinBehaviors([
         };
     }
 
-    static get observers() {
-        return [
-            '_listenForItemInfoLoad(_partnerAdminsLoaded, _licencesLoaded)'
-        ];
-    }
-
     ready() {
         super.ready();
 
         if (!this.item.partner) {
             this.item.partner = this.listApi;
         }
-
+        this._licencesCount = this.item.max_subscription_size;
+        this._partnerAdminsCount = this.item.partner_admins;
         afterNextRender(this, function() {
             this._addListeners();
         });
@@ -185,54 +156,6 @@ class AppscoCustomerItem extends mixinBehaviors([
     }
 
     reloadInfo() {
-        this.$.getPartnerAdminsApiRequest.generateRequest();
-        this.$.getLicencesApiRequest.generateRequest();
-    }
-
-    _computePartnerAdminsApiUrl(customer, listApi) {
-        return (customer.partner && listApi && customer.partner !== listApi) ?
-            customer.partner :
-            (customer.alias && listApi) ?
-                (listApi + '/' + customer.alias + '/partner-admins') :
-                null;
-    }
-
-    _computeLicencesApiUrl(customer, listApi) {
-        return (customer.partner && listApi && customer.partner !== listApi) ?
-            customer.partner :
-            (customer.alias && listApi) ?
-                (listApi + '/' + customer.alias + '/licences') :
-                null;
-    }
-
-    _onPartnerAdminsError() {
-        this._partnerAdminsCount = 0;
-        this._partnerAdminsLoaded = true;
-    }
-
-    _onPartnerAdminsResponse(event) {
-        var response = event.detail.response;
-
-        this._partnerAdminsCount = (response && response.meta) ? response.meta.total : 0;
-        this._partnerAdminsLoaded = true;
-    }
-
-    _onLicencesError() {
-        this._licencesCount = 0;
-        this._licencesLoaded = true;
-    }
-
-    _onLicencesResponse(event) {
-        const response = event.detail.response;
-
-        this._licencesCount = (response && response.appscoLicences) ? response.appscoLicences : 0;
-        this._licencesLoaded = true;
-    }
-
-    _listenForItemInfoLoad(partnerAdminsLoaded, licencesLoaded) {
-        if (this.noAutoDisplay && partnerAdminsLoaded && licencesLoaded) {
-            this._showItem();
-        }
     }
 }
 window.customElements.define(AppscoCustomerItem.is, AppscoCustomerItem);
